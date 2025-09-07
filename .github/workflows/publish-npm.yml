@@ -1,0 +1,360 @@
+name: Publish to NPM & Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version type (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Quality checks before publishing
+  quality-check:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run type check
+        run: npm run type-check
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm test
+        env:
+          CI: true
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Check bundle size
+        run: npm run size
+        continue-on-error: true
+
+  # Fetch and display NPM stats
+  npm-stats:
+    name: NPM Package Stats
+    runs-on: ubuntu-latest
+    outputs:
+      current_version: ${{ steps.package.outputs.version }}
+      downloads: ${{ steps.stats.outputs.downloads }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get current package version
+        id: package
+        run: |
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Fetch NPM stats
+        id: stats
+        run: |
+          PACKAGE_NAME="create-js-stack-cli"
+          
+          # Check if package exists on NPM
+          if npm view $PACKAGE_NAME version 2>/dev/null; then
+            # Get download stats
+            WEEKLY=$(curl -s https://api.npmjs.org/downloads/point/last-week/$PACKAGE_NAME | jq -r '.downloads // 0')
+            MONTHLY=$(curl -s https://api.npmjs.org/downloads/point/last-month/$PACKAGE_NAME | jq -r '.downloads // 0')
+            
+            echo "downloads=Weekly: $WEEKLY | Monthly: $MONTHLY" >> $GITHUB_OUTPUT
+            echo "📊 NPM Stats for $PACKAGE_NAME:"
+            echo "  - Weekly Downloads: $WEEKLY"
+            echo "  - Monthly Downloads: $MONTHLY"
+          else
+            echo "downloads=Package not yet published" >> $GITHUB_OUTPUT
+            echo "📦 Package not yet published to NPM"
+          fi
+
+  # Fetch and display GitHub stats
+  github-stats:
+    name: GitHub Repository Stats
+    runs-on: ubuntu-latest
+    outputs:
+      stars: ${{ steps.stats.outputs.stars }}
+      forks: ${{ steps.stats.outputs.forks }}
+    steps:
+      - name: Fetch GitHub stats
+        id: stats
+        run: |
+          REPO="${{ github.repository }}"
+          
+          # Fetch repository data
+          REPO_DATA=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$REPO")
+          
+          STARS=$(echo $REPO_DATA | jq -r '.stargazers_count // 0')
+          FORKS=$(echo $REPO_DATA | jq -r '.forks_count // 0')
+          ISSUES=$(echo $REPO_DATA | jq -r '.open_issues_count // 0')
+          
+          echo "stars=$STARS" >> $GITHUB_OUTPUT
+          echo "forks=$FORKS" >> $GITHUB_OUTPUT
+          
+          echo "📊 GitHub Stats for $REPO:"
+          echo "  - ⭐ Stars: $STARS"
+          echo "  - 🍴 Forks: $FORKS"
+          echo "  - 📝 Open Issues: $ISSUES"
+
+  # Publish to NPM
+  publish-npm:
+    name: Publish to NPM
+    needs: [quality-check, npm-stats]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Version bump
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to $VERSION"
+          git push
+
+      - name: Publish to NPM
+        run: |
+          # Check if package exists and get current version
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          # Try to get published version
+          PUBLISHED_VERSION=$(npm view $PACKAGE_NAME version 2>/dev/null || echo "0.0.0")
+          
+          echo "Current version: $CURRENT_VERSION"
+          echo "Published version: $PUBLISHED_VERSION"
+          
+          # Only publish if version is different
+          if [ "$CURRENT_VERSION" != "$PUBLISHED_VERSION" ]; then
+            npm publish --access public
+            echo "✅ Published version $CURRENT_VERSION to NPM"
+          else
+            echo "⏭️ Version $CURRENT_VERSION already published, skipping"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
+          body: |
+            ## 🎉 Release v${{ env.VERSION }}
+            
+            ### 📦 Installation
+            ```bash
+            npm install -g create-js-stack-cli@${{ env.VERSION }}
+            ```
+            
+            ### 📊 Stats
+            - NPM Downloads: ${{ needs.npm-stats.outputs.downloads }}
+            - GitHub Stars: ${{ needs.github-stats.outputs.stars }}
+            - GitHub Forks: ${{ needs.github-stats.outputs.forks }}
+            
+            ### 🔗 Links
+            - [NPM Package](https://www.npmjs.com/package/create-js-stack-cli)
+            - [Documentation](https://github.com/${{ github.repository }})
+            - [Web App](https://create-js-stack-web.pages.dev)
+          draft: false
+          prerelease: false
+
+  # Deploy web app to Cloudflare Pages
+  deploy-web:
+    name: Deploy Web App
+    needs: quality-check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd apps/web
+          npm ci
+
+      - name: Build web app
+        run: |
+          cd apps/web
+          npm run build
+        env:
+          NEXT_PUBLIC_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GEMINI_API_KEY }}
+          NEXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: create-js-stack-web
+          directory: apps/web/out
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  # Update documentation
+  update-docs:
+    name: Update Documentation
+    needs: [publish-npm, github-stats, npm-stats]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update README with stats
+        run: |
+          # Update badges in README
+          VERSION=$(node -p "require('./package.json').version")
+          
+          # Create or update shields.io badges
+          cat > .github/badges.md << EOF
+          ![NPM Version](https://img.shields.io/npm/v/create-js-stack-cli)
+          ![NPM Downloads](https://img.shields.io/npm/dm/create-js-stack-cli)
+          ![GitHub Stars](https://img.shields.io/github/stars/${{ github.repository }})
+          ![GitHub Forks](https://img.shields.io/github/forks/${{ github.repository }})
+          ![License](https://img.shields.io/npm/l/create-js-stack-cli)
+          EOF
+          
+          echo "📝 Documentation updated with latest stats"
+
+      - name: Commit documentation updates
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if [[ `git status --porcelain` ]]; then
+            git add .
+            git commit -m "docs: update badges and stats"
+            git push
+          fi
+
+  # Send notifications
+  notify:
+    name: Send Notifications
+    needs: [publish-npm, deploy-web, github-stats, npm-stats]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Send Discord notification
+        if: success() && secrets.DISCORD_WEBHOOK_URL
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "🚀 create-js-stack-cli Published!",
+                "description": "Version '"$VERSION"' has been successfully published",
+                "color": 3066993,
+                "fields": [
+                  {
+                    "name": "📊 NPM Stats",
+                    "value": "'"${{ needs.npm-stats.outputs.downloads }}"'",
+                    "inline": true
+                  },
+                  {
+                    "name": "⭐ GitHub Stars",
+                    "value": "'"${{ needs.github-stats.outputs.stars }}"'",
+                    "inline": true
+                  },
+                  {
+                    "name": "🔗 Links",
+                    "value": "[NPM](https://npmjs.com/package/create-js-stack-cli) | [GitHub](https://github.com/'"${{ github.repository }}"')"
+                  }
+                ]
+              }]
+            }'
+
+      - name: Create summary
+        run: |
+          echo "## 📊 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.publish-npm.result }}" == "success" ]; then
+            echo "✅ **NPM Package Published Successfully**" >> $GITHUB_STEP_SUMMARY
+            echo "- Version: ${{ needs.npm-stats.outputs.current_version }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Downloads: ${{ needs.npm-stats.outputs.downloads }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **NPM Package Publication Failed**" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.deploy-web.result }}" == "success" ]; then
+            echo "✅ **Web App Deployed Successfully**" >> $GITHUB_STEP_SUMMARY
+            echo "- URL: https://create-js-stack-web.pages.dev" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Web App Deployment Failed**" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📈 Repository Stats" >> $GITHUB_STEP_SUMMARY
+          echo "- ⭐ Stars: ${{ needs.github-stats.outputs.stars }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🍴 Forks: ${{ needs.github-stats.outputs.forks }}" >> $GITHUB_STEP_SUMMARY

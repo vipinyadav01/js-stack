@@ -1,0 +1,62 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+{{#if useJWT}}
+import { AuthModule } from './auth/auth.module';
+{{/if}}
+{{#if usePrisma}}
+import { PrismaModule } from './prisma/prisma.module';
+{{/if}}
+{{#if useSequelize}}
+import { SequelizeModule } from '@nestjs/sequelize';
+{{/if}}
+{{#if useMongoose}}
+import { MongooseModule } from '@nestjs/mongoose';
+{{/if}}
+{{#if useRedis}}
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-store';
+{{/if}}
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    {{#if useSequelize}}
+    SequelizeModule.forRoot({
+      dialect: '{{database}}',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT) || {{#if database.postgres}}5432{{else}}{{#if database.mysql}}3306{{else}}3306{{/if}}{{/if}},
+      username: process.env.DB_USER || '{{#if database.postgres}}postgres{{else}}root{{/if}}',
+      password: process.env.DB_PASSWORD || 'password',
+      database: process.env.DB_NAME || '{{projectName}}',
+      autoLoadModels: true,
+      synchronize: process.env.NODE_ENV !== 'production',
+    }),
+    {{/if}}
+    {{#if useMongoose}}
+    MongooseModule.forRoot(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/{{projectName}}'
+    ),
+    {{/if}}
+    {{#if useRedis}}
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT) || 6379,
+    }),
+    {{/if}}
+    {{#if usePrisma}}
+    PrismaModule,
+    {{/if}}
+    {{#if useJWT}}
+    AuthModule,
+    {{/if}}
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}

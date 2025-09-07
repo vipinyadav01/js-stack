@@ -1,0 +1,48 @@
+# Production Dockerfile for {{backend}} backend
+
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy source code
+COPY . .
+
+{{#if useTypeScript}}
+# Build the application
+RUN npm run build
+{{/if}}
+
+# Production stage
+FROM node:18-alpine AS production
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S backend -u 1001
+
+WORKDIR /app
+
+# Copy built application
+{{#if useTypeScript}}
+COPY --from=builder --chown=backend:nodejs /app/dist ./dist
+{{else}}
+COPY --from=builder --chown=backend:nodejs /app/src ./src
+{{/if}}
+COPY --from=builder --chown=backend:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=backend:nodejs /app/package*.json ./
+
+USER backend
+
+EXPOSE {{backendPort}}
+
+ENV NODE_ENV=production
+
+{{#if useTypeScript}}
+CMD ["node", "dist/server.js"]
+{{else}}
+CMD ["node", "src/server.js"]
+{{/if}}

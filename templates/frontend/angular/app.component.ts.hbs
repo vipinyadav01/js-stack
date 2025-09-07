@@ -1,0 +1,99 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <header class="{{#if useMaterial}}mat-toolbar{{else}}{{#if useBootstrap}}navbar navbar-expand-lg navbar-dark bg-primary{{else}}app-header{{/if}}{{/if}}">
+      <div class="{{#if useBootstrap}}container-fluid{{else}}{{#unless useMaterial}}header-content{{/unless}}{{/if}}">
+        <h1 class="{{#if useMaterial}}mat-h1{{else}}{{#if useBootstrap}}navbar-brand{{else}}logo{{/if}}{{/if}}">{{projectName}}</h1>
+        <nav class="{{#if useBootstrap}}navbar-nav ms-auto{{else}}nav-links{{/if}}">
+          <a routerLink="/" class="{{#if useMaterial}}mat-button{{else}}{{#if useBootstrap}}nav-link{{else}}nav-link{{/if}}{{/if}}">Home</a>
+          <a routerLink="/about" class="{{#if useMaterial}}mat-button{{else}}{{#if useBootstrap}}nav-link{{else}}nav-link{{/if}}{{/if}}">About</a>
+        </nav>
+      </div>
+    </header>
+    
+    <main class="{{#if useBootstrap}}container my-4{{else}}main-content{{/if}}">
+      <router-outlet></router-outlet>
+    </main>
+    
+    <footer class="{{#if useBootstrap}}bg-dark text-white py-3 mt-auto{{else}}app-footer{{/if}}">
+      <div class="{{#if useBootstrap}}container text-center{{else}}footer-content{{/if}}">
+        <p>&copy; 2024 {{projectName}}. Built with create-js-stack.</p>
+      </div>
+    </footer>
+  `,
+  {{#unless useMaterial}}
+  {{#unless useBootstrap}}
+  styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    .app-header {
+      background-color: #1976d2;
+      color: white;
+      padding: 1rem;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .main-content {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      width: 100%;
+    }
+    
+    .app-footer {
+      background-color: #333;
+      color: white;
+      padding: 1rem;
+      margin-top: auto;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+  `]
+  {{/unless}}
+  {{/unless}}
+})
+export class AppComponent {
+  title = '{{projectName}}';
+}

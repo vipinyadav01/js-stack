@@ -1,0 +1,139 @@
+# Source files (only include compiled)
+src/**/*.test.js
+src/**/*.spec.js
+src/**/*.test.ts
+src/**/*.spec.ts
+__tests__/
+test/
+tests/
+*.test.js
+*.spec.js
+*.test.ts
+*.spec.ts
+
+# Development files
+.github/
+.vscode/
+.idea/
+docs/
+examples/
+scripts/
+apps/web/
+packages/*/src/
+
+# Config files
+.eslintrc*
+.prettierrc*
+jest.config.*
+tsconfig.json
+tsconfig.*.json
+.babelrc*
+rollup.config.*
+webpack.config.*
+vite.config.*
+vitest.config*
+playwright.config*
+.editorconfig
+.gitattributes
+
+# Build files
+*.log
+*.pid
+*.seed
+.DS_Store
+Thumbs.db
+.env*
+!.env.example
+coverage/
+.nyc_output/
+.turbo/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.vercel/
+.changeset/
+!.changeset/config.json
+
+# Documentation
+*.md
+!README.md
+!LICENSE.md
+CONTRIBUTING.md
+CHANGELOG.md
+CODE_OF_CONDUCT.md
+SECURITY.md
+TEMPLATE-CONFIG.md
+USAGE-GUIDE.md
+DIFFERENTIATORS.md
+PUBLISHING-DEPLOYMENT-GUIDE.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+azure-pipelines.yml
+Jenkinsfile
+
+# Development dependencies files
+.husky/
+.lintstagedrc*
+commitlint.config.*
+
+# Test fixtures and mocks
+fixtures/
+mocks/
+__mocks__/
+
+# Storybook
+.storybook/
+storybook-static/
+*.stories.js
+*.stories.jsx
+*.stories.ts
+*.stories.tsx
+
+# Docker files (for development)
+Dockerfile.dev
+docker-compose.dev.yml
+.dockerignore
+
+# IDE
+*.sublime-*
+*.code-workspace
+*.iml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.orig
+*.rej
+
+# Lock files (controversial, but some prefer not to include)
+# Uncomment if you don't want to include lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Monorepo specific
+lerna.json
+nx.json
+rush.json
+pnpm-workspace.yaml
+
+# Build artifacts that shouldn't be published
+*.tsbuildinfo
+dist/**/*.map
+dist/**/*.d.ts.map
+
+# Keep only essential files for npm package
+# The package should include:
+# - dist/ (compiled code)
+# - templates/ (template files)
+# - bin/ (executable files)
+# - README.md
+# - LICENSE
+# - package.json

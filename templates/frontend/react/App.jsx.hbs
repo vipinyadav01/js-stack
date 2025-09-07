@@ -1,0 +1,116 @@
+{{#if useTypeScript}}import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+{{#if useTanstackQuery}}import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';{{/if}}
+{{#if useZustand}}import { useStore } from './store';{{/if}}
+{{#if useTailwind}}import './index.css';{{else}}import './App.css';{{/if}}
+
+{{#if useTanstackQuery}}const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+});{{/if}}
+
+function App(): JSX.Element {
+{{else}}import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+{{#if useTanstackQuery}}import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';{{/if}}
+{{#if useZustand}}import { useStore } from './store';{{/if}}
+{{#if useTailwind}}import './index.css';{{else}}import './App.css';{{/if}}
+
+{{#if useTanstackQuery}}const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+});{{/if}}
+
+function App() {
+{{/if}}
+  return (
+    {{#if useTanstackQuery}}<QueryClientProvider client={queryClient}>{{/if}}
+      <Router>
+        <div className="{{#if useTailwind}}min-h-screen bg-gray-50 dark:bg-gray-900{{else}}App{{/if}}">
+          <header className="{{#if useTailwind}}bg-white dark:bg-gray-800 shadow{{else}}App-header{{/if}}">
+            <div className="{{#if useTailwind}}max-w-7xl mx-auto px-4 sm:px-6 lg:px-8{{else}}container{{/if}}">
+              <div className="{{#if useTailwind}}flex justify-between items-center py-6{{else}}header-content{{/if}}">
+                <h1 className="{{#if useTailwind}}text-3xl font-bold text-gray-900 dark:text-white{{else}}title{{/if}}">
+                  {{projectName}}
+                </h1>
+                <nav className="{{#if useTailwind}}flex space-x-4{{else}}nav{{/if}}">
+                  <a href="/" className="{{#if useTailwind}}text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white{{else}}nav-link{{/if}}">
+                    Home
+                  </a>
+                  <a href="/about" className="{{#if useTailwind}}text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white{{else}}nav-link{{/if}}">
+                    About
+                  </a>
+                </nav>
+              </div>
+            </div>
+          </header>
+
+          <main className="{{#if useTailwind}}max-w-7xl mx-auto py-6 sm:px-6 lg:px-8{{else}}main-content{{/if}}">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+      {{#if useTanstackQuery}}<ReactQueryDevtools initialIsOpen={false} />{{/if}}
+    {{#if useTanstackQuery}}</QueryClientProvider>{{/if}}
+  );
+}
+
+function Home() {
+  return (
+    <div className="{{#if useTailwind}}px-4 py-6 sm:px-0{{else}}page{{/if}}">
+      <div className="{{#if useTailwind}}border-4 border-dashed border-gray-200 dark:border-gray-700 rounded-lg h-96 flex items-center justify-center{{else}}content-box{{/if}}">
+        <div className="{{#if useTailwind}}text-center{{else}}center{{/if}}">
+          <h2 className="{{#if useTailwind}}text-2xl font-semibold text-gray-900 dark:text-white mb-4{{else}}heading{{/if}}">
+            Welcome to {{projectName}}
+          </h2>
+          <p className="{{#if useTailwind}}text-gray-600 dark:text-gray-400{{else}}description{{/if}}">
+            Start building your amazing application!
+          </p>
+          {{#if useFramerMotion}}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="{{#if useTailwind}}mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700{{else}}button{{/if}}"
+          >
+            Get Started
+          </motion.button>
+          {{else}}
+          <button className="{{#if useTailwind}}mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700{{else}}button{{/if}}">
+            Get Started
+          </button>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function About() {
+  return (
+    <div className="{{#if useTailwind}}px-4 py-6 sm:px-0{{else}}page{{/if}}">
+      <h2 className="{{#if useTailwind}}text-2xl font-semibold text-gray-900 dark:text-white mb-4{{else}}heading{{/if}}">
+        About {{projectName}}
+      </h2>
+      <p className="{{#if useTailwind}}text-gray-600 dark:text-gray-400{{else}}description{{/if}}">
+        This project was scaffolded with create-js-stack-cli.
+      </p>
+    </div>
+  );
+}
+
+export default App;

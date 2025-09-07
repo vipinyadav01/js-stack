@@ -1,0 +1,117 @@
+# {{projectName}} - Production Docker Compose
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT={{backendPort}}
+      - DATABASE_URL=${DATABASE_URL}
+      {{#if useRedis}}
+      - REDIS_URL=${REDIS_URL}
+      {{/if}}
+      {{#if useJWT}}
+      - JWT_SECRET=${JWT_SECRET}
+      {{/if}}
+    depends_on:
+      {{#if database.postgres}}
+      - postgres
+      {{/if}}
+      {{#if database.mysql}}
+      - mysql
+      {{/if}}
+      {{#if useRedis}}
+      - redis
+      {{/if}}
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.{{projectName}}.com`)"
+      - "traefik.http.services.backend.loadbalancer.server.port={{backendPort}}"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`{{projectName}}.com`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  {{#if database.postgres}}
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+  {{/if}}
+
+  {{#if useRedis}}
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    networks:
+      - app-network
+  {{/if}}
+
+  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v3.0
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - app-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.{{projectName}}.com`)"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+
+volumes:
+  {{#if database.postgres}}
+  postgres_data:
+  {{/if}}
+  {{#if useRedis}}
+  redis_data:
+  {{/if}}
+  letsencrypt:
+
+networks:
+  app-network:
+    driver: bridge
