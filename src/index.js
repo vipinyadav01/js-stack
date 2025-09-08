@@ -1,5 +1,5 @@
 // Programmatic API for create-js-stack
-import { collectProjectConfig } from "./prompts.js";
+import { collectProjectConfig } from "./prompts-modern.js";
 import { createProject } from "./generators/project-generator.js";
 
 /**
