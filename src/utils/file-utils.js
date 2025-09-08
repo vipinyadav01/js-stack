@@ -182,7 +182,27 @@ function sortObject(obj) {
  * Get template directory path
  */
 export function getTemplateDir() {
-  return path.join(__dirname, "../../templates");
+  // Support both dev (src) and build (dist) locations
+  const candidates = [
+    // When running from src (development)
+    path.join(__dirname, "../../templates"),
+    // When running from dist (published package)
+    path.join(__dirname, "../../../templates"),
+    // Fallback: project root when executed from elsewhere
+    path.join(process.cwd(), "templates"),
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      const stat = fs.statSync(candidate);
+      if (stat.isDirectory()) return candidate;
+    } catch {
+      // try next candidate
+    }
+  }
+
+  // Last resort: return the first candidate (dev path)
+  return candidates[0];
 }
 
 /**
