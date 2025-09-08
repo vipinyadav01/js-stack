@@ -133,7 +133,13 @@ try {
   await program.parseAsync(process.argv);
 } catch (error) {
   console.log();
-  if (error.code === 'commander.missingArgument') {
+  if (error.code === 'commander.version') {
+    // Version command successful, exit normally
+    process.exit(0);
+  } else if (error.code === 'commander.helpDisplayed') {
+    // Help command successful, exit normally
+    process.exit(0);
+  } else if (error.code === 'commander.missingArgument') {
     console.error(chalk.red('❌ Error: Missing required argument'));
   } else if (error.code === 'commander.unknownOption') {
     console.error(chalk.red('❌ Error: Unknown option'));

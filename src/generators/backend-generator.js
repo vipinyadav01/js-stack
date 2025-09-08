@@ -1,5 +1,5 @@
 import path from 'path';
-import { ensureDir, writeJson, mergePackageJson } from '../utils/file-utils.js';
+import { ensureDir, writeJson, mergePackageJson, copyTemplates, getTemplateDir } from '../utils/file-utils.js';
 import { BACKEND_OPTIONS } from '../types.js';
 
 /**
@@ -9,30 +9,102 @@ export async function generateBackend(config) {
   const backendDir = path.join(config.projectDir, 'backend');
   await ensureDir(backendDir);
   
+  const templateDir = getTemplateDir();
+  
   switch (config.backend) {
     case BACKEND_OPTIONS.EXPRESS:
-      await generateExpressBackend(config, backendDir);
+      await generateBackendFromTemplate(config, backendDir, 'express', templateDir);
       break;
     case BACKEND_OPTIONS.FASTIFY:
-      await generateFastifyBackend(config, backendDir);
+      await generateBackendFromTemplate(config, backendDir, 'fastify', templateDir);
       break;
     case BACKEND_OPTIONS.KOA:
-      await generateKoaBackend(config, backendDir);
+      await generateBackendFromTemplate(config, backendDir, 'koa', templateDir);
       break;
     case BACKEND_OPTIONS.HAPI:
-      await generateHapiBackend(config, backendDir);
+      await generateBackendFromTemplate(config, backendDir, 'hapi', templateDir);
       break;
     case BACKEND_OPTIONS.NESTJS:
-      await generateNestBackend(config, backendDir);
+      await generateBackendFromTemplate(config, backendDir, 'nestjs', templateDir);
       break;
   }
 }
 
-async function generateExpressBackend(config, backendDir) {
-  // Create server.js
+async function generateBackendFromTemplate(config, backendDir, frameworkName, templateDir) {
+  const backendTemplateDir = path.join(templateDir, 'backend', frameworkName);
+  
+  // Template context
+  const context = {
+    projectName: config.projectName,
+    projectDescription: config.description || `A ${frameworkName} backend application`,
+    backend: {
+      [frameworkName]: true
+    },
+    database: {
+      [config.database]: config.database !== 'none'
+    },
+    orm: {
+      [config.orm]: config.orm !== 'none'
+    },
+    auth: {
+      [config.auth]: config.auth !== 'none'
+    },
+    typescript: config.typescript || false,
+    testing: {
+      jest: config.addons?.includes('testing'),
+      vitest: false
+    },
+    useTypeScript: config.typescript || false,
+    useJWT: config.auth === 'jwt',
+    usePrisma: config.orm === 'prisma',
+    useMongoose: config.orm === 'mongoose',
+    useSequelize: config.orm === 'sequelize',
+    useTypeORM: config.orm === 'typeorm',
+    useRedis: config.addons?.includes('redis') || false,
+    authorName: config.authorName || '',
+    packageManager: {
+      [config.packageManager]: true
+    }
+  };
+  
+  // Copy templates with context
+  try {
+    await copyTemplates(backendTemplateDir, backendDir, context);
+  } catch (error) {
+    console.warn(`Warning: Could not find templates for ${frameworkName} backend. Using fallback generation.`);
+    await generateFallbackBackend(config, backendDir, frameworkName);
+  }
+}
+
+async function generateFallbackBackend(config, backendDir, frameworkName) {
+  // Fallback: Create basic package.json and server file when templates are missing
+  const packageJson = {
+    name: `${config.projectName}-backend`,
+    version: '1.0.0',
+    description: `${config.projectName} backend`,
+    main: 'server.js',
+    scripts: {
+      start: 'node server.js',
+      dev: 'nodemon server.js'
+    },
+    dependencies: {
+      express: '^4.18.2',
+      cors: '^2.8.5',
+      helmet: '^7.0.0',
+      dotenv: '^16.3.1'
+    },
+    devDependencies: {
+      nodemon: '^3.0.1'
+    }
+  };
+
+  await writeJson(path.join(backendDir, 'package.json'), packageJson);
+
+  // Create basic server file
   const serverContent = `const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -60,48 +132,8 @@ app.listen(PORT, () => {
 });
 `;
 
-  await writeJson(path.join(backendDir, 'server.js'), serverContent, { spaces: 0 });
-  
-  // Update package.json
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
-    scripts: {
-      'dev:backend': 'nodemon backend/server.js',
-      'start:backend': 'node backend/server.js'
-    },
-    dependencies: {
-      'express': '^4.18.2',
-      'cors': '^2.8.5',
-      'helmet': '^7.1.0'
-    },
-    devDependencies: {
-      'nodemon': '^3.0.2'
-    }
-  });
+  const fs = await import('fs-extra');
+  await fs.writeFile(path.join(backendDir, 'server.js'), serverContent);
 }
 
-async function generateFastifyBackend(config, backendDir) {
-  // Similar implementation for Fastify
-  // Stub for now
-  const serverContent = `// Fastify backend implementation`;
-  await writeJson(path.join(backendDir, 'server.js'), serverContent, { spaces: 0 });
-}
-
-async function generateKoaBackend(config, backendDir) {
-  // Stub for Koa
-  const serverContent = `// Koa backend implementation`;
-  await writeJson(path.join(backendDir, 'server.js'), serverContent, { spaces: 0 });
-}
-
-async function generateHapiBackend(config, backendDir) {
-  // Stub for Hapi
-  const serverContent = `// Hapi backend implementation`;
-  await writeJson(path.join(backendDir, 'server.js'), serverContent, { spaces: 0 });
-}
-
-async function generateNestBackend(config, backendDir) {
-  // Stub for NestJS
-  const serverContent = `// NestJS backend implementation`;
-  await writeJson(path.join(backendDir, 'server.js'), serverContent, { spaces: 0 });
-}
-
-export default { generateBackend };
+export default generateBackend;

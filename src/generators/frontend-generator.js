@@ -1,43 +1,58 @@
 import path from 'path';
-import { ensureDir, writeJson, mergePackageJson } from '../utils/file-utils.js';
+import { ensureDir, writeJson, mergePackageJson, copyTemplates, getTemplateDir } from '../utils/file-utils.js';
 import { FRONTEND_OPTIONS } from '../types.js';
 
 /**
  * Generate frontend structure
  */
 export async function generateFrontend(config) {
+  const templateDir = getTemplateDir();
+  
   for (const frontend of config.frontend) {
     if (frontend === FRONTEND_OPTIONS.NONE) continue;
     
-    switch (frontend) {
-      case FRONTEND_OPTIONS.REACT:
-        await generateReactFrontend(config);
-        break;
-      case FRONTEND_OPTIONS.VUE:
-        await generateVueFrontend(config);
-        break;
-      case FRONTEND_OPTIONS.ANGULAR:
-        await generateAngularFrontend(config);
-        break;
-      case FRONTEND_OPTIONS.SVELTE:
-        await generateSvelteFrontend(config);
-        break;
-      case FRONTEND_OPTIONS.NEXTJS:
-        await generateNextFrontend(config);
-        break;
-      case FRONTEND_OPTIONS.NUXT:
-        await generateNuxtFrontend(config);
-        break;
-      case FRONTEND_OPTIONS.REACT_NATIVE:
-        await generateReactNativeFrontend(config);
-        break;
+    const frontendDir = path.join(config.projectDir, 'frontend');
+    await ensureDir(frontendDir);
+    
+    // Template context
+    const context = {
+      projectName: config.projectName,
+      projectDescription: config.description || `A ${frontend} frontend application`,
+      frontend: {
+        [frontend]: true
+      },
+      typescript: config.typescript || false,
+      styling: {
+        tailwind: config.addons?.includes('tailwind') || false,
+        'styled-components': config.addons?.includes('styled-components') || false,
+        emotion: config.addons?.includes('emotion') || false,
+        sass: config.addons?.includes('sass') || false
+      },
+      auth: {
+        [config.auth]: config.auth !== 'none'
+      },
+      testing: {
+        jest: config.addons?.includes('testing'),
+        vitest: false
+      },
+      useTypeScript: config.typescript || false,
+      authorName: config.authorName || '',
+      packageManager: {
+        [config.packageManager]: true
+      }
+    };
+    
+    try {
+      const frontendTemplateDir = path.join(templateDir, 'frontend', frontend);
+      await copyTemplates(frontendTemplateDir, frontendDir, context);
+    } catch (error) {
+      console.warn(`Warning: Could not find templates for ${frontend} frontend. Using fallback generation.`);
+      await generateFallbackFrontend(config, frontendDir, frontend);
     }
   }
 }
 
-async function generateReactFrontend(config) {
-  const frontendDir = path.join(config.projectDir, 'frontend');
-  await ensureDir(frontendDir);
+async function generateFallbackFrontend(config, frontendDir, frameworkType) {
   await ensureDir(path.join(frontendDir, 'src'));
   await ensureDir(path.join(frontendDir, 'public'));
   
@@ -108,40 +123,4 @@ root.render(
   });
 }
 
-async function generateVueFrontend(config) {
-  // Stub for Vue
-  const frontendDir = path.join(config.projectDir, 'frontend-vue');
-  await ensureDir(frontendDir);
-}
-
-async function generateAngularFrontend(config) {
-  // Stub for Angular
-  const frontendDir = path.join(config.projectDir, 'frontend-angular');
-  await ensureDir(frontendDir);
-}
-
-async function generateSvelteFrontend(config) {
-  // Stub for Svelte
-  const frontendDir = path.join(config.projectDir, 'frontend-svelte');
-  await ensureDir(frontendDir);
-}
-
-async function generateNextFrontend(config) {
-  // Stub for Next.js
-  const frontendDir = path.join(config.projectDir, 'frontend-next');
-  await ensureDir(frontendDir);
-}
-
-async function generateNuxtFrontend(config) {
-  // Stub for Nuxt
-  const frontendDir = path.join(config.projectDir, 'frontend-nuxt');
-  await ensureDir(frontendDir);
-}
-
-async function generateReactNativeFrontend(config) {
-  // Stub for React Native
-  const mobileDir = path.join(config.projectDir, 'mobile');
-  await ensureDir(mobileDir);
-}
-
-export default { generateFrontend };
+export default generateFrontend;

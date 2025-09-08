@@ -8,7 +8,7 @@
     "OPENAI_API_KEY",
     "DATABASE_URL"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [

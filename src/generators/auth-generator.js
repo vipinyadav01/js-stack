@@ -1,5 +1,5 @@
 import path from 'path';
-import { ensureDir, writeJson, mergePackageJson } from '../utils/file-utils.js';
+import { ensureDir, writeJson, mergePackageJson, copyTemplates, getTemplateDir } from '../utils/file-utils.js';
 import { AUTH_OPTIONS } from '../types.js';
 
 /**
@@ -11,23 +11,38 @@ export async function generateAuth(config) {
   const authDir = path.join(config.projectDir, 'auth');
   await ensureDir(authDir);
   
-  switch (config.auth) {
-    case AUTH_OPTIONS.JWT:
-      await generateJWTAuth(config, authDir);
-      break;
-    case AUTH_OPTIONS.PASSPORT:
-      await generatePassportAuth(config, authDir);
-      break;
-    case AUTH_OPTIONS.AUTH0:
-      await generateAuth0(config, authDir);
-      break;
-    case AUTH_OPTIONS.FIREBASE:
-      await generateFirebaseAuth(config, authDir);
-      break;
+  const templateDir = getTemplateDir();
+  
+  const context = {
+    projectName: config.projectName,
+    backend: {
+      [config.backend]: config.backend !== 'none'
+    },
+    database: {
+      [config.database]: config.database !== 'none'
+    },
+    orm: {
+      [config.orm]: config.orm !== 'none'
+    },
+    auth: {
+      [config.auth]: true
+    },
+    typescript: config.typescript || false,
+    useTypeScript: config.typescript || false,
+    oauth: config.auth === 'oauth' || config.addons?.includes('oauth') || false
+  };
+  
+  try {
+    const authTemplateDir = path.join(templateDir, 'auth', config.auth);
+    await copyTemplates(authTemplateDir, authDir, context);
+  } catch (error) {
+    console.warn(`Warning: Could not find templates for ${config.auth} auth. Using fallback generation.`);
+    await generateFallbackAuth(config, authDir);
   }
 }
 
-async function generateJWTAuth(config, authDir) {
+async function generateFallbackAuth(config, authDir) {
+  // Basic JWT auth fallback
   const authContent = `const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -84,7 +99,8 @@ module.exports = {
 };
 `;
 
-  await writeJson(path.join(authDir, 'jwt.js'), authContent, { spaces: 0 });
+  const fs = await import('fs-extra');
+  await fs.writeFile(path.join(authDir, 'auth.js'), authContent);
   
   await mergePackageJson(path.join(config.projectDir, 'package.json'), {
     dependencies: {
@@ -94,34 +110,4 @@ module.exports = {
   });
 }
 
-async function generatePassportAuth(config, authDir) {
-  // Stub for Passport
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
-    dependencies: {
-      'passport': '^0.7.0',
-      'passport-local': '^1.0.0',
-      'passport-jwt': '^4.0.1'
-    }
-  });
-}
-
-async function generateAuth0(config, authDir) {
-  // Stub for Auth0
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
-    dependencies: {
-      'auth0': '^4.3.0'
-    }
-  });
-}
-
-async function generateFirebaseAuth(config, authDir) {
-  // Stub for Firebase
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
-    dependencies: {
-      'firebase': '^10.7.1',
-      'firebase-admin': '^12.0.0'
-    }
-  });
-}
-
-export default { generateAuth };
+export default generateAuth;

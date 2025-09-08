@@ -39,8 +39,8 @@ export async function initCommand(projectName, options) {
     // Set project directory
     config.projectDir = path.resolve(process.cwd(), config.projectName);
     
-  // Show configuration summary
-  displayConfigTable(config);
+    // Show configuration summary
+    displayConfigTable(config);
   
   // Create progress steps
   const steps = [

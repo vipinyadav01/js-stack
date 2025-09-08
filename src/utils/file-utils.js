@@ -7,6 +7,48 @@ import Handlebars from 'handlebars';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Register Handlebars helpers
+Handlebars.registerHelper('kebabCase', function(str) {
+  return str?.replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
+});
+
+Handlebars.registerHelper('camelCase', function(str) {
+  return str?.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
+    .replace(/^[A-Z]/, (g) => g.toLowerCase());
+});
+
+Handlebars.registerHelper('pascalCase', function(str) {
+  return str?.replace(/(^|-)([a-z])/g, (g) => g.slice(-1).toUpperCase());
+});
+
+Handlebars.registerHelper('eq', function(a, b) {
+  return a === b;
+});
+
+Handlebars.registerHelper('ne', function(a, b) {
+  return a !== b;
+});
+
+Handlebars.registerHelper('or', function() {
+  const args = Array.prototype.slice.call(arguments, 0, -1);
+  return args.some(Boolean);
+});
+
+Handlebars.registerHelper('and', function() {
+  const args = Array.prototype.slice.call(arguments, 0, -1);
+  return args.every(Boolean);
+});
+
+Handlebars.registerHelper('includes', function(array, value) {
+  return Array.isArray(array) && array.includes(value);
+});
+
+Handlebars.registerHelper('json', function(context) {
+  return JSON.stringify(context, null, 2);
+});
+
 /**
  * Copy directory recursively
  */

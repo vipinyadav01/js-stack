@@ -1,24 +1,43 @@
 import path from 'path';
-import { ensureDir, writeJson, mergePackageJson } from '../utils/file-utils.js';
+import { ensureDir, writeJson, mergePackageJson, copyTemplates, getTemplateDir } from '../utils/file-utils.js';
 import { DATABASE_OPTIONS, ORM_OPTIONS } from '../types.js';
 
 /**
  * Generate database configuration
  */
 export async function generateDatabase(config) {
-  const dbDir = path.join(config.projectDir, 'database');
-  await ensureDir(dbDir);
+  if (config.database === DATABASE_OPTIONS.NONE && config.orm === ORM_OPTIONS.NONE) return;
+  
+  const templateDir = getTemplateDir();
   
   // Generate ORM configuration
   if (config.orm !== ORM_OPTIONS.NONE) {
-    await generateORM(config, dbDir);
+    const dbDir = path.join(config.projectDir, 'database');
+    await ensureDir(dbDir);
+    
+    const context = {
+      projectName: config.projectName,
+      database: {
+        [config.database]: config.database !== 'none'
+      },
+      orm: {
+        [config.orm]: config.orm !== 'none'
+      },
+      typescript: config.typescript || false,
+      useTypeScript: config.typescript || false
+    };
+    
+    try {
+      const ormTemplateDir = path.join(templateDir, 'database', config.orm);
+      await copyTemplates(ormTemplateDir, dbDir, context);
+    } catch (error) {
+      console.warn(`Warning: Could not find templates for ${config.orm}. Using fallback generation.`);
+      await generateFallbackDatabase(config, dbDir);
+    }
   }
-  
-  // Generate database connection
-  await generateDatabaseConnection(config, dbDir);
 }
 
-async function generateORM(config, dbDir) {
+async function generateFallbackDatabase(config, dbDir) {
   switch (config.orm) {
     case ORM_OPTIONS.PRISMA:
       await generatePrisma(config, dbDir);
@@ -136,4 +155,4 @@ async function generateTypeORM(config, dbDir) {
   });
 }
 
-export default { generateDatabase };
+export default generateDatabase;

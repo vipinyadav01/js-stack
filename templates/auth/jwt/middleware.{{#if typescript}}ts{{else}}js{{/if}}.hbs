@@ -1,0 +1,65 @@
+{{#if backend.express}}
+const jwt = require('jsonwebtoken');
+
+const authMiddleware = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token, authorization denied' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ message: 'Token is not valid' });
+  }
+};
+
+module.exports = authMiddleware;
+{{/if}}
+
+{{#if backend.fastify}}
+const jwt = require('jsonwebtoken');
+
+async function authMiddleware(request, reply) {
+  try {
+    const token = request.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      reply.code(401).send({ message: 'No token, authorization denied' });
+      return;
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    request.user = decoded;
+  } catch (err) {
+    reply.code(401).send({ message: 'Token is not valid' });
+  }
+}
+
+module.exports = authMiddleware;
+{{/if}}
+
+{{#if backend.nestjs}}
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+
+@Injectable()
+export class AuthService {
+  constructor(private jwtService: JwtService) {}
+
+  async validateToken(token: string) {
+    try {
+      return this.jwtService.verify(token);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  async generateToken(payload: any) {
+    return this.jwtService.sign(payload);
+  }
+}
+{{/if}}
