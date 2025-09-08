@@ -1,77 +1,111 @@
-import path from 'path';
-import { ensureDir, writeJson, mergePackageJson, copyTemplates, getTemplateDir } from '../utils/file-utils.js';
-import { BACKEND_OPTIONS } from '../types.js';
+import path from "path";
+import {
+  ensureDir,
+  writeJson,
+  mergePackageJson,
+  copyTemplates,
+  getTemplateDir,
+} from "../utils/file-utils.js";
+import { BACKEND_OPTIONS } from "../types.js";
 
 /**
  * Generate backend structure
  */
 export async function generateBackend(config) {
-  const backendDir = path.join(config.projectDir, 'backend');
+  const backendDir = path.join(config.projectDir, "backend");
   await ensureDir(backendDir);
-  
+
   const templateDir = getTemplateDir();
-  
+
   switch (config.backend) {
     case BACKEND_OPTIONS.EXPRESS:
-      await generateBackendFromTemplate(config, backendDir, 'express', templateDir);
+      await generateBackendFromTemplate(
+        config,
+        backendDir,
+        "express",
+        templateDir,
+      );
       break;
     case BACKEND_OPTIONS.FASTIFY:
-      await generateBackendFromTemplate(config, backendDir, 'fastify', templateDir);
+      await generateBackendFromTemplate(
+        config,
+        backendDir,
+        "fastify",
+        templateDir,
+      );
       break;
     case BACKEND_OPTIONS.KOA:
-      await generateBackendFromTemplate(config, backendDir, 'koa', templateDir);
+      await generateBackendFromTemplate(config, backendDir, "koa", templateDir);
       break;
     case BACKEND_OPTIONS.HAPI:
-      await generateBackendFromTemplate(config, backendDir, 'hapi', templateDir);
+      await generateBackendFromTemplate(
+        config,
+        backendDir,
+        "hapi",
+        templateDir,
+      );
       break;
     case BACKEND_OPTIONS.NESTJS:
-      await generateBackendFromTemplate(config, backendDir, 'nestjs', templateDir);
+      await generateBackendFromTemplate(
+        config,
+        backendDir,
+        "nestjs",
+        templateDir,
+      );
       break;
   }
 }
 
-async function generateBackendFromTemplate(config, backendDir, frameworkName, templateDir) {
-  const backendTemplateDir = path.join(templateDir, 'backend', frameworkName);
-  
+async function generateBackendFromTemplate(
+  config,
+  backendDir,
+  frameworkName,
+  templateDir,
+) {
+  const backendTemplateDir = path.join(templateDir, "backend", frameworkName);
+
   // Template context
   const context = {
     projectName: config.projectName,
-    projectDescription: config.description || `A ${frameworkName} backend application`,
+    projectDescription:
+      config.description || `A ${frameworkName} backend application`,
     backend: {
-      [frameworkName]: true
+      [frameworkName]: true,
     },
     database: {
-      [config.database]: config.database !== 'none'
+      [config.database]: config.database !== "none",
     },
     orm: {
-      [config.orm]: config.orm !== 'none'
+      [config.orm]: config.orm !== "none",
     },
     auth: {
-      [config.auth]: config.auth !== 'none'
+      [config.auth]: config.auth !== "none",
     },
     typescript: config.typescript || false,
     testing: {
-      jest: config.addons?.includes('testing'),
-      vitest: false
+      jest: config.addons?.includes("testing"),
+      vitest: false,
     },
     useTypeScript: config.typescript || false,
-    useJWT: config.auth === 'jwt',
-    usePrisma: config.orm === 'prisma',
-    useMongoose: config.orm === 'mongoose',
-    useSequelize: config.orm === 'sequelize',
-    useTypeORM: config.orm === 'typeorm',
-    useRedis: config.addons?.includes('redis') || false,
-    authorName: config.authorName || '',
+    useJWT: config.auth === "jwt",
+    usePrisma: config.orm === "prisma",
+    useMongoose: config.orm === "mongoose",
+    useSequelize: config.orm === "sequelize",
+    useTypeORM: config.orm === "typeorm",
+    useRedis: config.addons?.includes("redis") || false,
+    authorName: config.authorName || "",
     packageManager: {
-      [config.packageManager]: true
-    }
+      [config.packageManager]: true,
+    },
   };
-  
+
   // Copy templates with context
   try {
     await copyTemplates(backendTemplateDir, backendDir, context);
   } catch (error) {
-    console.warn(`Warning: Could not find templates for ${frameworkName} backend. Using fallback generation.`);
+    console.warn(
+      `Warning: Could not find templates for ${frameworkName} backend. Using fallback generation.`,
+    );
     await generateFallbackBackend(config, backendDir, frameworkName);
   }
 }
@@ -80,25 +114,25 @@ async function generateFallbackBackend(config, backendDir, frameworkName) {
   // Fallback: Create basic package.json and server file when templates are missing
   const packageJson = {
     name: `${config.projectName}-backend`,
-    version: '1.0.0',
+    version: "1.0.0",
     description: `${config.projectName} backend`,
-    main: 'server.js',
+    main: "server.js",
     scripts: {
-      start: 'node server.js',
-      dev: 'nodemon server.js'
+      start: "node server.js",
+      dev: "nodemon server.js",
     },
     dependencies: {
-      express: '^4.18.2',
-      cors: '^2.8.5',
-      helmet: '^7.0.0',
-      dotenv: '^16.3.1'
+      express: "^4.18.2",
+      cors: "^2.8.5",
+      helmet: "^7.0.0",
+      dotenv: "^16.3.1",
     },
     devDependencies: {
-      nodemon: '^3.0.1'
-    }
+      nodemon: "^3.0.1",
+    },
   };
 
-  await writeJson(path.join(backendDir, 'package.json'), packageJson);
+  await writeJson(path.join(backendDir, "package.json"), packageJson);
 
   // Create basic server file
   const serverContent = `const express = require('express');
@@ -132,8 +166,8 @@ app.listen(PORT, () => {
 });
 `;
 
-  const fs = await import('fs-extra');
-  await fs.writeFile(path.join(backendDir, 'server.js'), serverContent);
+  const fs = await import("fs-extra");
+  await fs.writeFile(path.join(backendDir, "server.js"), serverContent);
 }
 
 export default generateBackend;

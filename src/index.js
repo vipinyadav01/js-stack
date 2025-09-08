@@ -1,6 +1,6 @@
 // Programmatic API for create-js-stack
-import { collectProjectConfig } from './prompts.js';
-import { createProject } from './generators/project-generator.js';
+import { collectProjectConfig } from "./prompts.js";
+import { createProject } from "./generators/project-generator.js";
 
 /**
  * Initialize a new project programmatically
@@ -14,22 +14,22 @@ export async function init(projectName, options = {}) {
     const config = await collectProjectConfig(projectName, {
       ...options,
       // Disable interactive prompts in programmatic mode
-      ci: true
+      ci: true,
     });
-    
+
     // Create the project
     await createProject(config);
-    
+
     return {
       success: true,
       projectName: config.projectName,
       projectDir: config.projectDir,
-      config
+      config,
     };
   } catch (error) {
     return {
       success: false,
-      error: error.message
+      error: error.message,
     };
   }
 }
@@ -42,7 +42,7 @@ export {
   FRONTEND_OPTIONS,
   PACKAGE_MANAGER_OPTIONS,
   AUTH_OPTIONS,
-  ADDON_OPTIONS
-} from './types.js';
+  ADDON_OPTIONS,
+} from "./types.js";
 
 export default { init };

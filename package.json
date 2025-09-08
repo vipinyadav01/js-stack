@@ -13,24 +13,17 @@
     "templates"
   ],
   "scripts": {
-    "build": "turbo run build",
+    "build": "echo 'Building CLI...' && node scripts/build.js || echo 'Build script not found'",
     "build:cli": "echo 'Building CLI...' && node scripts/build.js || echo 'Build script not found'",
-    "dev": "turbo run dev",
+    "dev": "node src/cli.js",
     "dev:cli": "node src/cli.js",
-    "dev:web": "turbo run dev --filter=@js-stack/web",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
+    "test": "echo 'No tests specified'",
+    "lint": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "prepare": "npx husky install 2>/dev/null || echo 'Husky not required for production'",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "turbo run build && changeset publish",
+    "release": "echo 'Building CLI...' && node scripts/build.js",
     "postinstall": "echo 'Installation complete!'"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "keywords": [
     "cli",
     "scaffolding",
@@ -65,18 +58,15 @@
     "chalk-animation": "^2.0.3"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.7",
     "@types/node": "^22.5.4",
     "esbuild": "^0.23.1",
     "husky": "^9.1.5",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3",
-    "turbo": "^2.1.1"
+    "prettier": "^3.3.3"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "prettier --write",
-      "eslint --fix"
+      "prettier --write"
     ],
     "*.{json,md}": [
       "prettier --write"

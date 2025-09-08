@@ -1,7 +1,7 @@
-import { execa } from 'execa';
-import ora from 'ora';
-import chalk from 'chalk';
-import { PACKAGE_MANAGER_OPTIONS } from '../types.js';
+import { execa } from "execa";
+import ora from "ora";
+import chalk from "chalk";
+import { PACKAGE_MANAGER_OPTIONS } from "../types.js";
 
 /**
  * Get install command for package manager
@@ -9,14 +9,14 @@ import { PACKAGE_MANAGER_OPTIONS } from '../types.js';
 export function getInstallCommand(packageManager) {
   switch (packageManager) {
     case PACKAGE_MANAGER_OPTIONS.YARN:
-      return 'yarn';
+      return "yarn";
     case PACKAGE_MANAGER_OPTIONS.PNPM:
-      return 'pnpm install';
+      return "pnpm install";
     case PACKAGE_MANAGER_OPTIONS.BUN:
-      return 'bun install';
+      return "bun install";
     case PACKAGE_MANAGER_OPTIONS.NPM:
     default:
-      return 'npm install';
+      return "npm install";
   }
 }
 
@@ -24,9 +24,9 @@ export function getInstallCommand(packageManager) {
  * Get add command for package manager
  */
 export function getAddCommand(packageManager, packages, isDev = false) {
-  const pkgString = packages.join(' ');
-  const devFlag = isDev ? '-D' : '';
-  
+  const pkgString = packages.join(" ");
+  const devFlag = isDev ? "-D" : "";
+
   switch (packageManager) {
     case PACKAGE_MANAGER_OPTIONS.YARN:
       return `yarn add ${devFlag} ${pkgString}`;
@@ -62,8 +62,9 @@ export function getRunCommand(packageManager, script) {
  */
 export async function isPackageManagerInstalled(packageManager) {
   try {
-    const command = packageManager === PACKAGE_MANAGER_OPTIONS.NPM ? 'npm' : packageManager;
-    await execa(command, ['--version']);
+    const command =
+      packageManager === PACKAGE_MANAGER_OPTIONS.NPM ? "npm" : packageManager;
+    await execa(command, ["--version"]);
     return true;
   } catch {
     return false;
@@ -74,28 +75,28 @@ export async function isPackageManagerInstalled(packageManager) {
  * Install dependencies
  */
 export async function installDependencies(projectDir, packageManager) {
-  const spinner = ora('Installing dependencies...').start();
-  
+  const spinner = ora("Installing dependencies...").start();
+
   try {
     // Check if package manager is installed
-    if (!await isPackageManagerInstalled(packageManager)) {
+    if (!(await isPackageManagerInstalled(packageManager))) {
       spinner.fail(`${packageManager} is not installed`);
       console.log(chalk.yellow(`Falling back to npm...`));
       packageManager = PACKAGE_MANAGER_OPTIONS.NPM;
     }
-    
+
     const installCmd = getInstallCommand(packageManager);
-    const [cmd, ...args] = installCmd.split(' ');
-    
-    await execa(cmd, args, { 
+    const [cmd, ...args] = installCmd.split(" ");
+
+    await execa(cmd, args, {
       cwd: projectDir,
-      stdio: 'ignore' 
+      stdio: "ignore",
     });
-    
-    spinner.succeed('Dependencies installed successfully');
+
+    spinner.succeed("Dependencies installed successfully");
     return true;
   } catch (error) {
-    spinner.fail('Failed to install dependencies');
+    spinner.fail("Failed to install dependencies");
     console.error(chalk.red(error.message));
     return false;
   }
@@ -104,24 +105,31 @@ export async function installDependencies(projectDir, packageManager) {
 /**
  * Add packages to project
  */
-export async function addPackages(projectDir, packages, packageManager, isDev = false) {
+export async function addPackages(
+  projectDir,
+  packages,
+  packageManager,
+  isDev = false,
+) {
   if (!packages || packages.length === 0) return true;
-  
-  const spinner = ora(`Adding ${isDev ? 'dev ' : ''}dependencies...`).start();
-  
+
+  const spinner = ora(`Adding ${isDev ? "dev " : ""}dependencies...`).start();
+
   try {
     const addCmd = getAddCommand(packageManager, packages, isDev);
-    const [cmd, ...args] = addCmd.split(' ');
-    
-    await execa(cmd, args, { 
+    const [cmd, ...args] = addCmd.split(" ");
+
+    await execa(cmd, args, {
       cwd: projectDir,
-      stdio: 'ignore' 
+      stdio: "ignore",
     });
-    
-    spinner.succeed(`${isDev ? 'Dev dependencies' : 'Dependencies'} added successfully`);
+
+    spinner.succeed(
+      `${isDev ? "Dev dependencies" : "Dependencies"} added successfully`,
+    );
     return true;
   } catch (error) {
-    spinner.fail(`Failed to add ${isDev ? 'dev ' : ''}dependencies`);
+    spinner.fail(`Failed to add ${isDev ? "dev " : ""}dependencies`);
     console.error(chalk.red(error.message));
     return false;
   }
@@ -133,14 +141,14 @@ export async function addPackages(projectDir, packages, packageManager, isDev = 
 export function getLockFileName(packageManager) {
   switch (packageManager) {
     case PACKAGE_MANAGER_OPTIONS.YARN:
-      return 'yarn.lock';
+      return "yarn.lock";
     case PACKAGE_MANAGER_OPTIONS.PNPM:
-      return 'pnpm-lock.yaml';
+      return "pnpm-lock.yaml";
     case PACKAGE_MANAGER_OPTIONS.BUN:
-      return 'bun.lockb';
+      return "bun.lockb";
     case PACKAGE_MANAGER_OPTIONS.NPM:
     default:
-      return 'package-lock.json';
+      return "package-lock.json";
   }
 }
 
@@ -151,5 +159,5 @@ export default {
   isPackageManagerInstalled,
   installDependencies,
   addPackages,
-  getLockFileName
+  getLockFileName,
 };

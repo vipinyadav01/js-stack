@@ -1,37 +1,49 @@
-import path from 'path';
-import { ensureDir, writeJson, mergePackageJson, copyTemplates, getTemplateDir } from '../utils/file-utils.js';
-import { DATABASE_OPTIONS, ORM_OPTIONS } from '../types.js';
+import path from "path";
+import {
+  ensureDir,
+  writeJson,
+  mergePackageJson,
+  copyTemplates,
+  getTemplateDir,
+} from "../utils/file-utils.js";
+import { DATABASE_OPTIONS, ORM_OPTIONS } from "../types.js";
 
 /**
  * Generate database configuration
  */
 export async function generateDatabase(config) {
-  if (config.database === DATABASE_OPTIONS.NONE && config.orm === ORM_OPTIONS.NONE) return;
-  
+  if (
+    config.database === DATABASE_OPTIONS.NONE &&
+    config.orm === ORM_OPTIONS.NONE
+  )
+    return;
+
   const templateDir = getTemplateDir();
-  
+
   // Generate ORM configuration
   if (config.orm !== ORM_OPTIONS.NONE) {
-    const dbDir = path.join(config.projectDir, 'database');
+    const dbDir = path.join(config.projectDir, "database");
     await ensureDir(dbDir);
-    
+
     const context = {
       projectName: config.projectName,
       database: {
-        [config.database]: config.database !== 'none'
+        [config.database]: config.database !== "none",
       },
       orm: {
-        [config.orm]: config.orm !== 'none'
+        [config.orm]: config.orm !== "none",
       },
       typescript: config.typescript || false,
-      useTypeScript: config.typescript || false
+      useTypeScript: config.typescript || false,
     };
-    
+
     try {
-      const ormTemplateDir = path.join(templateDir, 'database', config.orm);
+      const ormTemplateDir = path.join(templateDir, "database", config.orm);
       await copyTemplates(ormTemplateDir, dbDir, context);
     } catch (error) {
-      console.warn(`Warning: Could not find templates for ${config.orm}. Using fallback generation.`);
+      console.warn(
+        `Warning: Could not find templates for ${config.orm}. Using fallback generation.`,
+      );
       await generateFallbackDatabase(config, dbDir);
     }
   }
@@ -55,8 +67,8 @@ async function generateFallbackDatabase(config, dbDir) {
 }
 
 async function generateDatabaseConnection(config, dbDir) {
-  let connectionContent = '';
-  
+  let connectionContent = "";
+
   switch (config.database) {
     case DATABASE_OPTIONS.SQLITE:
       connectionContent = `// SQLite connection configuration
@@ -112,46 +124,48 @@ module.exports = { connect, client };
 `;
       break;
   }
-  
-  await writeJson(path.join(dbDir, 'config.js'), connectionContent, { spaces: 0 });
+
+  await writeJson(path.join(dbDir, "config.js"), connectionContent, {
+    spaces: 0,
+  });
 }
 
 async function generatePrisma(config, dbDir) {
   // Stub for Prisma
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
+  await mergePackageJson(path.join(config.projectDir, "package.json"), {
     devDependencies: {
-      'prisma': '^5.7.1'
+      prisma: "^5.7.1",
     },
     dependencies: {
-      '@prisma/client': '^5.7.1'
-    }
+      "@prisma/client": "^5.7.1",
+    },
   });
 }
 
 async function generateSequelize(config, dbDir) {
   // Stub for Sequelize
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
+  await mergePackageJson(path.join(config.projectDir, "package.json"), {
     dependencies: {
-      'sequelize': '^6.35.2'
-    }
+      sequelize: "^6.35.2",
+    },
   });
 }
 
 async function generateMongoose(config, dbDir) {
   // Stub for Mongoose
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
+  await mergePackageJson(path.join(config.projectDir, "package.json"), {
     dependencies: {
-      'mongoose': '^8.0.3'
-    }
+      mongoose: "^8.0.3",
+    },
   });
 }
 
 async function generateTypeORM(config, dbDir) {
   // Stub for TypeORM
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
+  await mergePackageJson(path.join(config.projectDir, "package.json"), {
     dependencies: {
-      'typeorm': '^0.3.17'
-    }
+      typeorm: "^0.3.17",
+    },
   });
 }
 

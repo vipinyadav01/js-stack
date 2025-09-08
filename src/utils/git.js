@@ -1,13 +1,13 @@
-import { execa } from 'execa';
-import fs from 'fs-extra';
-import path from 'path';
+import { execa } from "execa";
+import fs from "fs-extra";
+import path from "path";
 
 /**
  * Check if git is installed
  */
 export async function isGitInstalled() {
   try {
-    await execa('git', ['--version']);
+    await execa("git", ["--version"]);
     return true;
   } catch {
     return false;
@@ -20,29 +20,29 @@ export async function isGitInstalled() {
 export async function initGitRepo(projectDir) {
   try {
     // Check if git is installed
-    if (!await isGitInstalled()) {
-      console.log('Git is not installed. Skipping git initialization.');
+    if (!(await isGitInstalled())) {
+      console.log("Git is not installed. Skipping git initialization.");
       return false;
     }
 
     // Initialize git repo
-    await execa('git', ['init'], { cwd: projectDir });
-    
+    await execa("git", ["init"], { cwd: projectDir });
+
     // Create .gitignore if it doesn't exist
-    const gitignorePath = path.join(projectDir, '.gitignore');
-    if (!await fs.pathExists(gitignorePath)) {
+    const gitignorePath = path.join(projectDir, ".gitignore");
+    if (!(await fs.pathExists(gitignorePath))) {
       await createGitignore(projectDir);
     }
-    
+
     // Add all files to staging
-    await execa('git', ['add', '.'], { cwd: projectDir });
-    
+    await execa("git", ["add", "."], { cwd: projectDir });
+
     // Create initial commit
-    await execa('git', ['commit', '-m', 'Initial commit'], { cwd: projectDir });
-    
+    await execa("git", ["commit", "-m", "Initial commit"], { cwd: projectDir });
+
     return true;
   } catch (error) {
-    console.error('Failed to initialize git repository:', error.message);
+    console.error("Failed to initialize git repository:", error.message);
     return false;
   }
 }
@@ -110,12 +110,12 @@ tmp/
 temp/
 `;
 
-  const gitignorePath = path.join(projectDir, '.gitignore');
+  const gitignorePath = path.join(projectDir, ".gitignore");
   await fs.writeFile(gitignorePath, gitignoreContent);
 }
 
 export default {
   isGitInstalled,
   initGitRepo,
-  createGitignore
+  createGitignore,
 };

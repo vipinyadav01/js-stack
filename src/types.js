@@ -1,99 +1,99 @@
-import * as yup from 'yup';
+import * as yup from "yup";
 
 // Database options
 export const DATABASE_OPTIONS = {
-  NONE: 'none',
-  SQLITE: 'sqlite',
-  POSTGRES: 'postgres',
-  MYSQL: 'mysql',
-  MONGODB: 'mongodb'
+  NONE: "none",
+  SQLITE: "sqlite",
+  POSTGRES: "postgres",
+  MYSQL: "mysql",
+  MONGODB: "mongodb",
 };
 
 // ORM options
 export const ORM_OPTIONS = {
-  NONE: 'none',
-  PRISMA: 'prisma',
-  SEQUELIZE: 'sequelize',
-  MONGOOSE: 'mongoose',
-  TYPEORM: 'typeorm'
+  NONE: "none",
+  PRISMA: "prisma",
+  SEQUELIZE: "sequelize",
+  MONGOOSE: "mongoose",
+  TYPEORM: "typeorm",
 };
 
 // Backend framework options
 export const BACKEND_OPTIONS = {
-  NONE: 'none',
-  EXPRESS: 'express',
-  FASTIFY: 'fastify',
-  KOA: 'koa',
-  HAPI: 'hapi',
-  NESTJS: 'nestjs'
+  NONE: "none",
+  EXPRESS: "express",
+  FASTIFY: "fastify",
+  KOA: "koa",
+  HAPI: "hapi",
+  NESTJS: "nestjs",
 };
 
 // Frontend framework options
 export const FRONTEND_OPTIONS = {
-  NONE: 'none',
-  REACT: 'react',
-  VUE: 'vue',
-  ANGULAR: 'angular',
-  SVELTE: 'svelte',
-  NEXTJS: 'nextjs',
-  NUXT: 'nuxt',
-  REACT_NATIVE: 'react-native'
+  NONE: "none",
+  REACT: "react",
+  VUE: "vue",
+  ANGULAR: "angular",
+  SVELTE: "svelte",
+  NEXTJS: "nextjs",
+  NUXT: "nuxt",
+  REACT_NATIVE: "react-native",
 };
 
 // Package manager options
 export const PACKAGE_MANAGER_OPTIONS = {
-  NPM: 'npm',
-  YARN: 'yarn',
-  PNPM: 'pnpm',
-  BUN: 'bun'
+  NPM: "npm",
+  YARN: "yarn",
+  PNPM: "pnpm",
+  BUN: "bun",
 };
 
 // Authentication options
 export const AUTH_OPTIONS = {
-  NONE: 'none',
-  JWT: 'jwt',
-  PASSPORT: 'passport',
-  AUTH0: 'auth0',
-  FIREBASE: 'firebase'
+  NONE: "none",
+  JWT: "jwt",
+  PASSPORT: "passport",
+  AUTH0: "auth0",
+  FIREBASE: "firebase",
 };
 
 // Addon options
 export const ADDON_OPTIONS = {
-  ESLINT: 'eslint',
-  PRETTIER: 'prettier',
-  HUSKY: 'husky',
-  DOCKER: 'docker',
-  GITHUB_ACTIONS: 'github-actions',
-  TESTING: 'testing'
+  ESLINT: "eslint",
+  PRETTIER: "prettier",
+  HUSKY: "husky",
+  DOCKER: "docker",
+  GITHUB_ACTIONS: "github-actions",
+  TESTING: "testing",
 };
 
 // Validation schemas
 export const ProjectNameSchema = yup
   .string()
-  .required('Project name is required')
-  .min(1, 'Project name cannot be empty')
-  .max(255, 'Project name must be less than 255 characters')
-  .matches(/^[^.]/, 'Project name cannot start with a dot')
-  .matches(/^[^-]/, 'Project name cannot start with a dash')
-  .test('no-invalid-chars', 'Project name contains invalid characters', (value) => {
-    const invalidChars = ['<', '>', ':', '"', '|', '?', '*'];
-    return !invalidChars.some((char) => value?.includes(char));
-  })
-  .test('not-reserved', 'Project name is reserved', (value) => {
-    return value?.toLowerCase() !== 'node_modules';
+  .required("Project name is required")
+  .min(1, "Project name cannot be empty")
+  .max(255, "Project name must be less than 255 characters")
+  .matches(/^[^.]/, "Project name cannot start with a dot")
+  .matches(/^[^-]/, "Project name cannot start with a dash")
+  .test(
+    "no-invalid-chars",
+    "Project name contains invalid characters",
+    (value) => {
+      const invalidChars = ["<", ">", ":", '"', "|", "?", "*"];
+      return !invalidChars.some((char) => value?.includes(char));
+    },
+  )
+  .test("not-reserved", "Project name is reserved", (value) => {
+    return value?.toLowerCase() !== "node_modules";
   });
 
 export const DatabaseSchema = yup
   .string()
   .oneOf(Object.values(DATABASE_OPTIONS));
 
-export const ORMSchema = yup
-  .string()
-  .oneOf(Object.values(ORM_OPTIONS));
+export const ORMSchema = yup.string().oneOf(Object.values(ORM_OPTIONS));
 
-export const BackendSchema = yup
-  .string()
-  .oneOf(Object.values(BACKEND_OPTIONS));
+export const BackendSchema = yup.string().oneOf(Object.values(BACKEND_OPTIONS));
 
 export const FrontendSchema = yup
   .string()
@@ -103,9 +103,7 @@ export const PackageManagerSchema = yup
   .string()
   .oneOf(Object.values(PACKAGE_MANAGER_OPTIONS));
 
-export const AuthSchema = yup
-  .string()
-  .oneOf(Object.values(AUTH_OPTIONS));
+export const AuthSchema = yup.string().oneOf(Object.values(AUTH_OPTIONS));
 
 export const ProjectConfigSchema = yup.object().shape({
   projectName: ProjectNameSchema,
@@ -117,7 +115,7 @@ export const ProjectConfigSchema = yup.object().shape({
   auth: AuthSchema,
   addons: yup.array().of(yup.string().oneOf(Object.values(ADDON_OPTIONS))),
   git: yup.boolean(),
-  install: yup.boolean()
+  install: yup.boolean(),
 });
 
 // Type definitions (using JSDoc for better IDE support)
@@ -158,5 +156,5 @@ export default {
   FRONTEND_OPTIONS,
   PACKAGE_MANAGER_OPTIONS,
   AUTH_OPTIONS,
-  ADDON_OPTIONS
+  ADDON_OPTIONS,
 };

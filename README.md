@@ -5,12 +5,14 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 ## ✨ Features
 
 ### 🚀 **Lightning Fast Setup**
+
 - Get a complete full-stack project running in minutes
 - Interactive prompts with smart defaults
 - Skip prompts with command-line flags
 - Programmatic API for automation
 
 ### 🎨 **Frontend Frameworks**
+
 - **React** - With Vite, TypeScript, and modern tooling
 - **Vue.js** - Vue 3 with Composition API and Vite
 - **Angular** - Latest Angular with CLI integration
@@ -20,6 +22,7 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 - **React Native** - Mobile app development
 
 ### ⚙️ **Backend Frameworks**
+
 - **Express.js** - Fast, minimalist web framework
 - **Fastify** - High-performance, low-overhead framework
 - **Koa.js** - Lightweight, expressive middleware framework
@@ -27,18 +30,21 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 - **NestJS** - Scalable Node.js framework with TypeScript
 
 ### 🗄️ **Database & Storage**
+
 - **SQLite** - Lightweight, serverless database
 - **PostgreSQL** - Advanced open-source database
 - **MySQL** - Popular relational database
 - **MongoDB** - NoSQL document database
 
 ### 🔧 **ORM/ODM Integration**
+
 - **Prisma** - Next-generation ORM with type safety
 - **Sequelize** - Feature-rich ORM for SQL databases
 - **Mongoose** - Elegant MongoDB object modeling
 - **TypeORM** - Advanced ORM with decorator support
 
 ### 🔐 **Authentication & Security**
+
 - **JWT** - JSON Web Token implementation
 - **Passport** - Flexible authentication middleware
 - **Auth0** - Identity platform integration
@@ -46,6 +52,7 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 - Security middleware (Helmet, CORS, Rate limiting)
 
 ### 🛠️ **Development & DevOps**
+
 - **TypeScript** - Full TypeScript support across all templates
 - **Docker** - Complete containerization with Docker Compose
 - **Testing** - Jest, Vitest, Cypress configurations
@@ -55,12 +62,14 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 - **CI/CD** - GitHub Actions workflows
 
 ### 📦 **Package Managers**
+
 - **npm** - Node.js default package manager
 - **yarn** - Fast, reliable dependency management
 - **pnpm** - Efficient disk space usage
 - **bun** - All-in-one JavaScript runtime
 
 ### 🎯 **Additional Features**
+
 - **Redis** - Caching and session storage
 - **Socket.IO** - Real-time communication
 - **Tailwind CSS** - Utility-first CSS framework
@@ -102,6 +111,7 @@ create-js-stack init my-app
 ## 💡 Usage Examples
 
 ### Full-Stack React + Express App
+
 ```bash
 npx create-js-stack init my-app \
   --backend express \
@@ -113,6 +123,7 @@ npx create-js-stack init my-app \
 ```
 
 ### Vue + NestJS Enterprise Setup
+
 ```bash
 npx create-js-stack init enterprise-app \
   --backend nestjs \
@@ -124,6 +135,7 @@ npx create-js-stack init enterprise-app \
 ```
 
 ### Next.js Full-Stack Application
+
 ```bash
 npx create-js-stack init nextjs-app \
   --frontend nextjs \
@@ -134,6 +146,7 @@ npx create-js-stack init nextjs-app \
 ```
 
 ### Mobile + Backend Setup
+
 ```bash
 npx create-js-stack init mobile-app \
   --backend fastify \
@@ -151,6 +164,7 @@ npx create-js-stack init mobile-app \
 Create a new full-stack project with all configurations.
 
 **Options:**
+
 - `-y, --yes` - Use default configuration (Express + React + SQLite + Prisma)
 - `--backend <type>` - Backend framework
   - `express` - Express.js (default)
@@ -212,12 +226,14 @@ Create a new full-stack project with all configurations.
 Add features to an existing project.
 
 **Options:**
+
 - `--addons <addons...>` - Additional tools to add
 - `--auth <type>` - Add authentication system
 - `--database <type>` - Add database support
 - `--install` - Install dependencies after adding features
 
 **Examples:**
+
 ```bash
 # Add Docker and testing to existing project
 create-js-stack add --addons docker testing
@@ -234,8 +250,9 @@ create-js-stack add --database postgres --orm prisma
 List all available options and their descriptions.
 
 **Options:**
+
 - `--backends` - List backend frameworks
-- `--frontends` - List frontend frameworks  
+- `--frontends` - List frontend frameworks
 - `--databases` - List database options
 - `--orms` - List ORM/ODM options
 - `--auth` - List authentication options
@@ -254,19 +271,19 @@ Display the current version of create-js-stack CLI.
 Use create-js-stack programmatically in your Node.js applications:
 
 ```javascript
-import { init, add, list } from 'create-js-stack';
+import { init, add, list } from "create-js-stack";
 
 // Create a new project
-const result = await init('my-app', {
-  backend: 'nestjs',
-  frontend: ['react'],
-  database: 'postgres',
-  orm: 'prisma',
-  auth: 'jwt',
-  addons: ['typescript', 'docker', 'testing'],
-  packageManager: 'pnpm',
+const result = await init("my-app", {
+  backend: "nestjs",
+  frontend: ["react"],
+  database: "postgres",
+  orm: "prisma",
+  auth: "jwt",
+  addons: ["typescript", "docker", "testing"],
+  packageManager: "pnpm",
   git: true,
-  install: true
+  install: true,
 });
 
 if (result.success) {
@@ -279,15 +296,15 @@ if (result.success) {
 
 // Add features to existing project
 const addResult = await add({
-  addons: ['redis', 'socketio'],
-  auth: 'passport',
-  install: true
+  addons: ["redis", "socketio"],
+  auth: "passport",
+  install: true,
 });
 
 // List available options
 const options = await list();
-console.log('Available backends:', options.backends);
-console.log('Available frontends:', options.frontends);
+console.log("Available backends:", options.backends);
+console.log("Available frontends:", options.frontends);
 ```
 
 ### API Reference
@@ -297,6 +314,7 @@ console.log('Available frontends:', options.frontends);
 Creates a new full-stack project.
 
 **Parameters:**
+
 - `projectName` (string) - Name of the project directory
 - `options` (object) - Configuration options
   - `backend` (string) - Backend framework
@@ -316,6 +334,7 @@ Creates a new full-stack project.
 Adds features to an existing project.
 
 **Parameters:**
+
 - `options` (object) - Features to add
   - `addons` (string[]) - Additional tools
   - `auth` (string) - Authentication system
@@ -335,6 +354,7 @@ Returns all available options.
 The generated project follows industry best practices with a well-organized structure:
 
 ### Full-Stack Project Structure
+
 ```
 my-awesome-app/
 ├── 📁 backend/                 # Backend application
@@ -394,6 +414,7 @@ my-awesome-app/
 ### Framework-Specific Structures
 
 #### Next.js Project
+
 ```
 nextjs-app/
 ├── 📁 app/                     # App Router (Next.js 13+)
@@ -408,6 +429,7 @@ nextjs-app/
 ```
 
 #### NestJS Project
+
 ```
 nestjs-app/
 ├── 📁 src/
@@ -428,6 +450,7 @@ nestjs-app/
 ### Generated Files Include:
 
 ✅ **Complete Configuration Files**
+
 - Package.json with all necessary dependencies
 - TypeScript configuration (if selected)
 - ESLint and Prettier configurations
@@ -436,6 +459,7 @@ nestjs-app/
 - CI/CD workflow files
 
 ✅ **Production-Ready Code**
+
 - Fully functional server with middleware
 - Authentication system (if selected)
 - Database models and connections
@@ -444,6 +468,7 @@ nestjs-app/
 - Testing setup and example tests
 
 ✅ **Development Tools**
+
 - Hot reload for development
 - Debugging configurations
 - Git hooks for code quality
@@ -529,17 +554,10 @@ templates/
 Templates use Handlebars with conditional logic:
 
 ```handlebars
-{
-  "name": "{{projectName}}",
-  "version": "1.0.0",
-  {{#if useTypeScript}}
-  "scripts": {
-    "build": "tsc"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0"
-  }
-  {{/if}}
+{ "name": "{{projectName}}", "version": "1.0.0",
+{{#if useTypeScript}}
+  "scripts": { "build": "tsc" }, "devDependencies": { "typescript": "^5.0.0" }
+{{/if}}
 }
 ```
 
@@ -563,11 +581,13 @@ create-js-stack init test-app --backend express --frontend react
 ### Contributing Guidelines
 
 1. **Fork and Clone**
+
    ```bash
    git clone https://github.com/yourusername/create-js-stack-cli.git
    ```
 
 2. **Create Feature Branch**
+
    ```bash
    git checkout -b feature/amazing-feature
    ```
@@ -578,12 +598,14 @@ create-js-stack init test-app --backend express --frontend react
    - Update documentation
 
 4. **Test Thoroughly**
+
    ```bash
    npm test
    npm run test:e2e
    ```
 
 5. **Commit with Conventional Commits**
+
    ```bash
    git commit -m "feat: add support for new framework"
    ```
@@ -625,15 +647,17 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 ## 👥 Authors & Acknowledgments
 
 ### Main Author
-- **Vipin Yadav** - *Initial work and ongoing development*
+
+- **Vipin Yadav** - _Initial work and ongoing development_
 
 ### Contributors
+
 - Community contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ### Acknowledgments
 
 - **Create React App** - Inspiration for CLI design patterns
-- **Next.js** - Modern full-stack framework inspiration  
+- **Next.js** - Modern full-stack framework inspiration
 - **NestJS** - Enterprise-grade architecture patterns
 - **Vite** - Lightning-fast build tool integration
 - **Prisma** - Next-generation ORM inspiration
@@ -647,7 +671,7 @@ Special thanks to the open-source community and all the maintainers of the frame
 If this project helped you, please consider:
 
 - ⭐ **Starring** the repository
-- 🐛 **Reporting** issues and bugs  
+- 🐛 **Reporting** issues and bugs
 - 💡 **Suggesting** new features
 - 🤝 **Contributing** code improvements
 - 📢 **Sharing** with the community

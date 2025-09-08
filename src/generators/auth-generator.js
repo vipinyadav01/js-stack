@@ -1,42 +1,50 @@
-import path from 'path';
-import { ensureDir, writeJson, mergePackageJson, copyTemplates, getTemplateDir } from '../utils/file-utils.js';
-import { AUTH_OPTIONS } from '../types.js';
+import path from "path";
+import {
+  ensureDir,
+  writeJson,
+  mergePackageJson,
+  copyTemplates,
+  getTemplateDir,
+} from "../utils/file-utils.js";
+import { AUTH_OPTIONS } from "../types.js";
 
 /**
  * Generate authentication setup
  */
 export async function generateAuth(config) {
   if (config.auth === AUTH_OPTIONS.NONE) return;
-  
-  const authDir = path.join(config.projectDir, 'auth');
+
+  const authDir = path.join(config.projectDir, "auth");
   await ensureDir(authDir);
-  
+
   const templateDir = getTemplateDir();
-  
+
   const context = {
     projectName: config.projectName,
     backend: {
-      [config.backend]: config.backend !== 'none'
+      [config.backend]: config.backend !== "none",
     },
     database: {
-      [config.database]: config.database !== 'none'
+      [config.database]: config.database !== "none",
     },
     orm: {
-      [config.orm]: config.orm !== 'none'
+      [config.orm]: config.orm !== "none",
     },
     auth: {
-      [config.auth]: true
+      [config.auth]: true,
     },
     typescript: config.typescript || false,
     useTypeScript: config.typescript || false,
-    oauth: config.auth === 'oauth' || config.addons?.includes('oauth') || false
+    oauth: config.auth === "oauth" || config.addons?.includes("oauth") || false,
   };
-  
+
   try {
-    const authTemplateDir = path.join(templateDir, 'auth', config.auth);
+    const authTemplateDir = path.join(templateDir, "auth", config.auth);
     await copyTemplates(authTemplateDir, authDir, context);
   } catch (error) {
-    console.warn(`Warning: Could not find templates for ${config.auth} auth. Using fallback generation.`);
+    console.warn(
+      `Warning: Could not find templates for ${config.auth} auth. Using fallback generation.`,
+    );
     await generateFallbackAuth(config, authDir);
   }
 }
@@ -99,14 +107,14 @@ module.exports = {
 };
 `;
 
-  const fs = await import('fs-extra');
-  await fs.writeFile(path.join(authDir, 'auth.js'), authContent);
-  
-  await mergePackageJson(path.join(config.projectDir, 'package.json'), {
+  const fs = await import("fs-extra");
+  await fs.writeFile(path.join(authDir, "auth.js"), authContent);
+
+  await mergePackageJson(path.join(config.projectDir, "package.json"), {
     dependencies: {
-      'jsonwebtoken': '^9.0.2',
-      'bcrypt': '^5.1.1'
-    }
+      jsonwebtoken: "^9.0.2",
+      bcrypt: "^5.1.1",
+    },
   });
 }
 
