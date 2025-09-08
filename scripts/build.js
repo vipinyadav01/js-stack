@@ -78,8 +78,7 @@ async function buildCLI() {
       ],
     });
 
-    const cliPath = path.join(__dirname, "../dist/cli.js");
-    // No need to add shebang a it's already in the source
+    // CLI is ready - shebang is already in the source file
 
     console.log("✓ Build completed successfully!");
   } catch (error) {
