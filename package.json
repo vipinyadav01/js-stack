@@ -1,6 +1,6 @@
 {
   "name": "create-js-stack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A modern CLI tool for scaffolding JavaScript full-stack projects",
   "type": "module",
   "packageManager": "npm@10.0.0",
