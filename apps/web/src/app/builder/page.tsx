@@ -27,29 +27,7 @@ import {
   Eye,
   Zap
 } from 'lucide-react';
-
-interface StackItem {
-  id: string;
-  category: 'frontend' | 'backend' | 'database' | 'orm' | 'auth' | 'styling' | 'testing' | 'deployment';
-  name: string;
-  icon: string;
-  color: string;
-  npmPackage?: string;
-  githubRepo?: string;
-  version?: string;
-  downloads?: number;
-  stars?: number;
-}
-
-interface StackConfig {
-  id: string;
-  name: string;
-  items: StackItem[];
-  score: number;
-  compatibility: number;
-  performance: number;
-  popularity: number;
-}
+import type { StackItem, StackConfig } from '@/lib/stack-logic';
 
 export default function BuilderPage() {
   const [stack, setStack] = useState<StackConfig>({
@@ -62,8 +40,8 @@ export default function BuilderPage() {
     popularity: 0,
   });
 
-  const [npmData, setNpmData] = useState<any>({});
-  const [githubData, setGithubData] = useState<any>({});
+  const [npmData, setNpmData] = useState<Record<string, import('@/services/api').NPMPackageData | null>>({});
+  const [githubData, setGithubData] = useState<Record<string, import('@/services/api').GitHubRepoData | null>>({});
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<any>(null);
@@ -83,11 +61,11 @@ export default function BuilderPage() {
       for (const item of stack.items) {
         if (item.npmPackage) {
           const data = await fetchNPMData(item.npmPackage);
-          setNpmData(prev => ({ ...prev, [item.npmPackage!]: data }));
+          setNpmData((prev: Record<string, import('@/services/api').NPMPackageData | null>) => ({ ...prev, [item.npmPackage!]: data }));
         }
         if (item.githubRepo) {
           const data = await fetchGitHubData(item.githubRepo);
-          setGithubData(prev => ({ ...prev, [item.githubRepo!]: data }));
+          setGithubData((prev: Record<string, import('@/services/api').GitHubRepoData | null>) => ({ ...prev, [item.githubRepo!]: data }));
         }
       }
     };

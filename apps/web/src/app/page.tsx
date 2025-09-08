@@ -73,7 +73,7 @@ const stats = [
 export default function HomePage() {
   const [showBuilder, setShowBuilder] = useState(false);
   const [showAI, setShowAI] = useState(false);
-  const [selectedStack, setSelectedStack] = useState(null);
+  const [selectedStack, setSelectedStack] = useState<unknown>(null);
 
   return (
     <div className="min-h-screen">
@@ -122,7 +122,7 @@ export default function HomePage() {
                 )}
               </div>
               <div>
-                <LivePreview stack={selectedStack} />
+                <LivePreview />
               </div>
             </motion.div>
           )}

@@ -165,10 +165,10 @@ export function useGemini(options: UseGeminiOptions = {}) {
   return {
     // State
     isConfigured,
-    isLoading: suggestStack.isLoading || generateCode.isLoading,
-    isSuggesting: suggestStack.isLoading,
-    isGenerating: generateCode.isLoading,
-    error: suggestStack.error || generateCode.error,
+    isLoading: suggestStack.isPending || generateCode.isPending,
+    isSuggesting: suggestStack.isPending,
+    isGenerating: generateCode.isPending,
+    error: (suggestStack.error as Error | null) || (generateCode.error as Error | null),
 
     // Methods
     checkConfiguration,
