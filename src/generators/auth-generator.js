@@ -2,6 +2,7 @@ import path from "path";
 import {
   ensureDir,
   writeJson,
+  writeFile,
   mergePackageJson,
   copyTemplates,
   getTemplateDir,
@@ -107,8 +108,7 @@ module.exports = {
 };
 `;
 
-  const fs = await import("fs-extra");
-  await fs.writeFile(path.join(authDir, "auth.js"), authContent);
+  await writeFile(path.join(authDir, "auth.js"), authContent);
 
   await mergePackageJson(path.join(config.projectDir, "package.json"), {
     dependencies: {

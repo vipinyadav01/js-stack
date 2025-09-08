@@ -219,6 +219,13 @@ export async function writeJson(filePath, data, options = { spaces: 2 }) {
 }
 
 /**
+ * Write file with content
+ */
+export async function writeFile(filePath, content, options = {}) {
+  await fs.writeFile(filePath, content, options);
+}
+
+/**
  * Remove directory
  */
 export async function removeDir(dirPath) {
@@ -235,5 +242,6 @@ export default {
   ensureDir,
   readJson,
   writeJson,
+  writeFile,
   removeDir,
 };

@@ -2,6 +2,7 @@ import path from "path";
 import {
   ensureDir,
   writeJson,
+  writeFile,
   mergePackageJson,
   copyTemplates,
   getTemplateDir,
@@ -166,8 +167,7 @@ app.listen(PORT, () => {
 });
 `;
 
-  const fs = await import("fs-extra");
-  await fs.writeFile(path.join(backendDir, "server.js"), serverContent);
+  await writeFile(path.join(backendDir, "server.js"), serverContent);
 }
 
 export default generateBackend;
