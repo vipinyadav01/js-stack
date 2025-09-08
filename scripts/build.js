@@ -24,7 +24,7 @@ async function buildCLI() {
       outfile: path.join(__dirname, "../dist/cli.js"),
       format: "esm",
       banner: {
-        js: "#!/usr/bin/env node\n",
+        js: "",
       },
       external: [
         "@clack/prompts",
@@ -65,9 +65,7 @@ async function buildCLI() {
     // Make the CLI executable
     const cliPath = path.join(__dirname, "../dist/cli.js");
     const cliContent = await fs.readFile(cliPath, "utf-8");
-    if (!cliContent.startsWith("#!/usr/bin/env node")) {
-      await fs.writeFile(cliPath, `#!/usr/bin/env node\n${cliContent}`);
-    }
+    await fs.writeFile(cliPath, `#!/usr/bin/env node\n${cliContent}`);
 
     console.log("✓ Build completed successfully!");
   } catch (error) {
