@@ -37,6 +37,14 @@ async function buildCLI() {
         "ora",
         "validate-npm-package-name",
         "yup",
+        "gradient-string",
+        "figlet",
+        "boxen",
+        "cli-table3",
+        "terminal-link",
+        "cli-spinners",
+        "nanospinner",
+        "chalk-animation",
       ],
     });
 
@@ -59,6 +67,14 @@ async function buildCLI() {
         "ora",
         "validate-npm-package-name",
         "yup",
+        "gradient-string",
+        "figlet",
+        "boxen",
+        "cli-table3",
+        "terminal-link",
+        "cli-spinners",
+        "nanospinner",
+        "chalk-animation",
       ],
     });
 
