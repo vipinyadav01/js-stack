@@ -7,6 +7,7 @@ import {
   copyTemplates,
   mergePackageJson,
   writeJson,
+  writeFile,
   getTemplateDir,
 } from "../utils/file-utils.js";
 import { initGitRepo } from "../utils/git.js";
@@ -208,11 +209,7 @@ ${config.database !== "none" ? "├── database/\n│   └── config.js" 
 MIT
 `;
 
-  await writeJson(
-    path.join(config.projectDir, "README.md"),
-    readmeContent,
-    { spaces: 0 }, // Write as plain text
-  );
+  await writeFile(path.join(config.projectDir, "README.md"), readmeContent);
 }
 
 export default { createProject };

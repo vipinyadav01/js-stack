@@ -2,6 +2,7 @@ import path from "path";
 import {
   ensureDir,
   writeJson,
+  writeFile,
   mergePackageJson,
   copyTemplates,
   getTemplateDir,
@@ -111,15 +112,9 @@ root.render(
 </html>
 `;
 
-  await writeJson(path.join(frontendDir, "src", "App.js"), appContent, {
-    spaces: 0,
-  });
-  await writeJson(path.join(frontendDir, "src", "index.js"), indexContent, {
-    spaces: 0,
-  });
-  await writeJson(path.join(frontendDir, "public", "index.html"), htmlContent, {
-    spaces: 0,
-  });
+  await writeFile(path.join(frontendDir, "src", "App.js"), appContent);
+  await writeFile(path.join(frontendDir, "src", "index.js"), indexContent);
+  await writeFile(path.join(frontendDir, "public", "index.html"), htmlContent);
 
   // Update package.json
   await mergePackageJson(path.join(config.projectDir, "package.json"), {

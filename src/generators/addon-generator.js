@@ -1,5 +1,5 @@
 import path from "path";
-import { writeJson, mergePackageJson } from "../utils/file-utils.js";
+import { writeJson, writeFile, mergePackageJson } from "../utils/file-utils.js";
 import { ADDON_OPTIONS } from "../types.js";
 
 /**
@@ -125,31 +125,26 @@ README.md
 .DS_Store
 `;
 
-  await writeJson(
+  await writeFile(
     path.join(config.projectDir, "Dockerfile"),
     dockerfileContent,
-    { spaces: 0 },
   );
-  await writeJson(
+  await writeFile(
     path.join(config.projectDir, ".dockerignore"),
     dockerIgnoreContent,
-    { spaces: 0 },
   );
 
-  const dockerComposeContent = {
-    version: "3.8",
-    services: {
-      app: {
-        build: ".",
-        ports: ["3000:3000"],
-        environment: {
-          NODE_ENV: "production",
-        },
-      },
-    },
-  };
+  const dockerComposeContent = `version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+`;
 
-  await writeJson(
+  await writeFile(
     path.join(config.projectDir, "docker-compose.yml"),
     dockerComposeContent,
   );
@@ -179,10 +174,9 @@ jobs:
     - run: npm run lint
 `;
 
-  await writeJson(
+  await writeFile(
     path.join(config.projectDir, ".github", "workflows", "ci.yml"),
     workflowContent,
-    { spaces: 0 },
   );
 }
 

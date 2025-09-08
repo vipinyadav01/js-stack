@@ -2,6 +2,7 @@ import path from "path";
 import {
   ensureDir,
   writeJson,
+  writeFile,
   mergePackageJson,
   copyTemplates,
   getTemplateDir,
@@ -125,9 +126,7 @@ module.exports = { connect, client };
       break;
   }
 
-  await writeJson(path.join(dbDir, "config.js"), connectionContent, {
-    spaces: 0,
-  });
+  await writeFile(path.join(dbDir, "config.js"), connectionContent);
 }
 
 async function generatePrisma(config, dbDir) {
