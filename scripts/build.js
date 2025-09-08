@@ -78,10 +78,8 @@ async function buildCLI() {
       ],
     });
 
-    // Make the CLI executable
     const cliPath = path.join(__dirname, "../dist/cli.js");
-    const cliContent = await fs.readFile(cliPath, "utf-8");
-    await fs.writeFile(cliPath, `#!/usr/bin/env node\n${cliContent}`);
+    // No need to add shebang a it's already in the source
 
     console.log("✓ Build completed successfully!");
   } catch (error) {
