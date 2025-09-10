@@ -34,7 +34,7 @@ export async function initCommand(projectName, options) {
     }
 
     // Collect project configuration
-    const config = await collectProjectConfig(projectName, options);
+    const config = await collectProjectConfig(projectName, { ...options, ci: options.yes });
 
     // Set project directory
     config.projectDir = path.resolve(process.cwd(), config.projectName);

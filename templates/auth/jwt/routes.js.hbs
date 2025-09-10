@@ -1,0 +1,175 @@
+{{#if backend.express}}
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const router = express.Router();
+
+// Register route
+router.post('/register', async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Create user (implement your user creation logic here)
+    const user = { id: Date.now(), username, email, password: hashedPassword };
+    
+    // Generate JWT token
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    
+    res.status(201).json({ 
+      message: 'User created successfully', 
+      token,
+      user: { id: user.id, username: user.username, email: user.email }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating user', error: error.message });
+  }
+});
+
+// Login route
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Find user (implement your user lookup logic here)
+    const user = { id: 1, email: 'test@example.com', password: '$2b$10$...' }; // Example user
+    
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    // Compare password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    // Generate JWT token
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    
+    res.json({ 
+      message: 'Login successful', 
+      token,
+      user: { id: user.id, email: user.email }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error during login', error: error.message });
+  }
+});
+
+module.exports = router;
+{{/if}}
+
+{{#if backend.fastify}}
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
+async function authRoutes(fastify, options) {
+  // Register route
+  fastify.post('/register', async (request, reply) => {
+    try {
+      const { username, email, password } = request.body;
+      
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user (implement your user creation logic here)
+      const user = { id: Date.now(), username, email, password: hashedPassword };
+      
+      // Generate JWT token
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      
+      reply.code(201).send({ 
+        message: 'User created successfully', 
+        token,
+        user: { id: user.id, username: user.username, email: user.email }
+      });
+    } catch (error) {
+      reply.code(500).send({ message: 'Error creating user', error: error.message });
+    }
+  });
+
+  // Login route
+  fastify.post('/login', async (request, reply) => {
+    try {
+      const { email, password } = request.body;
+      
+      // Find user (implement your user lookup logic here)
+      const user = { id: 1, email: 'test@example.com', password: '$2b$10$...' }; // Example user
+      
+      if (!user) {
+        return reply.code(401).send({ message: 'Invalid credentials' });
+      }
+      
+      // Compare password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      
+      if (!isValidPassword) {
+        return reply.code(401).send({ message: 'Invalid credentials' });
+      }
+      
+      // Generate JWT token
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      
+      reply.send({ 
+        message: 'Login successful', 
+        token,
+        user: { id: user.id, email: user.email }
+      });
+    } catch (error) {
+      reply.code(500).send({ message: 'Error during login', error: error.message });
+    }
+  });
+}
+
+module.exports = authRoutes;
+{{/if}}
+
+{{#if backend.nestjs}}
+import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { AuthService } from './auth.service';
+
+@Controller('auth')
+export class AuthController {
+  constructor(private authService: AuthService) {}
+
+  @Post('register')
+  async register(@Body() registerDto: { username: string; email: string; password: string }) {
+    try {
+      // Implement user creation logic here
+      const user = { id: Date.now(), ...registerDto };
+      
+      const token = await this.authService.generateToken({ userId: user.id });
+      
+      return {
+        message: 'User created successfully',
+        token,
+        user: { id: user.id, username: user.username, email: user.email }
+      };
+    } catch (error) {
+      throw new HttpException('Error creating user', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Post('login')
+  async login(@Body() loginDto: { email: string; password: string }) {
+    try {
+      // Implement user lookup and password validation logic here
+      const user = { id: 1, email: loginDto.email };
+      
+      const token = await this.authService.generateToken({ userId: user.id });
+      
+      return {
+        message: 'Login successful',
+        token,
+        user: { id: user.id, email: user.email }
+      };
+    } catch (error) {
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
+  }
+}
+{{/if}}

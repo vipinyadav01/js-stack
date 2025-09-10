@@ -480,7 +480,7 @@ nestjs-app/
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/create-js-stack-cli.git
+git clone https://github.com/vipinyadav01/create-js-stack-cli-cli.git
 cd create-js-stack-cli
 
 # Install dependencies
@@ -583,7 +583,7 @@ create-js-stack init test-app --backend express --frontend react
 1. **Fork and Clone**
 
    ```bash
-   git clone https://github.com/yourusername/create-js-stack-cli.git
+   git clone https://github.com/vipinyadav01/create-js-stack-cli-cli.git
    ```
 
 2. **Create Feature Branch**

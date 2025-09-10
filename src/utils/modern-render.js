@@ -7,21 +7,16 @@ import terminalLink from "terminal-link";
 import { createSpinner } from "nanospinner";
 import chalkAnimation from "chalk-animation";
 
-// Gradient themes
-const gradients = {
-  atlas: gradient(["#feac5e", "#c779d0", "#4bc0c8"]),
-  cristal: gradient(["#bdfff3", "#4ac29a"]),
-  teen: gradient(["#77a1d3", "#79cbca", "#e684ae"]),
-  mind: gradient(["#473b7b", "#3584a7", "#30d2be"]),
-  morning: gradient(["#ff5f6d", "#ffc371"]),
-  vice: gradient(["#5ee7df", "#b490ca"]),
-  passion: gradient(["#f43b47", "#453a94"]),
-  fruit: gradient(["#fa709a", "#fee140"]),
-  instagram: gradient(["#833ab4", "#fd1d1d", "#fcb045"]),
-  retro: gradient(["#3f51b1", "#5a55ae", "#7b5fac", "#8f48a8", "#a237a0"]),
-  summer: gradient(["#fdbb2d", "#22c1c3"]),
-  rainbow: gradient.rainbow,
-  pastel: gradient.pastel,
+// Clean color scheme
+const colors = {
+  primary: chalk.blue.bold,
+  secondary: chalk.gray,
+  success: chalk.green.bold,
+  warning: chalk.yellow.bold,
+  error: chalk.red.bold,
+  muted: chalk.gray,
+  accent: chalk.cyan.bold,
+  white: chalk.white.bold,
 };
 
 /**
@@ -30,30 +25,18 @@ const gradients = {
 export async function displayBanner() {
   console.clear();
 
-  // Create ASCII art
-  const title = figlet.textSync("JS Stack", {
-    font: "ANSI Shadow",
-    horizontalLayout: "fitted",
-    verticalLayout: "default",
-    width: 80,
-    whitespaceBreak: true,
-  });
-
-  // Apply gradient
-  console.log(gradients.passion(title));
-
-  // Add animated tagline
-  const tagline = chalkAnimation.rainbow(
-    "✨ Modern JavaScript Project Generator ✨",
-  );
-  await sleep(2000);
-  tagline.stop();
-
+  // Clean banner design
+  console.log(colors.white("╭─────────────────────────────────────────────────────────╮"));
+  console.log(colors.white("│") + colors.primary("  🚀 JS Stack Generator") + colors.white("                                    │"));
+  console.log(colors.white("│") + colors.secondary("  Modern JavaScript Project Scaffolding Tool") + colors.white("        │"));
+  console.log(colors.white("╰─────────────────────────────────────────────────────────╯"));
   console.log();
+
+  // Welcome message
   console.log(
     boxen(
-      chalk.cyan("Build full-stack JavaScript applications with ease!\n") +
-        chalk.gray("Choose your stack • Generate instantly • Start coding"),
+      colors.accent("Build full-stack JavaScript applications with ease!\n") +
+        colors.muted("Choose your stack • Generate instantly • Start coding"),
       {
         padding: 1,
         margin: 1,
@@ -70,25 +53,11 @@ export async function displayBanner() {
  * Display welcome message with animation
  */
 export async function displayWelcome() {
-  const welcomeText = gradients.atlas.multiline(
-    [
-      "╔════════════════════════════════════════╗",
-      "║                                        ║",
-      "║     Welcome to JS Stack Generator     ║",
-      "║                                        ║",
-      "╚════════════════════════════════════════╝",
-    ].join("\n"),
-  );
-
-  console.log(welcomeText);
+  console.log(colors.white("╔════════════════════════════════════════╗"));
+  console.log(colors.white("║") + colors.primary("     Welcome to JS Stack Generator     ") + colors.white("║"));
+  console.log(colors.white("╚════════════════════════════════════════╝"));
   console.log();
-
-  // Add pulsing effect
-  const pulsingText = chalkAnimation.pulse(
-    "Let's create something amazing! 🚀",
-  );
-  await sleep(1500);
-  pulsingText.stop();
+  console.log(colors.accent("Let's create something amazing! 🚀"));
   console.log();
 }
 
@@ -97,14 +66,16 @@ export async function displayWelcome() {
  */
 export function displayConfigTable(config) {
   console.log();
-  console.log(gradients.cristal("📋 Your Configuration"));
+  console.log(colors.primary("╭─ Your Configuration"));
+  console.log(colors.secondary("│  Review your project setup"));
+  console.log(colors.primary("╰─────────────────────────────────────"));
   console.log();
 
   const table = new Table({
-    head: [chalk.cyan("Category"), chalk.cyan("Selection")],
+    head: [colors.accent("Category"), colors.accent("Selection")],
     style: {
       head: [],
-      border: ["cyan"],
+      border: ["blue"],
       "padding-left": 2,
       "padding-right": 2,
     },
@@ -177,7 +148,7 @@ export function createStepProgress(steps) {
         console.log(
           chalk.dim(progress) +
             " " +
-            gradients.morning(step.icon + " " + step.title),
+            colors.warning(step.icon + " " + step.title),
         );
 
         if (message) {
@@ -189,7 +160,7 @@ export function createStepProgress(steps) {
     },
     complete: () => {
       console.log();
-      console.log(gradients.summer("✅ All steps completed!"));
+      console.log(colors.success("✅ All steps completed!"));
     },
   };
 }
@@ -215,9 +186,9 @@ export async function displaySuccess(projectName, projectPath) {
 
   // Success banner
   const successBox = boxen(
-    gradients.summer("🎉 PROJECT CREATED SUCCESSFULLY! 🎉\n\n") +
-      chalk.white(`Project: ${chalk.bold.cyan(projectName)}\n`) +
-      chalk.white(`Location: ${chalk.underline.gray(projectPath)}`),
+    colors.success("🎉 PROJECT CREATED SUCCESSFULLY! 🎉\n\n") +
+      colors.white(`Project: ${colors.accent(projectName)}\n`) +
+      colors.white(`Location: ${colors.muted(projectPath)}`),
     {
       padding: 2,
       margin: 1,
@@ -228,13 +199,7 @@ export async function displaySuccess(projectName, projectPath) {
   );
 
   console.log(successBox);
-
-  // Animated celebration
-  const celebration = chalkAnimation.rainbow(
-    "🚀 Ready to build amazing things! 🚀",
-  );
-  await sleep(2000);
-  celebration.stop();
+  console.log(colors.accent("🚀 Ready to build amazing things! 🚀"));
   console.log();
 }
 
@@ -242,7 +207,7 @@ export async function displaySuccess(projectName, projectPath) {
  * Display next steps with links
  */
 export function displayNextSteps(config) {
-  console.log(gradients.vice("📚 Next Steps:"));
+  console.log(colors.accent("📚 Next Steps:"));
   console.log();
 
   const steps = [
@@ -262,7 +227,7 @@ export function displayNextSteps(config) {
     },
     {
       icon: "📖",
-      text: `Documentation: ${terminalLink("View Docs", "https://github.com/yourusername/create-js-stack#readme")}`,
+      text: `Documentation: ${terminalLink("View Docs", "https://github.com/vipinyadav01/create-js-stack-cli#readme")}`,
     },
   ];
 
@@ -301,7 +266,7 @@ export function displayError(error, context) {
  */
 export function displayOptionsGrid(title, options) {
   console.log();
-  console.log(gradients.retro(title));
+  console.log(colors.primary(title));
   console.log();
 
   const table = new Table({

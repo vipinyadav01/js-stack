@@ -30,21 +30,26 @@ import {
   createModernSpinner,
 } from "./utils/modern-render.js";
 
-// Gradient presets
-const g = {
-  title: gradient(["#5ee7df", "#b490ca"]),
-  success: gradient(["#77a1d3", "#79cbca"]),
-  warning: gradient(["#ff5f6d", "#ffc371"]),
-  info: gradient(["#bdfff3", "#4ac29a"]),
+// Clean color scheme
+const colors = {
+  primary: chalk.blue.bold,
+  secondary: chalk.gray,
+  success: chalk.green.bold,
+  warning: chalk.yellow.bold,
+  error: chalk.red.bold,
+  muted: chalk.gray,
+  accent: chalk.cyan.bold,
 };
 
 export async function promptProjectName(suggestedName) {
   console.log();
-  console.log(g.title("🏗️  Project Setup"));
+  console.log(colors.primary("╭─ Project Setup"));
+  console.log(colors.secondary("│  Let's start by naming your project"));
+  console.log(colors.primary("╰─────────────────────────────────────"));
   console.log();
 
   const projectName = await text({
-    message: chalk.cyan("What should we call your project?"),
+    message: colors.accent("What should we call your project?"),
     placeholder: suggestedName || "my-awesome-app",
     defaultValue: suggestedName || "",
     validate(value) {
@@ -71,34 +76,37 @@ export async function promptProjectName(suggestedName) {
 
 export async function promptDatabase() {
   console.log();
-  console.log(g.info("💾 Database Configuration"));
+  console.log(colors.primary("╭─ Database Selection"));
+  console.log(colors.secondary("│  Choose your data storage solution"));
+  console.log(colors.primary("╰─────────────────────────────────────"));
+  console.log();
 
   const database = await select({
-    message: chalk.cyan("Choose your database"),
+    message: colors.accent("Choose your database"),
     options: [
       {
         value: DATABASE_OPTIONS.NONE,
-        label: chalk.gray("⏭️  Skip database"),
+        label: colors.muted("⏭️  Skip database"),
         hint: "No database integration",
       },
       {
         value: DATABASE_OPTIONS.SQLITE,
-        label: `${chalk.yellow("💾")} SQLite`,
+        label: `${colors.success("💾")} SQLite`,
         hint: "Lightweight, file-based, perfect for development",
       },
       {
         value: DATABASE_OPTIONS.POSTGRES,
-        label: `${chalk.blue("🐘")} PostgreSQL`,
+        label: `${colors.primary("🐘")} PostgreSQL`,
         hint: "Advanced features, enterprise-ready",
       },
       {
         value: DATABASE_OPTIONS.MYSQL,
-        label: `${chalk.cyan("🐬")} MySQL`,
+        label: `${colors.accent("🐬")} MySQL`,
         hint: "Popular, well-supported, reliable",
       },
       {
         value: DATABASE_OPTIONS.MONGODB,
-        label: `${chalk.green("🍃")} MongoDB`,
+        label: `${colors.success("🍃")} MongoDB`,
         hint: "NoSQL, flexible schemas, scalable",
       },
     ],
@@ -175,34 +183,37 @@ export async function promptORM(database) {
 
 export async function promptBackend() {
   console.log();
-  console.log(g.info("⚙️  Backend Framework"));
+  console.log(colors.primary("╭─ Backend Framework"));
+  console.log(colors.secondary("│  Choose your server-side technology"));
+  console.log(colors.primary("╰─────────────────────────────────────"));
+  console.log();
 
   const backend = await select({
-    message: chalk.cyan("Choose your backend framework"),
+    message: colors.accent("Choose your backend framework"),
     options: [
       {
         value: BACKEND_OPTIONS.EXPRESS,
-        label: `${chalk.green("🚂")} Express`,
+        label: `${colors.success("🚂")} Express`,
         hint: "Minimal, flexible, huge ecosystem",
       },
       {
         value: BACKEND_OPTIONS.FASTIFY,
-        label: `${chalk.yellow("⚡")} Fastify`,
+        label: `${colors.warning("⚡")} Fastify`,
         hint: "High performance, schema-based",
       },
       {
         value: BACKEND_OPTIONS.NESTJS,
-        label: `${chalk.red("🦁")} NestJS`,
+        label: `${colors.error("🦁")} NestJS`,
         hint: "Enterprise-grade, Angular-inspired",
       },
       {
         value: BACKEND_OPTIONS.KOA,
-        label: `${chalk.blue("🌊")} Koa`,
+        label: `${colors.primary("🌊")} Koa`,
         hint: "Modern, lightweight, by Express team",
       },
       {
         value: BACKEND_OPTIONS.HAPI,
-        label: `${chalk.magenta("🎪")} Hapi`,
+        label: `${colors.accent("🎪")} Hapi`,
         hint: "Configuration-centric, battle-tested",
       },
       {
@@ -223,34 +234,37 @@ export async function promptBackend() {
 
 export async function promptFrontend() {
   console.log();
-  console.log(g.info("🎨 Frontend Framework"));
+  console.log(colors.primary("╭─ Frontend Framework"));
+  console.log(colors.secondary("│  Choose your client-side technology"));
+  console.log(colors.primary("╰─────────────────────────────────────"));
+  console.log();
 
   const frontend = await multiselect({
-    message: chalk.cyan("Select frontend framework(s)"),
+    message: colors.accent("Select frontend framework(s)"),
     options: [
       {
         value: FRONTEND_OPTIONS.REACT,
-        label: `${chalk.cyan("⚛️")} React`,
+        label: `${colors.accent("⚛️")} React`,
         hint: "Component-based, virtual DOM, huge ecosystem",
       },
       {
         value: FRONTEND_OPTIONS.NEXTJS,
-        label: `${chalk.white("▲")} Next.js`,
+        label: `${colors.primary("▲")} Next.js`,
         hint: "Full-stack React framework with SSR/SSG",
       },
       {
         value: FRONTEND_OPTIONS.VUE,
-        label: `${chalk.green("💚")} Vue`,
+        label: `${colors.success("💚")} Vue`,
         hint: "Progressive, approachable, versatile",
       },
       {
         value: FRONTEND_OPTIONS.NUXT,
-        label: `${chalk.green("💚")} Nuxt`,
+        label: `${colors.success("💚")} Nuxt`,
         hint: "Full-stack Vue framework",
       },
       {
         value: FRONTEND_OPTIONS.ANGULAR,
-        label: `${chalk.red("🅰️")} Angular`,
+        label: `${colors.error("🅰️")} Angular`,
         hint: "Full-featured, TypeScript-first",
       },
       {
@@ -464,7 +478,7 @@ export async function collectProjectConfig(projectName, options = {}) {
   // Get ORM based on database selection
   config.orm = options.orm || (await promptORM(config.database));
 
-  // Show configuration summary
+
   if (!options.ci) {
     console.log();
     note(

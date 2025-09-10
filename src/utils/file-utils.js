@@ -105,17 +105,34 @@ export async function copyTemplates(
     const srcPath = path.join(templateDir, file);
     const stat = await fs.stat(srcPath);
 
+    // Process filename template if it contains Handlebars syntax
+    let processedFile = file;
+    if (file.includes("{{")) {
+      const filenameTemplate = Handlebars.compile(file);
+      processedFile = filenameTemplate(context);
+    } else if (file.endsWith('.hbs')) {
+      // Handle static template files that need dynamic output names
+      const baseName = file.slice(0, -4); // Remove .hbs extension
+      if (baseName.includes('middleware') || baseName.includes('routes')) {
+        // Generate dynamic filename based on context
+        const extension = context.typescript ? 'ts' : 'js';
+        // Remove existing extension if present
+        const nameWithoutExt = baseName.replace(/\.(js|ts)$/, '');
+        processedFile = `${nameWithoutExt}.${extension}`;
+      }
+    }
+
     if (stat.isDirectory()) {
-      const destPath = path.join(outputDir, file);
+      const destPath = path.join(outputDir, processedFile);
       await copyTemplates(srcPath, destPath, context, options);
     } else {
-      let destFile = file;
+      let destFile = processedFile;
       let shouldProcess = false;
 
       // Check if file should be processed
       for (const ext of processExtensions) {
         if (file.endsWith(ext)) {
-          destFile = file.slice(0, -ext.length);
+          destFile = processedFile.slice(0, -ext.length);
           shouldProcess = true;
           break;
         }
