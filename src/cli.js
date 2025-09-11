@@ -8,6 +8,7 @@ import chalk from "chalk";
 import gradient from "gradient-string";
 import figlet from "figlet";
 import { initCommand } from "./commands/init.js";
+import { enhancedInitCommand, listPresetsCommand } from "./commands/enhanced-init.js";
 import { addCommand } from "./commands/add.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -129,6 +130,7 @@ program
   .alias("i")
   .description(chalk.cyan("🏗️  Create a new JavaScript stack project"))
   .option("-y, --yes", chalk.gray("🚀 Use default configuration (quick start)"))
+  .option("-p, --preset <name>", chalk.gray("🎯 Use a preset configuration (saas-app, api-service, mobile-app, etc.)"))
   .option("-t, --template <name>", chalk.gray("📄 Use a specific template"))
   .option("--database <type>", chalk.gray("🗄️  Database: sqlite, postgres, mysql, mongodb, supabase, planetscale, none"))
   .option("--orm <type>", chalk.gray("🔗 ORM: prisma, sequelize, mongoose, typeorm, drizzle, none"))
@@ -148,7 +150,7 @@ program
 ${chalk.gray('Examples:')}
   ${chalk.cyan('$ npx create-js-stack init my-app')}                    ${chalk.gray('# Interactive setup')}
   ${chalk.cyan('$ npx create-js-stack init my-app --yes')}              ${chalk.gray('# Quick start with defaults')}
-  ${chalk.cyan('$ npx create-js-stack init my-app --template=fullstack')} ${chalk.gray('# Use specific template')}
+  ${chalk.cyan('$ npx create-js-stack init my-app --preset=saas-app')} ${chalk.gray('# Use preset configuration')}
   ${chalk.cyan('$ npx create-js-stack init my-app --typescript --frontend=react --backend=express')}
 `)
   .action(async (projectName, options) => {
@@ -173,7 +175,8 @@ ${chalk.gray('Examples:')}
     }
     
     try {
-      await initCommand(projectName, options);
+      // Use enhanced init command for better features
+      await enhancedInitCommand(projectName, options);
     } catch (error) {
       console.error(chalk.red.bold("❌ Project initialization failed:"));
       console.error(chalk.gray(`   ${error.message}`));
@@ -274,10 +277,24 @@ ${chalk.gray('Categories:')}
   ${chalk.cyan('frontends')}    ${chalk.gray('# Frontend frameworks')}
   ${chalk.cyan('backends')}     ${chalk.gray('# Backend frameworks')}
   ${chalk.cyan('addons')}       ${chalk.gray('# Available add-ons')}
+  ${chalk.cyan('presets')}      ${chalk.gray('# Available preset configurations')}
 `)
   .action(async (category, options) => {
-    const { listOptions } = await import("./commands/list.js");
-    await listOptions(category, options);
+    if (category === 'presets') {
+      listPresetsCommand();
+    } else {
+      const { listOptions } = await import("./commands/list.js");
+      await listOptions(category, options);
+    }
+  });
+
+// Presets command
+program
+  .command("presets")
+  .alias("preset")
+  .description(chalk.cyan("🎯 List available preset configurations"))
+  .action(() => {
+    listPresetsCommand();
   });
 
 // New Commands
