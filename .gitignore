@@ -184,3 +184,20 @@ storybook-static/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Monorepo
+**/dist/
+**/build/
+**/out/
+**/.next/
+**/.turbo/
+**/node_modules/
+
+# Web app specific
+web/.next/
+web/out/
+web/.vercel/
+
+# Local development
+test-filename.js
+test-fs-dir/

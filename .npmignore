@@ -18,8 +18,8 @@ tests/
 docs/
 examples/
 scripts/
-apps/web/
-packages/*/src/
+web/
+MONOREPO_STRUCTURE.md
 
 # Config files
 .eslintrc*
@@ -123,6 +123,9 @@ lerna.json
 nx.json
 rush.json
 pnpm-workspace.yaml
+turbo.json
+.turbo/
+web/
 
 # Build artifacts that shouldn't be published
 *.tsbuildinfo
@@ -130,10 +133,16 @@ dist/**/*.map
 dist/**/*.d.ts.map
 
 # Keep only essential files for npm package
-# The package should include:
+# The CLI package should include:
 # - dist/ (compiled code)
-# - templates/ (template files)
-# - bin/ (executable files)
+# - templates/ (template files) 
 # - README.md
 # - LICENSE
 # - package.json
+
+# Exclude web app entirely from CLI package
+web/
+
+# Exclude monorepo files
+test-filename.js
+test-fs-dir/
