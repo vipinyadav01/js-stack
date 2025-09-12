@@ -114,6 +114,14 @@ const StatCard = ({
 };
 
 const useRealPackageStats = (packageName: string, githubRepo: string) => {
+  // Helper to sanitize githubRepo input (removes accidental encoding)
+  const getGithubRepoPath = (repo: string) => repo.replace(/%2F/g, '/');
+
+  // Example: If you fetch releases or contributors, always use sanitized path
+  // Usage:
+  // const repoPath = getGithubRepoPath(githubRepo);
+  // fetch(`https://api.github.com/repos/${repoPath}/releases?per_page=5`)
+  // fetch(`https://api.github.com/repos/${repoPath}/contributors?per_page=10`)
   type DownloadDay = { downloads: number };
   const [stats, setStats] = useState<PackageStats>({
     downloads: { total: 0, weekly: 0, monthly: 0, daily: 0 },
@@ -194,10 +202,16 @@ const useRealPackageStats = (packageName: string, githubRepo: string) => {
         }
 
         // Fetch GitHub statistics
-        const githubResponse = await fetch(`https://api.github.com/repos/${githubRepo}`);
         let githubData = { stars: 0, forks: 0, issues: 0, watchers: 0 };
-        
-        if (githubResponse.ok) {
+        try {
+          const repoPath = getGithubRepoPath(githubRepo);
+          const githubResponse = await fetch(`https://api.github.com/repos/${repoPath}`);
+          // If you need releases or contributors, always use repoPath:
+          // const releasesResponse = await fetch(`https://api.github.com/repos/${repoPath}/releases?per_page=5`);
+          // const contributorsResponse = await fetch(`https://api.github.com/repos/${repoPath}/contributors?per_page=10`);
+          if (!githubResponse.ok) {
+            throw new Error(`GitHub API error: ${githubResponse.status} ${githubResponse.statusText}`);
+          }
           const githubJson = await githubResponse.json();
           githubData = {
             stars: githubJson.stargazers_count || 0,
@@ -205,6 +219,13 @@ const useRealPackageStats = (packageName: string, githubRepo: string) => {
             issues: githubJson.open_issues_count || 0,
             watchers: githubJson.watchers_count || 0
           };
+        } catch (err) {
+          console.error('Error fetching GitHub data:', err);
+          setStats(prev => ({
+            ...prev,
+            loading: false,
+            error: 'Failed to fetch GitHub statistics. This may be due to rate limits, CORS, or network issues.'
+          }));
         }
 
         setStats({

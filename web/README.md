@@ -1,11 +1,11 @@
-# Next.js Dashboard App
+# Next.js Analytics App
 
-A modern web application built with Next.js, featuring a dashboard, features showcase, and real-time analytics from NPM and GitHub APIs. Styled with shadcn/ui components and Tailwind CSS.
+A modern web application built with Next.js, featuring analytics, features showcase, and real-time analytics from NPM and GitHub APIs. Styled with shadcn/ui components and Tailwind CSS.
 
 ## Features
 
 - 🏠 **Home Page** - Project overview and installation instructions
-- 📊 **Dashboard** - Project statistics and overview widgets
+- 📊 **Analytics** - Project statistics and overview widgets
 - ⚡ **Features Page** - Comprehensive feature showcase
 - 📈 **Analytics Page** - Real-time data from NPM and GitHub APIs
 - 🎨 **Modern UI** - Built with shadcn/ui components
@@ -63,7 +63,6 @@ src/
 │   │   ├── github/         # GitHub API integration
 │   │   └── npm/            # NPM API integration
 │   ├── analytics/          # Analytics page with real data
-│   ├── dashboard/          # Dashboard overview page
 │   ├── features/           # Features showcase page
 │   ├── globals.css         # Global styles
 │   ├── layout.tsx          # Root layout
@@ -83,7 +82,7 @@ src/
 - Project integration guides
 - Essential command examples
 
-### Dashboard (`/dashboard`)
+### Analytics (`/analytics`)
 - Project statistics overview
 - Recent project activities
 - Progress tracking

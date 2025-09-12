@@ -101,13 +101,16 @@ export async function fetchNpmPackageData(packageName: string): Promise<NpmPacka
 
 // Fetch GitHub repository data
 export async function fetchGitHubRepoData(repo: string): Promise<GitHubRepoData> {
-  const repoUrl = `https://api.github.com/repos/${encodeURIComponent(repo)}`;
-  const releasesUrl = `https://api.github.com/repos/${encodeURIComponent(repo)}/releases?per_page=5`;
-  const contributorsUrl = `https://api.github.com/repos/${encodeURIComponent(repo)}/contributors?per_page=10`;
+  // Sanitize repo path: replace %2F with /
+  const getGithubRepoPath = (r: string) => r.replace(/%2F/g, '/');
+  const repoPath = getGithubRepoPath(repo);
+  const repoUrl = `https://api.github.com/repos/${repoPath}`;
+  const releasesUrl = `https://api.github.com/repos/${repoPath}/releases?per_page=5`;
+  const contributorsUrl = `https://api.github.com/repos/${repoPath}/contributors?per_page=10`;
 
   const headers: Record<string, string> = {
     "Accept": "application/vnd.github+json",
-    "User-Agent": "nextjs-dashboard-app",
+  "User-Agent": "nextjs-analytics-app",
   };
 
   // Add GitHub token if available (for higher rate limits)

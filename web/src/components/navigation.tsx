@@ -10,7 +10,6 @@ import { NpmIcon } from "@/components/icons/npm-icon";
 import { GithubIcon } from "./icons/github-icon";
 import {
   Menu,
-  BarChart3,
   Zap,
   Activity,
   Code2,
@@ -32,13 +31,6 @@ const navItems = [
     href: "/analytics",
     icon: Activity,
     description: "Usage insights",
-    badge: undefined
-  },
-  {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: BarChart3,
-    description: "Project overview",
     badge: undefined
   },
 ];

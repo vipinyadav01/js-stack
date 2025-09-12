@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { fetchNpmPackageData, fetchGitHubRepoData, NpmPackageData, GitHubRepoData } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Contributors from "@/components/analytics/Contributors";
+import Releases from "@/components/analytics/Releases";
+import RepoInfo from "@/components/analytics/RepoInfo";
+import NpmDownloads from "@/components/analytics/NpmDownloads";
+import QuickActions from "@/components/analytics/QuickActions";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { 
   Star, 
@@ -12,61 +17,59 @@ import {
   Eye, 
   AlertCircle, 
   Package, 
-  Users,
-  Calendar,
-  Activity,
-  ExternalLink,
-  RefreshCw
+  Activity, 
+  ExternalLink, 
+  RefreshCw 
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { format } from "date-fns";
-import { fetchNpmPackageData, fetchGitHubRepoData, type NpmPackageData, type GitHubRepoData } from "@/lib/api";
-
-// Using types from the API utility
-type NpmData = NpmPackageData;
-type GitHubData = GitHubRepoData;
 
 export default function Analytics() {
-  const [npmData, setNpmData] = useState<NpmData | null>(null);
-  const [githubData, setGitHubData] = useState<GitHubData | null>(null);
+  // State management
+  const [npmData, setNpmData] = useState<NpmPackageData | null>(null);
+  const [githubData, setGitHubData] = useState<GitHubRepoData | null>(null);
   const [loading, setLoading] = useState({ npm: false, github: false });
   const [error, setError] = useState({ npm: "", github: "" });
-
-  // Get packages/repos from environment variables
+  
+  // Configuration
   const npmPackage = process.env.NPM_PACKAGE_NAME || "create-js-stack";
   const githubRepo = process.env.GITHUB_REPO || "vipinyadav01/create-js-stack-cli";
 
+  // Fetch NPM data
   const fetchNpmData = useCallback(async () => {
     setLoading(prev => ({ ...prev, npm: true }));
     setError(prev => ({ ...prev, npm: "" }));
     try {
       const data = await fetchNpmPackageData(npmPackage);
       setNpmData(data);
-    } catch (err: unknown) {
+    } catch (err) {
       setError(prev => ({ ...prev, npm: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
       setLoading(prev => ({ ...prev, npm: false }));
     }
   }, [npmPackage]);
 
+  // Fetch GitHub data
   const fetchGitHubData = useCallback(async () => {
     setLoading(prev => ({ ...prev, github: true }));
     setError(prev => ({ ...prev, github: "" }));
     try {
       const data = await fetchGitHubRepoData(githubRepo);
       setGitHubData(data);
-    } catch (err: unknown) {
+    } catch (err) {
       setError(prev => ({ ...prev, github: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
       setLoading(prev => ({ ...prev, github: false }));
     }
   }, [githubRepo]);
 
+  // Load data on component mount
   useEffect(() => {
     fetchNpmData();
     fetchGitHubData();
   }, [fetchNpmData, fetchGitHubData]);
 
+  // Utility function for formatting numbers
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
@@ -79,9 +82,9 @@ export default function Analytics() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Real-time Analytics</h1>
+            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
             <p className="text-muted-foreground">
-              Live data from NPM and GitHub APIs
+              Real-time data from NPM and GitHub APIs
             </p>
           </div>
           <div className="flex gap-2">
@@ -107,13 +110,39 @@ export default function Analytics() {
         </div>
       </div>
 
-      <Tabs defaultValue="npm" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      {/* Main Analytics Tabs */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="npm">NPM Analytics</TabsTrigger>
           <TabsTrigger value="github">GitHub Analytics</TabsTrigger>
         </TabsList>
 
+        {/* Overview Tab - All Analytics Together */}
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* NPM Downloads Component */}
+            <NpmDownloads npmData={npmData} error={error.npm} />
+            
+            {/* GitHub Repo Info Component */}
+            <RepoInfo info={githubData?.info} />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Contributors Component */}
+            <Contributors contributors={githubData?.contributors || []} />
+            
+            {/* Releases Component */}
+            <Releases releases={githubData?.releases || []} />
+          </div>
+
+          {/* Quick Actions Component */}
+          <QuickActions />
+        </TabsContent>
+
+        {/* NPM Analytics Tab */}
         <TabsContent value="npm" className="space-y-6">
+          {/* Error Display */}
           {error.npm && (
             <Card className="border-destructive">
               <CardContent className="pt-6">
@@ -125,6 +154,7 @@ export default function Analytics() {
             </Card>
           )}
 
+          {/* Loading Display */}
           {loading.npm && (
             <Card>
               <CardContent className="pt-6">
@@ -136,6 +166,7 @@ export default function Analytics() {
             </Card>
           )}
 
+          {/* NPM Data Display */}
           {npmData && (
             <>
               {/* Package Info */}
@@ -206,9 +237,14 @@ export default function Analytics() {
               </Card>
             </>
           )}
+
+          {/* Modular NPM Downloads Component */}
+          <NpmDownloads npmData={npmData} error={error.npm} />
         </TabsContent>
 
+        {/* GitHub Analytics Tab */}
         <TabsContent value="github" className="space-y-6">
+          {/* Error Display */}
           {error.github && (
             <Card className="border-destructive">
               <CardContent className="pt-6">
@@ -220,6 +256,7 @@ export default function Analytics() {
             </Card>
           )}
 
+          {/* Loading Display */}
           {loading.github && (
             <Card>
               <CardContent className="pt-6">
@@ -231,6 +268,7 @@ export default function Analytics() {
             </Card>
           )}
 
+          {/* GitHub Data Display */}
           {githubData && (
             <>
               {/* Repository Info */}
@@ -314,76 +352,10 @@ export default function Analytics() {
                 </CardContent>
               </Card>
 
-              {/* Contributors and Releases */}
+              {/* Contributors and Releases Grid */}
               <div className="grid lg:grid-cols-2 gap-6">
-                {/* Top Contributors */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      Top Contributors
-                    </CardTitle>
-                    <CardDescription>Most active contributors to this repository</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {githubData.contributors.slice(0, 5).map((contributor) => (
-                        <div key={contributor.login} className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage src={contributor.avatarUrl} />
-                            <AvatarFallback>{contributor.login[0]}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="font-medium">{contributor.login}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {contributor.contributions} contributions
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm" asChild>
-                            <a href={contributor.htmlUrl} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Recent Releases */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5" />
-                      Recent Releases
-                    </CardTitle>
-                    <CardDescription>Latest releases and versions</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {githubData.releases.slice(0, 5).map((release) => (
-                        <div key={release.tagName} className="flex items-center justify-between">
-                          <div>
-                            <div className="font-medium flex items-center gap-2">
-                              {release.name || release.tagName}
-                              {release.prerelease && (
-                                <Badge variant="secondary" className="text-xs">Pre-release</Badge>
-                              )}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {format(new Date(release.publishedAt), 'MMM dd, yyyy')}
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm" asChild>
-                            <a href={release.htmlUrl} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                <Contributors contributors={githubData.contributors} />
+                <Releases releases={githubData.releases} />
               </div>
 
               {/* Contribution Chart */}
@@ -408,6 +380,13 @@ export default function Analytics() {
               )}
             </>
           )}
+
+          {/* Modular GitHub Components */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RepoInfo info={githubData?.info} />
+            <Contributors contributors={githubData?.contributors || []} />
+          </div>
+          <Releases releases={githubData?.releases || []} />
         </TabsContent>
       </Tabs>
     </div>

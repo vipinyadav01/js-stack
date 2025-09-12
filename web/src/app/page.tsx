@@ -2,7 +2,6 @@ import { Separator } from "@/components/ui/separator";
 
 import Hero from "@/components/hero";
 import Command from "@/components/command";
-import StatsSection from "@/components/statsSection";
 import ProjectInt from "@/components/ProjectInt";
 export default function Home() {
   return (
@@ -12,9 +11,6 @@ export default function Home() {
       <Separator />
       {/* Command Section */}
       <Command />
-      <Separator />
-      {/* Stats Section */}
-      <StatsSection  />
       <Separator />
       {/* Integration Guide */}
       <ProjectInt />
