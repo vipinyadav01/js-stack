@@ -16,7 +16,7 @@
     "build": "turbo run build",
     "build:cli": "echo 'Building CLI...' && node scripts/build.js || echo 'Build script not found'",
     "dev": "turbo run dev",
-    "dev:cli": "node src/cli.js",
+    "dev:cli": "node bugange sesrc/cli.js",
     "dev:web": "turbo run dev --filter=web",
     "test": "turbo run test",
     "lint": "turbo run lint",
