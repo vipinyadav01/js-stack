@@ -1,0 +1,6 @@
+{{#if typescript}}/** @type {import('next').NextConfig} */
+{{/if}}const nextConfig = {
+  {{#if typescript}}/* config options here */{{else}}/* config options here */{{/if}}
+}
+
+{{#if typescript}}export default nextConfig{{else}}module.exports = nextConfig{{/if}}

@@ -1,3 +1,4 @@
+
 import path from "path";
 import fs from "fs-extra";
 import Handlebars from "handlebars";
@@ -73,6 +74,35 @@ export const TEMPLATE_RULES = {
         "pages/api/hello.js",
       ],
       dependencies: ["next", "react", "react-dom"],
+    },
+  },
+
+  // Authentication templates
+  auth: {
+    jwt: {
+      base: "jwt",
+      files: ["middleware.js", "routes.js"],
+      dependencies: ["jsonwebtoken", "bcryptjs"],
+    },
+    passport: {
+      base: "passport",
+      files: ["config.js"],
+      dependencies: ["passport", "passport-local"],
+    },
+    oauth: {
+      base: "oauth",
+      files: ["config.js", "routes.js"],
+      dependencies: ["passport-google-oauth20"],
+    },
+    auth0: {
+      base: "auth0",
+      files: ["config.js", "routes.js"],
+      dependencies: ["auth0"],
+    },
+    firebase: {
+      base: "firebase",
+      files: ["config.js"],
+      dependencies: ["firebase-admin"],
     },
   },
 

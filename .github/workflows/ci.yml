@@ -108,7 +108,7 @@ jobs:
             ### 🔗 Links
             - [NPM Package](https://www.npmjs.com/package/create-js-stack)
             - [Documentation](https://github.com/${{ github.repository }})
-            - [Web Dashboard](https://create-js-stack.https://create-js-stack-cli.pages.dev)
+            - [Web Dashboard](https://create-js-stack-cli.pages.dev)
           draft: false
           prerelease: false
 
@@ -118,6 +118,11 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      deployments: write
+      pages: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -166,5 +171,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: create-js-stack
           directory: web/out
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '2'
