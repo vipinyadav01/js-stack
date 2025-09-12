@@ -143,6 +143,22 @@ jobs:
           NPM_PACKAGE_NAME: create-js-stack
           GITHUB_REPO: vipinyadav01/create-js-stack-cli
 
+      - name: Setup Wrangler
+        run: npm install -g wrangler
+
+      - name: Create Cloudflare Pages Project (if not exists)
+        run: |
+          echo "Checking if Cloudflare Pages project exists..."
+          if ! wrangler pages project list | grep -q "create-js-stack"; then
+            echo "Project not found, creating..."
+            wrangler pages project create create-js-stack --compatibility-date=2024-01-01 || echo "Project may already exist"
+          else
+            echo "Project already exists"
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
@@ -151,3 +167,4 @@ jobs:
           projectName: create-js-stack
           directory: web/out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '2'
