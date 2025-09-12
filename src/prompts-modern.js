@@ -478,7 +478,6 @@ export async function collectProjectConfig(projectName, options = {}) {
   // Get ORM based on database selection
   config.orm = options.orm || (await promptORM(config.database));
 
-
   if (!options.ci) {
     console.log();
     note(

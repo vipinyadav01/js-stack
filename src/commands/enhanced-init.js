@@ -1,7 +1,10 @@
 import path from "path";
 import chalk from "chalk";
 import gradient from "gradient-string";
-import { collectProjectConfig, displayConfigSummary } from "../prompts-enhanced.js";
+import {
+  collectProjectConfig,
+  displayConfigSummary,
+} from "../prompts-enhanced.js";
 
 import { confirm, outro } from "@clack/prompts";
 import { createEnhancedProject } from "../generators/enhanced-project-generator.js";
@@ -29,7 +32,7 @@ export async function enhancedInitCommand(projectName, options) {
       if (preset) {
         console.log(chalk.green.bold(`\n🎯 Using preset: ${preset.name}`));
         console.log(chalk.gray(`   ${preset.description}`));
-        
+
         // Merge preset with CLI options
         options = {
           ...preset.config,
@@ -39,7 +42,7 @@ export async function enhancedInitCommand(projectName, options) {
       } else {
         console.log(chalk.yellow(`⚠️  Unknown preset: ${options.preset}`));
         console.log(chalk.gray("Available presets:"));
-        listPresets().forEach(preset => {
+        listPresets().forEach((preset) => {
           console.log(chalk.gray(`  • ${preset.key}: ${preset.name}`));
         });
         process.exit(1);
@@ -62,14 +65,16 @@ export async function enhancedInitCommand(projectName, options) {
       };
     }
 
-
     // Ensure package manager is set
     if (!options.packageManager) {
       options.packageManager = "npm";
     }
 
     // Collect project configuration
-    const config = await collectProjectConfig(projectName, { ...options, ci: options.yes });
+    const config = await collectProjectConfig(projectName, {
+      ...options,
+      ci: options.yes,
+    });
 
     // Set project directory
     config.projectDir = path.resolve(process.cwd(), config.projectName);
@@ -113,7 +118,10 @@ export async function enhancedInitCommand(projectName, options) {
 
     // Debug: Log the result structure
     if (options.verbose) {
-      console.log(chalk.gray("Debug - Result structure:"), JSON.stringify(result, null, 2));
+      console.log(
+        chalk.gray("Debug - Result structure:"),
+        JSON.stringify(result, null, 2),
+      );
     }
 
     // Show success message with enhanced details
@@ -149,25 +157,37 @@ async function displayEnhancedSuccess(result) {
   console.log(chalk.gray("│  Your project is ready to go"));
   console.log(chalk.green.bold("╰─────────────────────────────────────"));
   console.log();
-  
+
   console.log(chalk.cyan.bold("📁 Project Details:"));
-  console.log(chalk.gray(`  Name: ${result.result?.result?.projectName || 'N/A'}`));
-  console.log(chalk.gray(`  Location: ${result.result?.result?.projectDir || 'N/A'}`));
+  console.log(
+    chalk.gray(`  Name: ${result.result?.result?.projectName || "N/A"}`),
+  );
+  console.log(
+    chalk.gray(`  Location: ${result.result?.result?.projectDir || "N/A"}`),
+  );
   console.log();
-  
+
   if (result.performance) {
     console.log(chalk.cyan.bold("⚡ Performance:"));
-    console.log(chalk.gray(`  Total Time: ${result.performance.totalDuration}ms`));
-    console.log(chalk.gray(`  Operations: ${result.performance.operationCount}`));
+    console.log(
+      chalk.gray(`  Total Time: ${result.performance.totalDuration}ms`),
+    );
+    console.log(
+      chalk.gray(`  Operations: ${result.performance.operationCount}`),
+    );
     console.log();
   }
-  
+
   if (result.health) {
     console.log(chalk.cyan.bold("🔍 Health Check:"));
     console.log(chalk.gray(`  Passed: ${result.health.passed}`));
     console.log(chalk.gray(`  Warnings: ${result.health.warnings}`));
     console.log(chalk.gray(`  Failed: ${result.health.failed}`));
-    console.log(chalk.gray(`  Success Rate: ${result.health.summary.successRate.toFixed(1)}%`));
+    console.log(
+      chalk.gray(
+        `  Success Rate: ${result.health.summary.successRate.toFixed(1)}%`,
+      ),
+    );
     console.log();
   }
 }
@@ -178,17 +198,21 @@ async function displayEnhancedSuccess(result) {
 export function listPresetsCommand() {
   console.log(chalk.blue.bold("\n🎯 Available Presets"));
   console.log(chalk.gray("─".repeat(50)));
-  
+
   const presets = listPresets();
-  presets.forEach(preset => {
+  presets.forEach((preset) => {
     console.log(chalk.cyan.bold(`\n${preset.name}`));
     console.log(chalk.gray(`  Key: ${preset.key}`));
     console.log(chalk.gray(`  Description: ${preset.description}`));
   });
-  
+
   console.log(chalk.gray("\nUsage:"));
-  console.log(chalk.cyan("  npx create-js-stack init my-app --preset=saas-app"));
-  console.log(chalk.cyan("  npx create-js-stack init my-app --preset=api-service"));
+  console.log(
+    chalk.cyan("  npx create-js-stack init my-app --preset=saas-app"),
+  );
+  console.log(
+    chalk.cyan("  npx create-js-stack init my-app --preset=api-service"),
+  );
 }
 
 export default enhancedInitCommand;

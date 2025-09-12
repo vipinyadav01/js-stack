@@ -36,7 +36,9 @@ export class PerformanceMonitor {
   end() {
     this.metrics.endTime = Date.now();
     const duration = this.metrics.endTime - this.metrics.startTime;
-    console.log(chalk.green(`✅ Performance monitoring completed in ${duration}ms`));
+    console.log(
+      chalk.green(`✅ Performance monitoring completed in ${duration}ms`),
+    );
     return this.getSummary();
   }
 
@@ -62,19 +64,26 @@ export class PerformanceMonitor {
   getSummary() {
     const totalDuration = this.metrics.endTime - this.metrics.startTime;
     const operations = this.metrics.operations;
-    
+
     const summary = {
       totalDuration,
       operationCount: operations.length,
-      averageOperationTime: operations.length > 0 ? 
-        operations.reduce((sum, op) => sum + op.duration, 0) / operations.length : 0,
-      slowestOperation: operations.length > 0 ? 
-        operations.reduce((max, op) => op.duration > max.duration ? op : max) : null,
+      averageOperationTime:
+        operations.length > 0
+          ? operations.reduce((sum, op) => sum + op.duration, 0) /
+            operations.length
+          : 0,
+      slowestOperation:
+        operations.length > 0
+          ? operations.reduce((max, op) =>
+              op.duration > max.duration ? op : max,
+            )
+          : null,
       operationsByType: {},
     };
 
     // Group operations by type
-    operations.forEach(op => {
+    operations.forEach((op) => {
       if (!summary.operationsByType[op.operation]) {
         summary.operationsByType[op.operation] = {
           count: 0,
@@ -87,7 +96,7 @@ export class PerformanceMonitor {
     });
 
     // Calculate averages
-    Object.keys(summary.operationsByType).forEach(type => {
+    Object.keys(summary.operationsByType).forEach((type) => {
       const op = summary.operationsByType[type];
       op.averageTime = op.totalTime / op.count;
     });
@@ -100,20 +109,32 @@ export class PerformanceMonitor {
    */
   displaySummary() {
     const summary = this.getSummary();
-    
+
     console.log(chalk.blue.bold("\n📊 Performance Summary"));
     console.log(chalk.gray("─".repeat(50)));
     console.log(chalk.cyan(`Total Duration: ${summary.totalDuration}ms`));
     console.log(chalk.cyan(`Operations: ${summary.operationCount}`));
-    console.log(chalk.cyan(`Average Operation Time: ${summary.averageOperationTime.toFixed(2)}ms`));
-    
+    console.log(
+      chalk.cyan(
+        `Average Operation Time: ${summary.averageOperationTime.toFixed(2)}ms`,
+      ),
+    );
+
     if (summary.slowestOperation) {
-      console.log(chalk.yellow(`Slowest Operation: ${summary.slowestOperation.operation} (${summary.slowestOperation.duration}ms)`));
+      console.log(
+        chalk.yellow(
+          `Slowest Operation: ${summary.slowestOperation.operation} (${summary.slowestOperation.duration}ms)`,
+        ),
+      );
     }
-    
+
     console.log(chalk.gray("\nOperations by Type:"));
     Object.entries(summary.operationsByType).forEach(([type, stats]) => {
-      console.log(chalk.gray(`  ${type}: ${stats.count} operations, ${stats.totalTime}ms total, ${stats.averageTime.toFixed(2)}ms avg`));
+      console.log(
+        chalk.gray(
+          `  ${type}: ${stats.count} operations, ${stats.totalTime}ms total, ${stats.averageTime.toFixed(2)}ms avg`,
+        ),
+      );
     });
   }
 }
@@ -178,7 +199,7 @@ export class ConcurrentFileManager {
    */
   async waitForCompletion() {
     while (this.queue.length > 0 || this.running > 0) {
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
     return {
@@ -263,13 +284,13 @@ export class OptimizedFileOperations {
    * @returns {Promise<Array>} - Results of all operations
    */
   async createFilesConcurrently(files, baseDir) {
-    const operations = files.map(file => 
+    const operations = files.map((file) =>
       this.concurrentManager.addOperation(async () => {
         const filePath = path.join(baseDir, file.path);
         await fs.ensureDir(path.dirname(filePath));
         await fs.writeFile(filePath, file.content, file.options || {});
         return { path: filePath, success: true };
-      })
+      }),
     );
 
     return Promise.allSettled(operations);
@@ -282,14 +303,14 @@ export class OptimizedFileOperations {
    * @returns {Promise<Array>} - Results of all operations
    */
   async copyFilesConcurrently(files, baseDir) {
-    const operations = files.map(file => 
+    const operations = files.map((file) =>
       this.concurrentManager.addOperation(async () => {
         const srcPath = file.source;
         const destPath = path.join(baseDir, file.destination);
         await fs.ensureDir(path.dirname(destPath));
         await fs.copy(srcPath, destPath, file.options || {});
         return { path: destPath, success: true };
-      })
+      }),
     );
 
     return Promise.allSettled(operations);
@@ -303,17 +324,17 @@ export class OptimizedFileOperations {
    * @returns {Promise<Array>} - Results of all operations
    */
   async processTemplatesConcurrently(templates, context, outputDir) {
-    const operations = templates.map(template => 
+    const operations = templates.map((template) =>
       this.concurrentManager.addOperation(async () => {
         // Check cache first
         let content = this.cache.get(template.source);
         if (!content) {
-          content = await fs.readFile(template.source, 'utf-8');
+          content = await fs.readFile(template.source, "utf-8");
           this.cache.set(template.source, content);
         }
 
         // Process template
-        const Handlebars = await import('handlebars');
+        const Handlebars = await import("handlebars");
         const compiled = Handlebars.compile(content);
         const processedContent = compiled(context);
 
@@ -322,12 +343,12 @@ export class OptimizedFileOperations {
         await fs.ensureDir(path.dirname(outputPath));
         await fs.writeFile(outputPath, processedContent);
 
-        return { 
-          source: template.source, 
-          output: outputPath, 
-          success: true 
+        return {
+          source: template.source,
+          output: outputPath,
+          success: true,
         };
-      })
+      }),
     );
 
     return Promise.allSettled(operations);
@@ -354,10 +375,18 @@ export class OptimizedFileOperations {
 export class DependencyOptimizer {
   constructor() {
     this.packageManagers = {
-      npm: { command: 'npm', install: 'install', ci: 'ci' },
-      yarn: { command: 'yarn', install: 'install', ci: 'install --frozen-lockfile' },
-      pnpm: { command: 'pnpm', install: 'install', ci: 'install --frozen-lockfile' },
-      bun: { command: 'bun', install: 'install', ci: 'install' },
+      npm: { command: "npm", install: "install", ci: "ci" },
+      yarn: {
+        command: "yarn",
+        install: "install",
+        ci: "install --frozen-lockfile",
+      },
+      pnpm: {
+        command: "pnpm",
+        install: "install",
+        ci: "install --frozen-lockfile",
+      },
+      bun: { command: "bun", install: "install", ci: "install" },
     };
   }
 
@@ -371,21 +400,26 @@ export class DependencyOptimizer {
   async optimizeInstallation(packageManager, projectDir, options = {}) {
     const startTime = Date.now();
     const pm = this.packageManagers[packageManager];
-    
+
     if (!pm) {
       throw new Error(`Unsupported package manager: ${packageManager}`);
     }
 
     try {
       // Use CI mode for faster installation if lockfile exists
-      const lockfileExists = await this.checkLockfile(projectDir, packageManager);
+      const lockfileExists = await this.checkLockfile(
+        projectDir,
+        packageManager,
+      );
       const command = lockfileExists ? pm.ci : pm.install;
-      
+
       // Add optimization flags
       const flags = this.getOptimizationFlags(packageManager, options);
       const fullCommand = `${pm.command} ${command} ${flags}`.trim();
 
-      console.log(chalk.blue(`📦 Installing dependencies with ${packageManager}...`));
+      console.log(
+        chalk.blue(`📦 Installing dependencies with ${packageManager}...`),
+      );
       console.log(chalk.gray(`Command: ${fullCommand}`));
 
       const { stdout, stderr } = await execAsync(fullCommand, {
@@ -394,7 +428,7 @@ export class DependencyOptimizer {
       });
 
       const duration = Date.now() - startTime;
-      
+
       return {
         success: true,
         duration,
@@ -404,7 +438,7 @@ export class DependencyOptimizer {
       };
     } catch (error) {
       const duration = Date.now() - startTime;
-      
+
       return {
         success: false,
         duration,
@@ -423,10 +457,10 @@ export class DependencyOptimizer {
    */
   async checkLockfile(projectDir, packageManager) {
     const lockfiles = {
-      npm: 'package-lock.json',
-      yarn: 'yarn.lock',
-      pnpm: 'pnpm-lock.yaml',
-      bun: 'bun.lockb',
+      npm: "package-lock.json",
+      yarn: "yarn.lock",
+      pnpm: "pnpm-lock.yaml",
+      bun: "bun.lockb",
     };
 
     const lockfile = lockfiles[packageManager];
@@ -450,29 +484,29 @@ export class DependencyOptimizer {
     const flags = [];
 
     switch (packageManager) {
-      case 'npm':
-        if (options.production) flags.push('--production');
-        if (options.ignoreScripts) flags.push('--ignore-scripts');
-        if (options.noOptional) flags.push('--no-optional');
+      case "npm":
+        if (options.production) flags.push("--production");
+        if (options.ignoreScripts) flags.push("--ignore-scripts");
+        if (options.noOptional) flags.push("--no-optional");
         break;
-      
-      case 'yarn':
-        if (options.production) flags.push('--production');
-        if (options.ignoreScripts) flags.push('--ignore-scripts');
+
+      case "yarn":
+        if (options.production) flags.push("--production");
+        if (options.ignoreScripts) flags.push("--ignore-scripts");
         break;
-      
-      case 'pnpm':
-        if (options.production) flags.push('--prod');
-        if (options.ignoreScripts) flags.push('--ignore-scripts');
+
+      case "pnpm":
+        if (options.production) flags.push("--prod");
+        if (options.ignoreScripts) flags.push("--ignore-scripts");
         break;
-      
-      case 'bun':
-        if (options.production) flags.push('--production');
-        if (options.ignoreScripts) flags.push('--ignore-scripts');
+
+      case "bun":
+        if (options.production) flags.push("--production");
+        if (options.ignoreScripts) flags.push("--ignore-scripts");
         break;
     }
 
-    return flags.join(' ');
+    return flags.join(" ");
   }
 }
 
@@ -506,13 +540,13 @@ export const performanceUtils = {
    */
   async batchOperations(operations, batchSize = 10) {
     const results = [];
-    
+
     for (let i = 0; i < operations.length; i += batchSize) {
       const batch = operations.slice(i, i + batchSize);
       const batchResults = await Promise.allSettled(batch);
       results.push(...batchResults);
     }
-    
+
     return results;
   },
 

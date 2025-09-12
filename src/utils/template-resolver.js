@@ -2,11 +2,11 @@ import path from "path";
 import fs from "fs-extra";
 import Handlebars from "handlebars";
 import chalk from "chalk";
-import { 
-  DATABASE_OPTIONS, 
-  ORM_OPTIONS, 
-  BACKEND_OPTIONS, 
-  FRONTEND_OPTIONS 
+import {
+  DATABASE_OPTIONS,
+  ORM_OPTIONS,
+  BACKEND_OPTIONS,
+  FRONTEND_OPTIONS,
 } from "../types.js";
 
 /**
@@ -21,87 +21,106 @@ export const TEMPLATE_RULES = {
   // Backend templates
   backend: {
     [BACKEND_OPTIONS.EXPRESS]: {
-      base: 'express',
-      files: ['package.json', 'server.js', 'routes/index.js', 'middleware/auth.js'],
-      dependencies: ['express', 'cors', 'helmet', 'morgan'],
+      base: "express",
+      files: [
+        "package.json",
+        "server.js",
+        "routes/index.js",
+        "middleware/auth.js",
+      ],
+      dependencies: ["express", "cors", "helmet", "morgan"],
     },
     [BACKEND_OPTIONS.FASTIFY]: {
-      base: 'fastify',
-      files: ['package.json', 'server.js', 'routes/index.js'],
-      dependencies: ['fastify', '@fastify/cors', '@fastify/helmet'],
+      base: "fastify",
+      files: ["package.json", "server.js", "routes/index.js"],
+      dependencies: ["fastify", "@fastify/cors", "@fastify/helmet"],
     },
     [BACKEND_OPTIONS.NESTJS]: {
-      base: 'nestjs',
-      files: ['package.json', 'main.ts', 'app.module.ts', 'app.controller.ts', 'app.service.ts'],
-      dependencies: ['@nestjs/core', '@nestjs/common', '@nestjs/platform-express'],
+      base: "nestjs",
+      files: [
+        "package.json",
+        "main.ts",
+        "app.module.ts",
+        "app.controller.ts",
+        "app.service.ts",
+      ],
+      dependencies: [
+        "@nestjs/core",
+        "@nestjs/common",
+        "@nestjs/platform-express",
+      ],
     },
   },
 
   // Frontend templates
   frontend: {
     [FRONTEND_OPTIONS.REACT]: {
-      base: 'react',
-      files: ['package.json', 'index.html', 'main.jsx', 'App.jsx'],
-      dependencies: ['react', 'react-dom', 'vite', '@vitejs/plugin-react'],
+      base: "react",
+      files: ["package.json", "index.html", "main.jsx", "App.jsx"],
+      dependencies: ["react", "react-dom", "vite", "@vitejs/plugin-react"],
     },
     [FRONTEND_OPTIONS.VUE]: {
-      base: 'vue',
-      files: ['package.json', 'index.html', 'main.js', 'App.vue'],
-      dependencies: ['vue', 'vite', '@vitejs/plugin-vue'],
+      base: "vue",
+      files: ["package.json", "index.html", "main.js", "App.vue"],
+      dependencies: ["vue", "vite", "@vitejs/plugin-vue"],
     },
     [FRONTEND_OPTIONS.NEXTJS]: {
-      base: 'nextjs',
-      files: ['package.json', 'next.config.js', 'pages/index.js', 'pages/api/hello.js'],
-      dependencies: ['next', 'react', 'react-dom'],
+      base: "nextjs",
+      files: [
+        "package.json",
+        "next.config.js",
+        "pages/index.js",
+        "pages/api/hello.js",
+      ],
+      dependencies: ["next", "react", "react-dom"],
     },
   },
-
 
   // Database templates (using ORM templates for database-specific files)
   database: {
     [DATABASE_OPTIONS.POSTGRES]: {
-      base: 'prisma', // Use Prisma templates for PostgreSQL
-      files: ['schema.prisma'],
-      dependencies: ['pg'],
+      base: "prisma", // Use Prisma templates for PostgreSQL
+      files: ["schema.prisma"],
+      dependencies: ["pg"],
     },
     [DATABASE_OPTIONS.MONGODB]: {
-      base: 'mongoose', // Use Mongoose templates for MongoDB
-      files: ['models.js'],
-      dependencies: ['mongodb'],
+      base: "mongoose", // Use Mongoose templates for MongoDB
+      files: ["models.js"],
+      dependencies: ["mongodb"],
     },
     [DATABASE_OPTIONS.SQLITE]: {
-      base: 'prisma', // Use Prisma templates for SQLite
-      files: ['schema.prisma'],
-      dependencies: ['sqlite3'],
+      base: "prisma", // Use Prisma templates for SQLite
+      files: ["schema.prisma"],
+      dependencies: ["sqlite3"],
     },
     [DATABASE_OPTIONS.MYSQL]: {
-      base: 'prisma', // Use Prisma templates for MySQL
-      files: ['schema.prisma'],
-      dependencies: ['mysql2'],
+      base: "prisma", // Use Prisma templates for MySQL
+      files: ["schema.prisma"],
+      dependencies: ["mysql2"],
     },
   },
 
   // ORM templates
   orm: {
     [ORM_OPTIONS.PRISMA]: {
-      base: 'prisma',
-      files: ['schema.prisma'],
-      dependencies: ['prisma', '@prisma/client'],
+      base: "prisma",
+      files: ["schema.prisma"],
+      dependencies: ["prisma", "@prisma/client"],
     },
     [ORM_OPTIONS.MONGOOSE]: {
-      base: 'mongoose',
-      files: ['models.js'],
-      dependencies: ['mongoose'],
+      base: "mongoose",
+      files: ["models.js"],
+      dependencies: ["mongoose"],
     },
     [ORM_OPTIONS.SEQUELIZE]: {
-      base: 'sequelize',
-      files: ['models.js'],
-      dependencies: ['sequelize'],
+      base: "sequelize",
+      files: ["models.js"],
+      dependencies: ["sequelize"],
     },
     [ORM_OPTIONS.TYPEORM]: {
-      base: 'typeorm',
-      files: ['data-source.ts', 'entities/User.ts', 'entities/Post.ts'],
-      dependencies: ['typeorm', 'reflect-metadata'],
+      base: "typeorm",
+      files: ["data-source.ts", "entities/User.ts", "entities/Post.ts"],
+      dependencies: ["typeorm", "reflect-metadata"],
     },
   },
 };
@@ -116,18 +135,21 @@ export class TemplateContextBuilder {
       // Basic project info
       projectName: config.projectName,
       projectDir: config.projectDir,
-      
+
       // Technology flags
-      typescript: config.addons?.includes('typescript') || false,
-      useTypeScript: config.addons?.includes('typescript') || false,
-      
+      typescript: config.addons?.includes("typescript") || false,
+      useTypeScript: config.addons?.includes("typescript") || false,
+
       // Framework flags
       hasBackend: config.backend && config.backend !== BACKEND_OPTIONS.NONE,
-      hasFrontend: config.frontend && config.frontend.length > 0 && !config.frontend.includes(FRONTEND_OPTIONS.NONE),
+      hasFrontend:
+        config.frontend &&
+        config.frontend.length > 0 &&
+        !config.frontend.includes(FRONTEND_OPTIONS.NONE),
       hasDatabase: config.database && config.database !== DATABASE_OPTIONS.NONE,
       hasORM: config.orm && config.orm !== ORM_OPTIONS.NONE,
-      hasAuth: config.auth && config.auth !== 'none',
-      
+      hasAuth: config.auth && config.auth !== "none",
+
       // Specific technology flags
       isExpress: config.backend === BACKEND_OPTIONS.EXPRESS,
       isFastify: config.backend === BACKEND_OPTIONS.FASTIFY,
@@ -139,16 +161,16 @@ export class TemplateContextBuilder {
       isMongoDB: config.database === DATABASE_OPTIONS.MONGODB,
       isPrisma: config.orm === ORM_OPTIONS.PRISMA,
       isMongoose: config.orm === ORM_OPTIONS.MONGOOSE,
-      
+
       // Package manager
-      packageManager: config.packageManager || 'npm',
-      
+      packageManager: config.packageManager || "npm",
+
       // Addons
-      hasDocker: config.addons?.includes('docker') || false,
-      hasTesting: config.addons?.includes('testing') || false,
-      hasESLint: config.addons?.includes('eslint') || false,
-      hasPrettier: config.addons?.includes('prettier') || false,
-      
+      hasDocker: config.addons?.includes("docker") || false,
+      hasTesting: config.addons?.includes("testing") || false,
+      hasESLint: config.addons?.includes("eslint") || false,
+      hasPrettier: config.addons?.includes("prettier") || false,
+
       // Timestamps
       year: new Date().getFullYear(),
       timestamp: new Date().toISOString(),
@@ -196,7 +218,12 @@ export class TemplateResolver {
     }
 
     // Check for custom template overrides
-    const customPath = path.join(this.templateDir, category, technology, 'custom');
+    const customPath = path.join(
+      this.templateDir,
+      category,
+      technology,
+      "custom",
+    );
     if (fs.existsSync(customPath)) {
       return customPath;
     }
@@ -213,24 +240,24 @@ export class TemplateResolver {
    */
   getTemplateFiles(category, technology, config) {
     const templatePath = this.resolveTemplatePath(category, technology, config);
-    
+
     if (!fs.existsSync(templatePath)) {
       console.warn(chalk.yellow(`Template path not found: ${templatePath}`));
       return [];
     }
 
     const files = [];
-    const scanDir = (dir, relativePath = '') => {
+    const scanDir = (dir, relativePath = "") => {
       const items = fs.readdirSync(dir);
-      
+
       for (const item of items) {
         const fullPath = path.join(dir, item);
         const relativeItemPath = path.join(relativePath, item);
         const stat = fs.statSync(fullPath);
-        
+
         if (stat.isDirectory()) {
           scanDir(fullPath, relativeItemPath);
-        } else if (item.endsWith('.hbs')) {
+        } else if (item.endsWith(".hbs")) {
           files.push({
             source: fullPath,
             relative: relativeItemPath,
@@ -254,27 +281,33 @@ export class TemplateResolver {
    */
   resolveOutputPath(templatePath, context, outputDir) {
     let outputPath = templatePath;
-    
+
     // Remove .hbs extension
-    if (outputPath.endsWith('.hbs')) {
+    if (outputPath.endsWith(".hbs")) {
       outputPath = outputPath.slice(0, -4);
     }
 
     // Process Handlebars in filename
-    if (outputPath.includes('{{')) {
+    if (outputPath.includes("{{")) {
       const template = Handlebars.compile(outputPath);
       outputPath = template(context);
     }
 
     // Handle dynamic extensions
-    if (outputPath.includes('{{#if typescript}}')) {
-      const extension = context.typescript ? 'ts' : 'js';
-      outputPath = outputPath.replace(/\{\{#if typescript\}\}[^{]+(\{\{else\}\}[^{]+)?\{\{\/if\}\}/g, extension);
+    if (outputPath.includes("{{#if typescript}}")) {
+      const extension = context.typescript ? "ts" : "js";
+      outputPath = outputPath.replace(
+        /\{\{#if typescript\}\}[^{]+(\{\{else\}\}[^{]+)?\{\{\/if\}\}/g,
+        extension,
+      );
     }
 
-    if (outputPath.includes('{{#if useTypeScript}}')) {
-      const extension = context.useTypeScript ? 'ts' : 'js';
-      outputPath = outputPath.replace(/\{\{#if useTypeScript\}\}[^{]+(\{\{else\}\}[^{]+)?\{\{\/if\}\}/g, extension);
+    if (outputPath.includes("{{#if useTypeScript}}")) {
+      const extension = context.useTypeScript ? "ts" : "js";
+      outputPath = outputPath.replace(
+        /\{\{#if useTypeScript\}\}[^{]+(\{\{else\}\}[^{]+)?\{\{\/if\}\}/g,
+        extension,
+      );
     }
 
     return path.join(outputDir, outputPath);
@@ -307,11 +340,14 @@ export class TemplateResolver {
     }
 
     try {
-      const content = fs.readFileSync(templatePath, 'utf-8');
+      const content = fs.readFileSync(templatePath, "utf-8");
       this.cache.set(templatePath, content);
       return content;
     } catch (error) {
-      console.error(chalk.red(`Failed to read template ${templatePath}:`), error.message);
+      console.error(
+        chalk.red(`Failed to read template ${templatePath}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -347,29 +383,41 @@ export class SmartTemplateProcessor {
     try {
       // Process backend templates
       if (config.backend && config.backend !== BACKEND_OPTIONS.NONE) {
-        if (progressCallback) progressCallback('Processing backend templates...');
-        
-        const backendFiles = this.resolver.getTemplateFiles('backend', config.backend, config);
+        if (progressCallback)
+          progressCallback("Processing backend templates...");
+
+        const backendFiles = this.resolver.getTemplateFiles(
+          "backend",
+          config.backend,
+          config,
+        );
         for (const file of backendFiles) {
           try {
             const content = this.resolver.getTemplate(file.source);
-            const processedContent = this.resolver.processTemplateContent(content, context);
-            const outputPath = this.resolver.resolveOutputPath(file.relative, context, outputDir);
-            
+            const processedContent = this.resolver.processTemplateContent(
+              content,
+              context,
+            );
+            const outputPath = this.resolver.resolveOutputPath(
+              file.relative,
+              context,
+              outputDir,
+            );
+
             await fs.ensureDir(path.dirname(outputPath));
             await fs.writeFile(outputPath, processedContent);
-            
+
             processedFiles.push({
               source: file.source,
               output: outputPath,
-              category: 'backend',
+              category: "backend",
               technology: config.backend,
             });
           } catch (error) {
             errors.push({
               file: file.source,
               error: error.message,
-              category: 'backend',
+              category: "backend",
             });
           }
         }
@@ -379,29 +427,41 @@ export class SmartTemplateProcessor {
       if (config.frontend && config.frontend.length > 0) {
         for (const frontend of config.frontend) {
           if (frontend !== FRONTEND_OPTIONS.NONE) {
-            if (progressCallback) progressCallback(`Processing ${frontend} templates...`);
-            
-            const frontendFiles = this.resolver.getTemplateFiles('frontend', frontend, config);
+            if (progressCallback)
+              progressCallback(`Processing ${frontend} templates...`);
+
+            const frontendFiles = this.resolver.getTemplateFiles(
+              "frontend",
+              frontend,
+              config,
+            );
             for (const file of frontendFiles) {
               try {
                 const content = this.resolver.getTemplate(file.source);
-                const processedContent = this.resolver.processTemplateContent(content, context);
-                const outputPath = this.resolver.resolveOutputPath(file.relative, context, outputDir);
-                
+                const processedContent = this.resolver.processTemplateContent(
+                  content,
+                  context,
+                );
+                const outputPath = this.resolver.resolveOutputPath(
+                  file.relative,
+                  context,
+                  outputDir,
+                );
+
                 await fs.ensureDir(path.dirname(outputPath));
                 await fs.writeFile(outputPath, processedContent);
-                
+
                 processedFiles.push({
                   source: file.source,
                   output: outputPath,
-                  category: 'frontend',
+                  category: "frontend",
                   technology: frontend,
                 });
               } catch (error) {
                 errors.push({
                   file: file.source,
                   error: error.message,
-                  category: 'frontend',
+                  category: "frontend",
                 });
               }
             }
@@ -411,29 +471,41 @@ export class SmartTemplateProcessor {
 
       // Process database templates
       if (config.database && config.database !== DATABASE_OPTIONS.NONE) {
-        if (progressCallback) progressCallback('Processing database templates...');
-        
-        const databaseFiles = this.resolver.getTemplateFiles('database', config.database, config);
+        if (progressCallback)
+          progressCallback("Processing database templates...");
+
+        const databaseFiles = this.resolver.getTemplateFiles(
+          "database",
+          config.database,
+          config,
+        );
         for (const file of databaseFiles) {
           try {
             const content = this.resolver.getTemplate(file.source);
-            const processedContent = this.resolver.processTemplateContent(content, context);
-            const outputPath = this.resolver.resolveOutputPath(file.relative, context, outputDir);
-            
+            const processedContent = this.resolver.processTemplateContent(
+              content,
+              context,
+            );
+            const outputPath = this.resolver.resolveOutputPath(
+              file.relative,
+              context,
+              outputDir,
+            );
+
             await fs.ensureDir(path.dirname(outputPath));
             await fs.writeFile(outputPath, processedContent);
-            
+
             processedFiles.push({
               source: file.source,
               output: outputPath,
-              category: 'database',
+              category: "database",
               technology: config.database,
             });
           } catch (error) {
             errors.push({
               file: file.source,
               error: error.message,
-              category: 'database',
+              category: "database",
             });
           }
         }
@@ -441,29 +513,40 @@ export class SmartTemplateProcessor {
 
       // Process ORM templates
       if (config.orm && config.orm !== ORM_OPTIONS.NONE) {
-        if (progressCallback) progressCallback('Processing ORM templates...');
-        
-        const ormFiles = this.resolver.getTemplateFiles('orm', config.orm, config);
+        if (progressCallback) progressCallback("Processing ORM templates...");
+
+        const ormFiles = this.resolver.getTemplateFiles(
+          "orm",
+          config.orm,
+          config,
+        );
         for (const file of ormFiles) {
           try {
             const content = this.resolver.getTemplate(file.source);
-            const processedContent = this.resolver.processTemplateContent(content, context);
-            const outputPath = this.resolver.resolveOutputPath(file.relative, context, outputDir);
-            
+            const processedContent = this.resolver.processTemplateContent(
+              content,
+              context,
+            );
+            const outputPath = this.resolver.resolveOutputPath(
+              file.relative,
+              context,
+              outputDir,
+            );
+
             await fs.ensureDir(path.dirname(outputPath));
             await fs.writeFile(outputPath, processedContent);
-            
+
             processedFiles.push({
               source: file.source,
               output: outputPath,
-              category: 'orm',
+              category: "orm",
               technology: config.orm,
             });
           } catch (error) {
             errors.push({
               file: file.source,
               error: error.message,
-              category: 'orm',
+              category: "orm",
             });
           }
         }

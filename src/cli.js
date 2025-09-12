@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import os from "os";
 import chalk from "chalk";
 import gradient from "gradient-string";
 import figlet from "figlet";
+import boxen from "boxen";
+import chalkAnimation from "chalk-animation";
 import { initCommand } from "./commands/init.js";
-import { enhancedInitCommand, listPresetsCommand } from "./commands/enhanced-init.js";
+import {
+  enhancedInitCommand,
+  listPresetsCommand,
+} from "./commands/enhanced-init.js";
 import { addCommand } from "./commands/add.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,58 +23,162 @@ const packageJson = JSON.parse(
   readFileSync(join(__dirname, "../package.json"), "utf-8"),
 );
 
-// Clean and modern banner
+// Modern colors using standard chalk colors
+const colors = {
+  primary: chalk.blue.bold,
+  secondary: chalk.cyan,
+  accent: chalk.yellow.bold,
+  success: chalk.green.bold,
+  warning: chalk.yellow.bold,
+  error: chalk.red.bold,
+  info: chalk.blue,
+  muted: chalk.gray,
+  bg: "black",
+  text: chalk.white,
+};
+
+// Modern icons with better semantics
+const icons = {
+  rocket: "🚀",
+  sparkles: "✨",
+  gear: "⚙️",
+  package: "📦",
+  folder: "📁",
+  file: "📄",
+  database: "🗄️",
+  shield: "🛡️",
+  paint: "🎨",
+  test: "🧪",
+  docker: "🐳",
+  lightning: "⚡",
+  check: "✅",
+  warning: "⚠️",
+  error: "❌",
+  info: "ℹ️",
+  bulb: "💡",
+  fire: "🔥",
+  target: "🎯",
+  book: "📚",
+  link: "🔗",
+  search: "🔍",
+  heart: "❤️",
+  star: "⭐",
+  crown: "👑",
+  magic: "🪄",
+  crystal: "💎",
+};
+
+// Ultra-modern animated banner with gradients
 function showBanner() {
   console.clear();
-  
-  // Main title with clean design
-  console.log(chalk.white.bold("╭─────────────────────────────────────────────────────────╮"));
-  console.log(chalk.white.bold("│") + chalk.blue.bold("  🚀 JS Stack Generator") + chalk.white.bold("                                    │"));
-  console.log(chalk.white.bold("│") + chalk.gray("  Modern JavaScript Project Scaffolding Tool") + chalk.white.bold("        │"));
-  console.log(chalk.white.bold("╰─────────────────────────────────────────────────────────╯"));
+
+  // Create animated title
+  const title = figlet.textSync("JS Stack", {
+    font: "Big",
+    horizontalLayout: "fitted",
+    width: 80,
+  });
+
+  // Create gradient effects
+  const gradientTitle = gradient(["#667eea", "#764ba2", "#f093fb"]);
+  const gradientSubtitle = gradient(["#4facfe", "#00f2fe"]);
+  const gradientInfo = gradient(["#43e97b", "#38f9d7"]);
+
+  // Show animated title
   console.log();
-  
-  // Version and system info
-  console.log(chalk.gray("  📦 Version: ") + chalk.green.bold(packageJson.version));
-  console.log(chalk.gray("  🚀 Node.js: ") + chalk.green(process.version));
-  console.log(chalk.gray("  💻 Platform: ") + chalk.yellow(process.platform));
-  console.log(chalk.gray("  🔧 Runtime: ") + chalk.magenta("ESM"));
+  console.log(gradientTitle(title));
   console.log();
+
+  // Modern subtitle with better spacing
+  const subtitle = chalk
+    .hex(colors.text)
+    .bold("Next-Generation JavaScript Project Generator");
+  console.log(gradientSubtitle(`    ${subtitle}`));
+  console.log();
+
+  // Enhanced system information in a modern card layout
+  const systemInfo = [
+    `${icons.package} v${packageJson.version}`,
+    `${icons.rocket} Node.js ${process.version}`,
+    `${icons.gear} ${getPlatformIcon()}${os.type()} ${os.arch()}`,
+    `${icons.lightning} ESM Runtime`,
+    `${icons.crystal} ${getMemoryUsage()}`,
+  ];
+
+  const infoBox = boxen(systemInfo.join("\n"), {
+    padding: 1,
+    margin: 1,
+    borderStyle: "round",
+    borderColor: "cyan",
+    backgroundColor: "black",
+    title: `${icons.sparkles} System Info`,
+    titleAlignment: "center",
+  });
+
+  console.log(gradientInfo(infoBox));
+}
+
+// Helper functions for enhanced system info
+function getPlatformIcon() {
+  const platform = process.platform;
+  const platformIcons = {
+    win32: "🪟 ",
+    darwin: "🍎 ",
+    linux: "🐧 ",
+    freebsd: "👹 ",
+    openbsd: "🐡 ",
+    sunos: "☀️ ",
+    aix: "🔵 ",
+  };
+  return platformIcons[platform] || "💻 ";
+}
+
+function getMemoryUsage() {
+  const used = process.memoryUsage();
+  const usage = Math.round((used.heapUsed / 1024 / 1024) * 100) / 100;
+  return `Memory: ${usage}MB`;
+}
+
+// Enhanced loading animation
+async function showLoadingAnimation(text = "Initializing...", duration = 2000) {
+  const rainbow = chalkAnimation.rainbow(text);
+  await new Promise((resolve) => setTimeout(resolve, duration));
+  rainbow.stop();
 }
 
 // Enhanced error handling with better messages
 function handleCliError(error, command = null) {
   console.log();
-  
+
   const errorMap = {
-    'commander.version': { exit: 0 },
-    'commander.helpDisplayed': { exit: 0 },
-    'commander.missingArgument': {
-      message: '❌ Missing required argument',
-      tip: `Run "${chalk.cyan('npx create-js-stack ' + (command || '--help'))}" for usage info`,
-      exit: 1
+    "commander.version": { exit: 0 },
+    "commander.helpDisplayed": { exit: 0 },
+    "commander.missingArgument": {
+      message: "❌ Missing required argument",
+      tip: `Run "${chalk.cyan("npx create-js-stack " + (command || "--help"))}" for usage info`,
+      exit: 1,
     },
-    'commander.unknownOption': {
-      message: '❌ Unknown option provided',
-      tip: `Run "${chalk.cyan('npx create-js-stack --help')}" to see valid options`,
-      exit: 1
+    "commander.unknownOption": {
+      message: "❌ Unknown option provided",
+      tip: `Run "${chalk.cyan("npx create-js-stack --help")}" to see valid options`,
+      exit: 1,
     },
-    'commander.unknownCommand': {
-      message: '❌ Unknown command provided',
-      tip: `Run "${chalk.cyan('npx create-js-stack list')}" to see available commands`,
-      exit: 1
+    "commander.unknownCommand": {
+      message: "❌ Unknown command provided",
+      tip: `Run "${chalk.cyan("npx create-js-stack list")}" to see available commands`,
+      exit: 1,
     },
-    'commander.invalidArgument': {
-      message: '❌ Invalid argument provided',
+    "commander.invalidArgument": {
+      message: "❌ Invalid argument provided",
       tip: `Check your argument format and try again`,
-      exit: 1
-    }
+      exit: 1,
+    },
   };
 
   const errorInfo = errorMap[error.code] || {
-    message: '❌ An unexpected error occurred',
-    tip: 'Please report this issue if it persists',
-    exit: 1
+    message: "❌ An unexpected error occurred",
+    tip: "Please report this issue if it persists",
+    exit: 1,
   };
 
   if (errorInfo.message) {
@@ -89,91 +199,201 @@ function handleCliError(error, command = null) {
 // Validation middleware for commands
 function validateProjectName(name) {
   if (!name) return null;
-  
+
   const validationRules = [
-    { test: /^[a-zA-Z0-9-_]+$/, message: 'Project name can only contain letters, numbers, hyphens, and underscores' },
-    { test: name => name.length >= 2, message: 'Project name must be at least 2 characters long' },
-    { test: name => name.length <= 50, message: 'Project name must be less than 50 characters' },
-    { test: name => !name.startsWith('-'), message: 'Project name cannot start with a hyphen' },
-    { test: name => !name.endsWith('-'), message: 'Project name cannot end with a hyphen' },
+    {
+      test: /^[a-zA-Z0-9-_]+$/,
+      message:
+        "Project name can only contain letters, numbers, hyphens, and underscores",
+    },
+    {
+      test: (name) => name.length >= 2,
+      message: "Project name must be at least 2 characters long",
+    },
+    {
+      test: (name) => name.length <= 50,
+      message: "Project name must be less than 50 characters",
+    },
+    {
+      test: (name) => !name.startsWith("-"),
+      message: "Project name cannot start with a hyphen",
+    },
+    {
+      test: (name) => !name.endsWith("-"),
+      message: "Project name cannot end with a hyphen",
+    },
   ];
 
   for (const rule of validationRules) {
-    const isValid = typeof rule.test === 'function' ? rule.test(name) : rule.test.test(name);
+    const isValid =
+      typeof rule.test === "function" ? rule.test(name) : rule.test.test(name);
     if (!isValid) {
       console.error(chalk.red(`❌ ${rule.message}`));
-      console.log(chalk.yellow(`💡 Example: ${chalk.cyan('my-awesome-project')}`));
+      console.log(
+        chalk.yellow(`💡 Example: ${chalk.cyan("my-awesome-project")}`),
+      );
       process.exit(1);
     }
   }
-  
+
   return name;
 }
 
 // Main CLI configuration with enhanced metadata
 program
   .name("create-js-stack")
-  .description("🚀 CLI tool for scaffolding modern JavaScript full-stack projects with best practices")
-  .version(packageJson.version, '-v, --version', 'display version number')
+  .description(
+    "🚀 CLI tool for scaffolding modern JavaScript full-stack projects with best practices",
+  )
+  .version(packageJson.version, "-v, --version", "display version number")
   .configureOutput({
     outputError: (str, write) => write(chalk.red(str)),
     writeOut: (str) => process.stdout.write(chalk.cyan(str)),
     writeErr: (str) => process.stderr.write(chalk.red(str)),
   })
-  .showHelpAfterError(chalk.yellow("💡 Add --help for detailed usage information"));
+  .showHelpAfterError(
+    chalk.yellow("💡 Add --help for detailed usage information"),
+  );
 
-// Enhanced Init command with better validation and options
+// Modern Init command with enhanced UX and comprehensive options
 program
   .command("init [project-name]")
-  .alias("create")
-  .alias("new")
-  .alias("i")
-  .description(chalk.cyan("🏗️  Create a new JavaScript stack project"))
-  .option("-y, --yes", chalk.gray("🚀 Use default configuration (quick start)"))
-  .option("-p, --preset <name>", chalk.gray("🎯 Use a preset configuration (saas-app, api-service, mobile-app, etc.)"))
-  .option("-t, --template <name>", chalk.gray("📄 Use a specific template"))
-  .option("--database <type>", chalk.gray("🗄️  Database: sqlite, postgres, mysql, mongodb, supabase, planetscale, none"))
-  .option("--orm <type>", chalk.gray("🔗 ORM: prisma, sequelize, mongoose, typeorm, drizzle, none"))
-  .option("--backend <type>", chalk.gray("⚙️  Backend: express, fastify, koa, hapi, nestjs, trpc, none"))
-  .option("--frontend <types...>", chalk.gray("🎨 Frontend: react, vue, angular, svelte, nextjs, nuxt, astro, remix"))
-  .option("--auth <type>", chalk.gray("🔐 Auth: jwt, passport, auth0, firebase, clerk, supabase, none"))
-  .option("--styling <type>", chalk.gray("💅 Styling: tailwind, styled-components, emotion, sass, css-modules"))
-  .option("--testing <type>", chalk.gray("🧪 Testing: jest, vitest, playwright, cypress"))
-  .option("--addons <addons...>", chalk.gray("🛠️  Tools: eslint, prettier, husky, docker, storybook, turborepo"))
-  .option("--pm <manager>", chalk.gray("📦 Package manager: npm, yarn, pnpm, bun"))
-  .option("--typescript", chalk.gray("📘 Use TypeScript"))
-  .option("--no-git", chalk.gray("⏭️  Skip git initialization"))
-  .option("--no-install", chalk.gray("⏭️  Skip dependency installation"))
-  .option("--verbose", chalk.gray("🔍 Show detailed output"))
-  .option("--dry-run", chalk.gray("🧪 Preview what would be created without making changes"))
-  .addHelpText('after', `
-${chalk.gray('Examples:')}
-  ${chalk.cyan('$ npx create-js-stack init my-app')}                    ${chalk.gray('# Interactive setup')}
-  ${chalk.cyan('$ npx create-js-stack init my-app --yes')}              ${chalk.gray('# Quick start with defaults')}
-  ${chalk.cyan('$ npx create-js-stack init my-app --preset=saas-app')} ${chalk.gray('# Use preset configuration')}
-  ${chalk.cyan('$ npx create-js-stack init my-app --typescript --frontend=react --backend=express')}
-`)
+  .aliases(["create", "new", "i", "scaffold"])
+  .description(
+    colors.secondary(`${icons.rocket} Create a new JavaScript stack project`),
+  )
+  .option(
+    "-y, --yes",
+    colors.muted(`${icons.lightning} Use default configuration (quick start)`),
+  )
+  .option(
+    "-p, --preset <name>",
+    colors.muted(
+      `${icons.target} Use preset: saas, api, mobile, fullstack, minimal`,
+    ),
+  )
+  .option(
+    "-t, --template <name>",
+    colors.muted(`${icons.file} Use specific template`),
+  )
+  .option(
+    "--database <type>",
+    colors.muted(
+      `${icons.database} Database: sqlite, postgres, mysql, mongodb, supabase, planetscale`,
+    ),
+  )
+  .option(
+    "--orm <type>",
+    colors.muted(
+      `${icons.gear} ORM: prisma, drizzle, sequelize, mongoose, typeorm`,
+    ),
+  )
+  .option(
+    "--backend <type>",
+    colors.muted(`${icons.gear} Backend: express, fastify, nestjs, trpc, hono`),
+  )
+  .option(
+    "--frontend <types...>",
+    colors.muted(
+      `${icons.paint} Frontend: react, vue, svelte, solid, nextjs, nuxt, astro`,
+    ),
+  )
+  .option(
+    "--auth <type>",
+    colors.muted(
+      `${icons.shield} Auth: clerk, supabase, auth0, firebase, lucia, none`,
+    ),
+  )
+  .option(
+    "--styling <type>",
+    colors.muted(
+      `${icons.paint} Styling: tailwind, shadcn, chakra, mantine, styled-components`,
+    ),
+  )
+  .option(
+    "--testing <type>",
+    colors.muted(`${icons.test} Testing: vitest, jest, playwright, cypress`),
+  )
+  .option(
+    "--addons <addons...>",
+    colors.muted(
+      `${icons.package} Tools: typescript, eslint, prettier, husky, docker, storybook`,
+    ),
+  )
+  .option(
+    "--pm <manager>",
+    colors.muted(`${icons.package} Package manager: npm, yarn, pnpm, bun`),
+  )
+  .option("--typescript", colors.muted(`${icons.crystal} Enable TypeScript`))
+  .option("--no-git", colors.muted(`${icons.cross} Skip git initialization`))
+  .option(
+    "--no-install",
+    colors.muted(`${icons.cross} Skip dependency installation`),
+  )
+  .option("--verbose", colors.muted(`${icons.search} Show detailed output`))
+  .option(
+    "--dry-run",
+    colors.muted(`${icons.bulb} Preview changes without creating files`),
+  )
+  .option(
+    "--interactive",
+    colors.muted(`${icons.sparkles} Enhanced interactive mode`),
+  )
+  .addHelpText("after", () => {
+    const exampleBox = boxen(
+      `${icons.bulb} ${chalk.bold("Usage Examples:")}
+
+${colors.primary("npx create-js-stack init my-app")}                     ${colors.muted("# Interactive setup")}
+${colors.primary("npx create-js-stack init my-app --yes")}               ${colors.muted("# Quick start (recommended)")}
+${colors.primary("npx create-js-stack init --preset saas")}              ${colors.muted("# SaaS application")}
+${colors.primary("npx create-js-stack init api-server --preset api")}    ${colors.muted("# REST API server")}
+${colors.primary("npx create-js-stack init mobile-app --preset mobile")} ${colors.muted("# Mobile application")}
+
+${icons.target} ${chalk.bold("Popular Presets:")}
+  ${colors.success("saas")}      - Full-stack SaaS with auth, database, and payments
+  ${colors.success("api")}       - RESTful API with database and authentication  
+  ${colors.success("fullstack")} - Full-stack web app with modern tooling
+  ${colors.success("minimal")}   - Lightweight starter template`,
+      {
+        padding: 1,
+        margin: { top: 1, bottom: 0, left: 2, right: 2 },
+        borderStyle: "round",
+        borderColor: "magenta",
+        backgroundColor: colors.bg,
+      },
+    );
+    return exampleBox;
+  })
   .action(async (projectName, options) => {
     // Validate project name if provided
     if (projectName) {
       projectName = validateProjectName(projectName);
     }
-    
+
     // Show banner for interactive mode
     if (!options.yes && !projectName && process.argv.length === 3) {
       showBanner();
     }
-    
+
     // Enhanced debug output
     if (options.verbose) {
       console.log(chalk.gray("📋 Debug Information:"));
-      console.log(chalk.gray("  Project Name:"), chalk.cyan(projectName || 'Not specified'));
-      console.log(chalk.gray("  Options:"), chalk.cyan(JSON.stringify(options, null, 2)));
+      console.log(
+        chalk.gray("  Project Name:"),
+        chalk.cyan(projectName || "Not specified"),
+      );
+      console.log(
+        chalk.gray("  Options:"),
+        chalk.cyan(JSON.stringify(options, null, 2)),
+      );
       console.log(chalk.gray("  Node Version:"), chalk.green(process.version));
-      console.log(chalk.gray("  Working Directory:"), chalk.yellow(process.cwd()));
+      console.log(
+        chalk.gray("  Working Directory:"),
+        chalk.yellow(process.cwd()),
+      );
       console.log();
     }
-    
+
     try {
       // Use enhanced init command for better features
       await enhancedInitCommand(projectName, options);
@@ -187,32 +407,51 @@ ${chalk.gray('Examples:')}
     }
   });
 
-// Enhanced Add command with better feature management
+// Modern Add command with enhanced feature management
 program
   .command("add <features...>")
-  .alias("install")
-  .alias("a")
-  .description(chalk.cyan("➕ Add features to an existing project"))
-  .option("--dev", chalk.gray("📦 Install as dev dependencies"))
-  .option("--config", chalk.gray("⚙️  Generate configuration files"))
-  .option("--no-install", chalk.gray("⏭️  Skip dependency installation"))
-  .option("--force", chalk.gray("💪 Force overwrite existing files"))
-  .option("--verbose", chalk.gray("🔍 Show detailed output"))
-  .addHelpText('after', `
-${chalk.gray('Available Features:')}
-  ${chalk.cyan('auth')}        ${chalk.gray('# Authentication setup')}
-  ${chalk.cyan('database')}    ${chalk.gray('# Database configuration')}
-  ${chalk.cyan('testing')}     ${chalk.gray('# Testing framework')}
-  ${chalk.cyan('docker')}      ${chalk.gray('# Docker configuration')}
-  ${chalk.cyan('ci/cd')}       ${chalk.gray('# GitHub Actions workflow')}
+  .aliases(["install", "a", "extend"])
+  .description(
+    colors.accent(`${icons.sparkles} Add features to an existing project`),
+  )
+  .option("--dev", colors.muted(`${icons.package} Install as dev dependencies`))
+  .option(
+    "--config",
+    colors.muted(`${icons.gear} Generate configuration files`),
+  )
+  .option(
+    "--no-install",
+    colors.muted(`${icons.cross} Skip dependency installation`),
+  )
+  .option(
+    "--force",
+    colors.muted(`${icons.fire} Force overwrite existing files`),
+  )
+  .option(
+    "--interactive",
+    colors.muted(`${icons.sparkles} Interactive feature selection`),
+  )
+  .option("--verbose", colors.muted(`${icons.search} Show detailed output`))
+  .addHelpText(
+    "after",
+    `
+${chalk.gray("Available Features:")}
+  ${chalk.cyan("auth")}        ${chalk.gray("# Authentication setup")}
+  ${chalk.cyan("database")}    ${chalk.gray("# Database configuration")}
+  ${chalk.cyan("testing")}     ${chalk.gray("# Testing framework")}
+  ${chalk.cyan("docker")}      ${chalk.gray("# Docker configuration")}
+  ${chalk.cyan("ci/cd")}       ${chalk.gray("# GitHub Actions workflow")}
 
-${chalk.gray('Examples:')}
-  ${chalk.cyan('$ npx create-js-stack add auth database')}
-  ${chalk.cyan('$ npx create-js-stack add testing --dev')}
-`)
+${chalk.gray("Examples:")}
+  ${chalk.cyan("$ npx create-js-stack add auth database")}
+  ${chalk.cyan("$ npx create-js-stack add testing --dev")}
+`,
+  )
   .action(async (features, options) => {
-    console.log(chalk.blue(`➕ Adding features: ${chalk.cyan(features.join(', '))}`));
-    
+    console.log(
+      chalk.blue(`➕ Adding features: ${chalk.cyan(features.join(", "))}`),
+    );
+
     try {
       await addCommand(features, options);
     } catch (error) {
@@ -229,58 +468,68 @@ program
   .alias("d")
   .description(chalk.cyan("📚 Open documentation"))
   .option("--offline", chalk.gray("📖 Show offline help"))
-  .addHelpText('after', `
-${chalk.gray('Available Topics:')}
-  ${chalk.cyan('getting-started')}  ${chalk.gray('# Quick start guide')}
-  ${chalk.cyan('templates')}        ${chalk.gray('# Available templates')}
-  ${chalk.cyan('configuration')}    ${chalk.gray('# Configuration options')}
-  ${chalk.cyan('troubleshooting')}  ${chalk.gray('# Common issues and solutions')}
-`)
+  .addHelpText(
+    "after",
+    `
+${chalk.gray("Available Topics:")}
+  ${chalk.cyan("getting-started")}  ${chalk.gray("# Quick start guide")}
+  ${chalk.cyan("templates")}        ${chalk.gray("# Available templates")}
+  ${chalk.cyan("configuration")}    ${chalk.gray("# Configuration options")}
+  ${chalk.cyan("troubleshooting")}  ${chalk.gray("# Common issues and solutions")}
+`,
+  )
   .action(async (topic, options) => {
     if (options.offline) {
-      console.log(chalk.yellow("Offline help not available. Please check the documentation online."));
+      console.log(
+        chalk.yellow(
+          "Offline help not available. Please check the documentation online.",
+        ),
+      );
       return;
     }
 
     const { openUrl } = await import("./utils/open-url.js");
     const baseUrl = "https://github.com/vipinyadav01/create-js-stack-cli";
     const docsUrl = topic ? `${baseUrl}/wiki/${topic}` : `${baseUrl}#readme`;
-    
+
     const g = gradient(["#5ee7df", "#b490ca"]);
     console.log();
     console.log(g("📖 Opening documentation..."));
-    
+
     try {
       await openUrl(docsUrl);
       console.log(chalk.green("✅ Documentation opened in your browser"));
     } catch (error) {
       console.log(chalk.yellow("⚠️  Could not open browser automatically"));
     }
-    
+
     console.log(chalk.gray("\n📎 Documentation URL:"));
     console.log(chalk.cyan(`   ${docsUrl}\n`));
   });
 
-// Enhanced List command
+// Enhanced List command with modern design
 program
   .command("list [category]")
-  .alias("ls")
-  .alias("options")
-  .alias("l")
-  .description(chalk.cyan("📋 List available options and templates"))
+  .aliases(["ls", "options", "l", "browse", "explore"])
+  .description(
+    colors.info(`${icons.search} Browse available options and templates`),
+  )
   .option("--json", chalk.gray("📄 Output in JSON format"))
   .option("--table", chalk.gray("📊 Output in table format"))
-  .addHelpText('after', `
-${chalk.gray('Categories:')}
-  ${chalk.cyan('templates')}    ${chalk.gray('# Available project templates')}
-  ${chalk.cyan('databases')}    ${chalk.gray('# Supported databases')}
-  ${chalk.cyan('frontends')}    ${chalk.gray('# Frontend frameworks')}
-  ${chalk.cyan('backends')}     ${chalk.gray('# Backend frameworks')}
-  ${chalk.cyan('addons')}       ${chalk.gray('# Available add-ons')}
-  ${chalk.cyan('presets')}      ${chalk.gray('# Available preset configurations')}
-`)
+  .addHelpText(
+    "after",
+    `
+${chalk.gray("Categories:")}
+  ${chalk.cyan("templates")}    ${chalk.gray("# Available project templates")}
+  ${chalk.cyan("databases")}    ${chalk.gray("# Supported databases")}
+  ${chalk.cyan("frontends")}    ${chalk.gray("# Frontend frameworks")}
+  ${chalk.cyan("backends")}     ${chalk.gray("# Backend frameworks")}
+  ${chalk.cyan("addons")}       ${chalk.gray("# Available add-ons")}
+  ${chalk.cyan("presets")}      ${chalk.gray("# Available preset configurations")}
+`,
+  )
   .action(async (category, options) => {
-    if (category === 'presets') {
+    if (category === "presets") {
       listPresetsCommand();
     } else {
       const { listOptions } = await import("./commands/list.js");
@@ -299,22 +548,25 @@ program
 
 // New Commands
 
-// Update command
+// Update command with modern styling
 program
   .command("update")
-  .alias("upgrade")
-  .alias("u")
-  .description(chalk.cyan("🔄 Update create-js-stack to latest version"))
+  .aliases(["upgrade", "u", "refresh"])
+  .description(
+    colors.warning(
+      `${icons.lightning} Update create-js-stack to latest version`,
+    ),
+  )
   .option("--check", chalk.gray("🔍 Check for updates without installing"))
   .action(async (options) => {
     console.log(chalk.yellow("Update command not implemented yet."));
   });
 
-// Config command
+// Config command with enhanced options
 program
   .command("config")
-  .alias("c")
-  .description(chalk.cyan("⚙️  Manage global configuration"))
+  .aliases(["c", "settings", "preferences"])
+  .description(colors.secondary(`${icons.gear} Manage global configuration`))
   .option("--set <key=value>", chalk.gray("🔧 Set configuration value"))
   .option("--get <key>", chalk.gray("📖 Get configuration value"))
   .option("--list", chalk.gray("📋 List all configuration"))
@@ -323,37 +575,73 @@ program
     console.log(chalk.yellow("Config command not implemented yet."));
   });
 
-// Info command
+// Info command with diagnostic capabilities
 program
   .command("info")
-  .alias("status")
-  .description(chalk.cyan("ℹ️  Show project and system information"))
+  .aliases(["status", "diag", "check"])
+  .description(colors.info(`${icons.info} Show project and system information`))
   .option("--system", chalk.gray("💻 Show system information"))
   .option("--project", chalk.gray("📦 Show project information"))
   .action(async (options) => {
     console.log(chalk.yellow("Info command not implemented yet."));
   });
 
-// Enhanced help text
+// Enhanced help text with modern design
 program.addHelpText("before", () => {
-  if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  if (process.argv.includes("--help") || process.argv.includes("-h")) {
+    // Don't await here, just call synchronously
     showBanner();
   }
   return "";
 });
 
 program.addHelpText("after", () => {
+  // Modern quick start section
+  const quickStartBox = boxen(
+    `${icons.target} ${chalk.bold("Quick Start:")}
+
+${colors.primary("npx create-js-stack init my-app")}     ${colors.muted("# Interactive setup")}
+${colors.primary("npx create-js-stack list")}             ${colors.muted("# Browse options")}
+${colors.primary("npx create-js-stack init --preset saas")} ${colors.muted("# Use preset")}`,
+    {
+      padding: 1,
+      margin: { top: 1, bottom: 0, left: 2, right: 2 },
+      borderStyle: "round",
+      borderColor: "blue",
+      backgroundColor: "black",
+    },
+  );
+
+  console.log(quickStartBox);
+
+  // Modern resources section
+  const resourcesBox = boxen(
+    `${icons.link} ${chalk.bold("Resources & Community:")}
+
+${icons.book} Documentation: ${colors.secondary.underline("https://github.com/vipinyadav01/create-js-stack-cli")}
+${icons.warning} Issues & Bugs: ${colors.secondary.underline("https://github.com/vipinyadav01/create-js-stack-cli/issues")}
+${icons.heart} Discussions:   ${colors.secondary.underline("https://github.com/vipinyadav01/create-js-stack-cli/discussions")}
+${icons.star} Give us a star: ${colors.accent("⭐ Star on GitHub")}`,
+    {
+      padding: 1,
+      margin: { top: 1, bottom: 1, left: 2, right: 2 },
+      borderStyle: "round",
+      borderColor: "green",
+      backgroundColor: "black",
+    },
+  );
+
+  console.log(resourcesBox);
+
+  // Pro tip
+  const tipGradient = gradient(["#ff6b6b", "#4ecdc4"]);
+  console.log(
+    tipGradient(
+      `    ${icons.bulb} Pro Tip: Use --verbose for detailed output and --dry-run to preview changes`,
+    ),
+  );
   console.log();
-  console.log(chalk.gray("🎯 Quick Start:"));
-  console.log(chalk.cyan("  $ npx create-js-stack init my-app"));
-  console.log(chalk.cyan("  $ npx create-js-stack list"));
-  console.log();
-  console.log(chalk.gray("🔗 Resources:"));
-  console.log(chalk.cyan("  • Documentation: ") + chalk.underline("https://github.com/vipinyadav01/create-js-stack-cli"));
-  console.log(chalk.cyan("  • Issues: ") + chalk.underline("https://github.com/vipinyadav01/create-js-stack-cli/issues"));
-  console.log(chalk.cyan("  • Discussions: ") + chalk.underline("https://github.com/vipinyadav01/create-js-stack-cli/discussions"));
-  console.log();
-  console.log(chalk.gray("💡 Need help? Run any command with ") + chalk.cyan("--help") + chalk.gray(" for detailed usage"));
+
   return "";
 });
 
@@ -361,17 +649,17 @@ program.addHelpText("after", () => {
 program.exitOverride();
 
 // Global error handler
-process.on('uncaughtException', (error) => {
-  console.error(chalk.red.bold('\n❌ Uncaught Exception:'));
+process.on("uncaughtException", (error) => {
+  console.error(chalk.red.bold("\n❌ Uncaught Exception:"));
   console.error(chalk.gray(error.message));
-  console.log(chalk.yellow('\n💡 Please report this issue if it persists'));
+  console.log(chalk.yellow("\n💡 Please report this issue if it persists"));
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error(chalk.red.bold('\n❌ Unhandled Promise Rejection:'));
+process.on("unhandledRejection", (reason, promise) => {
+  console.error(chalk.red.bold("\n❌ Unhandled Promise Rejection:"));
   console.error(chalk.gray(reason));
-  console.log(chalk.yellow('\n💡 Please report this issue if it persists'));
+  console.log(chalk.yellow("\n💡 Please report this issue if it persists"));
   process.exit(1);
 });
 

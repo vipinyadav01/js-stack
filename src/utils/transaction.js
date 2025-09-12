@@ -40,7 +40,7 @@ export class Transaction {
 
       // Record operation
       this.operations.push({
-        type: 'createFile',
+        type: "createFile",
         filePath,
         content,
         options,
@@ -48,7 +48,10 @@ export class Transaction {
 
       return true;
     } catch (error) {
-      console.error(chalk.red(`Failed to create file ${filePath}:`), error.message);
+      console.error(
+        chalk.red(`Failed to create file ${filePath}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -65,13 +68,16 @@ export class Transaction {
       }
 
       this.operations.push({
-        type: 'createDir',
+        type: "createDir",
         dirPath,
       });
 
       return true;
     } catch (error) {
-      console.error(chalk.red(`Failed to create directory ${dirPath}:`), error.message);
+      console.error(
+        chalk.red(`Failed to create directory ${dirPath}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -101,7 +107,7 @@ export class Transaction {
       await fs.copy(src, dest, options);
 
       this.operations.push({
-        type: 'copyFile',
+        type: "copyFile",
         src,
         dest,
         options,
@@ -109,7 +115,10 @@ export class Transaction {
 
       return true;
     } catch (error) {
-      console.error(chalk.red(`Failed to copy file ${src} to ${dest}:`), error.message);
+      console.error(
+        chalk.red(`Failed to copy file ${src} to ${dest}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -139,7 +148,7 @@ export class Transaction {
       await fs.writeJson(filePath, data, { spaces: 2, ...options });
 
       this.operations.push({
-        type: 'writeJson',
+        type: "writeJson",
         filePath,
         data,
         options,
@@ -147,7 +156,10 @@ export class Transaction {
 
       return true;
     } catch (error) {
-      console.error(chalk.red(`Failed to write JSON file ${filePath}:`), error.message);
+      console.error(
+        chalk.red(`Failed to write JSON file ${filePath}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -160,7 +172,7 @@ export class Transaction {
   async mergePackageJson(filePath, newData) {
     try {
       let existingData = {};
-      
+
       // Read existing package.json if it exists
       if (await fs.pathExists(filePath)) {
         existingData = await fs.readJson(filePath);
@@ -197,7 +209,7 @@ export class Transaction {
       await fs.writeJson(filePath, mergedData, { spaces: 2 });
 
       this.operations.push({
-        type: 'mergePackageJson',
+        type: "mergePackageJson",
         filePath,
         existingData,
         newData,
@@ -206,7 +218,10 @@ export class Transaction {
 
       return true;
     } catch (error) {
-      console.error(chalk.red(`Failed to merge package.json ${filePath}:`), error.message);
+      console.error(
+        chalk.red(`Failed to merge package.json ${filePath}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -226,7 +241,10 @@ export class Transaction {
             console.log(chalk.gray(`  Removed: ${filePath}`));
           }
         } catch (error) {
-          console.error(chalk.red(`  Failed to remove ${filePath}:`), error.message);
+          console.error(
+            chalk.red(`  Failed to remove ${filePath}:`),
+            error.message,
+          );
         }
       }
 
@@ -238,7 +256,10 @@ export class Transaction {
             console.log(chalk.gray(`  Removed directory: ${dirPath}`));
           }
         } catch (error) {
-          console.error(chalk.red(`  Failed to remove directory ${dirPath}:`), error.message);
+          console.error(
+            chalk.red(`  Failed to remove directory ${dirPath}:`),
+            error.message,
+          );
         }
       }
 
@@ -251,7 +272,10 @@ export class Transaction {
             console.log(chalk.gray(`  Restored: ${filePath}`));
           }
         } catch (error) {
-          console.error(chalk.red(`  Failed to restore ${filePath}:`), error.message);
+          console.error(
+            chalk.red(`  Failed to restore ${filePath}:`),
+            error.message,
+          );
         }
       }
 
@@ -274,7 +298,10 @@ export class Transaction {
       }
       this.backupFiles.clear();
     } catch (error) {
-      console.error(chalk.red("Failed to cleanup backup files:"), error.message);
+      console.error(
+        chalk.red("Failed to cleanup backup files:"),
+        error.message,
+      );
     }
   }
 
@@ -300,13 +327,13 @@ export class Transaction {
  */
 export async function executeTransaction(operation, options = {}) {
   const transaction = new Transaction();
-  
+
   try {
     const result = await operation(transaction);
-    
+
     // Clean up backup files on success
     await transaction.cleanup();
-    
+
     return {
       success: true,
       result,
@@ -314,12 +341,12 @@ export async function executeTransaction(operation, options = {}) {
     };
   } catch (error) {
     console.error(chalk.red.bold("\n❌ Transaction failed:"), error.message);
-    
+
     // Rollback on failure
     if (options.rollback !== false) {
       await transaction.rollback();
     }
-    
+
     return {
       success: false,
       error: error.message,
@@ -336,19 +363,25 @@ export async function executeTransaction(operation, options = {}) {
  */
 export async function safeOperation(operation, operationFn, options = {}) {
   console.log(chalk.blue(`\n🔧 ${operation}...`));
-  
+
   const result = await executeTransaction(operationFn, options);
-  
+
   if (result.success) {
     console.log(chalk.green(`✅ ${operation} completed successfully`));
     if (options.verbose && result.summary) {
-      console.log(chalk.gray(`   Files created: ${result.summary.createdFiles}`));
-      console.log(chalk.gray(`   Directories created: ${result.summary.createdDirs}`));
-      console.log(chalk.gray(`   Files modified: ${result.summary.modifiedFiles}`));
+      console.log(
+        chalk.gray(`   Files created: ${result.summary.createdFiles}`),
+      );
+      console.log(
+        chalk.gray(`   Directories created: ${result.summary.createdDirs}`),
+      );
+      console.log(
+        chalk.gray(`   Files modified: ${result.summary.modifiedFiles}`),
+      );
     }
   } else {
     console.log(chalk.red(`❌ ${operation} failed: ${result.error}`));
   }
-  
+
   return result;
 }

@@ -1,10 +1,10 @@
 import chalk from "chalk";
-import { 
-  DATABASE_OPTIONS, 
-  ORM_OPTIONS, 
-  BACKEND_OPTIONS, 
+import {
+  DATABASE_OPTIONS,
+  ORM_OPTIONS,
+  BACKEND_OPTIONS,
   FRONTEND_OPTIONS,
-  AUTH_OPTIONS 
+  AUTH_OPTIONS,
 } from "../types.js";
 
 /**
@@ -14,9 +14,21 @@ import {
 export const COMPATIBILITY_MATRIX = {
   // Database-ORM compatibility
   database_orm: {
-    [DATABASE_OPTIONS.SQLITE]: [ORM_OPTIONS.PRISMA, ORM_OPTIONS.SEQUELIZE, ORM_OPTIONS.TYPEORM],
-    [DATABASE_OPTIONS.POSTGRES]: [ORM_OPTIONS.PRISMA, ORM_OPTIONS.SEQUELIZE, ORM_OPTIONS.TYPEORM],
-    [DATABASE_OPTIONS.MYSQL]: [ORM_OPTIONS.PRISMA, ORM_OPTIONS.SEQUELIZE, ORM_OPTIONS.TYPEORM],
+    [DATABASE_OPTIONS.SQLITE]: [
+      ORM_OPTIONS.PRISMA,
+      ORM_OPTIONS.SEQUELIZE,
+      ORM_OPTIONS.TYPEORM,
+    ],
+    [DATABASE_OPTIONS.POSTGRES]: [
+      ORM_OPTIONS.PRISMA,
+      ORM_OPTIONS.SEQUELIZE,
+      ORM_OPTIONS.TYPEORM,
+    ],
+    [DATABASE_OPTIONS.MYSQL]: [
+      ORM_OPTIONS.PRISMA,
+      ORM_OPTIONS.SEQUELIZE,
+      ORM_OPTIONS.TYPEORM,
+    ],
     [DATABASE_OPTIONS.MONGODB]: [ORM_OPTIONS.MONGOOSE, ORM_OPTIONS.PRISMA],
     [DATABASE_OPTIONS.NONE]: [ORM_OPTIONS.NONE],
   },
@@ -60,60 +72,60 @@ export const COMPATIBILITY_MATRIX = {
 export const DEPENDENCY_VERSIONS = {
   // React ecosystem
   react: {
-    "react": "^18.2.0",
+    react: "^18.2.0",
     "react-dom": "^18.2.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
   },
-  
+
   // Vue ecosystem
   vue: {
-    "vue": "^3.3.0",
+    vue: "^3.3.0",
     "@vitejs/plugin-vue": "^4.4.0",
   },
 
   // Express ecosystem
   express: {
-    "express": "^4.18.0",
+    express: "^4.18.0",
     "@types/express": "^4.17.0",
-    "cors": "^2.8.5",
-    "helmet": "^7.0.0",
+    cors: "^2.8.5",
+    helmet: "^7.0.0",
   },
 
   // Database drivers
   database: {
     [DATABASE_OPTIONS.POSTGRES]: {
-      "pg": "^8.11.0",
+      pg: "^8.11.0",
       "@types/pg": "^8.10.0",
     },
     [DATABASE_OPTIONS.MYSQL]: {
-      "mysql2": "^3.6.0",
+      mysql2: "^3.6.0",
       "@types/mysql": "^2.15.0",
     },
     [DATABASE_OPTIONS.MONGODB]: {
-      "mongodb": "^6.0.0",
+      mongodb: "^6.0.0",
     },
     [DATABASE_OPTIONS.SQLITE]: {
-      "sqlite3": "^5.1.0",
+      sqlite3: "^5.1.0",
     },
   },
 
   // ORM packages
   orm: {
     [ORM_OPTIONS.PRISMA]: {
-      "prisma": "^5.0.0",
+      prisma: "^5.0.0",
       "@prisma/client": "^5.0.0",
     },
     [ORM_OPTIONS.SEQUELIZE]: {
-      "sequelize": "^6.32.0",
+      sequelize: "^6.32.0",
       "@types/sequelize": "^4.28.0",
     },
     [ORM_OPTIONS.MONGOOSE]: {
-      "mongoose": "^7.5.0",
+      mongoose: "^7.5.0",
       "@types/mongoose": "^5.11.0",
     },
     [ORM_OPTIONS.TYPEORM]: {
-      "typeorm": "^0.3.17",
+      typeorm: "^0.3.17",
       "reflect-metadata": "^0.1.13",
     },
   },
@@ -121,11 +133,11 @@ export const DEPENDENCY_VERSIONS = {
   // Authentication packages
   auth: {
     [AUTH_OPTIONS.JWT]: {
-      "jsonwebtoken": "^9.0.0",
+      jsonwebtoken: "^9.0.0",
       "@types/jsonwebtoken": "^9.0.0",
     },
     [AUTH_OPTIONS.PASSPORT]: {
-      "passport": "^0.6.0",
+      passport: "^0.6.0",
       "passport-jwt": "^4.0.0",
       "@types/passport": "^1.0.0",
     },
@@ -142,25 +154,32 @@ export function validateCompatibility(config) {
   const warnings = [];
 
   // Check database-ORM compatibility
-  if (config.database !== DATABASE_OPTIONS.NONE && config.orm !== ORM_OPTIONS.NONE) {
+  if (
+    config.database !== DATABASE_OPTIONS.NONE &&
+    config.orm !== ORM_OPTIONS.NONE
+  ) {
     const compatibleORMs = COMPATIBILITY_MATRIX.database_orm[config.database];
     if (!compatibleORMs.includes(config.orm)) {
       errors.push({
-        type: 'incompatible',
+        type: "incompatible",
         message: `${config.database} database is not compatible with ${config.orm} ORM`,
-        suggestion: `Use one of: ${compatibleORMs.join(', ')}`,
+        suggestion: `Use one of: ${compatibleORMs.join(", ")}`,
       });
     }
   }
 
   // Check backend-database compatibility
-  if (config.backend !== BACKEND_OPTIONS.NONE && config.database !== DATABASE_OPTIONS.NONE) {
-    const compatibleDatabases = COMPATIBILITY_MATRIX.backend_database[config.backend];
+  if (
+    config.backend !== BACKEND_OPTIONS.NONE &&
+    config.database !== DATABASE_OPTIONS.NONE
+  ) {
+    const compatibleDatabases =
+      COMPATIBILITY_MATRIX.backend_database[config.backend];
     if (!compatibleDatabases.includes(config.database)) {
       warnings.push({
-        type: 'suboptimal',
+        type: "suboptimal",
         message: `${config.backend} backend with ${config.database} database is not optimal`,
-        suggestion: `Consider using: ${compatibleDatabases.join(', ')}`,
+        suggestion: `Consider using: ${compatibleDatabases.join(", ")}`,
       });
     }
   }
@@ -169,12 +188,16 @@ export function validateCompatibility(config) {
   if (config.frontend && config.frontend.length > 0) {
     for (const frontend of config.frontend) {
       if (frontend !== FRONTEND_OPTIONS.NONE) {
-        const compatibleBackends = COMPATIBILITY_MATRIX.frontend_backend[frontend];
-        if (config.backend !== BACKEND_OPTIONS.NONE && !compatibleBackends.includes(config.backend)) {
+        const compatibleBackends =
+          COMPATIBILITY_MATRIX.frontend_backend[frontend];
+        if (
+          config.backend !== BACKEND_OPTIONS.NONE &&
+          !compatibleBackends.includes(config.backend)
+        ) {
           warnings.push({
-            type: 'suboptimal',
+            type: "suboptimal",
             message: `${frontend} frontend with ${config.backend} backend is not optimal`,
-            suggestion: `Consider using: ${compatibleBackends.join(', ')}`,
+            suggestion: `Consider using: ${compatibleBackends.join(", ")}`,
           });
         }
       }
@@ -182,19 +205,27 @@ export function validateCompatibility(config) {
   }
 
   // Check for full-stack frameworks
-  if (config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS) && config.backend !== BACKEND_OPTIONS.NONE) {
+  if (
+    config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS) &&
+    config.backend !== BACKEND_OPTIONS.NONE
+  ) {
     warnings.push({
-      type: 'redundant',
-      message: 'Next.js includes backend functionality, separate backend may be redundant',
-      suggestion: 'Consider using Next.js API routes instead',
+      type: "redundant",
+      message:
+        "Next.js includes backend functionality, separate backend may be redundant",
+      suggestion: "Consider using Next.js API routes instead",
     });
   }
 
-  if (config.frontend?.includes(FRONTEND_OPTIONS.NUXT) && config.backend !== BACKEND_OPTIONS.NONE) {
+  if (
+    config.frontend?.includes(FRONTEND_OPTIONS.NUXT) &&
+    config.backend !== BACKEND_OPTIONS.NONE
+  ) {
     warnings.push({
-      type: 'redundant',
-      message: 'Nuxt.js includes backend functionality, separate backend may be redundant',
-      suggestion: 'Consider using Nuxt.js server routes instead',
+      type: "redundant",
+      message:
+        "Nuxt.js includes backend functionality, separate backend may be redundant",
+      suggestion: "Consider using Nuxt.js server routes instead",
     });
   }
 
@@ -214,25 +245,27 @@ export function validateCompatibility(config) {
  */
 export function getCompatibleOptions(type, currentValue, config) {
   switch (type) {
-    case 'orm':
+    case "orm":
       if (config.database && config.database !== DATABASE_OPTIONS.NONE) {
         return COMPATIBILITY_MATRIX.database_orm[config.database] || [];
       }
       return Object.values(ORM_OPTIONS);
 
-    case 'database':
+    case "database":
       if (config.backend && config.backend !== BACKEND_OPTIONS.NONE) {
         return COMPATIBILITY_MATRIX.backend_database[config.backend] || [];
       }
       return Object.values(DATABASE_OPTIONS);
 
-    case 'backend':
+    case "backend":
       if (config.frontend && config.frontend.length > 0) {
         const compatibleBackends = new Set();
-        config.frontend.forEach(frontend => {
-          COMPATIBILITY_MATRIX.frontend_backend[frontend]?.forEach(backend => {
-            compatibleBackends.add(backend);
-          });
+        config.frontend.forEach((frontend) => {
+          COMPATIBILITY_MATRIX.frontend_backend[frontend]?.forEach(
+            (backend) => {
+              compatibleBackends.add(backend);
+            },
+          );
         });
         return Array.from(compatibleBackends);
       }
@@ -254,7 +287,7 @@ export function resolveDependencies(config) {
 
   // Add frontend dependencies
   if (config.frontend && config.frontend.length > 0) {
-    config.frontend.forEach(frontend => {
+    config.frontend.forEach((frontend) => {
       if (frontend !== FRONTEND_OPTIONS.NONE) {
         const frontendDeps = DEPENDENCY_VERSIONS[frontend];
         if (frontendDeps) {
@@ -333,69 +366,69 @@ export function displayValidationResults(validation) {
  * Preset configurations for common use cases
  */
 export const PRESET_CONFIGS = {
-  'saas-app': {
-    name: 'SaaS Application',
-    description: 'Full-stack SaaS application with authentication',
+  "saas-app": {
+    name: "SaaS Application",
+    description: "Full-stack SaaS application with authentication",
     config: {
       backend: BACKEND_OPTIONS.EXPRESS,
       frontend: [FRONTEND_OPTIONS.REACT],
       database: DATABASE_OPTIONS.POSTGRES,
       orm: ORM_OPTIONS.PRISMA,
       auth: AUTH_OPTIONS.JWT,
-      packageManager: 'npm',
-      addons: ['typescript', 'eslint', 'prettier', 'docker', 'testing'],
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "docker", "testing"],
     },
   },
-  'api-service': {
-    name: 'API Service',
-    description: 'RESTful API service with database',
+  "api-service": {
+    name: "API Service",
+    description: "RESTful API service with database",
     config: {
       backend: BACKEND_OPTIONS.EXPRESS,
       frontend: [FRONTEND_OPTIONS.NONE],
       database: DATABASE_OPTIONS.POSTGRES,
       orm: ORM_OPTIONS.PRISMA,
       auth: AUTH_OPTIONS.JWT,
-      packageManager: 'npm',
-      addons: ['typescript', 'eslint', 'prettier', 'docker', 'testing'],
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "docker", "testing"],
     },
   },
-  'mobile-app': {
-    name: 'Mobile Application',
-    description: 'React Native mobile app with backend',
+  "mobile-app": {
+    name: "Mobile Application",
+    description: "React Native mobile app with backend",
     config: {
       backend: BACKEND_OPTIONS.EXPRESS,
       frontend: [FRONTEND_OPTIONS.REACT_NATIVE],
       database: DATABASE_OPTIONS.MONGODB,
       orm: ORM_OPTIONS.MONGOOSE,
       auth: AUTH_OPTIONS.FIREBASE,
-      packageManager: 'npm',
-      addons: ['typescript', 'eslint', 'prettier'],
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier"],
     },
   },
-  'fullstack-nextjs': {
-    name: 'Next.js Full-Stack',
-    description: 'Next.js application with API routes',
+  "fullstack-nextjs": {
+    name: "Next.js Full-Stack",
+    description: "Next.js application with API routes",
     config: {
       backend: BACKEND_OPTIONS.NONE,
       frontend: [FRONTEND_OPTIONS.NEXTJS],
       database: DATABASE_OPTIONS.POSTGRES,
       orm: ORM_OPTIONS.PRISMA,
       auth: AUTH_OPTIONS.AUTH0,
-      packageManager: 'npm',
-      addons: ['typescript', 'eslint', 'prettier', 'tailwind', 'testing'],
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "tailwind", "testing"],
     },
   },
-  'microservice': {
-    name: 'Microservice',
-    description: 'Lightweight microservice',
+  microservice: {
+    name: "Microservice",
+    description: "Lightweight microservice",
     config: {
       backend: BACKEND_OPTIONS.FASTIFY,
       frontend: [FRONTEND_OPTIONS.NONE],
       database: DATABASE_OPTIONS.SQLITE,
       orm: ORM_OPTIONS.NONE,
       auth: AUTH_OPTIONS.JWT,
-      packageManager: 'npm',
-      addons: ['typescript', 'eslint', 'prettier', 'docker'],
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "docker"],
     },
   },
 };

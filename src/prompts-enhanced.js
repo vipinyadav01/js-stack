@@ -60,7 +60,7 @@ export async function collectProjectConfig(projectName, options = {}) {
     if (preset) {
       console.log(chalk.green.bold(`\n🎯 Using preset: ${preset.name}`));
       console.log(chalk.gray(`   ${preset.description}`));
-      
+
       const usePreset = await confirm({
         message: "Use this preset configuration?",
         initialValue: true,
@@ -171,8 +171,8 @@ async function promptPresetSelection() {
  */
 async function promptPresetChoice() {
   const presets = listPresets();
-  
-  const presetOptions = presets.map(preset => ({
+
+  const presetOptions = presets.map((preset) => ({
     value: preset.key,
     label: `${colors.success("🎯")} ${preset.name}`,
     hint: preset.description,
@@ -264,9 +264,9 @@ async function promptORM(database) {
   console.log(colors.primary("╰─────────────────────────────────────"));
   console.log();
 
-  const compatibleORMs = getCompatibleOptions('orm', null, { database });
-  
-  const ormOptions = compatibleORMs.map(orm => {
+  const compatibleORMs = getCompatibleOptions("orm", null, { database });
+
+  const ormOptions = compatibleORMs.map((orm) => {
     const options = {
       [ORM_OPTIONS.PRISMA]: {
         label: `${colors.success("▲")} Prisma`,
@@ -624,10 +624,10 @@ async function validateConfiguration(config) {
   console.log();
 
   const validation = validateCompatibility(config);
-  
+
   if (!validation.isValid) {
     displayValidationResults(validation);
-    
+
     const continueAnyway = await confirm({
       message: colors.warning("Continue despite validation errors?"),
       initialValue: false,
@@ -639,7 +639,7 @@ async function validateConfiguration(config) {
     }
   } else if (validation.warnings.length > 0) {
     displayValidationResults(validation);
-    
+
     const continueAnyway = await confirm({
       message: colors.accent("Continue with warnings?"),
       initialValue: true,
@@ -663,12 +663,12 @@ export function displayConfigSummary(config) {
   console.log(colors.secondary("│  Review your project settings"));
   console.log(colors.primary("╰─────────────────────────────────────"));
   console.log();
-  
+
   console.log(chalk.cyan.bold("📋 Project Details:"));
   console.log(chalk.gray(`  Name: ${config.projectName}`));
   console.log(chalk.gray(`  Directory: ${config.projectDir}`));
   console.log();
-  
+
   console.log(chalk.cyan.bold("🛠️  Technology Stack:"));
   console.log(chalk.gray(`  Database: ${config.database}`));
   console.log(chalk.gray(`  ORM: ${config.orm}`));
@@ -677,15 +677,17 @@ export function displayConfigSummary(config) {
   console.log(chalk.gray(`  Authentication: ${config.auth}`));
   console.log(chalk.gray(`  Package Manager: ${config.packageManager}`));
   console.log();
-  
+
   if (config.addons.length > 0) {
     console.log(chalk.cyan.bold("🔧 Development Tools:"));
     console.log(chalk.gray(`  ${config.addons.join(", ")}`));
     console.log();
   }
-  
+
   console.log(chalk.cyan.bold("⚙️  Additional Options:"));
   console.log(chalk.gray(`  Git Initialization: ${config.git ? "Yes" : "No"}`));
-  console.log(chalk.gray(`  Install Dependencies: ${config.install ? "Yes" : "No"}`));
+  console.log(
+    chalk.gray(`  Install Dependencies: ${config.install ? "Yes" : "No"}`),
+  );
   console.log();
 }

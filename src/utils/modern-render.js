@@ -6,47 +6,230 @@ import Table from "cli-table3";
 import terminalLink from "terminal-link";
 import { createSpinner } from "nanospinner";
 import chalkAnimation from "chalk-animation";
+import ora from "ora";
 
-// Clean color scheme
+// Modern color palette with hex colors
+const modernColors = {
+  primary: "#6366f1", // Indigo
+  secondary: "#14b8a6", // Teal
+  accent: "#f59e0b", // Amber
+  success: "#10b981", // Emerald
+  warning: "#f59e0b", // Amber
+  error: "#ef4444", // Red
+  info: "#3b82f6", // Blue
+  muted: "#6b7280", // Gray-500
+  dark: "#111827", // Gray-900
+  light: "#f9fafb", // Gray-50
+  border: "#374151", // Gray-700
+  background: "#1f2937", // Gray-800
+};
+
+// Legacy chalk colors for compatibility
 const colors = {
-  primary: chalk.blue.bold,
-  secondary: chalk.gray,
-  success: chalk.green.bold,
-  warning: chalk.yellow.bold,
-  error: chalk.red.bold,
-  muted: chalk.gray,
-  accent: chalk.cyan.bold,
+  primary: chalk.hex(modernColors.primary).bold,
+  secondary: chalk.hex(modernColors.secondary),
+  success: chalk.hex(modernColors.success).bold,
+  warning: chalk.hex(modernColors.warning).bold,
+  error: chalk.hex(modernColors.error).bold,
+  info: chalk.hex(modernColors.info).bold,
+  muted: chalk.hex(modernColors.muted),
+  accent: chalk.hex(modernColors.accent).bold,
   white: chalk.white.bold,
 };
 
+// Modern icon set with semantic meaning
+const modernIcons = {
+  // Status
+  success: "✅",
+  error: "❌",
+  warning: "⚠️",
+  info: "ℹ️",
+  loading: "⏳",
+
+  // Actions
+  rocket: "🚀",
+  sparkles: "✨",
+  magic: "🪄",
+  target: "🎯",
+  fire: "🔥",
+  lightning: "⚡",
+
+  // Tech
+  gear: "⚙️",
+  package: "📦",
+  folder: "📁",
+  file: "📄",
+  database: "🗄️",
+  shield: "🛡️",
+  paint: "🎨",
+  test: "🧪",
+  docker: "🐳",
+
+  // UI
+  arrow: "→",
+  check: "✓",
+  cross: "✗",
+  bullet: "•",
+  diamond: "◆",
+  star: "⭐",
+  heart: "❤️",
+  crown: "👑",
+  crystal: "💎",
+
+  // Misc
+  book: "📚",
+  link: "🔗",
+  search: "🔍",
+  bulb: "💡",
+  party: "🎉",
+  trophy: "🏆",
+  medal: "🏅",
+};
+
 /**
- * Display animated banner
+ * Ultra-modern animated banner with ASCII art and gradients
  */
 export async function displayBanner() {
   console.clear();
 
-  // Clean banner design
-  console.log(colors.white("╭─────────────────────────────────────────────────────────╮"));
-  console.log(colors.white("│") + colors.primary("  🚀 JS Stack Generator") + colors.white("                                    │"));
-  console.log(colors.white("│") + colors.secondary("  Modern JavaScript Project Scaffolding Tool") + colors.white("        │"));
-  console.log(colors.white("╰─────────────────────────────────────────────────────────╯"));
+  // Create ASCII art title
+  const title = figlet.textSync("JS Stack", {
+    font: "ANSI Shadow",
+    horizontalLayout: "fitted",
+    width: 120,
+  });
+
+  // Apply rainbow gradient
+  const gradientTitle = gradient([
+    modernColors.primary,
+    modernColors.secondary,
+    modernColors.accent,
+    modernColors.success,
+  ]);
+
+  console.log(gradientTitle(title));
   console.log();
 
-  // Welcome message
-  console.log(
-    boxen(
-      colors.accent("Build full-stack JavaScript applications with ease!\n") +
-        colors.muted("Choose your stack • Generate instantly • Start coding"),
-      {
-        padding: 1,
-        margin: 1,
-        borderStyle: "round",
-        borderColor: "cyan",
-        backgroundColor: "#1e1e1e",
-      },
-    ),
-  );
+  // Modern subtitle with animation
+  const subtitle = `${modernIcons.magic} Next-Generation JavaScript Project Generator ${modernIcons.magic}`;
+  console.log(chalk.hex(modernColors.light).bold(`    ${subtitle}`));
   console.log();
+
+  // Feature highlights in modern cards
+  const features = [
+    `${modernIcons.lightning} Lightning Fast Setup`,
+    `${modernIcons.crystal} Production Ready`,
+    `${modernIcons.shield} Best Practices Built-in`,
+    `${modernIcons.rocket} Deploy Anywhere`,
+  ];
+
+  const featureBox = boxen(features.join("  |  "), {
+    padding: { top: 1, bottom: 1, left: 3, right: 3 },
+    margin: 1,
+    borderStyle: "round",
+    borderColor: "cyan",
+    backgroundColor: modernColors.dark,
+    title: `${modernIcons.star} Why Choose JS Stack?`,
+    titleAlignment: "center",
+  });
+
+  console.log(
+    gradient([modernColors.info, modernColors.secondary])(featureBox),
+  );
+}
+
+/**
+ * Modern loading spinner with customizable messages
+ */
+export function createModernLoader(text, options = {}) {
+  const {
+    spinner = "dots12",
+    color = "cyan",
+    successText = null,
+    failText = null,
+  } = options;
+
+  return ora({
+    text: ` ${text}`,
+    spinner,
+    color,
+    stream: process.stdout,
+    hideCursor: true,
+  });
+}
+
+/**
+ * Advanced progress bar with steps and animations
+ */
+export function createAdvancedProgress(steps) {
+  let currentStep = 0;
+  const totalSteps = steps.length;
+
+  const renderProgressBar = (current, total, width = 40) => {
+    const progress = current / total;
+    const filled = Math.round(progress * width);
+    const empty = width - filled;
+
+    const bar = "█".repeat(filled) + "░".repeat(empty);
+    const percentage = Math.round(progress * 100);
+
+    return `${chalk.hex(modernColors.primary)(bar)} ${chalk.hex(modernColors.accent).bold(`${percentage}%`)}`;
+  };
+
+  return {
+    start: () => {
+      console.log(
+        `\n${modernIcons.rocket} ${chalk.hex(modernColors.info).bold("Starting project creation...")}`,
+      );
+      console.log();
+    },
+
+    next: async (customMessage) => {
+      if (currentStep < totalSteps) {
+        const step = steps[currentStep];
+        const progress = renderProgressBar(currentStep + 1, totalSteps);
+
+        console.log(`${progress}`);
+        console.log(
+          `${modernIcons.arrow} ${step.icon} ${chalk.hex(modernColors.light).bold(step.title)}`,
+        );
+
+        if (customMessage || step.description) {
+          console.log(
+            `   ${chalk.hex(modernColors.muted)(customMessage || step.description)}`,
+          );
+        }
+
+        console.log();
+        currentStep++;
+
+        // Add a small delay for better UX
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    },
+
+    complete: async () => {
+      const progress = renderProgressBar(totalSteps, totalSteps);
+      console.log(`${progress}`);
+      console.log(
+        `${modernIcons.success} ${chalk.hex(modernColors.success).bold("All steps completed successfully!")}`,
+      );
+      console.log();
+
+      // Celebration animation
+      const celebration = chalkAnimation.rainbow("🎉 Project Created! 🎉");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      celebration.stop();
+      console.log();
+    },
+
+    fail: (error) => {
+      console.log(
+        `${modernIcons.error} ${chalk.hex(modernColors.error).bold("Process failed:")} ${error}`,
+      );
+      console.log();
+    },
+  };
 }
 
 /**
@@ -54,7 +237,11 @@ export async function displayBanner() {
  */
 export async function displayWelcome() {
   console.log(colors.white("╔════════════════════════════════════════╗"));
-  console.log(colors.white("║") + colors.primary("     Welcome to JS Stack Generator     ") + colors.white("║"));
+  console.log(
+    colors.white("║") +
+      colors.primary("     Welcome to JS Stack Generator     ") +
+      colors.white("║"),
+  );
   console.log(colors.white("╚════════════════════════════════════════╝"));
   console.log();
   console.log(colors.accent("Let's create something amazing! 🚀"));

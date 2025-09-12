@@ -110,14 +110,14 @@ export async function copyTemplates(
     if (file.includes("{{")) {
       const filenameTemplate = Handlebars.compile(file);
       processedFile = filenameTemplate(context);
-    } else if (file.endsWith('.hbs')) {
+    } else if (file.endsWith(".hbs")) {
       // Handle static template files that need dynamic output names
       const baseName = file.slice(0, -4); // Remove .hbs extension
-      if (baseName.includes('middleware') || baseName.includes('routes')) {
+      if (baseName.includes("middleware") || baseName.includes("routes")) {
         // Generate dynamic filename based on context
-        const extension = context.typescript ? 'ts' : 'js';
+        const extension = context.typescript ? "ts" : "js";
         // Remove existing extension if present
-        const nameWithoutExt = baseName.replace(/\.(js|ts)$/, '');
+        const nameWithoutExt = baseName.replace(/\.(js|ts)$/, "");
         processedFile = `${nameWithoutExt}.${extension}`;
       }
     }
