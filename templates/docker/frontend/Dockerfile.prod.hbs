@@ -1,54 +1,66 @@
-# Production Dockerfile for {{frontend}} frontend
+# Production Dockerfile Template for {{frontend}} frontend
+# This is a Handlebars template file (.hbs), not a standard Dockerfile
+# Template syntax like {{#if}} and {{else}} should be processed by a template engine
 
+############################
+# Builder Stage
+############################
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Install deps first (better layer caching)
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
+# Copy rest of the code
 COPY . .
 
 {{#if frontend.nextjs}}
-# Build Next.js application
+############################
+# Next.js Build
+############################
 RUN npm run build
 
-# Production stage
-FROM node:18-alpine AS production
+############################
+# Production Stage (Node.js)
+############################
+FROM node:18-alpine AS nextjs-production
 
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S frontend -u 1001
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs \
+  && adduser -S frontend -u 1001 -G nodejs
 
 WORKDIR /app
 
-# Copy built application
-COPY --from=builder --chown=frontend:nodejs /app/.next ./.next
+# Copy only necessary files
+COPY --from=builder --chown=frontend:nodejs /app/package*.json ./ 
+COPY --from=builder --chown=frontend:nodejs /app/node_modules ./node_modules 
+COPY --from=builder --chown=frontend:nodejs /app/.next ./.next 
 COPY --from=builder --chown=frontend:nodejs /app/public ./public
-COPY --from=builder --chown=frontend:nodejs /app/package*.json ./
-COPY --from=builder --chown=frontend:nodejs /app/node_modules ./node_modules
 
 USER frontend
 
+ENV NODE_ENV=production
 EXPOSE 3000
 
-ENV NODE_ENV=production
-
 CMD ["npm", "start"]
+
 {{else}}
-# Build application
+############################
+# Build for static frontend (React/Vue/etc.)
+############################
 RUN npm run build
 
-# Production stage with nginx
-FROM nginx:alpine AS production
+############################
+# Production Stage (Nginx)
+############################
+FROM nginx:alpine AS static-production
 
-# Copy built files to nginx
+# Copy built files
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration
+# Copy nginx config (optional, fallback if provided)
 COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80

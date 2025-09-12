@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,55 +20,11 @@ import {
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { format } from "date-fns";
+import { fetchNpmPackageData, fetchGitHubRepoData, type NpmPackageData, type GitHubRepoData } from "@/lib/api";
 
-interface NpmData {
-  package: string;
-  downloads: Array<{ day: string; downloads: number }>;
-  totalLast7Days: number;
-  info: {
-    name: string;
-    description: string;
-    version: string;
-    versionsCount: number;
-    homepage?: string;
-    repository?: Record<string, unknown>;
-  };
-}
-
-interface GitHubData {
-  repo: string;
-  info: {
-    name: string;
-    fullName: string;
-    description: string;
-    htmlUrl: string;
-    stargazersCount: number;
-    watchersCount: number;
-    forksCount: number;
-    openIssuesCount: number;
-    language: string;
-    createdAt: string;
-    updatedAt: string;
-    size: number;
-    topics: string[];
-    license?: { name: string };
-  };
-  releases: Array<{
-    tagName: string;
-    name: string;
-    publishedAt: string;
-    htmlUrl: string;
-    draft: boolean;
-    prerelease: boolean;
-  }>;
-  contributors: Array<{
-    login: string;
-    avatarUrl: string;
-    htmlUrl: string;
-    contributions: number;
-    type: string;
-  }>;
-}
+// Using types from the API utility
+type NpmData = NpmPackageData;
+type GitHubData = GitHubRepoData;
 
 export default function Analytics() {
   const [npmData, setNpmData] = useState<NpmData | null>(null);
@@ -76,44 +32,40 @@ export default function Analytics() {
   const [loading, setLoading] = useState({ npm: false, github: false });
   const [error, setError] = useState({ npm: "", github: "" });
 
-  // Example packages/repos - you can modify these
-  const npmPackage = "create-react-app";
-  const githubRepo = "facebook/create-react-app";
+  // Get packages/repos from environment variables
+  const npmPackage = process.env.NPM_PACKAGE_NAME || "create-js-stack";
+  const githubRepo = process.env.GITHUB_REPO || "vipinyadav01/create-js-stack-cli";
 
-  const fetchNpmData = async () => {
+  const fetchNpmData = useCallback(async () => {
     setLoading(prev => ({ ...prev, npm: true }));
     setError(prev => ({ ...prev, npm: "" }));
     try {
-      const res = await fetch(`/api/npm?package=${encodeURIComponent(npmPackage)}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const data = await fetchNpmPackageData(npmPackage);
       setNpmData(data);
     } catch (err: unknown) {
       setError(prev => ({ ...prev, npm: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
       setLoading(prev => ({ ...prev, npm: false }));
     }
-  };
+  }, [npmPackage]);
 
-  const fetchGitHubData = async () => {
+  const fetchGitHubData = useCallback(async () => {
     setLoading(prev => ({ ...prev, github: true }));
     setError(prev => ({ ...prev, github: "" }));
     try {
-      const res = await fetch(`/api/github?repo=${encodeURIComponent(githubRepo)}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const data = await fetchGitHubRepoData(githubRepo);
       setGitHubData(data);
     } catch (err: unknown) {
       setError(prev => ({ ...prev, github: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
       setLoading(prev => ({ ...prev, github: false }));
     }
-  };
+  }, [githubRepo]);
 
   useEffect(() => {
     fetchNpmData();
     fetchGitHubData();
-  }, []);
+  }, [fetchNpmData, fetchGitHubData]);
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
