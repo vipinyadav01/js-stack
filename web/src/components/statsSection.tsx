@@ -4,89 +4,49 @@ import {
   Activity, 
   Download, 
   GitBranch, 
-  Layers, 
   TrendingUp, 
   Code2,
   Users2,
-  Sparkles,
-  ArrowUpRight
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { LucideIcon } from 'lucide-react';
+
+interface PackageStats {
+  downloads: {
+    total: number;
+    weekly: number;
+    monthly: number;
+    daily: number;
+  };
+  github: {
+    stars: number;
+    forks: number;
+    issues: number;
+    watchers: number;
+  };
+  package: {
+    version: string;
+    license: string;
+    dependencies: number;
+    size: string;
+    lastUpdate: string;
+  };
+  loading: boolean;
+  error: string | null;
+}
 
 interface StatCardProps {
-  icon: LucideIcon;
+  icon: React.ElementType;
   title: string;
-  value: number;
-  subtitle: string;
+  value: number | string;
+  subtitle?: string;
   trend?: string;
   href?: string;
-  variant?: string;
   loading?: boolean;
 }
-
-interface CardWrapperProps {
-  children: React.ReactNode;
-  href?: string;
-}
-
-// Mock data hook to simulate API calls
-const useStatsData = () => {
-  const [data, setData] = useState({
-    downloads: { total: 0, weekly: 0, trend: '+12%' },
-    stars: { count: 0, trend: '+8%' },
-    projects: { created: 0, active: 0 },
-    contributors: { count: 0, trend: '+3%' },
-    loading: true
-  });
-
-  useEffect(() => {
-    // Simulate API call with animated counting
-    const timer = setTimeout(() => {
-      setData({
-        downloads: { total: 15420, weekly: 1250, trend: '+12%' },
-        stars: { count: 342, trend: '+8%' },
-        projects: { created: 2840, active: 180 },
-        contributors: { count: 28, trend: '+3%' },
-        loading: false
-      });
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  return data;
-};
-
-interface AnimatedCounterProps {
-  value: number;
-  duration?: number;
-}
-
-const AnimatedCounter = ({ value, duration = 2000 }: AnimatedCounterProps) => {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (value === 0) return;
-    
-    let startTime: number;
-    const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      setCount(Math.floor(progress * value));
-      
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-    
-    requestAnimationFrame(animate);
-  }, [value, duration]);
-
-  return <span>{count.toLocaleString()}</span>;
-};
 
 const StatCard = ({ 
   icon: Icon, 
@@ -95,17 +55,16 @@ const StatCard = ({
   subtitle, 
   trend, 
   href, 
-  variant = 'default',
   loading = false 
 }: StatCardProps) => {
-  const CardWrapper = ({ children, href }: CardWrapperProps) => {
+  const CardWrapper = ({ children }: { children: React.ReactNode }) => {
     if (href) {
       return (
         <a 
           href={href} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="block group transition-transform hover:scale-[1.02]"
+          className="block group transition-all duration-200 hover:scale-[1.02]"
         >
           {children}
         </a>
@@ -114,53 +73,37 @@ const StatCard = ({
     return <div className="group">{children}</div>;
   };
 
-  const getVariantStyles = (variant: string) => {
-    switch (variant) {
-      case 'primary':
-        return 'border-blue-200 bg-gradient-to-br from-blue-50/50 to-indigo-50/30';
-      case 'success':
-        return 'border-green-200 bg-gradient-to-br from-green-50/50 to-emerald-50/30';
-      case 'warning':
-        return 'border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/30';
-      default:
-        return 'border-border';
-    }
-  };
-
   return (
     <CardWrapper>
-      <Card className={`relative overflow-hidden transition-all duration-300 hover:shadow-md ${getVariantStyles(variant)}`}>
+      <Card className="transition-all duration-200 hover:shadow-md border-border">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <div className="flex items-center space-x-2">
-            <div className="p-2 rounded-md bg-background/60 shadow-sm border">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-md bg-muted/50">
               <Icon className="h-4 w-4 text-muted-foreground" />
             </div>
-            <CardTitle className="text-sm font-medium tracking-tight">
+            <CardTitle className="text-sm font-medium text-foreground">
               {title}
             </CardTitle>
           </div>
-          {href && (
-            <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-          )}
         </CardHeader>
         <CardContent>
           <div className="flex items-baseline space-x-2 mb-1">
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-foreground">
               {loading ? (
                 <div className="w-16 h-7 bg-muted rounded animate-pulse" />
               ) : (
-                <AnimatedCounter value={value} />
+                typeof value === 'number' ? value.toLocaleString() : value
               )}
             </div>
             {trend && !loading && (
-              <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 hover:bg-green-100">
+              <Badge variant="secondary" className="text-xs">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 {trend}
               </Badge>
             )}
           </div>
           {subtitle && (
-            <p className="text-xs text-muted-foreground font-medium">
+            <p className="text-xs text-muted-foreground">
               {subtitle}
             </p>
           )}
@@ -170,29 +113,165 @@ const StatCard = ({
   );
 };
 
+const useRealPackageStats = (packageName: string, githubRepo: string) => {
+  type DownloadDay = { downloads: number };
+  const [stats, setStats] = useState<PackageStats>({
+    downloads: { total: 0, weekly: 0, monthly: 0, daily: 0 },
+    github: { stars: 0, forks: 0, issues: 0, watchers: 0 },
+    package: { 
+      version: '', 
+      license: '', 
+      dependencies: 0, 
+      size: '', 
+      lastUpdate: '' 
+    },
+    loading: true,
+    error: null
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      setStats(prev => ({ ...prev, loading: true, error: null }));
+      
+      try {
+        // Fetch NPM download statistics
+        const downloadsResponse = await fetch(
+          `https://api.npmjs.org/downloads/range/last-year/${packageName}`
+        );
+        
+        let downloadData = { total: 0, weekly: 0, monthly: 0, daily: 0 };
+        if (downloadsResponse.ok) {
+          const downloadsJson = await downloadsResponse.json();
+          if (downloadsJson.downloads) {
+            const totalDownloads = downloadsJson.downloads.reduce(
+              (sum: number, day: DownloadDay) => sum + day.downloads, 0
+            );
+            const last7Days = downloadsJson.downloads.slice(-7);
+            const last30Days = downloadsJson.downloads.slice(-30);
+            const weeklyDownloads = last7Days.reduce(
+              (sum: number, day: DownloadDay) => sum + day.downloads, 0
+            );
+            const monthlyDownloads = last30Days.reduce(
+              (sum: number, day: DownloadDay) => sum + day.downloads, 0
+            );
+            const dailyAverage = Math.round(weeklyDownloads / 7);
+            
+            downloadData = {
+              total: totalDownloads,
+              weekly: weeklyDownloads,
+              monthly: monthlyDownloads,
+              daily: dailyAverage
+            };
+          }
+        }
+
+        // Fetch package information
+        const packageResponse = await fetch(`https://registry.npmjs.org/${packageName}`);
+        let packageData = {
+          version: 'N/A',
+          license: 'N/A',
+          dependencies: 0,
+          size: 'N/A',
+          lastUpdate: 'N/A'
+        };
+        
+        if (packageResponse.ok) {
+          const packageJson = await packageResponse.json();
+          const latestVersion = packageJson['dist-tags']?.latest;
+          const versionInfo = packageJson.versions?.[latestVersion];
+          
+          if (versionInfo) {
+            packageData = {
+              version: latestVersion || 'N/A',
+              license: versionInfo.license || 'N/A',
+              dependencies: Object.keys(versionInfo.dependencies || {}).length,
+              size: 'N/A', // Would need bundlephobia API for accurate size
+              lastUpdate: packageJson.time?.[latestVersion] 
+                ? new Date(packageJson.time[latestVersion]).toLocaleDateString()
+                : 'N/A'
+            };
+          }
+        }
+
+        // Fetch GitHub statistics
+        const githubResponse = await fetch(`https://api.github.com/repos/${githubRepo}`);
+        let githubData = { stars: 0, forks: 0, issues: 0, watchers: 0 };
+        
+        if (githubResponse.ok) {
+          const githubJson = await githubResponse.json();
+          githubData = {
+            stars: githubJson.stargazers_count || 0,
+            forks: githubJson.forks_count || 0,
+            issues: githubJson.open_issues_count || 0,
+            watchers: githubJson.watchers_count || 0
+          };
+        }
+
+        setStats({
+          downloads: downloadData,
+          github: githubData,
+          package: packageData,
+          loading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        setStats(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to fetch package statistics'
+        }));
+      }
+    };
+
+    if (packageName && githubRepo) {
+      fetchStats();
+    }
+  }, [packageName, githubRepo]);
+
+  return { stats, refetch: () => setStats(prev => ({ ...prev, loading: true })) };
+};
+
 const StatsSection = ({ 
   packageName = "create-js-stack",
   githubRepo = "vipinyadav01/create-js-stack-cli",
   npmUrl = "https://www.npmjs.com/package/create-js-stack"
 }) => {
-  const stats = useStatsData();
+  const { stats, refetch } = useRealPackageStats(packageName, githubRepo);
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6 space-y-8">
       {/* Header */}
       <div className="text-center space-y-4">
-        <div className="flex items-center justify-center space-x-2">
-          <div className="p-2 rounded-full bg-primary/10 border">
-            <Sparkles className="w-6 h-6 text-primary" />
-          </div>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Project Analytics
-          </h2>
-        </div>
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">
+          Package Statistics
+        </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-          Real-time metrics and community insights for <span className="font-semibold text-foreground">{packageName}</span>
+          Real-time metrics and insights for <span className="font-semibold text-foreground">{packageName}</span>
         </p>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={refetch}
+          disabled={stats.loading}
+          className="gap-2"
+        >
+          <RefreshCw className={`w-4 h-4 ${stats.loading ? 'animate-spin' : ''}`} />
+          Refresh Data
+        </Button>
       </div>
+
+      {/* Error State */}
+      {stats.error && (
+        <Card className="border-destructive/50">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-2 text-destructive">
+              <AlertCircle className="w-4 h-4" />
+              <p className="text-sm">{stats.error}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -201,39 +280,34 @@ const StatsSection = ({
           title="Total Downloads"
           value={stats.downloads.total}
           subtitle={`${stats.downloads.weekly.toLocaleString()} this week`}
-          trend={stats.downloads.trend}
           href={npmUrl}
-          variant="primary"
           loading={stats.loading}
         />
         
         <StatCard
           icon={GitBranch}
           title="GitHub Stars"
-          value={stats.stars.count}
+          value={stats.github.stars}
           subtitle="Community support"
-          trend={stats.stars.trend}
           href={`https://github.com/${githubRepo}`}
-          variant="success"
-          loading={stats.loading}
-        />
-        
-        <StatCard
-          icon={Layers}
-          title="Projects Created"
-          value={stats.projects.created}
-          subtitle={`${stats.projects.active} active this month`}
-          variant="warning"
           loading={stats.loading}
         />
         
         <StatCard
           icon={Users2}
-          title="Contributors"
-          value={stats.contributors.count}
-          subtitle="Amazing developers"
-          trend={stats.contributors.trend}
-          href={`https://github.com/${githubRepo}/graphs/contributors`}
+          title="GitHub Forks"
+          value={stats.github.forks}
+          subtitle="Community contributions"
+          href={`https://github.com/${githubRepo}/network/members`}
+          loading={stats.loading}
+        />
+        
+        <StatCard
+          icon={Activity}
+          title="Open Issues"
+          value={stats.github.issues}
+          subtitle="Active development"
+          href={`https://github.com/${githubRepo}/issues`}
           loading={stats.loading}
         />
       </div>
@@ -243,36 +317,36 @@ const StatsSection = ({
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
-              <Activity className="w-5 h-5 text-primary" />
-              <CardTitle className="text-lg">Usage Analytics</CardTitle>
+              <Activity className="w-5 h-5 text-muted-foreground" />
+              <CardTitle className="text-lg">Download Analytics</CardTitle>
             </div>
             <CardDescription>
-              Download patterns and usage trends
+              Usage patterns and download trends
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center py-2 border-b border-border/50">
-              <span className="text-sm text-muted-foreground font-medium">Daily Average</span>
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm text-muted-foreground">Daily Average</span>
               <Badge variant="outline" className="font-mono">
-                {stats.loading ? '—' : '~85'}
+                {stats.loading ? '—' : stats.downloads.daily.toLocaleString()}
               </Badge>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-border/50">
-              <span className="text-sm text-muted-foreground font-medium">Peak Day Record</span>
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm text-muted-foreground">Weekly Total</span>
               <Badge variant="outline" className="font-mono">
-                {stats.loading ? '—' : '342'}
+                {stats.loading ? '—' : stats.downloads.weekly.toLocaleString()}
               </Badge>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-border/50">
-              <span className="text-sm text-muted-foreground font-medium">Monthly Growth</span>
-              <Badge variant="secondary" className="bg-green-100 text-green-800 font-mono">
-                {stats.loading ? '—' : '+23%'}
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm text-muted-foreground">Monthly Total</span>
+              <Badge variant="outline" className="font-mono">
+                {stats.loading ? '—' : stats.downloads.monthly.toLocaleString()}
               </Badge>
             </div>
             <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground font-medium">Version Stability</span>
-              <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                Stable
+              <span className="text-sm text-muted-foreground">Yearly Total</span>
+              <Badge variant="secondary" className="font-mono">
+                {stats.loading ? '—' : stats.downloads.total.toLocaleString()}
               </Badge>
             </div>
           </CardContent>
@@ -281,34 +355,36 @@ const StatsSection = ({
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
-              <Code2 className="w-5 h-5 text-primary" />
-              <CardTitle className="text-lg">Package Info</CardTitle>
+              <Code2 className="w-5 h-5 text-muted-foreground" />
+              <CardTitle className="text-lg">Package Details</CardTitle>
             </div>
             <CardDescription>
-              Technical details and metadata
+              Technical information and metadata
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex justify-between items-center py-2 border-b border-border/50">
-              <span className="text-sm text-muted-foreground font-medium">Bundle Size</span>
-              <Badge variant="outline" className="font-mono">2.1 MB</Badge>
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm text-muted-foreground">Current Version</span>
+              <Badge variant="outline" className="font-mono">
+                {stats.loading ? '—' : stats.package.version}
+              </Badge>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-border/50">
-              <span className="text-sm text-muted-foreground font-medium">Dependencies</span>
-              <Badge variant="outline" className="font-mono">12</Badge>
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm text-muted-foreground">Dependencies</span>
+              <Badge variant="outline" className="font-mono">
+                {stats.loading ? '—' : stats.package.dependencies}
+              </Badge>
             </div>
-            <div className="flex justify-between items-center py-2 border-b border-border/50">
-              <span className="text-sm text-muted-foreground font-medium">License</span>
-              <Badge variant="secondary">MIT</Badge>
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-sm text-muted-foreground">License</span>
+              <Badge variant="secondary">
+                {stats.loading ? '—' : stats.package.license}
+              </Badge>
             </div>
             <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground font-medium">Last Updated</span>
-              <Badge variant="outline" className="font-mono">
-                {new Date().toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
+              <span className="text-sm text-muted-foreground">Last Updated</span>
+              <Badge variant="outline" className="font-mono text-xs">
+                {stats.loading ? '—' : stats.package.lastUpdate}
               </Badge>
             </div>
           </CardContent>
@@ -316,11 +392,11 @@ const StatsSection = ({
       </div>
 
       {/* Quick Actions */}
-      <Card className="border-dashed">
+      <Card>
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h3 className="font-semibold">Quick Actions</h3>
+              <h3 className="font-semibold text-foreground">Quick Actions</h3>
               <p className="text-sm text-muted-foreground">
                 Access package resources and documentation
               </p>
@@ -329,13 +405,19 @@ const StatsSection = ({
               <Button variant="outline" size="sm" asChild>
                 <a href={npmUrl} target="_blank" rel="noopener noreferrer">
                   <Download className="w-4 h-4 mr-2" />
-                  Install Package
+                  View on NPM
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>
                 <a href={`https://github.com/${githubRepo}`} target="_blank" rel="noopener noreferrer">
                   <GitBranch className="w-4 h-4 mr-2" />
-                  View Source
+                  View Repository
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" asChild>
+                <a href={`https://github.com/${githubRepo}/issues`} target="_blank" rel="noopener noreferrer">
+                  <Activity className="w-4 h-4 mr-2" />
+                  Report Issue
                 </a>
               </Button>
             </div>
