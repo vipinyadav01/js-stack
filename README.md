@@ -700,6 +700,6 @@ If this project helped you, please consider:
 
 **Built with ❤️ by the Vipin Yadav**
 
-[Website](https://js-stack.pages.dev) • [Documentation](https://create-js-stack.com/docs) • [Examples](https://github.com/create-js-stack/examples) • [Community](https://discord.gg/js-stack)
+[Website](https://js-stack.https://create-js-stack-cli.pages.dev) • [Documentation](https://create-js-stack.com/docs) • [Examples](https://github.com/create-js-stack/examples) • [Community](https://discord.gg/js-stack)
 
 </div>

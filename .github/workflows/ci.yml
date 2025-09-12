@@ -108,7 +108,7 @@ jobs:
             ### 🔗 Links
             - [NPM Package](https://www.npmjs.com/package/create-js-stack)
             - [Documentation](https://github.com/${{ github.repository }})
-            - [Web Dashboard](https://create-js-stack.pages.dev)
+            - [Web Dashboard](https://create-js-stack.https://create-js-stack-cli.pages.dev)
           draft: false
           prerelease: false
 
