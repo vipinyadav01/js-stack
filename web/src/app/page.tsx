@@ -1,20 +1,20 @@
-import { Separator } from "@/components/ui/separator";
-
 import Hero from "@/components/hero";
 import Command from "@/components/command";
 import ProjectInt from "@/components/ProjectInt";
+
 export default function Home() {
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12">
+    <div className="space-y-8">
       {/* Hero Section */}
       <Hero />
-      <Separator />
       {/* Command Section */}
-      <Command />
-      <Separator />
+      <div className="mx-auto max-w-[1280px] px-4">
+        <Command />
+      </div>
       {/* Integration Guide */}
-      <ProjectInt />
-      <Separator />
+      <div className="mx-auto max-w-[1280px] px-4">
+        <ProjectInt />
+      </div>
     </div>
   );
 }
