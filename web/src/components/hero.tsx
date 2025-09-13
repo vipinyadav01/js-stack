@@ -23,22 +23,22 @@ export default function Hero() {
 
 				{/* ASCII Art Section */}
 				<div className="mb-8 flex items-center justify-center">
-					<div className="flex h-full flex-col justify-between rounded border border-border p-6">
-						<div className="mb-4 flex items-center justify-between">
+					<div className="flex h-full flex-col justify-between rounded border border-border p-4 sm:p-6 w-full max-w-full">
+						<div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
 							<div className="flex items-center gap-2">
 								<Code2 className="h-4 w-4 text-primary" />
 								<span className="font-semibold text-sm">ASCII_ART</span>
 							</div>
-							<div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+							<div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs mt-2 sm:mt-0">
 								DISPLAY
 							</div>
 						</div>
 
 						<div className="space-y-3">
-							<div className="rounded border border-border p-4">
+							<div className="rounded border border-border p-2 sm:p-4">
 								<div className="text-xs text-muted-foreground mb-2">LOGO_DISPLAY</div>
-								<div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-6">
-									<pre className="ascii-art text-primary text-xs leading-tight sm:text-sm">
+								<div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-6 w-full">
+									<pre className="ascii-art text-primary text-[0.6rem] xs:text-xs sm:text-sm leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words">
 										{` ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝
 ██║     ██████╔╝█████╗  ███████║   ██║   █████╗  
@@ -47,7 +47,7 @@ export default function Hero() {
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝`}
 									</pre>
 
-									<pre className="ascii-art text-primary text-xs leading-tight sm:text-sm">
+									<pre className="ascii-art text-primary text-[0.6rem] xs:text-xs sm:text-sm leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words">
 										{`     ██╗███████╗
      ██║██╔════╝
      ██║███████╗
@@ -56,7 +56,7 @@ export default function Hero() {
  ╚════╝ ╚══════╝`}
 									</pre>
 
-									<pre className="ascii-art text-primary text-xs leading-tight sm:text-sm">
+									<pre className="ascii-art text-primary text-[0.6rem] xs:text-xs sm:text-sm leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words">
 										{`███████╗████████╗ █████╗  ██████╗██╗  ██╗
 ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
 ███████╗   ██║   ███████║██║     █████╔╝ 
