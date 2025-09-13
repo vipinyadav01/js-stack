@@ -4,6 +4,10 @@
   "description": "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
   "type": "module",
   "packageManager": "npm@10.0.0",
+  "private": true,
+  "workspaces": [
+    "web"
+  ],
   "main": "dist/index.js",
   "bin": {
     "create-js-stack": "dist/cli.js"
@@ -13,13 +17,15 @@
     "templates"
   ],
   "scripts": {
-    "build": "node scripts/build.js",
-    "build:cli": "echo 'Building CLI...' && node scripts/build.js || echo 'Build script not found'",
-    "dev": "node src/cli.js",
-    "test": "echo 'No tests configured'",
-    "lint": "echo 'No linting configured'",
+    "build": "turbo run build",
+    "build:cli": "node scripts/build.js",
+    "dev": "turbo run dev",
+    "dev:cli": "node src/cli.js",
+    "dev:web": "turbo run dev --filter=web",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "clean": "rm -rf dist",
+    "clean": "turbo run clean",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "changeset publish",
@@ -76,7 +82,8 @@
     "esbuild": "^0.23.1",
     "husky": "^9.1.5",
     "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "turbo": "^2.3.3"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

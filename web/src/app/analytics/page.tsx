@@ -137,12 +137,12 @@ export default function Analytics() {
                 <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                   FETCH
                 </div>
-              </div>
-            </div>
+          </div>
           </div>
         </div>
+      </div>
 
-        {/* Main Analytics Tabs */}
+      {/* Main Analytics Tabs */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-primary" />
@@ -156,12 +156,12 @@ export default function Analytics() {
           </span>
         </div>
 
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">OVERVIEW</TabsTrigger>
             <TabsTrigger value="npm">NPM_DATA</TabsTrigger>
             <TabsTrigger value="github">GITHUB_DATA</TabsTrigger>
-          </TabsList>
+        </TabsList>
 
         {/* Overview Tab - All Analytics Together */}
         <TabsContent value="overview" className="space-y-6">
@@ -210,7 +210,7 @@ export default function Analytics() {
                   </div>
                 </div>
               </div>
-            </div>
+                </div>
           )}
 
           {/* Loading Display */}
@@ -236,7 +236,7 @@ export default function Analytics() {
                   </div>
                 </div>
               </div>
-            </div>
+                </div>
           )}
 
           {/* NPM Data Display */}
@@ -292,24 +292,24 @@ export default function Analytics() {
                     <div className="flex items-center justify-between rounded border border-border p-3">
                       <div className="flex items-center gap-2 text-sm">
                         <span className="text-foreground font-mono text-lg font-bold">{npmData.downloads.length}</span>
-                      </div>
+                    </div>
                       <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                         TRACKED
-                      </div>
+                    </div>
                     </div>
                     <div className="flex items-center justify-between rounded border border-border p-3">
                       <div className="flex items-center gap-2 text-sm">
                         <span className="text-foreground font-mono text-lg font-bold">
-                          {Math.round(npmData.totalLast7Days / npmData.downloads.length)}
+                        {Math.round(npmData.totalLast7Days / npmData.downloads.length)}
                         </span>
                       </div>
                       <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                         DAILY
                       </div>
                     </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
               {/* Downloads Chart */}
               <div className="flex h-full flex-col justify-between rounded border border-border p-4">
@@ -326,27 +326,27 @@ export default function Analytics() {
                 <div className="space-y-3">
                   <div className="rounded border border-border p-3">
                     <div className="text-xs text-muted-foreground mb-2">CHART_DATA</div>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={npmData.downloads}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="day" 
-                          tickFormatter={(value) => format(new Date(value), 'MMM dd')}
-                        />
-                        <YAxis tickFormatter={formatNumber} />
-                        <Tooltip 
-                          labelFormatter={(value) => format(new Date(value as string), 'MMM dd, yyyy')}
-                          formatter={(value: number) => [formatNumber(value), 'Downloads']}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="downloads" 
-                          stroke="hsl(var(--primary))" 
-                          strokeWidth={2}
-                          dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={npmData.downloads}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="day" 
+                        tickFormatter={(value) => format(new Date(value), 'MMM dd')}
+                      />
+                      <YAxis tickFormatter={formatNumber} />
+                      <Tooltip 
+                        labelFormatter={(value) => format(new Date(value as string), 'MMM dd, yyyy')}
+                        formatter={(value: number) => [formatNumber(value), 'Downloads']}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="downloads" 
+                        stroke="hsl(var(--primary))" 
+                        strokeWidth={2}
+                        dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
                   </div>
                 </div>
               </div>
@@ -382,7 +382,7 @@ export default function Analytics() {
                   </div>
                 </div>
               </div>
-            </div>
+                </div>
           )}
 
           {/* Loading Display */}
@@ -408,7 +408,7 @@ export default function Analytics() {
                   </div>
                 </div>
               </div>
-            </div>
+                </div>
           )}
 
           {/* GitHub Data Display */}
@@ -425,7 +425,7 @@ export default function Analytics() {
                     <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                       ACTIVE
                     </div>
-                    <a href={githubData.info.htmlUrl} target="_blank" rel="noopener noreferrer">
+                      <a href={githubData.info.htmlUrl} target="_blank" rel="noopener noreferrer">
                       <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-primary" />
                     </a>
                   </div>
@@ -457,8 +457,8 @@ export default function Analytics() {
                       </div>
                       <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                         STARS
+                        </div>
                       </div>
-                    </div>
                     <div className="flex items-center justify-between rounded border border-border p-3">
                       <div className="flex items-center gap-2 text-sm">
                         <GitFork className="h-4 w-4 text-blue-500" />
@@ -466,8 +466,8 @@ export default function Analytics() {
                       </div>
                       <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                         FORKS
+                        </div>
                       </div>
-                    </div>
                     <div className="flex items-center justify-between rounded border border-border p-3">
                       <div className="flex items-center gap-2 text-sm">
                         <Eye className="h-4 w-4 text-green-500" />
@@ -475,8 +475,8 @@ export default function Analytics() {
                       </div>
                       <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                         WATCHERS
+                        </div>
                       </div>
-                    </div>
                     <div className="flex items-center justify-between rounded border border-border p-3">
                       <div className="flex items-center gap-2 text-sm">
                         <AlertCircle className="h-4 w-4 text-red-500" />
@@ -484,23 +484,23 @@ export default function Analytics() {
                       </div>
                       <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                         ISSUES
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Topics */}
-                  {githubData.info.topics.length > 0 && (
+                    {/* Topics */}
+                    {githubData.info.topics.length > 0 && (
                     <div className="rounded border border-border p-3">
                       <div className="text-xs text-muted-foreground mb-2">TOPICS</div>
-                      <div className="flex flex-wrap gap-2">
-                        {githubData.info.topics.map((topic) => (
+                        <div className="flex flex-wrap gap-2">
+                          {githubData.info.topics.map((topic) => (
                           <Badge key={topic} variant="outline" className="text-xs">{topic}</Badge>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Additional Info */}
+                    {/* Additional Info */}
                   <div className="grid grid-cols-1 gap-3">
                     <div className="flex items-center justify-between rounded border border-border p-3">
                       <div className="flex items-center gap-2 text-sm">
@@ -525,10 +525,10 @@ export default function Analytics() {
                       <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                         LICENSE
                       </div>
+                      </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
               {/* Contributors and Releases Grid */}
               <div className="grid lg:grid-cols-2 gap-6">
@@ -552,15 +552,15 @@ export default function Analytics() {
                   <div className="space-y-3">
                     <div className="rounded border border-border p-3">
                       <div className="text-xs text-muted-foreground mb-2">CHART_DATA</div>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={githubData.contributors.slice(0, 8)}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="login" />
-                          <YAxis />
-                          <Tooltip />
-                          <Bar dataKey="contributions" fill="hsl(var(--primary))" />
-                        </BarChart>
-                      </ResponsiveContainer>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={githubData.contributors.slice(0, 8)}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="login" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="contributions" fill="hsl(var(--primary))" />
+                      </BarChart>
+                    </ResponsiveContainer>
                     </div>
                   </div>
                 </div>
