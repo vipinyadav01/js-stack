@@ -1,5 +1,6 @@
 import React from 'react';
-import { Code2 } from 'lucide-react';
+import Image from 'next/image';
+
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -23,10 +24,15 @@ export function Logo({ size = 'md', showText = true, className = '' }: LogoProps
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
-        <div className={`${sizeClasses[size]} rounded border-2 border-primary bg-background flex items-center justify-center relative overflow-hidden`}>
+        <div className={`${sizeClasses[size]} rounded border-1 border-primary bg-background flex items-center justify-center relative overflow-hidden`}>
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
 
-          <Code2 className={`${size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-6 w-6'} text-primary relative z-10`} />
+          <Image 
+            src="/web-app-192x192.png" 
+            alt="JS-Stack Logo" 
+            fill
+            className="object-cover relative z-10"
+          />
           <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
         </div>
 
@@ -58,7 +64,12 @@ export function LogoIcon({ size = 'md', className = '' }: { size?: 'sm' | 'md' |
     <div className={`${sizeClasses[size]} rounded border-2 border-primary bg-background flex items-center justify-center relative overflow-hidden ${className}`}>
       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
 
-      <Code2 className={`${size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-6 w-6'} text-primary relative z-10`} />
+      <Image 
+        src="/web-app-192x192.png" 
+        alt="JS-Stack Logo" 
+        fill
+        className="object-cover relative z-10"
+      />
 
       <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
     </div>

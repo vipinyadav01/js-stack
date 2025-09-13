@@ -53,18 +53,38 @@ const jetbrainsMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "JS Stack - Modern Development Tool",
-  description: "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
+  title: "JS-Stack - Modern Full-Stack Development Tool",
+  description: "A comprehensive CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications with React, Next.js, Node.js, and modern development best practices.",
+  keywords: ["javascript", "typescript", "react", "nextjs", "nodejs", "cli", "scaffolding", "full-stack", "development"],
+  authors: [{ name: "Vipin Yadav" }],
+  creator: "Vipin Yadav",
+  publisher: "JS-Stack",
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/web-app-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/web-app-512x512.png', sizes: '512x512', type: 'image/png' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/icon.svg', type: 'image/svg+xml' }
+      { url: '/favicon.ico' },
+      { url: '/icon.svg', type: 'image/svg+xml', rel: 'alternate icon' },
     ],
-    shortcut: '/favicon.ico',
-    apple: '/favicon.svg',
+    shortcut: ['/favicon.ico'],
+    apple: ['/web-app-192x192.png'],
+    other: [
+      { rel: 'mask-icon', url: '/favicon.svg', color: '#3b82f6' }
+    ],
   },
   manifest: '/manifest.json',
+  openGraph: {
+    title: "JS-Stack - Modern Full-Stack Development Tool",
+    description: "A comprehensive CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "JS-Stack - Modern Full-Stack Development Tool",
+    description: "A comprehensive CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications",
+  },
 };
 
 export default function RootLayout({
