@@ -9,8 +9,7 @@ coverage/
 .nyc_output
 *.lcov
 
-# Production builds
-dist/
+# Production builds (keep dist/ for CLI package)
 build/
 out/
 .next/
@@ -185,8 +184,7 @@ storybook-static/
 /blob-report/
 /playwright/.cache/
 
-# Monorepo
-**/dist/
+# Monorepo (keep dist/ for CLI package)
 **/build/
 **/out/
 **/.next/

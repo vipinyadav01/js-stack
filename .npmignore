@@ -12,11 +12,8 @@ tests/
 *.spec.ts
 
 # Development files
-.github/
 .vscode/
 .idea/
-docs/
-examples/
 scripts/
 web/
 MONOREPO_STRUCTURE.md
@@ -55,10 +52,7 @@ coverage/
 .changeset/
 !.changeset/config.json
 
-# Documentation
-*.md
-!README.md
-!LICENSE.md
+# Documentation (keep essential ones)
 CONTRIBUTING.md
 CHANGELOG.md
 CODE_OF_CONDUCT.md
@@ -67,9 +61,9 @@ TEMPLATE-CONFIG.md
 USAGE-GUIDE.md
 DIFFERENTIATORS.md
 PUBLISHING-DEPLOYMENT-GUIDE.md
+SCRIPTS.md
 
 # CI/CD
-.github/
 .gitlab-ci.yml
 .travis.yml
 .circleci/
@@ -111,12 +105,6 @@ temp/
 *.temp
 *.orig
 *.rej
-
-# Lock files (controversial, but some prefer not to include)
-# Uncomment if you don't want to include lock files
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
 
 # Monorepo specific
 lerna.json
