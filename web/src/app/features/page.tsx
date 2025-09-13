@@ -1,4 +1,3 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -15,7 +14,14 @@ import {
   Layers,
   Monitor,
   Smartphone,
-  Palette
+  Palette,
+  Activity,
+  FileText,
+  Database,
+  Lock,
+  Globe,
+  Cpu,
+  Wrench
 } from "lucide-react";
 
 export default function Features() {
@@ -96,322 +102,358 @@ export default function Features() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <Badge variant="secondary" className="mb-4">
-          <Star className="w-3 h-3 mr-1" />
-          Feature Rich
-        </Badge>
-        <h1 className="text-4xl md:text-5xl font-bold">Powerful Features</h1>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          create-js-stack comes packed with everything you need for modern JavaScript development, 
-          from project initialization to production deployment.
-        </p>
-      </div>
-
-      {/* Core Features */}
-      <section className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold">Core Capabilities</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Essential features that make create-js-stack the perfect choice for your development workflow.
-          </p>
+    <div className="mx-auto min-h-svh max-w-[1280px]">
+      <main className="mx-auto px-4 pt-12">
+        {/* Terminal Header */}
+        <div className="mb-8">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-primary" />
+              <span className="font-bold text-lg sm:text-xl">
+                FEATURES.TXT
+              </span>
+            </div>
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-muted-foreground text-xs">
+              [POWERFUL CAPABILITIES]
+            </span>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        {/* Core Features */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+          <div className="flex items-center gap-2">
+            <Zap className="h-4 w-4 text-primary" />
+            <span className="font-bold text-lg sm:text-xl">
+              CORE_CAPABILITIES.TXT
+            </span>
+          </div>
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-muted-foreground text-xs">
+            [ESSENTIAL FEATURES]
+          </span>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-12">
           {coreFeatures.map((feature, index) => (
-            <Card key={index} className="relative overflow-hidden">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <feature.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  {feature.title}
-                </CardTitle>
-                <CardDescription className="text-base">
-                  {feature.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {feature.details}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Development Features */}
-      <section className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold">Development Experience</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Features designed to enhance your development workflow and productivity.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {developmentFeatures.map((feature, index) => (
-            <Card key={index} className="text-center">
-              <CardHeader className="space-y-4">
-                <div className="mx-auto p-3 bg-primary/10 rounded-full w-fit">
-                  <feature.icon className="h-8 w-8 text-primary" />
+            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <feature.icon className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">{feature.title.toUpperCase().replace(/\s+/g, '_')}</span>
                 </div>
-                <div className="space-y-2">
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                  <Badge variant="outline" className="text-xs">
-                    {feature.badge}
-                  </Badge>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  CORE
                 </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Framework Support & Tools */}
-      <div className="grid lg:grid-cols-2 gap-12">
-        {/* Framework Support */}
-        <section className="space-y-6">
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold">Framework Support</h2>
-            <p className="text-muted-foreground">
-              Works seamlessly with all major JavaScript frameworks and libraries.
-            </p>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Layers className="h-5 w-5" />
-                Supported Frameworks
-              </CardTitle>
-              <CardDescription>
-                Full compatibility with modern JavaScript frameworks
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                {frameworks.map((framework, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="font-medium">{framework.name}</span>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {framework.version}
-                    </Badge>
-                  </div>
-                ))}
               </div>
-            </CardContent>
-          </Card>
-        </section>
 
-        {/* Integrated Tools */}
-        <section className="space-y-6">
-          <div className="space-y-4">
-            <h2 className="text-3xl font-bold">Integrated Tools</h2>
-            <p className="text-muted-foreground">
-              Pre-configured tools and utilities for a complete development experience.
-            </p>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-foreground">{feature.description}</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    FEATURE
+                  </div>
+                </div>
+                
+                <div className="rounded border border-border p-3">
+                  <div className="text-xs text-muted-foreground mb-1">DETAILS</div>
+                  <div className="text-sm text-foreground">{feature.details}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Development Features */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+          <div className="flex items-center gap-2">
+            <Settings className="h-4 w-4 text-primary" />
+            <span className="font-bold text-lg sm:text-xl">
+              DEV_EXPERIENCE.TXT
+            </span>
+          </div>
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-muted-foreground text-xs">
+            [WORKFLOW ENHANCEMENT]
+          </span>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          {developmentFeatures.map((feature, index) => (
+            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <feature.icon className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">{feature.title.toUpperCase().replace(/\s+/g, '_')}</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  {feature.badge.toUpperCase()}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-foreground">{feature.description}</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    DEV
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Framework Support & Tools */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-12">
+          {/* Framework Support */}
+          <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Layers className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">FRAMEWORK_SUPPORT</span>
+              </div>
+              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                COMPATIBLE
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="rounded border border-border p-3">
+                <div className="text-xs text-muted-foreground mb-2">SUPPORTED_FRAMEWORKS</div>
+                <div className="grid grid-cols-1 gap-2">
+                  {frameworks.map((framework, index) => (
+                    <div key={index} className="flex items-center justify-between rounded border border-border p-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <CheckCircle className="h-3 w-3 text-green-500" />
+                        <span className="text-foreground font-mono">{framework.name}</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        {framework.version}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Built-in Tools
-              </CardTitle>
-              <CardDescription>
-                Everything you need, configured and ready to use
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          {/* Integrated Tools */}
+          <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">INTEGRATED_TOOLS</span>
+              </div>
+              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                BUILT_IN
+              </div>
+            </div>
+
+            <div className="space-y-3">
               <Tabs defaultValue="development" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="development">Dev</TabsTrigger>
-                  <TabsTrigger value="testing">Test</TabsTrigger>
-                  <TabsTrigger value="deployment">Deploy</TabsTrigger>
+                  <TabsTrigger value="development" className="text-xs">DEV</TabsTrigger>
+                  <TabsTrigger value="testing" className="text-xs">TEST</TabsTrigger>
+                  <TabsTrigger value="deployment" className="text-xs">DEPLOY</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="development" className="space-y-3">
+                <TabsContent value="development" className="space-y-2 mt-3">
                   {tools.filter(tool => ['Language', 'Linting', 'Formatting', 'Git Hooks'].includes(tool.category)).map((tool, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded">
-                      <div>
-                        <div className="font-medium">{tool.name}</div>
-                        <div className="text-sm text-muted-foreground">{tool.description}</div>
+                    <div key={index} className="flex items-center justify-between rounded border border-border p-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-foreground font-mono text-sm">{tool.name}</span>
                       </div>
-                      <Badge variant="outline">{tool.category}</Badge>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        {tool.category.toUpperCase()}
+                      </div>
                     </div>
                   ))}
                 </TabsContent>
 
-                <TabsContent value="testing" className="space-y-3">
+                <TabsContent value="testing" className="space-y-2 mt-3">
                   {tools.filter(tool => tool.category.includes('Testing')).map((tool, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded">
-                      <div>
-                        <div className="font-medium">{tool.name}</div>
-                        <div className="text-sm text-muted-foreground">{tool.description}</div>
+                    <div key={index} className="flex items-center justify-between rounded border border-border p-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-foreground font-mono text-sm">{tool.name}</span>
                       </div>
-                      <Badge variant="outline">{tool.category}</Badge>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        {tool.category.toUpperCase()}
+                      </div>
                     </div>
                   ))}
                 </TabsContent>
 
-                <TabsContent value="deployment" className="space-y-3">
+                <TabsContent value="deployment" className="space-y-2 mt-3">
                   {tools.filter(tool => ['Containerization', 'CI/CD'].includes(tool.category)).map((tool, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded">
-                      <div>
-                        <div className="font-medium">{tool.name}</div>
-                        <div className="text-sm text-muted-foreground">{tool.description}</div>
+                    <div key={index} className="flex items-center justify-between rounded border border-border p-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-foreground font-mono text-sm">{tool.name}</span>
                       </div>
-                      <Badge variant="outline">{tool.category}</Badge>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        {tool.category.toUpperCase()}
+                      </div>
                     </div>
                   ))}
                 </TabsContent>
               </Tabs>
-            </CardContent>
-          </Card>
-        </section>
-      </div>
-
-      {/* Presets Section */}
-      <section className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold">Popular Presets</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Get started quickly with pre-configured project templates.
-          </p>
+            </div>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">SaaS App</CardTitle>
-              <CardDescription>Full-stack SaaS with auth & payments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted p-3 rounded font-mono text-sm">
-                npx create-js-stack init --preset saas
+        {/* Presets Section */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+          <div className="flex items-center gap-2">
+            <FileText className="h-4 w-4 text-primary" />
+            <span className="font-bold text-lg sm:text-xl">
+              PROJECT_PRESETS.TXT
+            </span>
+          </div>
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-muted-foreground text-xs">
+            [QUICK START TEMPLATES]
+          </span>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          {[
+            { name: "SaaS App", desc: "Full-stack SaaS with auth & payments", cmd: "npx create-js-stack init --preset saas" },
+            { name: "API Service", desc: "RESTful API with database", cmd: "npx create-js-stack init --preset api" },
+            { name: "Full Stack", desc: "Complete web application", cmd: "npx create-js-stack init --preset fullstack" },
+            { name: "Minimal", desc: "Lightweight starter template", cmd: "npx create-js-stack init --preset minimal" }
+          ].map((preset, index) => (
+            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Rocket className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">{preset.name.toUpperCase().replace(/\s+/g, '_')}</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  PRESET
+                </div>
               </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">API Service</CardTitle>
-              <CardDescription>RESTful API with database</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted p-3 rounded font-mono text-sm">
-                npx create-js-stack init --preset api
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-foreground">{preset.desc}</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    TEMPLATE
+                  </div>
+                </div>
+                
+                <div className="rounded border border-border p-3">
+                  <div className="text-xs text-muted-foreground mb-1">COMMAND</div>
+                  <div className="text-sm text-foreground font-mono">{preset.cmd}</div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          ))}
+        </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Full Stack</CardTitle>
-              <CardDescription>Complete web application</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted p-3 rounded font-mono text-sm">
-                npx create-js-stack init --preset fullstack
+        {/* Additional Features */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+          <div className="flex items-center gap-2">
+            <Star className="h-4 w-4 text-primary" />
+            <span className="font-bold text-lg sm:text-xl">
+              ADDITIONAL_FEATURES.TXT
+            </span>
+          </div>
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-muted-foreground text-xs">
+            [EXTRA CAPABILITIES]
+          </span>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4 mb-12">
+          {[
+            { icon: Monitor, title: "Cross Platform", desc: "Works seamlessly on Windows, macOS, and Linux with consistent behavior across all platforms." },
+            { icon: Smartphone, title: "Mobile Ready", desc: "Built-in support for Progressive Web Apps and mobile-first development practices." },
+            { icon: Palette, title: "Customizable", desc: "Flexible configuration system that adapts to your team's coding standards and preferences." }
+          ].map((feature, index) => (
+            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <feature.icon className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">{feature.title.toUpperCase().replace(/\s+/g, '_')}</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  BONUS
+                </div>
               </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Minimal</CardTitle>
-              <CardDescription>Lightweight starter template</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted p-3 rounded font-mono text-sm">
-                npx create-js-stack init --preset minimal
+              <div className="space-y-3">
+                <div className="rounded border border-border p-3">
+                  <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                  <div className="text-sm text-foreground">{feature.desc}</div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Additional Features */}
-      <section className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold">Additional Features</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Extra capabilities that set create-js-stack apart from other development tools.
-          </p>
+            </div>
+          ))}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card>
-            <CardHeader className="text-center">
-              <Monitor className="h-12 w-12 mx-auto mb-4 text-primary" />
-              <CardTitle>Cross Platform</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-muted-foreground">
-                Works seamlessly on Windows, macOS, and Linux with consistent behavior across all platforms.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="text-center">
-              <Smartphone className="h-12 w-12 mx-auto mb-4 text-primary" />
-              <CardTitle>Mobile Ready</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-muted-foreground">
-                Built-in support for Progressive Web Apps and mobile-first development practices.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="text-center">
-              <Palette className="h-12 w-12 mx-auto mb-4 text-primary" />
-              <CardTitle>Customizable</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-muted-foreground">
-                Flexible configuration system that adapts to your team&apos;s coding standards and preferences.
-              </p>
-            </CardContent>
-          </Card>
+        {/* Call to Action */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+          <div className="flex items-center gap-2">
+            <Rocket className="h-4 w-4 text-primary" />
+            <span className="font-bold text-lg sm:text-xl">
+              GET_STARTED.TXT
+            </span>
+          </div>
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-muted-foreground text-xs">
+            [READY TO START]
+          </span>
         </div>
-      </section>
 
-      {/* Call to Action */}
-      <section className="text-center space-y-6 py-12 bg-muted/30 rounded-2xl">
-        <div className="space-y-4">
-          <h2 className="text-3xl font-bold">Ready to Experience These Features?</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Join thousands of developers who have streamlined their workflow with create-js-stack.
-          </p>
-        </div>
-        <div className="flex justify-center gap-4">
-          <Card className="p-6 text-left max-w-sm">
-            <CardContent className="space-y-3">
-              <div className="font-mono text-sm bg-muted p-2 rounded">
-                npx create-js-stack init my-app
+        <div className="rounded border border-border p-6 mb-12">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-primary" />
+              <span className="font-semibold text-sm">QUICK_START_COMMAND</span>
+            </div>
+            <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+              READY
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded border border-border p-4">
+              <div className="text-xs text-muted-foreground mb-2">COMMAND</div>
+              <div className="text-sm text-foreground font-mono">npx create-js-stack init my-app</div>
+            </div>
+            
+            <div className="flex items-center justify-between rounded border border-border p-3">
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-foreground">Get started in seconds with a single command</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Get started in seconds with a single command
-              </p>
-            </CardContent>
-          </Card>
+              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                INSTANT
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
+
+        {/* End of File */}
+        <div className="mb-4 mt-8">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-muted-foreground" />
+              <span className="font-bold text-lg sm:text-xl text-muted-foreground">
+                END_OF_FILE
+              </span>
+            </div>
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-muted-foreground text-xs">
+              [FEATURES]
+            </span>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
