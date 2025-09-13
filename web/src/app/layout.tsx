@@ -19,10 +19,8 @@ export const metadata: Metadata = {
   title: "JS Stack - Modern Development Tool",
   description: "A powerful CLI tool for modern JavaScript development workflows",
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/icon.svg', type: 'image/svg+xml' },
-    ],
+    icon: '/favicon.svg',
+    shortcut: '/icon.svg',
   },
 };
 

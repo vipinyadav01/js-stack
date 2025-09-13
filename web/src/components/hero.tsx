@@ -1,5 +1,5 @@
 import NpmVersion from "./NpmVersion";
-import { Terminal, Code2, Zap, Package, Github, ExternalLink } from "lucide-react";
+import { Terminal, Code2, Zap, Package, Github } from "lucide-react";
 
 export default function Hero() {
 	return (

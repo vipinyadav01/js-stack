@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Zap, 
@@ -15,12 +14,7 @@ import {
   Monitor,
   Smartphone,
   Palette,
-  Activity,
   FileText,
-  Database,
-  Lock,
-  Globe,
-  Cpu,
   Wrench
 } from "lucide-react";
 

@@ -4,23 +4,17 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NpmIcon } from "@/components/icons/npm-icon";
 import { GithubIcon } from "./icons/github-icon";
-import { Logo, LogoIcon } from "@/components/Logo";
+import { Logo } from "@/components/Logo";
 import {
   Menu,
   Zap,
   Activity,
-  Code2,
   ExternalLink,
   ChevronRight,
   Terminal,
-  Package,
-  Github,
-  Monitor,
-  Smartphone,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { fetchNpmPackageData, fetchGitHubRepoData, NpmPackageData, GitHubRepoData } from "@/lib/api";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Contributors from "@/components/analytics/Contributors";
 import Releases from "@/components/analytics/Releases";
 import RepoInfo from "@/components/analytics/RepoInfo";
@@ -10,7 +9,6 @@ import NpmDownloads from "@/components/analytics/NpmDownloads";
 import QuickActions from "@/components/analytics/QuickActions";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { 
   Star, 
   GitFork, 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Terminal, Code2 } from 'lucide-react';
+import { Code2 } from 'lucide-react';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';

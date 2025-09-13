@@ -1,6 +1,5 @@
 import React from 'react'
 import { Badge } from './ui/badge'
-import { Button } from './ui/button'
 import { CheckCircle, Zap, Settings, Plus, Terminal, FileText, Code } from 'lucide-react'
 
 export default function ProjectInt() {
