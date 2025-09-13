@@ -2,6 +2,11 @@
 
 A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.
 
+## 📊 Feature Status
+
+- ✅ **Available** - Feature is fully implemented and ready to use
+- 🚧 **Coming Soon** - Feature is planned and in development
+
 ## ✨ Features
 
 ### 🚀 **Lightning Fast Setup**
@@ -13,71 +18,77 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 
 ### 🎨 **Frontend Frameworks**
 
-- **React** - With Vite, TypeScript, and modern tooling
-- **Vue.js** - Vue 3 with Composition API and Vite
-- **Angular** - Latest Angular with CLI integration
-- **Svelte** - SvelteKit with optimized builds
-- **Next.js** - Full-stack React framework
-- **Nuxt** - Vue.js full-stack framework
-- **React Native** - Mobile app development
+- ✅ **React** - With Vite, TypeScript, and modern tooling
+- ✅ **Vue.js** - Vue 3 with Composition API and Vite
+- ✅ **Angular** - Latest Angular with CLI integration
+- ✅ **Svelte** - SvelteKit with optimized builds
+- ✅ **Next.js** - Full-stack React framework
+- ✅ **Nuxt** - Vue.js full-stack framework
+- ✅ **React Native** - Mobile app development
 
 ### ⚙️ **Backend Frameworks**
 
-- **Express.js** - Fast, minimalist web framework
-- **Fastify** - High-performance, low-overhead framework
-- **Koa.js** - Lightweight, expressive middleware framework
-- **Hapi.js** - Rich ecosystem with built-in validation
-- **NestJS** - Scalable Node.js framework with TypeScript
+- ✅ **Express.js** - Fast, minimalist web framework
+- ✅ **Fastify** - High-performance, low-overhead framework
+- ✅ **Koa.js** - Lightweight, expressive middleware framework
+- ✅ **Hapi.js** - Rich ecosystem with built-in validation
+- ✅ **NestJS** - Scalable Node.js framework with TypeScript
 
 ### 🗄️ **Database & Storage**
 
-- **SQLite** - Lightweight, serverless database
-- **PostgreSQL** - Advanced open-source database
-- **MySQL** - Popular relational database
-- **MongoDB** - NoSQL document database
+- ✅ **SQLite** - Lightweight, serverless database
+- ✅ **PostgreSQL** - Advanced open-source database
+- ✅ **MySQL** - Popular relational database
+- ✅ **MongoDB** - NoSQL document database
+- 🚧 **Supabase** - Open source Firebase alternative (Coming Soon)
+- 🚧 **PlanetScale** - Serverless MySQL platform (Coming Soon)
 
 ### 🔧 **ORM/ODM Integration**
 
-- **Prisma** - Next-generation ORM with type safety
-- **Sequelize** - Feature-rich ORM for SQL databases
-- **Mongoose** - Elegant MongoDB object modeling
-- **TypeORM** - Advanced ORM with decorator support
+- ✅ **Prisma** - Next-generation ORM with type safety
+- ✅ **Sequelize** - Feature-rich ORM for SQL databases
+- ✅ **Mongoose** - Elegant MongoDB object modeling
+- ✅ **TypeORM** - Advanced ORM with decorator support
 
 ### 🔐 **Authentication & Security**
 
-- **JWT** - JSON Web Token implementation
-- **Passport** - Flexible authentication middleware
-- **Auth0** - Identity platform integration
-- **Firebase Auth** - Google's authentication service
-- Security middleware (Helmet, CORS, Rate limiting)
+- ✅ **JWT** - JSON Web Token implementation
+- ✅ **Passport** - Flexible authentication middleware
+- ✅ **Auth0** - Identity platform integration
+- 🚧 **Firebase Auth** - Google's authentication service (Coming Soon)
+- 🚧 **Clerk** - Modern authentication platform (Coming Soon)
+- 🚧 **Lucia** - Lightweight authentication library (Coming Soon)
+- 🚧 **Supabase Auth** - Open source auth solution (Coming Soon)
+- ✅ **Security middleware** - Helmet, CORS, Rate limiting
 
 ### 🛠️ **Development & DevOps**
 
-- **TypeScript** - Full TypeScript support across all templates
-- **Docker** - Complete containerization with Docker Compose
-- **Testing** - Jest, Vitest, Cypress configurations
-- **Linting** - ESLint with framework-specific rules
-- **Formatting** - Prettier with consistent configurations
-- **Git Hooks** - Husky for pre-commit validation
-- **CI/CD** - GitHub Actions workflows
+- ✅ **TypeScript** - Full TypeScript support across all templates
+- ✅ **Docker** - Complete containerization with Docker Compose
+- ✅ **Testing** - Jest, Vitest configurations
+- 🚧 **Cypress** - E2E testing framework (Coming Soon)
+- ✅ **Linting** - ESLint with framework-specific rules
+- ✅ **Formatting** - Prettier with consistent configurations
+- ✅ **Git Hooks** - Husky for pre-commit validation
+- ✅ **CI/CD** - GitHub Actions workflows
 
 ### 📦 **Package Managers**
 
-- **npm** - Node.js default package manager
-- **yarn** - Fast, reliable dependency management
-- **pnpm** - Efficient disk space usage
-- **bun** - All-in-one JavaScript runtime
+- ✅ **npm** - Node.js default package manager
+- ✅ **yarn** - Fast, reliable dependency management
+- ✅ **pnpm** - Efficient disk space usage
+- ✅ **bun** - All-in-one JavaScript runtime
 
 ### 🎯 **Additional Features**
 
-- **Redis** - Caching and session storage
-- **Socket.IO** - Real-time communication
-- **Tailwind CSS** - Utility-first CSS framework
-- **Material UI** - React component library
-- **Bootstrap** - Popular CSS framework
-- **Environment Management** - Complete .env configuration
-- **API Documentation** - Auto-generated Swagger/OpenAPI docs
-- **Hot Reload** - Development with instant updates
+- ✅ **Redis** - Caching and session storage
+- ✅ **Socket.IO** - Real-time communication
+- ✅ **Tailwind CSS** - Utility-first CSS framework
+- 🚧 **Material UI** - React component library (Coming Soon)
+- 🚧 **Bootstrap** - Popular CSS framework (Coming Soon)
+- ✅ **Environment Management** - Complete .env configuration
+- 🚧 **API Documentation** - Auto-generated Swagger/OpenAPI docs (Coming Soon)
+- ✅ **Hot Reload** - Development with instant updates
 
 ## 🚀 Quick Start
 
@@ -195,24 +206,28 @@ Create a new full-stack project with all configurations.
   - `typeorm` - TypeORM
   - `none` - No ORM
 - `--auth <type>` - Authentication
-  - `jwt` - JSON Web Tokens
-  - `passport` - Passport.js
-  - `auth0` - Auth0 integration
-  - `firebase` - Firebase Auth
+  - `jwt` - JSON Web Tokens ✅
+  - `passport` - Passport.js ✅
+  - `auth0` - Auth0 integration ✅
+  - `firebase` - Firebase Auth 🚧 (Coming Soon)
+  - `clerk` - Clerk Auth 🚧 (Coming Soon)
+  - `lucia` - Lucia Auth 🚧 (Coming Soon)
   - `none` - No authentication (default)
 - `--addons <addons...>` - Additional tools
-  - `typescript` - TypeScript support
-  - `eslint` - ESLint linting
-  - `prettier` - Code formatting
-  - `husky` - Git hooks
-  - `docker` - Docker containerization
-  - `github-actions` - CI/CD workflows
-  - `testing` - Testing frameworks
-  - `tailwind` - Tailwind CSS
-  - `material` - Material UI (React/Angular)
-  - `bootstrap` - Bootstrap CSS
-  - `redis` - Redis caching
-  - `socketio` - Socket.IO real-time
+  - `typescript` - TypeScript support ✅
+  - `eslint` - ESLint linting ✅
+  - `prettier` - Code formatting ✅
+  - `husky` - Git hooks ✅
+  - `docker` - Docker containerization ✅
+  - `github-actions` - CI/CD workflows ✅
+  - `testing` - Testing frameworks ✅
+  - `tailwind` - Tailwind CSS ✅
+  - `material` - Material UI (React/Angular) 🚧 (Coming Soon)
+  - `bootstrap` - Bootstrap CSS 🚧 (Coming Soon)
+  - `redis` - Redis caching ✅
+  - `socketio` - Socket.IO real-time ✅
+  - `cypress` - E2E testing 🚧 (Coming Soon)
+  - `swagger` - API documentation 🚧 (Coming Soon)
 - `--pm <manager>` - Package manager
   - `npm` - npm (default)
   - `yarn` - Yarn
@@ -698,8 +713,8 @@ If this project helped you, please consider:
 
 <div align="center">
 
-**Built with ❤️ by the Vipin Yadav**
+**Built with ❤️ by [Vipin Yadav](https://vipinyadav01.vercel.app)**
 
-[Website](https://js-stack.https://js-stack.pages.dev) • [Documentation](https://create-js-stack.com/docs) • [Examples](https://github.com/create-js-stack/examples) • [Community](https://discord.gg/js-stack)
+[Website](https://js-stack.https://js-stack.pages.dev) • [Documentation](https://js-stack.pages.dev/docs) • [Examples](https://github.com/js-stack/examples) • [Community](https://discord.gg/js-stack)
 
 </div>

@@ -99,12 +99,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create and push Git tag
-        if: steps.version-check.outputs.should_publish == 'true'
-        run: |
-          git tag "v${{ steps.version-check.outputs.version }}"
-          git push origin "v${{ steps.version-check.outputs.version }}"
-
       - name: Create GitHub Release
         if: steps.version-check.outputs.should_publish == 'true'
         uses: softprops/action-gh-release@v2
@@ -123,8 +117,14 @@ jobs:
             - [NPM Package](https://www.npmjs.com/package/create-js-stack)
             - [Documentation](https://github.com/${{ github.repository }})
             - [Web Dashboard](https://js-stack.pages.dev)
+            
+            ### 📋 What's New
+            - Bug fixes and improvements
+            - Updated dependencies
+            - Enhanced CLI experience
           draft: false
           prerelease: false
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
