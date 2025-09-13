@@ -61,16 +61,33 @@ export const metadata: Metadata = {
   publisher: "JS-Stack",
   icons: {
     icon: [
-      { url: '/web-app-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/web-app-512x512.png', sizes: '512x512', type: 'image/png' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico' },
-      { url: '/icon.svg', type: 'image/svg+xml', rel: 'alternate icon' },
+      {
+        url: "/images/favicon.svg",
+        href: "/images/favicon.svg",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/images/icon.svg",
+        href: "/images/icon.svg",
+        type: "image/svg+xml",
+      },
+      {
+        url: "/web-app-192x192.png",
+        href: "/web-app-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        url: "/web-app-512x512.png",
+        href: "/web-app-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
     ],
-    shortcut: ['/favicon.ico'],
-    apple: ['/web-app-192x192.png'],
-    other: [
-      { rel: 'mask-icon', url: '/favicon.svg', color: '#3b82f6' }
+    shortcut: "/images/favicon.svg",
+    apple: [
+      { url: "/web-app-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/web-app-512x512.png", sizes: "512x512", type: "image/png" },
     ],
   },
   manifest: '/manifest.json',
