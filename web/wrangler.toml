@@ -11,4 +11,4 @@ pages_build_output_dir = "out"
 # Environment variables (set in Cloudflare dashboard)
 # [vars]
 # NPM_PACKAGE_NAME = "create-js-stack"
-# GITHUB_REPO = "vipinyadav01/create-js-stack-cli"
+# GITHUB_REPO = "vipinyadav01/js-stack"

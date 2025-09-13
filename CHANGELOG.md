@@ -101,6 +101,6 @@ To contribute to this changelog, please follow the [Contributing Guidelines](CON
 ## Links
 
 - [NPM Package](https://www.npmjs.com/package/create-js-stack)
-- [GitHub Repository](https://github.com/vipinyadav01/create-js-stack-cli)
-- [Web Dashboard](https://create-js-stack-cli.pages.dev)
-- [Documentation](https://github.com/vipinyadav01/create-js-stack-cli#readme)
+- [GitHub Repository](https://github.com/vipinyadav01/js-stack)
+- [Web Dashboard](https://js-stack.pages.dev)
+- [Documentation](https://github.com/vipinyadav01/js-stack#readme)

@@ -414,7 +414,7 @@ export function displayNextSteps(config) {
     },
     {
       icon: "📖",
-      text: `Documentation: ${terminalLink("View Docs", "https://github.com/vipinyadav01/create-js-stack-cli#readme")}`,
+      text: `Documentation: ${terminalLink("View Docs", "https://github.com/vipinyadav01/js-stack#readme")}`,
     },
   ];
 

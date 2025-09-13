@@ -316,7 +316,7 @@ ${this.getFeatureList()}
 MIT
 
 ---
-Generated with ❤️ by [Vipin Yadav](https://github.com/vipinyadav01/create-js-stack-cli)
+Generated with ❤️ by [Vipin Yadav](https://github.com/vipinyadav01/js-stack)
 `;
   }
 

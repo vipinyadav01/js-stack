@@ -33,7 +33,7 @@ export default function Analytics() {
   
   // Configuration
   const npmPackage = process.env.NPM_PACKAGE_NAME || "create-js-stack";
-  const githubRepo = process.env.GITHUB_REPO || "vipinyadav01/create-js-stack-cli";
+  const githubRepo = process.env.GITHUB_REPO || "vipinyadav01/js-stack";
 
   // Fetch NPM data
   const fetchNpmData = useCallback(async () => {

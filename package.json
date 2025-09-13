@@ -1,6 +1,6 @@
 {
   "name": "create-js-stack",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A modern CLI tool for scaffolding JavaScript full-stack projects",
   "type": "module",
   "packageManager": "npm@10.0.0",
@@ -46,12 +46,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vipinyadav01/create-js-stack-cli.git"
+    "url": "https://github.com/vipinyadav01/js-stack.git"
   },
   "bugs": {
-    "url": "https://github.com/vipinyadav01/create-js-stack-cli/issues"
+    "url": "https://github.com/vipinyadav01/js-stack/issues"
   },
-  "homepage": "https://github.com/vipinyadav01/create-js-stack-cli#readme",
+  "homepage": "https://github.com/vipinyadav01/js-stack#readme",
   "dependencies": {
     "@clack/prompts": "^0.7.0",
     "boxen": "^7.1.1",

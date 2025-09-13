@@ -489,7 +489,7 @@ ${chalk.gray("Available Topics:")}
     }
 
     const { openUrl } = await import("./utils/open-url.js");
-    const baseUrl = "https://github.com/vipinyadav01/create-js-stack-cli";
+    const baseUrl = "https://github.com/vipinyadav01/js-stack";
     const docsUrl = topic ? `${baseUrl}/wiki/${topic}` : `${baseUrl}#readme`;
 
     const g = gradient(["#5ee7df", "#b490ca"]);
@@ -618,9 +618,9 @@ ${colors.primary("npx create-js-stack init --preset saas")} ${colors.muted("# Us
   const resourcesBox = boxen(
     `${icons.link} ${chalk.bold("Resources & Community:")}
 
-${icons.book} Documentation: ${colors.secondary.underline("https://github.com/vipinyadav01/create-js-stack-cli")}
-${icons.warning} Issues & Bugs: ${colors.secondary.underline("https://github.com/vipinyadav01/create-js-stack-cli/issues")}
-${icons.heart} Discussions:   ${colors.secondary.underline("https://github.com/vipinyadav01/create-js-stack-cli/discussions")}
+${icons.book} Documentation: ${colors.secondary.underline("https://github.com/vipinyadav01/js-stack")}
+${icons.warning} Issues & Bugs: ${colors.secondary.underline("https://github.com/vipinyadav01/js-stack/issues")}
+${icons.heart} Discussions:   ${colors.secondary.underline("https://github.com/vipinyadav01/js-stack/discussions")}
 ${icons.star} Give us a star: ${colors.accent("⭐ Star on GitHub")}`,
     {
       padding: 1,

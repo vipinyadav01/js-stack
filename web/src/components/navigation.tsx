@@ -38,7 +38,7 @@ const navItems = [
 const quickActions = [
   {
     name: "GitHub",
-    href: "https://github.com/vipinyadav01/create-js-stack-cli",
+    href: "https://github.com/vipinyadav01/js-stack",
     icon: GithubIcon,
     external: true
   },
@@ -87,7 +87,7 @@ export function Navigation() {
             </div>
             <div className="hidden sm:block">
               <span className="font-bold text-lg bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-400">
-                Create-JS-Stack
+                JS-Stack
               </span>
             </div>
           </Link>
@@ -106,7 +106,7 @@ export function Navigation() {
               </div>
             </div>
             <span className="font-bold text-base bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-400">
-              Create-JS-Stack
+              JS-Stack
             </span>
           </Link>
         </div>
@@ -201,7 +201,7 @@ export function Navigation() {
                     </div>
                   </div>
                   <span className="font-bold text-lg text-foreground">
-                    Create-JS-Stack
+                    JS-Stack
                   </span>
                 </Link>
               </div>

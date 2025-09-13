@@ -9,7 +9,7 @@ const NpmVersion = () => {
 		const getLatestVersion = async () => {
 			try {
 				const res = await fetch(
-					"https://api.github.com/repos/vipinyadav01/create-js-stack-cli/releases",
+					"https://api.github.com/repos/vipinyadav01/js-stack/releases",
 				);
 				if (!res.ok) throw new Error("Failed to fetch version");
 				const data = await res.json();

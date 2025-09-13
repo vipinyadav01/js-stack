@@ -35,8 +35,8 @@ This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/vipinyadav01/create-js-stack-cli.git
-   cd create-js-stack-cli
+   git clone https://github.com/vipinyadav01/js-stack.git
+   cd js-stack
    ```
 3. **Install dependencies**:
    ```bash
@@ -99,7 +99,7 @@ npm run clean
 ## 📁 Project Structure
 
 ```
-create-js-stack-cli/
+js-stack/
 ├── src/                    # Source code
 │   ├── cli.js             # Main CLI entry point
 │   ├── commands/          # CLI commands
