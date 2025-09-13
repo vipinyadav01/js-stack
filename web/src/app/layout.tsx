@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JS Stack CLI - Modern Development Tool",
+  title: "JS Stack - Modern Development Tool",
   description: "A powerful CLI tool for modern JavaScript development workflows",
 };
 
@@ -39,6 +39,7 @@ export default function RootLayout({
           <main className="min-h-screen">
             {children}
           </main>
+
         </ThemeProvider>
       </body>
     </html>

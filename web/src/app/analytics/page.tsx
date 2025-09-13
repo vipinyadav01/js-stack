@@ -77,46 +77,93 @@ export default function Analytics() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-            <p className="text-muted-foreground">
-              Real-time data from NPM and GitHub APIs
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={fetchNpmData}
-              disabled={loading.npm}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading.npm ? 'animate-spin' : ''}`} />
-              Refresh NPM
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={fetchGitHubData}
-              disabled={loading.github}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading.github ? 'animate-spin' : ''}`} />
-              Refresh GitHub
-            </Button>
+    <div className="mx-auto min-h-svh max-w-[1280px]">
+      <main className="mx-auto px-4 pt-12">
+        {/* Terminal Header */}
+        <div className="mb-8">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" />
+              <span className="font-bold text-lg sm:text-xl">
+                ANALYTICS_DASHBOARD.TXT
+              </span>
+            </div>
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-muted-foreground text-xs">
+              [REAL-TIME DATA]
+            </span>
           </div>
         </div>
-      </div>
 
-      {/* Main Analytics Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="npm">NPM Analytics</TabsTrigger>
-          <TabsTrigger value="github">GitHub Analytics</TabsTrigger>
-        </TabsList>
+        {/* Refresh Controls */}
+        <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="group flex h-full cursor-pointer flex-col justify-between rounded border border-border p-4 transition-colors hover:bg-muted/10" onClick={fetchNpmData}>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
+                <span className="font-semibold text-sm">REFRESH_NPM</span>
+              </div>
+              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                {loading.npm ? "LOADING" : "READY"}
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <RefreshCw className={`h-4 w-4 text-primary ${loading.npm ? 'animate-spin' : ''}`} />
+                  <span className="text-foreground">Update NPM package data</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  FETCH
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="group flex h-full cursor-pointer flex-col justify-between rounded border border-border p-4 transition-colors hover:bg-muted/10" onClick={fetchGitHubData}>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
+                <span className="font-semibold text-sm">REFRESH_GITHUB</span>
+              </div>
+              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                {loading.github ? "LOADING" : "READY"}
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <RefreshCw className={`h-4 w-4 text-primary ${loading.github ? 'animate-spin' : ''}`} />
+                  <span className="text-foreground">Update GitHub repository data</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  FETCH
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Analytics Tabs */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+          <div className="flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" />
+            <span className="font-bold text-lg sm:text-xl">
+              DATA_SECTIONS.TXT
+            </span>
+          </div>
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-muted-foreground text-xs">
+            [ANALYTICS VIEWS]
+          </span>
+        </div>
+
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview">OVERVIEW</TabsTrigger>
+            <TabsTrigger value="npm">NPM_DATA</TabsTrigger>
+            <TabsTrigger value="github">GITHUB_DATA</TabsTrigger>
+          </TabsList>
 
         {/* Overview Tab - All Analytics Together */}
         <TabsContent value="overview" className="space-y-6">
@@ -144,97 +191,167 @@ export default function Analytics() {
         <TabsContent value="npm" className="space-y-6">
           {/* Error Display */}
           {error.npm && (
-            <Card className="border-destructive">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-2 text-destructive">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>Error loading NPM data: {error.npm}</span>
+            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-destructive" />
+                  <span className="font-semibold text-sm">NPM_ERROR</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded border border-border bg-destructive/10 px-2 py-1 text-destructive text-xs">
+                  ERROR
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                    <span className="text-destructive">Error loading NPM data: {error.npm}</span>
+                  </div>
+                  <div className="rounded border border-border bg-destructive/10 px-2 py-1 text-destructive text-xs">
+                    FAILED
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Loading Display */}
           {loading.npm && (
-            <Card>
-              <CardContent className="pt-6">
+            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Loading NPM data...</span>
+                  <RefreshCw className="h-4 w-4 text-primary animate-spin" />
+                  <span className="font-semibold text-sm">NPM_LOADING</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  LOADING
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <RefreshCw className="h-4 w-4 text-primary animate-spin" />
+                    <span className="text-foreground">Loading NPM data...</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    FETCHING
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* NPM Data Display */}
           {npmData && (
             <>
               {/* Package Info */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="w-5 h-5" />
-                    {npmData.info.name}
-                    <Badge variant="secondary">v{npmData.info.version}</Badge>
-                  </CardTitle>
-                  <CardDescription>
-                    {npmData.info.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{formatNumber(npmData.totalLast7Days)}</div>
-                      <div className="text-sm text-muted-foreground">Downloads (7 days)</div>
+              <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">PACKAGE_INFO</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    v{npmData.info.version}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between rounded border border-border p-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Package className="h-4 w-4 text-primary" />
+                      <span className="text-foreground font-mono">{npmData.info.name}</span>
                     </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{npmData.info.versionsCount}</div>
-                      <div className="text-sm text-muted-foreground">Total Versions</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{npmData.downloads.length}</div>
-                      <div className="text-sm text-muted-foreground">Days Tracked</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">
-                        {Math.round(npmData.totalLast7Days / npmData.downloads.length)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Avg Daily</div>
+                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                      PACKAGE
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+
+                  {npmData.info.description && (
+                    <div className="rounded border border-border p-3">
+                      <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                      <div className="text-sm text-foreground">{npmData.info.description}</div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-foreground font-mono text-lg font-bold">{formatNumber(npmData.totalLast7Days)}</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        7 DAYS
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-foreground font-mono text-lg font-bold">{npmData.info.versionsCount}</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        VERSIONS
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-foreground font-mono text-lg font-bold">{npmData.downloads.length}</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        TRACKED
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-foreground font-mono text-lg font-bold">
+                          {Math.round(npmData.totalLast7Days / npmData.downloads.length)}
+                        </span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        DAILY
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Downloads Chart */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Download Trends</CardTitle>
-                  <CardDescription>Daily downloads over the last 7 days</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={npmData.downloads}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="day" 
-                        tickFormatter={(value) => format(new Date(value), 'MMM dd')}
-                      />
-                      <YAxis tickFormatter={formatNumber} />
-                      <Tooltip 
-                        labelFormatter={(value) => format(new Date(value as string), 'MMM dd, yyyy')}
-                        formatter={(value: number) => [formatNumber(value), 'Downloads']}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="downloads" 
-                        stroke="hsl(var(--primary))" 
-                        strokeWidth={2}
-                        dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+              <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">DOWNLOAD_TRENDS</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    7 DAYS
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="rounded border border-border p-3">
+                    <div className="text-xs text-muted-foreground mb-2">CHART_DATA</div>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={npmData.downloads}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="day" 
+                          tickFormatter={(value) => format(new Date(value), 'MMM dd')}
+                        />
+                        <YAxis tickFormatter={formatNumber} />
+                        <Tooltip 
+                          labelFormatter={(value) => format(new Date(value as string), 'MMM dd, yyyy')}
+                          formatter={(value: number) => [formatNumber(value), 'Downloads']}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="downloads" 
+                          stroke="hsl(var(--primary))" 
+                          strokeWidth={2}
+                          dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
             </>
           )}
 
@@ -246,111 +363,174 @@ export default function Analytics() {
         <TabsContent value="github" className="space-y-6">
           {/* Error Display */}
           {error.github && (
-            <Card className="border-destructive">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-2 text-destructive">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>Error loading GitHub data: {error.github}</span>
+            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-destructive" />
+                  <span className="font-semibold text-sm">GITHUB_ERROR</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded border border-border bg-destructive/10 px-2 py-1 text-destructive text-xs">
+                  ERROR
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <AlertCircle className="h-4 w-4 text-destructive" />
+                    <span className="text-destructive">Error loading GitHub data: {error.github}</span>
+                  </div>
+                  <div className="rounded border border-border bg-destructive/10 px-2 py-1 text-destructive text-xs">
+                    FAILED
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Loading Display */}
           {loading.github && (
-            <Card>
-              <CardContent className="pt-6">
+            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Loading GitHub data...</span>
+                  <RefreshCw className="h-4 w-4 text-primary animate-spin" />
+                  <span className="font-semibold text-sm">GITHUB_LOADING</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  LOADING
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <RefreshCw className="h-4 w-4 text-primary animate-spin" />
+                    <span className="text-foreground">Loading GitHub data...</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    FETCHING
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* GitHub Data Display */}
           {githubData && (
             <>
               {/* Repository Info */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    {githubData.info.fullName}
-                    <Button variant="ghost" size="sm" asChild>
-                      <a href={githubData.info.htmlUrl} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
-                  </CardTitle>
-                  <CardDescription>
-                    {githubData.info.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="flex items-center gap-2">
-                        <Star className="w-4 h-4 text-yellow-500" />
-                        <div>
-                          <div className="font-semibold">{formatNumber(githubData.info.stargazersCount)}</div>
-                          <div className="text-xs text-muted-foreground">Stars</div>
-                        </div>
+              <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">REPOSITORY_INFO</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                      ACTIVE
+                    </div>
+                    <a href={githubData.info.htmlUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-primary" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between rounded border border-border p-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Activity className="h-4 w-4 text-primary" />
+                      <span className="text-foreground font-mono">{githubData.info.fullName}</span>
+                    </div>
+                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                      REPO
+                    </div>
+                  </div>
+
+                  {githubData.info.description && (
+                    <div className="rounded border border-border p-3">
+                      <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                      <div className="text-sm text-foreground">{githubData.info.description}</div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Star className="h-4 w-4 text-yellow-500" />
+                        <span className="text-foreground font-mono text-lg font-bold">{formatNumber(githubData.info.stargazersCount)}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <GitFork className="w-4 h-4 text-blue-500" />
-                        <div>
-                          <div className="font-semibold">{formatNumber(githubData.info.forksCount)}</div>
-                          <div className="text-xs text-muted-foreground">Forks</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Eye className="w-4 h-4 text-green-500" />
-                        <div>
-                          <div className="font-semibold">{formatNumber(githubData.info.watchersCount)}</div>
-                          <div className="text-xs text-muted-foreground">Watchers</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-red-500" />
-                        <div>
-                          <div className="font-semibold">{githubData.info.openIssuesCount}</div>
-                          <div className="text-xs text-muted-foreground">Issues</div>
-                        </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        STARS
                       </div>
                     </div>
-
-                    {/* Topics */}
-                    {githubData.info.topics.length > 0 && (
-                      <div>
-                        <div className="text-sm font-medium mb-2">Topics</div>
-                        <div className="flex flex-wrap gap-2">
-                          {githubData.info.topics.map((topic) => (
-                            <Badge key={topic} variant="secondary">{topic}</Badge>
-                          ))}
-                        </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <GitFork className="h-4 w-4 text-blue-500" />
+                        <span className="text-foreground font-mono text-lg font-bold">{formatNumber(githubData.info.forksCount)}</span>
                       </div>
-                    )}
-
-                    {/* Additional Info */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Language:</span>{" "}
-                        <span className="font-medium">{githubData.info.language || "N/A"}</span>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        FORKS
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">Size:</span>{" "}
-                        <span className="font-medium">{formatNumber(githubData.info.size)} KB</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Eye className="h-4 w-4 text-green-500" />
+                        <span className="text-foreground font-mono text-lg font-bold">{formatNumber(githubData.info.watchersCount)}</span>
                       </div>
-                      <div>
-                        <span className="text-muted-foreground">License:</span>{" "}
-                        <span className="font-medium">{githubData.info.license?.name || "N/A"}</span>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        WATCHERS
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                        <span className="text-foreground font-mono text-lg font-bold">{githubData.info.openIssuesCount}</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        ISSUES
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+
+                  {/* Topics */}
+                  {githubData.info.topics.length > 0 && (
+                    <div className="rounded border border-border p-3">
+                      <div className="text-xs text-muted-foreground mb-2">TOPICS</div>
+                      <div className="flex flex-wrap gap-2">
+                        {githubData.info.topics.map((topic) => (
+                          <Badge key={topic} variant="outline" className="text-xs">{topic}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional Info */}
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-foreground font-mono">{githubData.info.language || "N/A"}</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        LANGUAGE
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-foreground font-mono">{formatNumber(githubData.info.size)} KB</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        SIZE
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded border border-border p-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-foreground font-mono">{githubData.info.license?.name || "N/A"}</span>
+                      </div>
+                      <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                        LICENSE
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Contributors and Releases Grid */}
               <div className="grid lg:grid-cols-2 gap-6">
@@ -360,23 +540,32 @@ export default function Analytics() {
 
               {/* Contribution Chart */}
               {githubData.contributors.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Contribution Distribution</CardTitle>
-                    <CardDescription>Contributions by top contributors</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={githubData.contributors.slice(0, 8)}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="login" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="contributions" fill="hsl(var(--primary))" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
+                <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-primary" />
+                      <span className="font-semibold text-sm">CONTRIBUTION_DISTRIBUTION</span>
+                    </div>
+                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                      TOP 8
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="rounded border border-border p-3">
+                      <div className="text-xs text-muted-foreground mb-2">CHART_DATA</div>
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={githubData.contributors.slice(0, 8)}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="login" />
+                          <YAxis />
+                          <Tooltip />
+                          <Bar dataKey="contributions" fill="hsl(var(--primary))" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
               )}
             </>
           )}
@@ -389,6 +578,7 @@ export default function Analytics() {
           <Releases releases={githubData?.releases || []} />
         </TabsContent>
       </Tabs>
+      </main>
     </div>
   );
 }

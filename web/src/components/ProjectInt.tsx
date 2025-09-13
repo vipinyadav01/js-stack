@@ -1,154 +1,304 @@
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import { CheckCircle, Zap, Settings, Plus } from 'lucide-react'
+import { CheckCircle, Zap, Settings, Plus, Terminal, FileText, Code } from 'lucide-react'
 
 export default function ProjectInt() {
   return (
     <>
       <section className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-3xl font-bold">Getting Started</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Create new projects or add features to existing ones with create-js-stack CLI.
-          </p>
+        <div className="mb-8">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-primary" />
+              <span className="font-bold text-lg sm:text-xl">
+                GETTING_STARTED.TXT
+              </span>
+            </div>
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-muted-foreground text-xs">
+              [CLI COMMANDS]
+            </span>
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="border-primary/20">
-            <CardHeader>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Zap className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>Create New Project</CardTitle>
-                  <CardDescription>
-                    Start fresh with modern full-stack templates
-                  </CardDescription>
-                </div>
+                <Zap className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">CREATE_PROJECT</span>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-muted p-4 rounded-lg font-mono text-sm space-y-2">
-                <div className="text-muted-foreground"># Interactive setup</div>
-                <div className="text-foreground">npx create-js-stack init my-app</div>
-                <div className="text-muted-foreground mt-3"># Quick start with defaults</div>
-                <div className="text-foreground">npx create-js-stack init my-app --yes</div>
-                <div className="text-muted-foreground mt-3"># Use preset template</div>
-                <div className="text-foreground">npx create-js-stack init --preset saas</div>
+              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                NEW
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">React + Express</Badge>
-                <Badge variant="outline">TypeScript</Badge>
-                <Badge variant="outline">Database</Badge>
-                <Badge variant="outline">Authentication</Badge>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          <Card className="border-secondary/20">
-            <CardHeader>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 font-mono text-sm">
+                  <span className="text-primary">$</span>
+                  <span className="text-foreground">
+                    npx create-js-stack init my-app
+                  </span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  INTERACTIVE
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 font-mono text-sm">
+                  <span className="text-primary">$</span>
+                  <span className="text-foreground">
+                    npx create-js-stack init my-app --yes
+                  </span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  QUICK
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 font-mono text-sm">
+                  <span className="text-primary">$</span>
+                  <span className="text-foreground">
+                    npx create-js-stack init --preset saas
+                  </span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  PRESET
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Badge variant="outline" className="text-xs">React + Express</Badge>
+              <Badge variant="outline" className="text-xs">TypeScript</Badge>
+              <Badge variant="outline" className="text-xs">Database</Badge>
+              <Badge variant="outline" className="text-xs">Auth</Badge>
+            </div>
+          </div>
+
+          <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-secondary/10">
-                  <Plus className="h-5 w-5 text-secondary" />
+                <Plus className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">ADD_FEATURES</span>
+              </div>
+              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                ENHANCE
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 font-mono text-sm">
+                  <span className="text-primary">$</span>
+                  <span className="text-foreground">
+                    npx create-js-stack add auth
+                  </span>
                 </div>
-                <div>
-                  <CardTitle>Add Features</CardTitle>
-                  <CardDescription>
-                    Enhance existing projects with new capabilities
-                  </CardDescription>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  AUTH
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-muted p-4 rounded-lg font-mono text-sm space-y-2">
-                <div className="text-muted-foreground"># Add authentication</div>
-                <div className="text-foreground">npx create-js-stack add auth</div>
-                <div className="text-muted-foreground mt-3"># Add database setup</div>
-                <div className="text-foreground">npx create-js-stack add database</div>
-                <div className="text-muted-foreground mt-3"># Add testing framework</div>
-                <div className="text-foreground">npx create-js-stack add testing</div>
+              
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 font-mono text-sm">
+                  <span className="text-primary">$</span>
+                  <span className="text-foreground">
+                    npx create-js-stack add database
+                  </span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  DB
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">JWT Auth</Badge>
-                <Badge variant="outline">Prisma</Badge>
-                <Badge variant="outline">Jest</Badge>
-                <Badge variant="outline">Docker</Badge>
+
+              <div className="flex items-center justify-between rounded border border-border p-3">
+                <div className="flex items-center gap-2 font-mono text-sm">
+                  <span className="text-primary">$</span>
+                  <span className="text-foreground">
+                    npx create-js-stack add testing
+                  </span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  TEST
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Badge variant="outline" className="text-xs">JWT Auth</Badge>
+              <Badge variant="outline" className="text-xs">Prisma</Badge>
+              <Badge variant="outline" className="text-xs">Jest</Badge>
+              <Badge variant="outline" className="text-xs">Docker</Badge>
+            </div>
+          </div>
         </div>
 
         {/* Advanced Usage Section */}
         <div className="mt-12">
-          <div className="text-center space-y-4 mb-8">
-            <h3 className="text-2xl font-bold">Advanced Usage</h3>
-            <p className="text-muted-foreground">
-              Explore all available options and customize your setup
-            </p>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2">
+              <Code className="h-4 w-4 text-primary" />
+              <span className="font-bold text-lg sm:text-xl">
+                ADVANCED_USAGE.TXT
+              </span>
+            </div>
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-muted-foreground text-xs">
+              [ADVANCED COMMANDS]
+            </span>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Browse Options</CardTitle>
-                <CardDescription>
-                  See all available frameworks and tools
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-muted p-3 rounded font-mono text-sm">
-                  npx create-js-stack list
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">BROWSE_OPTIONS</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  LIST
+                </div>
+              </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Custom Configuration</CardTitle>
-                <CardDescription>
-                  Specify exact technologies you want
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-muted p-3 rounded font-mono text-sm space-y-1">
-                  <div>npx create-js-stack init my-app \</div>
-                  <div>  --frontend react \</div>
-                  <div>  --backend express \</div>
-                  <div>  --database postgres</div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 font-mono text-sm">
+                    <span className="text-primary">$</span>
+                    <span className="text-foreground">
+                      npx create-js-stack list
+                    </span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    INFO
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">View Documentation</CardTitle>
-                <CardDescription>
-                  Get help and detailed guides
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-muted p-3 rounded font-mono text-sm">
-                  npx create-js-stack docs
+            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">CUSTOM_CONFIG</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  SPECIFY
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="rounded border border-border p-3">
+                  <div className="flex items-center gap-2 font-mono text-sm mb-2">
+                    <span className="text-primary">$</span>
+                    <span className="text-foreground">
+                      npx create-js-stack init my-app \
+                    </span>
+                  </div>
+                  <div className="font-mono text-xs text-muted-foreground space-y-1 ml-4">
+                    <div>--frontend react \</div>
+                    <div>--backend express \</div>
+                    <div>--database postgres</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" />
+                  <span className="font-semibold text-sm">VIEW_DOCS</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  HELP
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 font-mono text-sm">
+                    <span className="text-primary">$</span>
+                    <span className="text-foreground">
+                      npx create-js-stack docs
+                    </span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    GUIDE
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="text-center space-y-6 py-8">
-          <div className="flex justify-center gap-4">
-            <Button size="lg" className="gap-2">
-              <CheckCircle className="w-4 h-4" />
-              Try Interactive Mode
-            </Button>
-            <Button variant="outline" size="lg" className="gap-2">
-              <Settings className="w-4 h-4" />
-              View All Options
-            </Button>
+        <div className="mt-12">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-primary" />
+              <span className="font-bold text-lg sm:text-xl">
+                QUICK_ACTIONS.TXT
+              </span>
+            </div>
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-muted-foreground text-xs">
+              [GET STARTED]
+            </span>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="group flex h-full cursor-pointer flex-col justify-between rounded border border-border p-4 transition-colors hover:bg-muted/10">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
+                  <span className="font-semibold text-sm">TRY_INTERACTIVE</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  START
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                    <span className="text-foreground">Try interactive mode</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    LAUNCH
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="group flex h-full cursor-pointer flex-col justify-between rounded border border-border p-4 transition-colors hover:bg-muted/10">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
+                  <span className="font-semibold text-sm">VIEW_OPTIONS</span>
+                </div>
+                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                  EXPLORE
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-border p-3">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Settings className="h-4 w-4 text-primary" />
+                    <span className="text-foreground">View all available options</span>
+                  </div>
+                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                    BROWSE
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
