@@ -12,7 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Build and test all packages
   test:
     name: Test & Build
     runs-on: ubuntu-latest
@@ -29,18 +28,18 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run linter
         run: npm run lint
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Build packages
         run: npm run build
 
       - name: Run tests
         run: npm run test
-        continue-on-error: true
+        continue-on-error: false
 
   # Publish CLI to NPM
   publish-cli:
@@ -48,20 +47,25 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build CLI
         run: npm run build:cli
@@ -71,7 +75,7 @@ jobs:
         run: |
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          PUBLISHED_VERSION=$(npm view $PACKAGE_NAME version 2>/dev/null || echo "0.0.0")
+          PUBLISHED_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || echo "0.0.0")
           
           echo "Current version: $CURRENT_VERSION"
           echo "Published version: $PUBLISHED_VERSION"
@@ -83,20 +87,30 @@ jobs:
             echo "should_publish=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Configure Git
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
       - name: Publish to NPM
         if: steps.version-check.outputs.should_publish == 'true'
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Create and push Git tag
+        if: steps.version-check.outputs.should_publish == 'true'
+        run: |
+          git tag "v${{ steps.version-check.outputs.version }}"
+          git push origin "v${{ steps.version-check.outputs.version }}"
+
       - name: Create GitHub Release
         if: steps.version-check.outputs.should_publish == 'true'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version-check.outputs.version }}
-          release_name: Release v${{ steps.version-check.outputs.version }}
+          name: Release v${{ steps.version-check.outputs.version }}
           body: |
             ## 🎉 Release v${{ steps.version-check.outputs.version }}
             
@@ -111,6 +125,8 @@ jobs:
             - [Web Dashboard](https://js-stack.pages.dev)
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Deploy web app to Cloudflare Pages
   deploy-web:
@@ -121,8 +137,6 @@ jobs:
     permissions:
       contents: read
       deployments: write
-      pages: write
-      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -134,10 +148,10 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Install web dependencies
-        run: npm install
+        run: npm ci
         working-directory: web
 
       - name: Build web app
@@ -148,22 +162,6 @@ jobs:
           NPM_PACKAGE_NAME: create-js-stack
           GITHUB_REPO: vipinyadav01/js-stack
 
-      - name: Setup Wrangler
-        run: npm install -g wrangler
-
-      - name: Create Cloudflare Pages Project (if not exists)
-        run: |
-          echo "Checking if Cloudflare Pages project exists..."
-          if ! wrangler pages project list | grep -q "js-stack"; then
-            echo "Project not found, creating..."
-            wrangler pages project create js-stack --compatibility-date=2024-01-01 || echo "Project may already exist"
-          else
-            echo "Project already exists"
-          fi
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
@@ -171,4 +169,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: js-stack
           directory: web/out
-          wranglerVersion: '2'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
