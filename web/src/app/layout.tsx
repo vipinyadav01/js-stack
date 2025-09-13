@@ -54,11 +54,17 @@ const jetbrainsMono = localFont({
 
 export const metadata: Metadata = {
   title: "JS Stack - Modern Development Tool",
-  description: "A powerful CLI tool for modern JavaScript development workflows",
+  description: "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/icon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon.svg', type: 'image/svg+xml' }
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/favicon.svg',
   },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
