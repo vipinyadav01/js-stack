@@ -1,28 +1,17 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Zap, 
-  Settings, 
-  Shield, 
   Rocket, 
-  Code, 
   Package, 
-  GitBranch, 
   Terminal,
   CheckCircle,
   Star,
   Layers,
   Monitor,
-  Smartphone,
-  Palette,
-  FileText,
   Wrench,
   Database,
   Lock,
-  Globe,
   Cpu,
   Badge,
-  Clock,
-  AlertCircle
+  Clock
 } from "lucide-react";
 
 export default function Features() {
