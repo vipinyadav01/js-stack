@@ -53,7 +53,7 @@ const jetbrainsMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "JS-Stack - Modern Full-Stack Development Tool",
+  title: "JS-Stack",
   description: "A comprehensive CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications with React, Next.js, Node.js, and modern development best practices.",
   keywords: ["javascript", "typescript", "react", "nextjs", "nodejs", "cli", "scaffolding", "full-stack", "development"],
   authors: [{ name: "Vipin Yadav" }],
