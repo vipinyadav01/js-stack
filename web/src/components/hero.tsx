@@ -4,18 +4,18 @@ import { Terminal, Code2, Zap, Package, Github } from "lucide-react";
 export default function Hero() {
 	return (
 		<div className="mx-auto min-h-svh max-w-[1280px]">
-			<main className="mx-auto px-4 pt-12">
+			<main className="mx-auto px-3 sm:px-4 md:px-6 pt-8 sm:pt-12">
 				{/* Terminal Header */}
 				<div className="mb-8">
 					<div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
 						<div className="flex items-center gap-2">
 							<Terminal className="h-4 w-4 text-primary" />
-							<span className="font-bold text-lg sm:text-xl">
+							<span className="font-bold text-base sm:text-lg md:text-xl">
 								WELCOME.TXT
 							</span>
 						</div>
-						<div className="h-px flex-1 bg-border" />
-						<span className="text-muted-foreground text-xs">
+						<div className="h-px flex-1 bg-border hidden sm:block" />
+						<span className="text-muted-foreground text-xs sm:text-sm">
 							[CLI TOOL INITIALIZATION]
 						</span>
 					</div>
@@ -23,7 +23,7 @@ export default function Hero() {
 
 				{/* ASCII Art Section */}
 				<div className="mb-8 flex items-center justify-center">
-					<div className="flex h-full flex-col justify-between rounded border border-border p-4 sm:p-6 w-full max-w-full">
+					<div className="flex h-full flex-col justify-between rounded border border-border p-3 sm:p-4 md:p-6 w-full max-w-full">
 						<div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
 							<div className="flex items-center gap-2">
 								<Code2 className="h-4 w-4 text-primary" />
@@ -35,10 +35,10 @@ export default function Hero() {
 						</div>
 
 						<div className="space-y-3">
-							<div className="rounded border border-border p-2 sm:p-4">
-								<div className="text-xs text-muted-foreground mb-2">LOGO_DISPLAY</div>
-								<div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-6 w-full">
-									<pre className="ascii-art text-primary text-[0.6rem] xs:text-xs sm:text-sm leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words">
+							<div className="rounded border border-border p-3 sm:p-4">
+								<div className="text-xs text-muted-foreground mb-3">LOGO_DISPLAY</div>
+								<div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 w-full">
+									<pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
 										{` ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝
 ██║     ██████╔╝█████╗  ███████║   ██║   █████╗  
@@ -47,7 +47,7 @@ export default function Hero() {
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝`}
 									</pre>
 
-									<pre className="ascii-art text-primary text-[0.6rem] xs:text-xs sm:text-sm leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words">
+									<pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
 										{`     ██╗███████╗
      ██║██╔════╝
      ██║███████╗
@@ -56,7 +56,7 @@ export default function Hero() {
  ╚════╝ ╚══════╝`}
 									</pre>
 
-									<pre className="ascii-art text-primary text-[0.6rem] xs:text-xs sm:text-sm leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words">
+									<pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
 										{`███████╗████████╗ █████╗  ██████╗██╗  ██╗
 ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
 ███████╗   ██║   ███████║██║     █████╔╝ 
