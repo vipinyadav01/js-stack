@@ -115,7 +115,7 @@ export default function Features() {
               [COMPREHENSIVE TECH STACK]
             </span>
           </div>
-        </div>
+      </div>
 
         {/* Feature Status Legend */}
         <div className="mb-8 rounded border border-border p-4">
@@ -157,7 +157,7 @@ export default function Features() {
             <span className="font-bold text-lg sm:text-xl">
               FRONTEND_FRAMEWORKS.TXT
             </span>
-          </div>
+                  </div>
           <div className="h-px flex-1 bg-border" />
           <span className="text-muted-foreground text-xs">
             [UI LIBRARIES & FRAMEWORKS]
@@ -178,7 +178,7 @@ export default function Features() {
                 }`}>
                   {framework.available ? '✅ AVAILABLE' : '🚧 COMING SOON'}
                 </div>
-              </div>
+        </div>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between rounded border border-border p-3">
@@ -189,8 +189,8 @@ export default function Features() {
                     {framework.version}
                   </div>
                 </div>
-              </div>
-            </div>
+                </div>
+                </div>
           ))}
         </div>
 
@@ -206,13 +206,13 @@ export default function Features() {
           <span className="text-muted-foreground text-xs">
             [SERVER-SIDE FRAMEWORKS]
           </span>
-        </div>
+          </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {backendFrameworks.map((framework, index) => (
             <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{framework.name.toUpperCase()}</span>
                 </div>
                 <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
@@ -224,15 +224,15 @@ export default function Features() {
                 <div className="flex items-center justify-between rounded border border-border p-3">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-foreground">{framework.description}</span>
-                  </div>
+                    </div>
                   <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                    {framework.version}
+                      {framework.version}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+                  </div>
+                ))}
+              </div>
 
         {/* Database & Storage */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
@@ -246,7 +246,7 @@ export default function Features() {
           <span className="text-muted-foreground text-xs">
             [DATA PERSISTENCE LAYERS]
           </span>
-        </div>
+          </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {databases.map((database, index) => (
@@ -269,9 +269,9 @@ export default function Features() {
                   <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
                   <div className="text-sm text-foreground">{database.description}</div>
                 </div>
-              </div>
-            </div>
-          ))}
+                      </div>
+                    </div>
+                  ))}
         </div>
 
         {/* ORM/ODM Integration */}
@@ -305,9 +305,9 @@ export default function Features() {
                   <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
                   <div className="text-sm text-foreground">{orm.description}</div>
                 </div>
-              </div>
-            </div>
-          ))}
+                      </div>
+                    </div>
+                  ))}
         </div>
 
         {/* Authentication & Security */}
@@ -345,9 +345,9 @@ export default function Features() {
                   <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
                   <div className="text-sm text-foreground">{auth.description}</div>
                 </div>
-              </div>
-            </div>
-          ))}
+                      </div>
+                    </div>
+                  ))}
         </div>
 
         {/* Development & DevOps */}
@@ -362,7 +362,7 @@ export default function Features() {
           <span className="text-muted-foreground text-xs">
             [DEVELOPMENT TOOLS & WORKFLOWS]
           </span>
-        </div>
+      </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {devTools.map((tool, index) => (
@@ -378,7 +378,7 @@ export default function Features() {
                 }`}>
                   {tool.available ? '✅ AVAILABLE' : '🚧 COMING SOON'}
                 </div>
-              </div>
+        </div>
 
               <div className="space-y-3">
                 <div className="rounded border border-border p-3">
@@ -388,7 +388,7 @@ export default function Features() {
               </div>
             </div>
           ))}
-        </div>
+              </div>
 
         {/* Package Managers */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
@@ -402,7 +402,7 @@ export default function Features() {
           <span className="text-muted-foreground text-xs">
             [DEPENDENCY MANAGEMENT]
           </span>
-        </div>
+              </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           {packageManagers.map((pm, index) => (
@@ -422,11 +422,11 @@ export default function Features() {
                   <div className="text-sm text-foreground">{pm.description}</div>
                 </div>
               </div>
-            </div>
+              </div>
           ))}
         </div>
 
-        {/* Additional Features */}
+      {/* Additional Features */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
             <Star className="h-4 w-4 text-primary" />
@@ -454,7 +454,7 @@ export default function Features() {
                 }`}>
                   {feature.available ? '✅ AVAILABLE' : '🚧 COMING SOON'}
                 </div>
-              </div>
+        </div>
 
               <div className="space-y-3">
                 <div className="rounded border border-border p-3">
@@ -489,9 +489,9 @@ export default function Features() {
             <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
               READY
             </div>
-          </div>
+        </div>
 
-          <div className="space-y-4">
+        <div className="space-y-4">
             <div className="rounded border border-border p-4">
               <div className="text-xs text-muted-foreground mb-2">COMMAND</div>
               <div className="text-sm text-foreground font-mono">npx create-js-stack init my-app</div>
@@ -516,12 +516,12 @@ export default function Features() {
               <span className="font-bold text-lg sm:text-xl text-muted-foreground">
                 END_OF_FILE
               </span>
-            </div>
+        </div>
             <div className="h-px flex-1 bg-border" />
             <span className="text-muted-foreground text-xs">
               [FEATURES]
             </span>
-          </div>
+              </div>
         </div>
       </main>
     </div>
