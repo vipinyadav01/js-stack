@@ -119,6 +119,11 @@ export const metadata: Metadata = {
         type: "image/svg+xml",
       },
       {
+        url: "/favicon-96x96.png",
+        sizes: "96x96",
+        type: "image/png",
+      },
+      {
         url: "/web-app-192x192.png",
         sizes: "192x192",
         type: "image/png",
@@ -129,7 +134,7 @@ export const metadata: Metadata = {
         type: "image/png",
       },
     ],
-    shortcut: "/favicon.svg",
+    shortcut: "/favicon.ico",
     apple: [
       { 
         url: "/apple-touch-icon.png", 
@@ -185,8 +190,18 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <meta name="apple-mobile-web-app-title" content="JS-Stack" />
         <meta name="theme-color" content="#000000" />
         <meta name="color-scheme" content="dark light" />
+        {/* Comprehensive favicon setup for development and production */}
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/web-app-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/web-app-512x512.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        {/* Force favicon refresh in development */}
+        <meta name="msapplication-TileImage" content="/web-app-192x192.png" />
       </head>
       <body
         className={`${jetbrainsMono.variable} font-mono antialiased bg-background text-foreground`}
