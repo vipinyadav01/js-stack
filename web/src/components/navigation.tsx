@@ -83,7 +83,7 @@ export function Navigation() {
               <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
                 <Image 
-                  src="/images/favicon.svg" 
+                  src="/web-app-192x192.png" 
                   alt="JS-Stack Logo" 
                   fill
                   className="object-cover relative z-10"
@@ -113,7 +113,7 @@ export function Navigation() {
               <div className="h-6 w-6 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
                 <Image 
-                  src="/images/favicon.svg" 
+                  src="/web-app-192x192.png" 
                   alt="JS-Stack Logo" 
                   fill
                   className="object-cover relative z-10"
@@ -209,7 +209,7 @@ export function Navigation() {
                     <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
                       <Image 
-                        src="/images/favicon.svg" 
+                        src="/web-app-192x192.png" 
                         alt="JS-Stack Logo" 
                         fill
                         className="object-cover relative z-10"
