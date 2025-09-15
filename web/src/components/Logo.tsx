@@ -1,4 +1,4 @@
-import Image from 'next/image';
+// import Image from 'next/image';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -53,12 +53,10 @@ export function LogoIcon({ size = 'md', className = '' }: LogoIconProps) {
       <div className={`${sizeClasses[size]} rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden`}>
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
         <div className="relative w-full h-full">
-          <Image 
-            src="../Images/web-app-192x192.png" 
+          <img 
+            src="/web-app-192x192.png" 
             alt="JS-Stack Logo" 
-            fill
-            className="object-cover"
-            sizes={size === 'sm' ? '24px' : size === 'md' ? '32px' : '48px'}
+            className="w-full h-full object-cover"
           />
         </div>
         <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse rounded-full" />
