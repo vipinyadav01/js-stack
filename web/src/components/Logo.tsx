@@ -54,7 +54,7 @@ export function LogoIcon({ size = 'md', className = '' }: LogoIconProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
         <div className="relative w-full h-full">
           <Image 
-            src="/web-app-192x192.png" 
+            src="../Images/web-app-192x192.png" 
             alt="JS-Stack Logo" 
             fill
             className="object-cover"
