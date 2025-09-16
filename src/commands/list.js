@@ -62,6 +62,9 @@ export async function listOptions() {
     svelte: { icon: "🔥", description: "Compile-time optimized" },
     nextjs: { icon: "▲", description: "Full-stack React" },
     nuxt: { icon: "💚", description: "Full-stack Vue" },
+    remix: { icon: "🎯", description: "Web standards focused" },
+    astro: { icon: "🚀", description: "Static site generator" },
+    sveltekit: { icon: "⚡", description: "Full-stack Svelte" },
     "react-native": { icon: "📱", description: "Mobile apps" },
     none: { icon: "⏭️", description: "Skip frontend" },
   };
@@ -73,6 +76,7 @@ export async function listOptions() {
     sequelize: { icon: "🔷", description: "Feature-rich ORM" },
     mongoose: { icon: "🍃", description: "MongoDB modeling" },
     typeorm: { icon: "📘", description: "TypeScript-first" },
+    drizzle: { icon: "❄️", description: "Lightweight SQL ORM" },
     none: { icon: "⏭️", description: "Skip ORM" },
   };
   displayOptionsGrid("🔧 ORM/ODM Options", orms);
@@ -82,7 +86,10 @@ export async function listOptions() {
     jwt: { icon: "🔑", description: "Token-based" },
     passport: { icon: "🛂", description: "Multiple strategies" },
     auth0: { icon: "🔒", description: "Managed service" },
-    firebase: { icon: "🔥", description: "Google Auth" },
+    oauth: { icon: "🔐", description: "OAuth flows (Google, GitHub, etc.)" },
+    nextauth: { icon: "🔐", description: "Next.js authentication" },
+    supabase: { icon: "⚡", description: "Open source Firebase alternative" },
+    lucia: { icon: "✨", description: "Type-safe authentication" },
     none: { icon: "⏭️", description: "Skip auth" },
   };
   displayOptionsGrid("🔐 Authentication", auths);
@@ -91,6 +98,9 @@ export async function listOptions() {
   const addons = {
     eslint: { icon: "🔍", description: "Code linting" },
     prettier: { icon: "✨", description: "Code formatting" },
+    tailwind: { icon: "🎨", description: "Utility-first CSS" },
+    shadcn: { icon: "🧩", description: "React components" },
+    storybook: { icon: "📚", description: "Component development" },
     husky: { icon: "🐕", description: "Git hooks" },
     docker: { icon: "🐳", description: "Containerization" },
     "github-actions": { icon: "🔄", description: "CI/CD workflows" },

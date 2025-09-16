@@ -301,7 +301,7 @@ program
   .option(
     "--auth <type>",
     colors.muted(
-      `${icons.shield} Auth: clerk, supabase, auth0, firebase, lucia, none`,
+      `${icons.shield} Auth: jwt, passport, auth0, oauth, none`,
     ),
   )
   .option(

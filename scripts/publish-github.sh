@@ -19,7 +19,7 @@ cp ../README.md .
 cat > package.json << 'EOF'
 {
   "name": "create-js-stack",
-  "version": "1.0.6",
+  "version": "1.0.11",
   "description": "A modern CLI tool for scaffolding JavaScript full-stack projects",
   "main": "index.js",
   "repository": {

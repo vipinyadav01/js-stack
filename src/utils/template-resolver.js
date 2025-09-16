@@ -99,11 +99,6 @@ export const TEMPLATE_RULES = {
       files: ["config.js", "routes.js"],
       dependencies: ["auth0"],
     },
-    firebase: {
-      base: "firebase",
-      files: ["config.js"],
-      dependencies: ["firebase-admin"],
-    },
   },
 
   // Database templates (using ORM templates for database-specific files)

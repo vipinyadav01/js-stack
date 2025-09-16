@@ -161,6 +161,11 @@ export async function promptORM(database) {
         hint: "TypeScript-first, decorators, migrations",
       },
       {
+        value: ORM_OPTIONS.DRIZZLE,
+        label: `${chalk.yellow("❄️")} Drizzle`,
+        hint: "Lightweight, type-safe SQL ORM",
+      },
+      {
         value: ORM_OPTIONS.NONE,
         label: chalk.gray("⏭️  Skip ORM"),
         hint: "Use raw SQL queries",
@@ -253,6 +258,11 @@ export async function promptFrontend() {
         hint: "Full-stack React framework with SSR/SSG",
       },
       {
+        value: FRONTEND_OPTIONS.REMIX,
+        label: `${colors.warning("🎯")} Remix`,
+        hint: "Web standards focused, full-stack React",
+      },
+      {
         value: FRONTEND_OPTIONS.VUE,
         label: `${colors.success("💚")} Vue`,
         hint: "Progressive, approachable, versatile",
@@ -271,6 +281,16 @@ export async function promptFrontend() {
         value: FRONTEND_OPTIONS.SVELTE,
         label: `${chalk.orange("🔥")} Svelte`,
         hint: "Compile-time optimized, no virtual DOM",
+      },
+      {
+        value: FRONTEND_OPTIONS.SVELTEKIT,
+        label: `${colors.primary("⚡")} SvelteKit`,
+        hint: "Full-stack Svelte framework",
+      },
+      {
+        value: FRONTEND_OPTIONS.ASTRO,
+        label: `${colors.warning("🚀")} Astro`,
+        hint: "Static site generator, multi-framework",
       },
       {
         value: FRONTEND_OPTIONS.REACT_NATIVE,
@@ -302,6 +322,11 @@ export async function promptAuth() {
     message: chalk.cyan("Choose authentication method"),
     options: [
       {
+        value: AUTH_OPTIONS.NONE,
+        label: chalk.gray("⏭️  Skip authentication"),
+        hint: "No authentication needed",
+      },
+      {
         value: AUTH_OPTIONS.JWT,
         label: `${chalk.yellow("🔑")} JWT`,
         hint: "JSON Web Tokens - stateless, scalable",
@@ -312,19 +337,29 @@ export async function promptAuth() {
         hint: "Multiple strategies, OAuth support",
       },
       {
+        value: AUTH_OPTIONS.OAUTH,
+        label: `${chalk.cyan("🔐")} OAuth`,
+        hint: "OAuth via Passport (Google, GitHub, etc.)",
+      },
+      {
         value: AUTH_OPTIONS.AUTH0,
         label: `${chalk.green("🔒")} Auth0`,
         hint: "Managed authentication service",
       },
       {
-        value: AUTH_OPTIONS.FIREBASE,
-        label: `${chalk.orange("🔥")} Firebase Auth`,
-        hint: "Google's authentication service",
+        value: AUTH_OPTIONS.NEXTAUTH,
+        label: `${chalk.cyan("🔐")} NextAuth.js`,
+        hint: "Authentication for Next.js applications",
       },
       {
-        value: AUTH_OPTIONS.NONE,
-        label: chalk.gray("⏭️  Skip authentication"),
-        hint: "No authentication needed",
+        value: AUTH_OPTIONS.SUPABASE,
+        label: `${chalk.green("⚡")} Supabase Auth`,
+        hint: "Open source Firebase alternative",
+      },
+      {
+        value: AUTH_OPTIONS.LUCIA,
+        label: `${chalk.cyan("✨")} Lucia`,
+        hint: "Type-safe authentication library",
       },
     ],
   });
@@ -353,6 +388,21 @@ export async function promptAddons() {
         value: ADDON_OPTIONS.PRETTIER,
         label: `${chalk.magenta("✨")} Prettier`,
         hint: "Automatic code formatting",
+      },
+      {
+        value: ADDON_OPTIONS.TAILWIND,
+        label: `${chalk.cyan("🎨")} Tailwind CSS`,
+        hint: "Utility-first CSS framework",
+      },
+      {
+        value: ADDON_OPTIONS.SHADCN,
+        label: `${chalk.green("🧩")} shadcn/ui`,
+        hint: "Beautiful, accessible React components",
+      },
+      {
+        value: ADDON_OPTIONS.STORYBOOK,
+        label: `${chalk.yellow("📚")} Storybook`,
+        hint: "Component development and testing",
       },
       {
         value: ADDON_OPTIONS.HUSKY,

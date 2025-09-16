@@ -5,6 +5,7 @@ import {
   BACKEND_OPTIONS,
   FRONTEND_OPTIONS,
   AUTH_OPTIONS,
+  ADDON_OPTIONS,
 } from "../types.js";
 
 /**
@@ -18,16 +19,19 @@ export const COMPATIBILITY_MATRIX = {
       ORM_OPTIONS.PRISMA,
       ORM_OPTIONS.SEQUELIZE,
       ORM_OPTIONS.TYPEORM,
+      ORM_OPTIONS.DRIZZLE,
     ],
     [DATABASE_OPTIONS.POSTGRES]: [
       ORM_OPTIONS.PRISMA,
       ORM_OPTIONS.SEQUELIZE,
       ORM_OPTIONS.TYPEORM,
+      ORM_OPTIONS.DRIZZLE,
     ],
     [DATABASE_OPTIONS.MYSQL]: [
       ORM_OPTIONS.PRISMA,
       ORM_OPTIONS.SEQUELIZE,
       ORM_OPTIONS.TYPEORM,
+      ORM_OPTIONS.DRIZZLE,
     ],
     [DATABASE_OPTIONS.MONGODB]: [ORM_OPTIONS.MONGOOSE, ORM_OPTIONS.PRISMA],
     [DATABASE_OPTIONS.NONE]: [ORM_OPTIONS.NONE],
@@ -52,6 +56,9 @@ export const COMPATIBILITY_MATRIX = {
     [FRONTEND_OPTIONS.NEXTJS]: [BACKEND_OPTIONS.NONE], // Next.js is full-stack
     [FRONTEND_OPTIONS.NUXT]: [BACKEND_OPTIONS.NONE], // Nuxt is full-stack
     [FRONTEND_OPTIONS.REACT_NATIVE]: Object.values(BACKEND_OPTIONS),
+    [FRONTEND_OPTIONS.REMIX]: Object.values(BACKEND_OPTIONS),
+    [FRONTEND_OPTIONS.ASTRO]: Object.values(BACKEND_OPTIONS),
+    [FRONTEND_OPTIONS.SVELTEKIT]: Object.values(BACKEND_OPTIONS),
     [FRONTEND_OPTIONS.NONE]: Object.values(BACKEND_OPTIONS),
   },
 
@@ -60,8 +67,57 @@ export const COMPATIBILITY_MATRIX = {
     [AUTH_OPTIONS.JWT]: Object.values(BACKEND_OPTIONS),
     [AUTH_OPTIONS.PASSPORT]: Object.values(BACKEND_OPTIONS),
     [AUTH_OPTIONS.AUTH0]: Object.values(BACKEND_OPTIONS),
-    [AUTH_OPTIONS.FIREBASE]: Object.values(BACKEND_OPTIONS),
+    [AUTH_OPTIONS.OAUTH]: Object.values(BACKEND_OPTIONS),
+    [AUTH_OPTIONS.NEXTAUTH]: [BACKEND_OPTIONS.NONE, BACKEND_OPTIONS.EXPRESS],
+    [AUTH_OPTIONS.SUPABASE]: Object.values(BACKEND_OPTIONS),
+    [AUTH_OPTIONS.LUCIA]: Object.values(BACKEND_OPTIONS),
     [AUTH_OPTIONS.NONE]: Object.values(BACKEND_OPTIONS),
+  },
+
+  // Auth-Frontend compatibility
+  auth_frontend: {
+    [AUTH_OPTIONS.NEXTAUTH]: [FRONTEND_OPTIONS.NEXTJS, FRONTEND_OPTIONS.REACT],
+    [AUTH_OPTIONS.AUTH0]: [
+      FRONTEND_OPTIONS.REACT,
+      FRONTEND_OPTIONS.NEXTJS,
+      FRONTEND_OPTIONS.VUE,
+      FRONTEND_OPTIONS.NUXT,
+      FRONTEND_OPTIONS.ANGULAR,
+    ],
+    [AUTH_OPTIONS.OAUTH]: Object.values(FRONTEND_OPTIONS),
+    [AUTH_OPTIONS.JWT]: Object.values(FRONTEND_OPTIONS),
+    [AUTH_OPTIONS.SUPABASE]: [
+      FRONTEND_OPTIONS.REACT,
+      FRONTEND_OPTIONS.NEXTJS,
+      FRONTEND_OPTIONS.VUE,
+      FRONTEND_OPTIONS.NUXT,
+      FRONTEND_OPTIONS.SVELTE,
+      FRONTEND_OPTIONS.SVELTEKIT,
+    ],
+    [AUTH_OPTIONS.LUCIA]: [FRONTEND_OPTIONS.NEXTJS, FRONTEND_OPTIONS.SVELTEKIT],
+    [AUTH_OPTIONS.PASSPORT]: Object.values(FRONTEND_OPTIONS),
+    [AUTH_OPTIONS.NONE]: Object.values(FRONTEND_OPTIONS),
+  },
+
+  // Addon-Frontend compatibility
+  addon_frontend: {
+    [ADDON_OPTIONS.TAILWIND]: [
+      FRONTEND_OPTIONS.REACT,
+      FRONTEND_OPTIONS.NEXTJS,
+      FRONTEND_OPTIONS.VUE,
+      FRONTEND_OPTIONS.NUXT,
+      FRONTEND_OPTIONS.SVELTE,
+      FRONTEND_OPTIONS.SVELTEKIT,
+      FRONTEND_OPTIONS.REMIX,
+      FRONTEND_OPTIONS.ASTRO,
+    ],
+    [ADDON_OPTIONS.SHADCN]: [FRONTEND_OPTIONS.REACT, FRONTEND_OPTIONS.NEXTJS],
+    [ADDON_OPTIONS.STORYBOOK]: [
+      FRONTEND_OPTIONS.REACT,
+      FRONTEND_OPTIONS.VUE,
+      FRONTEND_OPTIONS.ANGULAR,
+      FRONTEND_OPTIONS.SVELTE,
+    ],
   },
 };
 
@@ -76,6 +132,25 @@ export const DEPENDENCY_VERSIONS = {
     "react-dom": "^18.2.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+  },
+
+  // Remix
+  remix: {
+    "@remix-run/node": "^2.9.0",
+    "@remix-run/react": "^2.9.0",
+    react: "^18.2.0",
+    "react-dom": "^18.2.0",
+  },
+
+  // Astro
+  astro: {
+    astro: "^4.0.0",
+  },
+
+  // SvelteKit
+  sveltekit: {
+    "@sveltejs/kit": "^2.0.0",
+    svelte: "^4.0.0",
   },
 
   // Vue ecosystem
@@ -116,6 +191,10 @@ export const DEPENDENCY_VERSIONS = {
       prisma: "^5.0.0",
       "@prisma/client": "^5.0.0",
     },
+    [ORM_OPTIONS.DRIZZLE]: {
+      drizzle: "^0.31.0",
+      "drizzle-orm": "^0.31.0",
+    },
     [ORM_OPTIONS.SEQUELIZE]: {
       sequelize: "^6.32.0",
       "@types/sequelize": "^4.28.0",
@@ -140,6 +219,15 @@ export const DEPENDENCY_VERSIONS = {
       passport: "^0.6.0",
       "passport-jwt": "^4.0.0",
       "@types/passport": "^1.0.0",
+    },
+    [AUTH_OPTIONS.NEXTAUTH]: {
+      "next-auth": "^4.24.7",
+    },
+    [AUTH_OPTIONS.SUPABASE]: {
+      "@supabase/supabase-js": "^2.45.0",
+    },
+    [AUTH_OPTIONS.LUCIA]: {
+      lucia: "^3.0.0",
     },
   },
 };
@@ -204,6 +292,40 @@ export function validateCompatibility(config) {
     }
   }
 
+  // Check auth-frontend compatibility
+  if (config.auth && config.auth !== AUTH_OPTIONS.NONE) {
+    const allowedFrontends = COMPATIBILITY_MATRIX.auth_frontend[config.auth];
+    if (allowedFrontends && config.frontend && config.frontend.length > 0) {
+      const invalid = config.frontend.filter(
+        (f) => f !== FRONTEND_OPTIONS.NONE && !allowedFrontends.includes(f),
+      );
+      if (invalid.length > 0) {
+        errors.push({
+          type: "incompatible",
+          message: `${config.auth} is not compatible with: ${invalid.join(", ")}`,
+        });
+      }
+    }
+  }
+
+  // Addon-frontend compatibility
+  if (config.addons && Array.isArray(config.addons)) {
+    for (const addon of config.addons) {
+      const allowedFrontends = COMPATIBILITY_MATRIX.addon_frontend[addon];
+      if (allowedFrontends && config.frontend && config.frontend.length > 0) {
+        const invalid = config.frontend.filter(
+          (f) => f !== FRONTEND_OPTIONS.NONE && !allowedFrontends.includes(f),
+        );
+        if (invalid.length > 0) {
+          warnings.push({
+            type: "suboptimal",
+            message: `${addon} works best with: ${allowedFrontends.join(", ")}`,
+          });
+        }
+      }
+    }
+  }
+
   // Check for full-stack frameworks
   if (
     config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS) &&
@@ -227,6 +349,25 @@ export function validateCompatibility(config) {
         "Nuxt.js includes backend functionality, separate backend may be redundant",
       suggestion: "Consider using Nuxt.js server routes instead",
     });
+  }
+
+  // Prevent conflicting meta-frameworks in the same selection
+  const metaFrameworks = [
+    FRONTEND_OPTIONS.NEXTJS,
+    FRONTEND_OPTIONS.NUXT,
+    FRONTEND_OPTIONS.SVELTEKIT,
+    FRONTEND_OPTIONS.REMIX,
+    FRONTEND_OPTIONS.ASTRO,
+  ];
+  if (config.frontend && config.frontend.length > 1) {
+    const chosenMeta = config.frontend.filter((f) => metaFrameworks.includes(f));
+    if (chosenMeta.length > 1) {
+      errors.push({
+        type: "incompatible",
+        message: `Conflicting meta-frameworks selected: ${chosenMeta.join(", ")}`,
+        suggestion: "Choose only one meta-framework",
+      });
+    }
   }
 
   return {
@@ -271,6 +412,60 @@ export function getCompatibleOptions(type, currentValue, config) {
       }
       return Object.values(BACKEND_OPTIONS);
 
+    case "auth":
+      if (config.frontend && config.frontend.length > 0) {
+        const allowed = new Set();
+        Object.entries(COMPATIBILITY_MATRIX.auth_frontend).forEach(
+          ([auth, fronts]) => {
+            const isAllowed = config.frontend.every(
+              (f) => f === FRONTEND_OPTIONS.NONE || fronts.includes(f),
+            );
+            if (isAllowed) allowed.add(auth);
+          },
+        );
+        return Array.from(allowed);
+      }
+      return Object.values(AUTH_OPTIONS);
+
+    default:
+      return [];
+  }
+}
+
+// Utility: Validate ORM-Database pair
+export function isORMCompatible(database, orm) {
+  const list = COMPATIBILITY_MATRIX.database_orm[database] || [];
+  return list.includes(orm);
+}
+
+// Utility: Prevent conflicting frontend frameworks
+export function areFrontendFrameworksCompatible(frontends) {
+  const meta = new Set([
+    FRONTEND_OPTIONS.NEXTJS,
+    FRONTEND_OPTIONS.NUXT,
+    FRONTEND_OPTIONS.SVELTEKIT,
+    FRONTEND_OPTIONS.REMIX,
+    FRONTEND_OPTIONS.ASTRO,
+  ]);
+  const chosen = (frontends || []).filter((f) => meta.has(f));
+  return chosen.length <= 1;
+}
+
+// Utility: Suggest ORMs by database
+export function getSuggestedORMs(database) {
+  return COMPATIBILITY_MATRIX.database_orm[database] || [];
+}
+
+// Utility: Required base frameworks for meta-frameworks
+export function getRequiredBaseFrameworks(frontend) {
+  switch (frontend) {
+    case FRONTEND_OPTIONS.NEXTJS:
+    case FRONTEND_OPTIONS.REMIX:
+      return [FRONTEND_OPTIONS.REACT];
+    case FRONTEND_OPTIONS.NUXT:
+      return [FRONTEND_OPTIONS.VUE];
+    case FRONTEND_OPTIONS.SVELTEKIT:
+      return [FRONTEND_OPTIONS.SVELTE];
     default:
       return [];
   }
@@ -376,7 +571,7 @@ export const PRESET_CONFIGS = {
       orm: ORM_OPTIONS.PRISMA,
       auth: AUTH_OPTIONS.JWT,
       packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "docker", "testing"],
+      addons: ["typescript", "eslint", "prettier", "docker", "testing", "tailwind"],
     },
   },
   "api-service": {
@@ -400,7 +595,7 @@ export const PRESET_CONFIGS = {
       frontend: [FRONTEND_OPTIONS.REACT_NATIVE],
       database: DATABASE_OPTIONS.MONGODB,
       orm: ORM_OPTIONS.MONGOOSE,
-      auth: AUTH_OPTIONS.FIREBASE,
+      auth: AUTH_OPTIONS.OAUTH,
       packageManager: "npm",
       addons: ["typescript", "eslint", "prettier"],
     },
@@ -413,7 +608,59 @@ export const PRESET_CONFIGS = {
       frontend: [FRONTEND_OPTIONS.NEXTJS],
       database: DATABASE_OPTIONS.POSTGRES,
       orm: ORM_OPTIONS.PRISMA,
-      auth: AUTH_OPTIONS.AUTH0,
+      auth: AUTH_OPTIONS.NEXTAUTH,
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "tailwind", "shadcn", "testing"],
+    },
+  },
+  "remix-app": {
+    name: "Remix Application",
+    description: "Full-stack Remix application with modern tooling",
+    config: {
+      backend: BACKEND_OPTIONS.NONE,
+      frontend: [FRONTEND_OPTIONS.REMIX],
+      database: DATABASE_OPTIONS.POSTGRES,
+      orm: ORM_OPTIONS.DRIZZLE,
+      auth: AUTH_OPTIONS.LUCIA,
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "tailwind", "testing"],
+    },
+  },
+  "astro-site": {
+    name: "Astro Website",
+    description: "Static site with Astro and modern tooling",
+    config: {
+      backend: BACKEND_OPTIONS.NONE,
+      frontend: [FRONTEND_OPTIONS.ASTRO],
+      database: DATABASE_OPTIONS.NONE,
+      orm: ORM_OPTIONS.NONE,
+      auth: AUTH_OPTIONS.NONE,
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "tailwind"],
+    },
+  },
+  "sveltekit-app": {
+    name: "SvelteKit Application",
+    description: "Full-stack SvelteKit application",
+    config: {
+      backend: BACKEND_OPTIONS.NONE,
+      frontend: [FRONTEND_OPTIONS.SVELTEKIT],
+      database: DATABASE_OPTIONS.POSTGRES,
+      orm: ORM_OPTIONS.DRIZZLE,
+      auth: AUTH_OPTIONS.LUCIA,
+      packageManager: "npm",
+      addons: ["typescript", "eslint", "prettier", "tailwind", "testing"],
+    },
+  },
+  "supabase-app": {
+    name: "Supabase Application",
+    description: "Full-stack app with Supabase backend",
+    config: {
+      backend: BACKEND_OPTIONS.NONE,
+      frontend: [FRONTEND_OPTIONS.REACT],
+      database: DATABASE_OPTIONS.POSTGRES,
+      orm: ORM_OPTIONS.NONE,
+      auth: AUTH_OPTIONS.SUPABASE,
       packageManager: "npm",
       addons: ["typescript", "eslint", "prettier", "tailwind", "testing"],
     },

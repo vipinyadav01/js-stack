@@ -1,5 +1,15 @@
 import * as yup from "yup";
 
+// Technology Categories
+export const TECHNOLOGY_TYPES = {
+  FRONTEND: "frontend",
+  BACKEND: "backend",
+  DATABASE: "database",
+  ORM: "orm",
+  AUTH: "auth",
+  ADDON: "addon",
+};
+
 // Database options
 export const DATABASE_OPTIONS = {
   NONE: "none",
@@ -16,6 +26,7 @@ export const ORM_OPTIONS = {
   SEQUELIZE: "sequelize",
   MONGOOSE: "mongoose",
   TYPEORM: "typeorm",
+  DRIZZLE: "drizzle",
 };
 
 // Backend framework options
@@ -38,6 +49,9 @@ export const FRONTEND_OPTIONS = {
   NEXTJS: "nextjs",
   NUXT: "nuxt",
   REACT_NATIVE: "react-native",
+  REMIX: "remix",
+  ASTRO: "astro",
+  SVELTEKIT: "sveltekit",
 };
 
 // Package manager options
@@ -54,7 +68,10 @@ export const AUTH_OPTIONS = {
   JWT: "jwt",
   PASSPORT: "passport",
   AUTH0: "auth0",
-  FIREBASE: "firebase",
+  OAUTH: "oauth",
+  NEXTAUTH: "nextauth",
+  SUPABASE: "supabase",
+  LUCIA: "lucia",
 };
 
 // Addon options
@@ -65,6 +82,9 @@ export const ADDON_OPTIONS = {
   DOCKER: "docker",
   GITHUB_ACTIONS: "github-actions",
   TESTING: "testing",
+  TAILWIND: "tailwind",
+  SHADCN: "shadcn",
+  STORYBOOK: "storybook",
 };
 
 // Validation schemas
@@ -150,6 +170,7 @@ export const ProjectConfigSchema = yup.object().shape({
  */
 
 export default {
+  TECHNOLOGY_TYPES,
   DATABASE_OPTIONS,
   ORM_OPTIONS,
   BACKEND_OPTIONS,
