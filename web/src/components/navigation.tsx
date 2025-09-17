@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Logo } from "@/components/Logo";
+
+import Image from "next/image";
 import { NpmIcon } from "@/components/icons/npm-icon";
 import { GithubIcon } from "./icons/github-icon";
 import {
@@ -77,9 +78,30 @@ export function Navigation() {
         <div className="hidden lg:flex items-center">
           <Link
             href="/"
-            className="hover:opacity-80 transition-all duration-200 group"
+            className="hover:opacity-80 transition-all duration-200 group flex items-center gap-3"
           >
-            <Logo size="md" showText={true} />
+            <div className="relative">
+              <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+                <Image 
+                  src="/web-app-192x192.png" 
+                  alt="JS-Stack Logo" 
+                  fill
+                  className="object-cover relative z-10"
+                  sizes="32px"
+                />
+                <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
+              </div>
+              <div className="absolute inset-0 rounded border border-primary/30 blur-sm" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold font-mono text-foreground text-lg">
+                JS-Stack
+              </span>
+              <span className="font-mono text-muted-foreground text-sm">
+                create-js-stack
+              </span>
+            </div>
           </Link>
         </div>
 
@@ -87,9 +109,30 @@ export function Navigation() {
         <div className="flex lg:hidden items-center">
           <Link
             href="/"
-            className="hover:opacity-80 transition-opacity group"
+            className="hover:opacity-80 transition-opacity group flex items-center gap-2"
           >
-            <Logo size="sm" showText={true} />
+            <div className="relative">
+              <div className="h-6 w-6 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+                <Image 
+                  src="/web-app-192x192.png" 
+                  alt="JS-Stack Logo" 
+                  fill
+                  className="object-cover relative z-10"
+                  sizes="24px"
+                />
+                <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
+              </div>
+              <div className="absolute inset-0 rounded border border-primary/30 blur-sm" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold font-mono text-foreground text-sm">
+                JS-Stack
+              </span>
+              <span className="font-mono text-muted-foreground text-xs">
+                create-js-stack
+              </span>
+            </div>
           </Link>
         </div>
 
@@ -162,10 +205,31 @@ export function Navigation() {
               <div className="p-6 border-b border-border">
                 <Link
                   href="/"
-                  className="group"
+                  className="group flex items-center gap-3"
                   onClick={() => setMobileOpen(false)}
                 >
-                  <Logo size="md" showText={true} />
+                  <div className="relative">
+                    <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+                      <Image 
+                        src="/web-app-192x192.png" 
+                        alt="JS-Stack Logo" 
+                        fill
+                        className="object-cover relative z-10"
+                        sizes="32px"
+                      />
+                      <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
+                    </div>
+                    <div className="absolute inset-0 rounded border border-primary/30 blur-sm" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold font-mono text-foreground text-lg">
+                      JS-Stack
+                    </span>
+                    <span className="font-mono text-muted-foreground text-sm">
+                      create-js-stack
+                    </span>
+                  </div>
                 </Link>
               </div>
 
