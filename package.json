@@ -1,6 +1,6 @@
 {
   "name": "create-js-stack",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
   "type": "module",
   "packageManager": "npm@10.0.0",
@@ -13,7 +13,8 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "README.md"
   ],
   "scripts": {
     "build": "turbo run build",
@@ -33,6 +34,9 @@
     "build:release": "echo 'Building CLI...' && node scripts/build.js",
     "publish:github": "powershell -ExecutionPolicy Bypass -File scripts/publish-github.ps1",
     "publish:github:bash": "bash scripts/publish-github.sh",
+    "publish:npm": "npm run build:release && npm publish",
+    "publish:npm:dry": "npm run build:release && npm publish --dry-run",
+    "publish:npm:check": "node scripts/publish-npm.js",
     "postinstall": "echo 'Installation complete!'"
   },
   "keywords": [

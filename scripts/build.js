@@ -23,8 +23,10 @@ async function buildCLI() {
       target: "node18",
       outfile: path.join(__dirname, "../dist/cli.js"),
       format: "esm",
+      minify: true,
+      sourcemap: false,
       banner: {
-        js: "",
+        js: "#!/usr/bin/env node",
       },
       external: [
         "@clack/prompts",
@@ -56,6 +58,8 @@ async function buildCLI() {
       target: "node18",
       outfile: path.join(__dirname, "../dist/index.js"),
       format: "esm",
+      minify: true,
+      sourcemap: false,
       external: [
         "@clack/prompts",
         "chalk",
@@ -78,9 +82,10 @@ async function buildCLI() {
       ],
     });
 
-    // CLI is ready - shebang is already in the source file
+    // CLI is ready with shebang for direct execution
 
     console.log("✓ Build completed successfully!");
+    console.log("✓ CLI optimized for npm distribution");
   } catch (error) {
     console.error("Build failed:", error);
     process.exit(1);
