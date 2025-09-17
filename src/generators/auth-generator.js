@@ -36,6 +36,10 @@ export async function generateAuth(config) {
     },
     typescript: config.typescript || false,
     useTypeScript: config.typescript || false,
+    useJWT: config.auth === "jwt",
+    usePassport: config.auth === "passport",
+    useAuth0: config.auth === "auth0",
+    useOAuth: config.auth === "oauth",
     oauth: config.auth === "oauth" || config.addons?.includes("oauth") || false,
   };
 

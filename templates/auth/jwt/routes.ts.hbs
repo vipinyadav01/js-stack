@@ -1,13 +1,13 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { authMiddleware } = require('./middleware');
+import express, { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { authMiddleware } from './middleware';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Register route
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
     
@@ -62,7 +62,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login route
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     
@@ -120,14 +120,14 @@ router.post('/login', async (req, res) => {
 });
 
 // Get current user profile
-router.get('/profile', authMiddleware, (req, res) => {
+router.get('/profile', authMiddleware, (req: Request, res: Response) => {
   res.json({
     user: req.user
   });
 });
 
 // Refresh token route
-router.post('/refresh', authMiddleware, (req, res) => {
+router.post('/refresh', authMiddleware, (req: Request, res: Response) => {
   try {
     // Generate new token with same payload
     const token = jwt.sign(
@@ -153,10 +153,10 @@ router.post('/refresh', authMiddleware, (req, res) => {
 });
 
 // Logout route (client-side token removal)
-router.post('/logout', authMiddleware, (req, res) => {
+router.post('/logout', authMiddleware, (req: Request, res: Response) => {
   res.json({
     message: 'Logout successful'
   });
 });
 
-module.exports = router;
+export default router;

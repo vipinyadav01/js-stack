@@ -103,10 +103,13 @@ export class ProjectHealthValidator {
     }
 
     // Generate summary
+    const totalChecks = results.passed + results.failed + results.warnings;
+    const totalPassedOrFailed = results.passed + results.failed;
+    
     results.summary = {
-      total: results.passed + results.failed + results.warnings,
+      total: totalChecks,
       successRate:
-        results.total > 0 ? (results.passed / results.total) * 100 : 0,
+        totalPassedOrFailed > 0 ? (results.passed / totalPassedOrFailed) * 100 : 100,
       hasCriticalFailures: results.checks.some(
         (check) => check.status === "failed" && check.critical,
       ),
@@ -540,15 +543,57 @@ export const healthChecks = {
       const mainFile = packageJson.main || "index.js";
       const mainPath = path.join(projectDir, mainFile);
 
-      if (!(await fs.pathExists(mainPath))) {
+      // Check if main file exists
+      let mainFileExists = await fs.pathExists(mainPath);
+      let actualMainFile = mainFile;
+
+      // If main file doesn't exist, look for common alternatives
+      if (!mainFileExists) {
+        const commonMainFiles = [
+          "index.js",
+          "index.ts", 
+          "server.js",
+          "server.ts",
+          "app.js",
+          "app.ts",
+          "main.js",
+          "main.ts"
+        ];
+
+        for (const file of commonMainFiles) {
+          const filePath = path.join(projectDir, file);
+          if (await fs.pathExists(filePath)) {
+            mainFileExists = true;
+            actualMainFile = file;
+            break;
+          }
+        }
+
+        // Check in backend directory for full-stack projects
+        if (!mainFileExists) {
+          const backendDir = path.join(projectDir, "backend");
+          if (await fs.pathExists(backendDir)) {
+            for (const file of commonMainFiles) {
+              const filePath = path.join(backendDir, file);
+              if (await fs.pathExists(filePath)) {
+                mainFileExists = true;
+                actualMainFile = `backend/${file}`;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      if (!mainFileExists) {
         return {
           status: "warning",
-          message: `Main file ${mainFile} not found`,
+          message: `Main file ${mainFile} not found, and no common entry point detected`,
         };
       }
 
       // Check for common directories
-      const commonDirs = ["src", "lib", "app", "public", "assets"];
+      const commonDirs = ["src", "lib", "app", "public", "assets", "backend", "frontend"];
       const existingDirs = [];
 
       for (const dir of commonDirs) {
@@ -562,7 +607,8 @@ export const healthChecks = {
         status: "passed",
         message: "Project structure is valid",
         details: {
-          mainFile,
+          mainFile: actualMainFile,
+          expectedMainFile: mainFile,
           existingDirs,
         },
       };

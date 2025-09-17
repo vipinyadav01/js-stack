@@ -7,7 +7,7 @@ import {
 } from "../prompts-enhanced.js";
 
 import { confirm, outro } from "@clack/prompts";
-import { createEnhancedProject } from "../generators/enhanced-project-generator.js";
+import { createEnhancedProject } from "../generators/project-generator.js";
 import {
   displayConfigTable,
   displaySuccess,

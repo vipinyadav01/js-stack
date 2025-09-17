@@ -86,6 +86,75 @@ export async function processTemplate(templatePath, outputPath, context) {
 }
 
 /**
+ * Process filename template with proper error handling
+ */
+function processFilenameTemplate(filename, context) {
+  try {
+    // Handle complex conditional patterns first
+    if (filename.includes("{{#if") && filename.includes("{{else}}")) {
+      const extension = context.typescript || context.useTypeScript ? "ts" : "js";
+      
+      // Match patterns like: {{#if useTypeScript}}ts{{else}}js{{/if}}
+      const conditionalPattern = /\{\{#if\s+[^}]*\}\}[^{]*\{\{else\}\}[^{]*\{\{\/if\}\}/g;
+      return filename.replace(conditionalPattern, extension);
+    }
+    
+    // Handle simple variable substitution
+    if (filename.includes("{{") && !filename.includes("{{#")) {
+      const template = Handlebars.compile(filename);
+      return template(context);
+    }
+    
+    return filename;
+  } catch (error) {
+    console.warn(`Warning: Could not process filename template: ${filename}. Using fallback.`);
+    
+    // Fallback logic for common patterns
+    if (filename.includes("middleware") || filename.includes("routes") || filename.includes("models")) {
+      const extension = context.typescript || context.useTypeScript ? "ts" : "js";
+      return filename.replace(/\{\{[^}]*\}\}/g, extension);
+    }
+    
+    // Remove all template syntax as last resort
+    return filename.replace(/\{\{[^}]*\}\}/g, "");
+  }
+}
+
+/**
+ * Get output filename from template filename
+ */
+function getOutputFilename(filename, context, processExtensions = [".hbs", ".handlebars"]) {
+  let outputName = filename;
+  
+  // Process template syntax in filename
+  if (filename.includes("{{")) {
+    outputName = processFilenameTemplate(filename, context);
+  }
+  
+  // Remove template extensions
+  for (const ext of processExtensions) {
+    if (outputName.endsWith(ext)) {
+      outputName = outputName.slice(0, -ext.length);
+      break;
+    }
+  }
+  
+  // Handle .hbs extension specifically
+  if (outputName.endsWith(".hbs")) {
+    outputName = outputName.slice(0, -4);
+  }
+  
+  return outputName;
+}
+
+/**
+ * Determine if file should be processed as template
+ */
+function shouldProcessAsTemplate(filename, processExtensions = [".hbs", ".handlebars"]) {
+  return processExtensions.some(ext => filename.endsWith(ext)) || filename.endsWith(".hbs");
+}
+
+/**
  * Copy and process templates
  */
 export async function copyTemplates(
@@ -105,42 +174,16 @@ export async function copyTemplates(
     const srcPath = path.join(templateDir, file);
     const stat = await fs.stat(srcPath);
 
-    // Process filename template if it contains Handlebars syntax
-    let processedFile = file;
-    if (file.includes("{{")) {
-      const filenameTemplate = Handlebars.compile(file);
-      processedFile = filenameTemplate(context);
-    } else if (file.endsWith(".hbs")) {
-      // Handle static template files that need dynamic output names
-      const baseName = file.slice(0, -4); // Remove .hbs extension
-      if (baseName.includes("middleware") || baseName.includes("routes")) {
-        // Generate dynamic filename based on context
-        const extension = context.typescript ? "ts" : "js";
-        // Remove existing extension if present
-        const nameWithoutExt = baseName.replace(/\.(js|ts)$/, "");
-        processedFile = `${nameWithoutExt}.${extension}`;
-      }
-    }
-
     if (stat.isDirectory()) {
-      const destPath = path.join(outputDir, processedFile);
+      const outputDirName = getOutputFilename(file, context, processExtensions);
+      const destPath = path.join(outputDir, outputDirName);
       await copyTemplates(srcPath, destPath, context, options);
     } else {
-      let destFile = processedFile;
-      let shouldProcess = false;
+      const outputFilename = getOutputFilename(file, context, processExtensions);
+      const destPath = path.join(outputDir, outputFilename);
+      const isTemplate = shouldProcessAsTemplate(file, processExtensions);
 
-      // Check if file should be processed
-      for (const ext of processExtensions) {
-        if (file.endsWith(ext)) {
-          destFile = processedFile.slice(0, -ext.length);
-          shouldProcess = true;
-          break;
-        }
-      }
-
-      const destPath = path.join(outputDir, destFile);
-
-      if (shouldProcess) {
+      if (isTemplate) {
         await processTemplate(srcPath, destPath, context);
       } else {
         await fs.copy(srcPath, destPath);

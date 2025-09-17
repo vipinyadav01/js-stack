@@ -36,6 +36,10 @@ export async function generateDatabase(config) {
       },
       typescript: config.typescript || false,
       useTypeScript: config.typescript || false,
+      useMongoose: config.orm === "mongoose",
+      usePrisma: config.orm === "prisma",
+      useSequelize: config.orm === "sequelize",
+      useTypeORM: config.orm === "typeorm",
     };
 
     try {
