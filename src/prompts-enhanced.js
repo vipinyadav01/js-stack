@@ -56,7 +56,43 @@ const totalSteps = 10;
  * Enhanced project configuration collection with improved UX
  */
 export async function collectProjectConfig(projectName, options = {}) {
-  // Show banner and welcome
+  // Non-interactive fast path (CI or --yes): build config from options and skip prompts
+  const isCi = Boolean(options.ci || options.yes);
+  if (isCi) {
+    const normalizeArray = (val) => {
+      if (Array.isArray(val)) {
+        // Split any comma-delimited entries and flatten
+        return val
+          .flatMap(v => (typeof v === 'string' && v.includes(',') ? v.split(',') : [v]))
+          .map(s => (typeof s === 'string' ? s.trim() : s))
+          .filter(Boolean);
+      }
+      if (typeof val === 'string') return val.includes(',') ? val.split(',').map(s => s.trim()).filter(Boolean) : [val];
+      return [];
+    };
+
+    const cfg = {
+      projectName: projectName || options.projectName || 'my-app',
+      projectDir: `${process.cwd()}/${projectName || options.projectName || 'my-app'}`,
+      frontend: normalizeArray(options.frontend && options.frontend.length ? options.frontend : options.frontend || []),
+      backend: options.backend || 'none',
+      database: options.database || 'none',
+      orm: options.orm || (options.database === 'none' ? 'none' : undefined),
+      auth: options.auth || 'none',
+      packageManager: options.packageManager || options.pm || 'npm',
+      addons: normalizeArray(options.addons || []),
+      git: options.git !== false,
+      // Per requirement: even if --no-install is passed, install should proceed automatically
+      install: true,
+      typescript: Boolean(options.typescript),
+    };
+
+    // Minimal validation without prompts
+    await validateConfiguration(ciSafe(cfg));
+    return cfg;
+  }
+
+  // Show banner and welcome (interactive)
   displayBanner();
   displayWelcome();
   
@@ -709,7 +745,9 @@ async function finalizeConfiguration(config, options) {
   // Step 10: Git and installation options
   progressHeader(++currentStep, totalSteps, "Final Setup", "Git initialization and dependency installation");
 
-  if (options.git === undefined) {
+  if (options.ci || options.yes) {
+    config.git = options.git !== false;
+  } else if (options.git === undefined) {
     config.git = await confirm({
       message: colors.accent("📝 Initialize Git repository?"),
       initialValue: true,
@@ -723,7 +761,10 @@ async function finalizeConfiguration(config, options) {
     config.git = options.git;
   }
 
-  if (options.install === undefined) {
+  // Per requirement: even if --no-install provided, install should proceed automatically
+  if (options.ci || options.yes) {
+    config.install = true;
+  } else if (options.install === undefined) {
     config.install = await confirm({
       message: colors.accent("📥 Install dependencies after creation?"),
       initialValue: true,
@@ -734,7 +775,7 @@ async function finalizeConfiguration(config, options) {
       process.exit(0);
     }
   } else {
-    config.install = options.install;
+    config.install = options.install === false ? true : options.install;
   }
 
   // Validate configuration
@@ -794,33 +835,40 @@ async function validateConfiguration(config) {
   const validation = validateCompatibility(config);
   s.stop();
 
+  const isCi = Boolean(config?.ci);
+
   if (!validation.isValid) {
     displayValidationResults(validation);
-
-    const continueAnyway = await confirm({
-      message: colors.warning("⚠️  Continue despite validation errors?"),
-      initialValue: false,
-    });
-
-    if (!continueAnyway || isCancel(continueAnyway)) {
-      cancel(colors.error("Configuration validation failed"));
-      process.exit(1);
+    if (!isCi) {
+      const continueAnyway = await confirm({
+        message: colors.warning("⚠️  Continue despite validation errors?"),
+        initialValue: false,
+      });
+      if (!continueAnyway || isCancel(continueAnyway)) {
+        cancel(colors.error("Configuration validation failed"));
+        process.exit(1);
+      }
     }
   } else if (validation.warnings.length > 0) {
     displayValidationResults(validation);
-
-    const continueAnyway = await confirm({
-      message: colors.accent("Continue with warnings?"),
-      initialValue: true,
-    });
-
-    if (!continueAnyway || isCancel(continueAnyway)) {
-      cancel(colors.error("Configuration cancelled"));
-      process.exit(1);
+    if (!isCi) {
+      const continueAnyway = await confirm({
+        message: colors.accent("Continue with warnings?"),
+        initialValue: true,
+      });
+      if (!continueAnyway || isCancel(continueAnyway)) {
+        cancel(colors.error("Configuration cancelled"));
+        process.exit(1);
+      }
     }
   } else {
     console.log(colors.success("✅ Configuration validated successfully!\n"));
   }
+}
+
+// Helper to tag config as CI to skip further prompts down the line
+function ciSafe(config) {
+  return { ...config, ci: true };
 }
 
 /**

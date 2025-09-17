@@ -171,6 +171,13 @@ export async function copyTemplates(
   for (const file of files) {
     if (exclude.includes(file)) continue;
 
+    // Skip language-specific alternates: prefer .ts.* when TypeScript, else .js.*
+    const isTsTemplate = /\.ts\.(hbs|handlebars)$/.test(file) || /\.tsx\.(hbs|handlebars)$/.test(file);
+    const isJsTemplate = /\.js\.(hbs|handlebars)$/.test(file) || /\.jsx\.(hbs|handlebars)$/.test(file);
+    const wantsTs = Boolean(context.typescript || context.useTypeScript);
+    if (isTsTemplate && !wantsTs) continue;
+    if (isJsTemplate && wantsTs) continue;
+
     const srcPath = path.join(templateDir, file);
     const stat = await fs.stat(srcPath);
 

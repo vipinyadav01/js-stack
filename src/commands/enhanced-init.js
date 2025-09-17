@@ -1,10 +1,8 @@
 import path from "path";
 import chalk from "chalk";
 import gradient from "gradient-string";
-import {
-  collectProjectConfig,
-  displayConfigSummary,
-} from "../prompts-enhanced.js";
+import { collectProjectConfig, displayConfigSummary } from "../prompts-enhanced.js";
+import { processAndValidateFlags as processFlagsRobust, getProvidedFlags } from "../utils/flag-processing.js";
 
 import { confirm, outro } from "@clack/prompts";
 import { createEnhancedProject } from "../generators/project-generator.js";
@@ -49,32 +47,37 @@ export async function enhancedInitCommand(projectName, options) {
       }
     }
 
-    // If --yes flag is provided, use defaults
+    // If --yes flag is provided, respect provided flags and set CI mode; only fill missing values
     if (options.yes) {
       options = {
-        ...options,
-        database: "sqlite",
-        orm: "prisma",
-        backend: "express",
-        frontend: ["react"],
-        auth: "jwt",
-        addons: ["typescript", "eslint", "prettier"],
-        packageManager: "npm",
-        git: true,
+        ci: true,
+        packageManager: options.packageManager || options.pm || "npm",
+        // Do NOT override selections provided via flags
+        database: options.database ?? undefined,
+        orm: options.orm ?? undefined,
+        backend: options.backend ?? undefined,
+        frontend: options.frontend ?? undefined,
+        auth: options.auth ?? undefined,
+        addons: options.addons ?? undefined,
+        git: options.git !== false,
+        // Per requirement: always install even if --no-install passed
         install: true,
+        ...options,
       };
     }
 
-    // Ensure package manager is set
-    if (!options.packageManager) {
-      options.packageManager = "npm";
+    // Non-interactive fast-path using robust processor when --yes
+    let config;
+    if (options.yes) {
+      const provided = getProvidedFlags(options);
+      config = processFlagsRobust(options, provided, projectName);
+    } else {
+      // Interactive path
+      if (!options.packageManager) {
+        options.packageManager = "npm";
+      }
+      config = await collectProjectConfig(projectName, { ...options, ci: false });
     }
-
-    // Collect project configuration
-    const config = await collectProjectConfig(projectName, {
-      ...options,
-      ci: options.yes,
-    });
 
     // Set project directory
     config.projectDir = path.resolve(process.cwd(), config.projectName);
@@ -83,14 +86,16 @@ export async function enhancedInitCommand(projectName, options) {
     displayConfigSummary(config);
 
     // Confirm before proceeding
-    const proceed = await confirm({
-      message: chalk.cyan("Proceed with project creation?"),
-      initialValue: true,
-    });
-
-    if (!proceed) {
-      console.log(chalk.yellow("Project creation cancelled"));
-      process.exit(0);
+    let proceed = true;
+    if (!options.yes) {
+      proceed = await confirm({
+        message: chalk.cyan("Proceed with project creation?"),
+        initialValue: true,
+      });
+      if (!proceed) {
+        console.log(chalk.yellow("Project creation cancelled"));
+        process.exit(0);
+      }
     }
 
     // Create progress steps

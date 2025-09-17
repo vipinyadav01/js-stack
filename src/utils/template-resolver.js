@@ -237,23 +237,23 @@ export class TemplateResolver {
    * @returns {string} - Resolved template path
    */
   resolveTemplatePath(category, technology, config) {
+    // Prefer direct technology folder if present
+    const directPath = path.join(this.templateDir, category, technology);
+    if (fs.existsSync(directPath)) return directPath;
+
+    // Custom override folder inside technology path
+    const customPath = path.join(this.templateDir, category, technology, "custom");
+    if (fs.existsSync(customPath)) return customPath;
+
+    // Fallback to base mapping if defined
     const rules = TEMPLATE_RULES[category]?.[technology];
-    if (!rules) {
-      return path.join(this.templateDir, category, technology);
+    if (rules) {
+      const basePath = path.join(this.templateDir, category, rules.base);
+      if (fs.existsSync(basePath)) return basePath;
     }
 
-    // Check for custom template overrides
-    const customPath = path.join(
-      this.templateDir,
-      category,
-      technology,
-      "custom",
-    );
-    if (fs.existsSync(customPath)) {
-      return customPath;
-    }
-
-    return path.join(this.templateDir, category, rules.base);
+    // Final fallback: category root (will result in no files if missing)
+    return path.join(this.templateDir, category, technology);
   }
 
   /**
@@ -272,6 +272,17 @@ export class TemplateResolver {
     }
 
     const files = [];
+    const wantsTs = Boolean(config.addons?.includes("typescript") || config.typescript || config.useTypeScript);
+
+    const includeByLanguage = (filename) => {
+      // If templates provide both js/ts variants, include only the desired one
+      const isTs = /\.(ts|tsx)\.hbs$/.test(filename);
+      const isJs = /\.(js|jsx)\.hbs$/.test(filename);
+      if (isTs) return wantsTs;
+      if (isJs) return !wantsTs;
+      return true;
+    };
+
     const scanDir = (dir, relativePath = "") => {
       const items = fs.readdirSync(dir);
 
@@ -282,7 +293,7 @@ export class TemplateResolver {
 
         if (stat.isDirectory()) {
           scanDir(fullPath, relativeItemPath);
-        } else if (item.endsWith(".hbs")) {
+        } else if (item.endsWith(".hbs") && includeByLanguage(item)) {
           files.push({
             source: fullPath,
             relative: relativeItemPath,
@@ -304,7 +315,7 @@ export class TemplateResolver {
    * @param {string} outputDir - Output directory
    * @returns {string} - Resolved output path
    */
-  resolveOutputPath(templatePath, context, outputDir) {
+  resolveOutputPath(templatePath, context, outputRoot) {
     let outputPath = templatePath;
 
     // Remove .hbs extension
@@ -335,7 +346,7 @@ export class TemplateResolver {
       );
     }
 
-    return path.join(outputDir, outputPath);
+    return path.join(outputRoot, outputPath);
   }
 
   /**

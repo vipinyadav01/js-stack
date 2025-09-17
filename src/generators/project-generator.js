@@ -12,6 +12,7 @@ import { performanceUtils } from "../utils/performance.js";
 import { createHealthValidator } from "../utils/health-validator.js";
 import { initGitRepo } from "../utils/git.js";
 import { installDependencies } from "../utils/package-manager.js";
+import { ModularGenerator } from "./types/ModularGenerator.js";
 
 /**
  * Project generator with enhanced features
@@ -36,8 +37,13 @@ export class ProjectGenerator {
       // Step 1: Validate configuration
       await this.validateConfiguration(progress);
 
-      // Step 2: Create project with transaction support
-      const result = await this.createProjectWithTransaction(progress);
+      // Step 2: Use modular generator by default (can be disabled with useModularGenerator: false)
+      let result;
+      if (this.config.useModularGenerator !== false) {
+        result = await this.createProjectWithModularGenerator(progress);
+      } else {
+        result = await this.createProjectWithTransaction(progress);
+      }
 
       // Step 3: Run health validation
       await this.runHealthValidation(progress);
@@ -50,6 +56,7 @@ export class ProjectGenerator {
         result,
         performance: performanceSummary,
         health: this.healthValidator?.results,
+        modular: this.config.useModularGenerator !== false,
       };
     } catch (error) {
       this.performanceMonitor.end();
@@ -78,6 +85,48 @@ export class ProjectGenerator {
     if (validation.warnings.length > 0) {
       displayValidationResults(validation);
       console.log(chalk.yellow("\n⚠️  Continuing with warnings..."));
+    }
+  }
+
+  /**
+   * Create project using modular generator
+   * @param {Object} progress - Progress callback
+   * @returns {Object} - Generation result
+   */
+  async createProjectWithModularGenerator(progress) {
+    try {
+      if (progress && typeof progress.start === 'function') {
+        progress.start("🔧 Using modular generator system");
+      }
+
+      // Create modular generator
+      const modularGenerator = new ModularGenerator(this.config);
+      
+      // Set up context
+      modularGenerator.setContext({
+        projectDir: this.config.projectDir,
+        templateDir: path.join(process.cwd(), "templates"),
+        config: this.config,
+      });
+
+      // Generate project
+      const result = await modularGenerator.generateProject(this.config);
+
+      if (progress && typeof progress.succeed === 'function') {
+        progress.succeed("✅ Modular generation completed");
+      }
+
+      return {
+        success: result.success,
+        projectDir: this.config.projectDir,
+        stats: result.stats,
+        modular: true,
+      };
+    } catch (error) {
+      if (progress && typeof progress.fail === 'function') {
+        progress.fail(`❌ Modular generation failed: ${error.message}`);
+      }
+      throw error;
     }
   }
 

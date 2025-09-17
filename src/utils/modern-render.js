@@ -90,16 +90,27 @@ const modernIcons = {
  * Ultra-modern animated banner with ASCII art and gradients
  */
 export async function displayBanner() {
+  // Minimal, accessible output in CI or non-TTY environments
+  const isCI = Boolean(process.env.CI) || !process.stdout.isTTY;
+  if (isCI) {
+    console.log(chalk.hex(modernColors.primary).bold("JS Stack"));
+    console.log(chalk.hex(modernColors.muted)("Next-Generation JavaScript Project Generator"));
+    console.log();
+    return;
+  }
+
   console.clear();
+  let title = "JS Stack";
+  try {
+    title = figlet.textSync("JS Stack", {
+      font: "ANSI Shadow",
+      horizontalLayout: "fitted",
+      width: 100,
+    });
+  } catch {
+    // Fallback to plain title
+  }
 
-  // Create ASCII art title
-  const title = figlet.textSync("JS Stack", {
-    font: "ANSI Shadow",
-    horizontalLayout: "fitted",
-    width: 120,
-  });
-
-  // Apply rainbow gradient
   const gradientTitle = gradient([
     modernColors.primary,
     modernColors.secondary,
@@ -110,12 +121,10 @@ export async function displayBanner() {
   console.log(gradientTitle(title));
   console.log();
 
-  // Modern subtitle with animation
   const subtitle = `${modernIcons.magic} Next-Generation JavaScript Project Generator ${modernIcons.magic}`;
   console.log(chalk.hex(modernColors.light).bold(`    ${subtitle}`));
   console.log();
 
-  // Feature highlights in modern cards
   const features = [
     `${modernIcons.lightning} Lightning Fast Setup`,
     `${modernIcons.crystal} Production Ready`,
@@ -133,9 +142,7 @@ export async function displayBanner() {
     titleAlignment: "center",
   });
 
-  console.log(
-    gradient([modernColors.info, modernColors.secondary])(featureBox),
-  );
+  console.log(gradient([modernColors.info, modernColors.secondary])(featureBox));
 }
 
 /**
@@ -285,33 +292,20 @@ export function displayConfigTable(config) {
     },
   });
 
-  // Add configuration rows with icons
-  const rows = [
-    ["📦 Project", chalk.yellow(config.projectName)],
-    [
-      "💾 Database",
-      getIconForDatabase(config.database) + " " + chalk.green(config.database),
-    ],
-    ["🔧 ORM", chalk.blue(config.orm)],
-    [
-      "⚙️  Backend",
-      getIconForBackend(config.backend) + " " + chalk.magenta(config.backend),
-    ],
-    [
-      "🎨 Frontend",
-      getIconForFrontend(config.frontend[0]) +
-        " " +
-        chalk.cyan(config.frontend.join(", ")),
-    ],
-    ["🔐 Auth", chalk.red(config.auth)],
-    ["📦 Package Manager", chalk.white(config.packageManager)],
-    [
-      "🛠️  Addons",
-      config.addons.length > 0
-        ? chalk.gray(config.addons.join(", "))
-        : chalk.dim("none"),
-    ],
-  ];
+  const safeFrontend = Array.isArray(config.frontend) ? config.frontend : [];
+  const frontendLabel = safeFrontend.length > 0 ? safeFrontend.join(", ") : "none";
+  const frontendIcon = safeFrontend.length > 0 ? getIconForFrontend(safeFrontend[0]) : getIconForFrontend("none");
+  const addonsLabel = Array.isArray(config.addons) && config.addons.length > 0 ? config.addons.join(", ") : "none";
+
+  const rows = [];
+  rows.push(["📦 Project", chalk.yellow(String(config.projectName || ""))]);
+  rows.push(["💾 Database", `${getIconForDatabase(config.database)} ${chalk.green(config.database || "none")}`]);
+  rows.push(["🔧 ORM", chalk.blue(config.orm || "none")]);
+  rows.push(["⚙️  Backend", `${getIconForBackend(config.backend)} ${chalk.magenta(config.backend || "none")}`]);
+  rows.push(["🎨 Frontend", `${frontendIcon} ${chalk.cyan(frontendLabel)}`]);
+  rows.push(["🔐 Auth", chalk.red(config.auth || "none")]);
+  rows.push(["📦 Package Manager", chalk.white(config.packageManager || "npm")]);
+  rows.push(["🛠️  Addons", addonsLabel !== "none" ? chalk.gray(addonsLabel) : chalk.dim("none")]);
 
   rows.forEach((row) => table.push(row));
   console.log(table.toString());
