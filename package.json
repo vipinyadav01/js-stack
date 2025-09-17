@@ -4,7 +4,6 @@
   "description": "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
   "type": "module",
   "packageManager": "npm@10.0.0",
-  "private": true,
   "workspaces": [
     "web"
   ],
