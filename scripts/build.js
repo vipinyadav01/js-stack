@@ -25,9 +25,7 @@ async function buildCLI() {
       format: "esm",
       minify: true,
       sourcemap: false,
-      banner: {
-        js: "#!/usr/bin/env node",
-      },
+      // No banner needed - source already has shebang
       external: [
         "@clack/prompts",
         "chalk",
