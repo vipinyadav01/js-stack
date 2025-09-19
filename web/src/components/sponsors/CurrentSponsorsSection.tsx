@@ -98,7 +98,7 @@ export default function CurrentSponsorsSection({ sponsors, loading, error }: Cur
         {/* Sponsors Grid */}
         {!loading && !error && sponsors.length > 0 && (
           <div className="space-y-3">
-            {sponsors.map((sponsor, index) => (
+            {sponsors.map((sponsor) => (
               <div key={sponsor.id} className="rounded border border-border p-3 hover:bg-muted/5 transition-colors">
                 {/* Sponsor Header */}
                 <div className="flex items-center justify-between mb-3">

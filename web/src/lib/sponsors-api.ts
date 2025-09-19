@@ -161,34 +161,38 @@ export function getTimeAgo(dateString: string): string {
 }
 
 // Validate sponsor data
-export function validateSponsor(sponsor: any): sponsor is Sponsor {
+export function validateSponsor(sponsor: unknown): sponsor is Sponsor {
   return (
-    sponsor &&
-    typeof sponsor.id === 'string' &&
-    typeof sponsor.name === 'string' &&
-    typeof sponsor.avatar === 'string' &&
-    typeof sponsor.amount === 'number' &&
-    typeof sponsor.tier === 'string' &&
-    typeof sponsor.duration === 'string' &&
-    typeof sponsor.isActive === 'boolean'
+    typeof sponsor === 'object' &&
+    sponsor !== null &&
+    typeof (sponsor as Record<string, unknown>).id === 'string' &&
+    typeof (sponsor as Record<string, unknown>).name === 'string' &&
+    typeof (sponsor as Record<string, unknown>).avatar === 'string' &&
+    typeof (sponsor as Record<string, unknown>).amount === 'number' &&
+    typeof (sponsor as Record<string, unknown>).tier === 'string' &&
+    typeof (sponsor as Record<string, unknown>).duration === 'string' &&
+    typeof (sponsor as Record<string, unknown>).isActive === 'boolean'
   );
 }
 
 // Validate tweet data
-export function validateTweet(tweet: any): tweet is TwitterTweet {
+export function validateTweet(tweet: unknown): tweet is TwitterTweet {
   return (
-    tweet &&
-    typeof tweet.id === 'string' &&
-    typeof tweet.text === 'string' &&
-    tweet.user &&
-    typeof tweet.user.name === 'string' &&
-    typeof tweet.user.username === 'string' &&
-    typeof tweet.user.avatar === 'string' &&
-    tweet.engagement &&
-    typeof tweet.engagement.likes === 'number' &&
-    typeof tweet.engagement.retweets === 'number' &&
-    typeof tweet.engagement.replies === 'number' &&
-    typeof tweet.timestamp === 'string' &&
-    typeof tweet.url === 'string'
+    typeof tweet === 'object' &&
+    tweet !== null &&
+    typeof (tweet as Record<string, unknown>).id === 'string' &&
+    typeof (tweet as Record<string, unknown>).text === 'string' &&
+    typeof (tweet as Record<string, unknown>).user === 'object' &&
+    (tweet as Record<string, unknown>).user !== null &&
+    typeof ((tweet as Record<string, unknown>).user as Record<string, unknown>).name === 'string' &&
+    typeof ((tweet as Record<string, unknown>).user as Record<string, unknown>).username === 'string' &&
+    typeof ((tweet as Record<string, unknown>).user as Record<string, unknown>).avatar === 'string' &&
+    typeof (tweet as Record<string, unknown>).engagement === 'object' &&
+    (tweet as Record<string, unknown>).engagement !== null &&
+    typeof ((tweet as Record<string, unknown>).engagement as Record<string, unknown>).likes === 'number' &&
+    typeof ((tweet as Record<string, unknown>).engagement as Record<string, unknown>).retweets === 'number' &&
+    typeof ((tweet as Record<string, unknown>).engagement as Record<string, unknown>).replies === 'number' &&
+    typeof (tweet as Record<string, unknown>).timestamp === 'string' &&
+    typeof (tweet as Record<string, unknown>).url === 'string'
   );
 }

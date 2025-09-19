@@ -3,18 +3,15 @@
 import { useEffect, useState, useCallback } from "react";
 import { Terminal, Heart, Twitter, Github, Users, TrendingUp, ExternalLink, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TwitterFeedSection from "@/components/sponsors/TwitterFeedSection";
 import CurrentSponsorsSection from "@/components/sponsors/CurrentSponsorsSection";
 import PotentialSponsorsSection from "@/components/sponsors/PotentialSponsorsSection";
 import SponsorshipTiers from "@/components/sponsors/SponsorshipTiers";
-import { cn } from "@/lib/utils";
 import { 
   fetchSponsors, 
   fetchTwitterMentions, 
-  formatCurrency, 
-  formatNumber,
+  formatCurrency,
   type Sponsor,
   type TwitterTweet,
   type SponsorAnalytics

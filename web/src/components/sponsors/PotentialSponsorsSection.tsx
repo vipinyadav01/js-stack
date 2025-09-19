@@ -20,10 +20,10 @@ interface PotentialSponsor {
 }
 
 interface PotentialSponsorsSectionProps {
-  // This could be extended to accept props in the future
+  className?: string;
 }
 
-export default function PotentialSponsorsSection({}: PotentialSponsorsSectionProps) {
+export default function PotentialSponsorsSection({ className }: PotentialSponsorsSectionProps) {
   // Mock data for potential sponsors
   const potentialSponsors: PotentialSponsor[] = [
     {
@@ -119,7 +119,7 @@ export default function PotentialSponsorsSection({}: PotentialSponsorsSectionPro
   };
 
   return (
-    <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+    <div className={`flex h-full flex-col justify-between rounded border border-border p-4 ${className || ''}`}>
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Target className="h-4 w-4 text-primary" />
@@ -133,7 +133,7 @@ export default function PotentialSponsorsSection({}: PotentialSponsorsSectionPro
       <div className="space-y-3">
         {/* Potential Sponsors List */}
         <div className="space-y-3">
-          {potentialSponsors.map((sponsor, index) => (
+          {potentialSponsors.map((sponsor) => (
             <div key={sponsor.id} className="rounded border border-border p-3 hover:bg-muted/5 transition-colors">
               {/* Sponsor Header */}
               <div className="flex items-center justify-between mb-3">

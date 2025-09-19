@@ -2,9 +2,7 @@
 
 import { Twitter, Heart, MessageCircle, Repeat2, ExternalLink, RefreshCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 
 interface TwitterTweet {
   id: string;
@@ -76,7 +74,7 @@ export default function TwitterFeedSection({ tweets, loading, error }: TwitterFe
         {/* Tweets */}
         {!loading && !error && tweets.length > 0 && (
           <div className="space-y-3">
-            {tweets.map((tweet, index) => (
+            {tweets.map((tweet) => (
               <div key={tweet.id} className="rounded border border-border p-3 hover:bg-muted/5 transition-colors">
                 {/* Tweet Header */}
                 <div className="flex items-center justify-between mb-2">

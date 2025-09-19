@@ -18,10 +18,10 @@ interface SponsorshipTier {
 }
 
 interface SponsorshipTiersProps {
-  // This could be extended to accept props in the future
+  className?: string;
 }
 
-export default function SponsorshipTiers({}: SponsorshipTiersProps) {
+export default function SponsorshipTiers({ className }: SponsorshipTiersProps) {
   const tiers: SponsorshipTier[] = [
     {
       id: "bronze",
@@ -112,7 +112,7 @@ export default function SponsorshipTiers({}: SponsorshipTiersProps) {
   };
 
   return (
-    <div className="flex h-full flex-col justify-between rounded border border-border p-4">
+    <div className={`flex h-full flex-col justify-between rounded border border-border p-4 ${className || ''}`}>
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Gift className="h-4 w-4 text-primary" />
@@ -126,7 +126,7 @@ export default function SponsorshipTiers({}: SponsorshipTiersProps) {
       <div className="space-y-3">
         {/* Tiers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {tiers.map((tier, index) => (
+          {tiers.map((tier) => (
             <div 
               key={tier.id} 
               className={cn(
