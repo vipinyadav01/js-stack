@@ -12,6 +12,7 @@ import {
   Menu,
   Zap,
   Activity,
+  Heart,
   ExternalLink,
   ChevronRight,
   Terminal,
@@ -31,6 +32,13 @@ const navItems = [
     href: "/analytics",
     icon: Activity,
     description: "Usage insights",
+    badge: undefined
+  },
+  {
+    name: "Sponsors",
+    href: "/sponsors",
+    icon: Heart,
+    description: "Support & recognition",
     badge: undefined
   },
 ];
