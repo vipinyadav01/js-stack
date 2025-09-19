@@ -1,11 +1,12 @@
 "use client";
-import Link from "next/link";
+
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Image from "next/image";
+import Link from 'next/link'
 import { NpmIcon } from "@/components/icons/npm-icon";
 import { GithubIcon } from "./icons/github-icon";
 import {
@@ -90,12 +91,13 @@ export function Navigation() {
             <div className="relative">
               <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-                <Image 
-                  src="/web-app-192x192.png" 
-                  alt="JS-Stack Logo" 
-                  fill
-                  className="object-cover relative z-10"
-                  sizes="32px"
+                <Image
+                  src="/favicon-96x96.png"
+                  alt="JS-Stack Logo"
+                  width={32}
+                  height={32}
+                  className="h-7 w-7 sm:h-8 sm:w-8 object-contain"
+                  style={{ minWidth: 28, minHeight: 28 }}
                 />
                 <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
               </div>
@@ -121,12 +123,13 @@ export function Navigation() {
             <div className="relative">
               <div className="h-6 w-6 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-                <Image 
-                  src="/web-app-192x192.png" 
-                  alt="JS-Stack Logo" 
-                  fill
-                  className="object-cover relative z-10"
-                  sizes="24px"
+                <Image
+                  src="/favicon-96x96.png"
+                  alt="JS-Stack Logo"
+                  width={32}
+                  height={32}
+                  className="h-7 w-7 sm:h-8 sm:w-8 object-contain"
+                  style={{ minWidth: 28, minHeight: 28 }}
                 />
                 <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
               </div>
@@ -189,7 +192,7 @@ export function Navigation() {
               {action.external && <ExternalLink className="h-3 w-3 text-muted-foreground" />}
             </Link>
           ))}
-          
+
           {/* Theme Toggle */}
           <div className="ml-2 pl-2 border-l border-border">
             <ThemeToggle />
@@ -218,12 +221,13 @@ export function Navigation() {
                   <div className="relative">
                     <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-                      <Image 
-                        src="/web-app-192x192.png" 
-                        alt="JS-Stack Logo" 
-                        fill
-                        className="object-cover relative z-10"
-                        sizes="32px"
+                      <Image
+                        src="/favicon-96x96.png"
+                        alt="JS-Stack Logo"
+                        width={32}
+                        height={32}
+                        className="h-7 w-7 sm:h-8 sm:w-8 object-contain"
+                        style={{ minWidth: 28, minHeight: 28 }}
                       />
                       <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
                     </div>
@@ -287,33 +291,33 @@ export function Navigation() {
                   );
                 })}
 
-                 {/* Mobile Quick Actions */}
-              <div className="p-4 border-t border-border mt-auto">
-                <div className="px-2 mb-4">
-                  <div className="flex items-center gap-2">
-                    <Terminal className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-mono text-muted-foreground">
-                      QUICK_ACTIONS.TXT
-                    </span>
+                {/* Mobile Quick Actions */}
+                <div className="p-4 border-t border-border mt-auto">
+                  <div className="px-2 mb-4">
+                    <div className="flex items-center gap-2">
+                      <Terminal className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-mono text-muted-foreground">
+                        QUICK_ACTIONS.TXT
+                      </span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {quickActions.map((action) => (
+                      <Link
+                        key={action.name}
+                        href={action.href}
+                        target={action.external ? "_blank" : "_self"}
+                        rel={action.external ? "noopener noreferrer" : ""}
+                        onClick={() => setMobileOpen(false)}
+                        className="group flex items-center gap-2 w-full rounded border border-border p-3 transition-colors hover:bg-muted/10 cursor-pointer"
+                      >
+                        <action.icon className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
+                        <span className="flex-1 font-mono text-sm uppercase">{action.name}</span>
+                        {action.external && <ExternalLink className="h-3 w-3 text-muted-foreground" />}
+                      </Link>
+                    ))}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  {quickActions.map((action) => (
-                    <Link
-                      key={action.name}
-                      href={action.href}
-                      target={action.external ? "_blank" : "_self"}
-                      rel={action.external ? "noopener noreferrer" : ""}
-                      onClick={() => setMobileOpen(false)}
-                      className="group flex items-center gap-2 w-full rounded border border-border p-3 transition-colors hover:bg-muted/10 cursor-pointer"
-                    >
-                      <action.icon className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
-                      <span className="flex-1 font-mono text-sm uppercase">{action.name}</span>
-                      {action.external && <ExternalLink className="h-3 w-3 text-muted-foreground" />}
-                    </Link>
-                  ))}
-                </div>
-              </div>
               </div>
             </SheetContent>
           </Sheet>
