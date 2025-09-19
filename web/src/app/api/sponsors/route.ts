@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-static';
-export const revalidate = 3600; // Revalidate every hour
+
+export const revalidate = 3600; 
 
 export interface Sponsor {
   id: string;
@@ -23,10 +23,10 @@ export interface SponsorAnalytics {
   averageAmount: number;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const includeAnalytics = searchParams.get('analytics') === 'true';
+    // Static data for static export - no dynamic query params
+    const includeAnalytics = false;
 
     // Mock data for demonstration
     // In a real implementation, you would use the GitHub Sponsors API

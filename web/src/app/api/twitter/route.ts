@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export const dynamic = 'force-static';
+// export const dynamic = 'force-dynamic';
 export const revalidate = 3600; // Revalidate every hour
 
 export interface TwitterTweet {
@@ -20,11 +20,11 @@ export interface TwitterTweet {
   url: string;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q') || 'js-stack';
-    const count = parseInt(searchParams.get('count') || '20');
+    // Static data for static export - no dynamic query params
+    const query = 'js-stack';
+    const count = 20;
 
     // Note: In a real implementation, you would use the Twitter API v2
     // For now, we'll return mock data that matches the expected format
