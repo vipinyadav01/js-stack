@@ -304,6 +304,17 @@ export function getTimeAgo(dateString: string): string {
   return `${Math.floor(diffInSeconds / 2592000)}mo ago`;
 }
 
+// Format time ago for Twitter timestamps (simplified format)
+export function formatTimeAgo(timestamp: string): string {
+  // If timestamp is already in short format (like "2h", "5h"), return as is
+  if (/^\d+[hmd]$/.test(timestamp)) {
+    return timestamp;
+  }
+  
+  // Otherwise, use getTimeAgo for full date strings
+  return getTimeAgo(timestamp);
+}
+
 // Validate sponsor data
 export function validateSponsor(sponsor: unknown): sponsor is Sponsor {
   return (

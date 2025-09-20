@@ -1,38 +1,105 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Terminal, Heart, Twitter, Github, Users, TrendingUp, ExternalLink, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TwitterFeedSection from "@/components/sponsors/TwitterFeedSection";
-import CurrentSponsorsSection from "@/components/sponsors/CurrentSponsorsSection";
-import PotentialSponsorsSection from "@/components/sponsors/PotentialSponsorsSection";
+import { Terminal, Heart } from "lucide-react";
+import { motion } from "framer-motion";
 import { 
   fetchSponsors, 
   fetchTwitterMentions, 
-  formatCurrency,
-  type Sponsor,
   type TwitterTweet,
   type SponsorAnalytics
 } from "@/lib/sponsors-api";
 
-// Component state interfaces
+// Import components
+import AnalyticsSection from "@/components/sponsors/AnalyticsSection";
+import GitHubSponsorsSection from "@/components/sponsors/GitHubSponsorsSection";
+import TwitterSection from "@/components/sponsors/TwitterSection";
+import CTASection from "@/components/sponsors/CTASection";
+import { type SponsorsData } from "@/lib/sponsor-utils";
 
 export default function SponsorsPage() {
-  // State management
-  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [tweets, setTweets] = useState<TwitterTweet[]>([]);
   const [analytics, setAnalytics] = useState<SponsorAnalytics | null>(null);
   const [loading, setLoading] = useState({
-    sponsors: false,
     twitter: false,
     analytics: false
   });
   const [error, setError] = useState({
-    sponsors: "",
     twitter: "",
     analytics: ""
   });
+
+  // Mock GitHub sponsors data
+  const mockGitHubSponsorsData: SponsorsData = {
+    specialSponsors: [
+      {
+        githubId: "acmecorp",
+        name: "Acme Corporation",
+        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=acme",
+        tierName: "Gold Sponsor",
+        formattedAmount: "$500",
+        sinceWhen: "6 months",
+        githubUrl: "https://github.com/acmecorp",
+        websiteUrl: "https://acme.com",
+        isSpecial: true
+      },
+      {
+        githubId: "techstartinc",
+        name: "TechStart Inc",
+        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=techstart",
+        tierName: "Silver Sponsor",
+        formattedAmount: "$200",
+        sinceWhen: "3 months",
+        githubUrl: "https://github.com/techstartinc",
+        websiteUrl: "https://techstart.io",
+        isSpecial: true
+      }
+    ],
+    sponsors: [
+      {
+        githubId: "devtoolsllc",
+        name: "DevTools LLC",
+        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=devtools",
+        tierName: "Bronze Sponsor",
+        formattedAmount: "$100",
+        sinceWhen: "1 month",
+        githubUrl: "https://github.com/devtoolsllc",
+        websiteUrl: "https://devtools.dev"
+      },
+      {
+        githubId: "opensourcefound",
+        name: "OpenSource Foundation",
+        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=opensource",
+        tierName: "Platinum Sponsor",
+        formattedAmount: "$1000",
+        sinceWhen: "12 months",
+        githubUrl: "https://github.com/opensourcefound",
+        websiteUrl: "https://opensource.org"
+      },
+      {
+        githubId: "edutechsolutions",
+        name: "EduTech Solutions",
+        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=edutech",
+        tierName: "Silver Sponsor",
+        formattedAmount: "$150",
+        sinceWhen: "4 months",
+        githubUrl: "https://github.com/edutechsolutions",
+        websiteUrl: "https://edutech.edu"
+      }
+    ],
+    pastSponsors: [
+      {
+        githubId: "oldsponsor1",
+        name: "Previous Sponsor",
+        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=old1",
+        tierName: "Bronze Sponsor",
+        formattedAmount: "$50",
+        sinceWhen: "past 2 months",
+        githubUrl: "https://github.com/oldsponsor1",
+        websiteUrl: "https://oldsponsor1.com"
+      }
+    ]
+  };
 
   // Configuration
   const twitterQuery = "js-stack";
@@ -40,20 +107,15 @@ export default function SponsorsPage() {
 
   // Fetch functions
   const fetchSponsorsData = useCallback(async () => {
-    setLoading(prev => ({ ...prev, sponsors: true }));
-    setError(prev => ({ ...prev, sponsors: "" }));
+    setLoading(prev => ({ ...prev, analytics: true }));
+    setError(prev => ({ ...prev, analytics: "" }));
     try {
-      const { sponsors, analytics, meta } = await fetchSponsors(true);
-      setSponsors(sponsors);
+      const { analytics } = await fetchSponsors(true);
       setAnalytics(analytics);
-      // Log fallback status for debugging
-      if (meta?.isFallback) {
-        console.log('Using fallback sponsor data');
-      }
     } catch (err) {
-      setError(prev => ({ ...prev, sponsors: err instanceof Error ? err.message : 'Unknown error' }));
+      setError(prev => ({ ...prev, analytics: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
-      setLoading(prev => ({ ...prev, sponsors: false }));
+      setLoading(prev => ({ ...prev, analytics: false }));
     }
   }, []);
 
@@ -61,12 +123,8 @@ export default function SponsorsPage() {
     setLoading(prev => ({ ...prev, twitter: true }));
     setError(prev => ({ ...prev, twitter: "" }));
     try {
-      const { tweets, meta } = await fetchTwitterMentions(twitterQuery, twitterCount);
+      const { tweets } = await fetchTwitterMentions(twitterQuery, twitterCount);
       setTweets(tweets);
-      // Log fallback status for debugging
-      if (meta?.isFallback) {
-        console.log('Using fallback Twitter data');
-      }
     } catch (err) {
       setError(prev => ({ ...prev, twitter: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
@@ -80,257 +138,73 @@ export default function SponsorsPage() {
     fetchTweetsData();
   }, [fetchSponsorsData, fetchTweetsData]);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+    },
+  };
 
   return (
-    <div className="mx-auto min-h-svh max-w-[1280px]">
-      <main className="mx-auto px-4 pt-12">
+    <div className="w-full max-w-full overflow-hidden px-4">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Terminal Header */}
-        <div className="mb-8">
+        <motion.div className="mb-8" variants={containerVariants}>
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2">
-              <Heart className="h-4 w-4 text-primary" />
+              <Heart className="h-5 w-5 text-primary" />
               <span className="font-bold text-lg sm:text-xl">
-                SPONSORS_DASHBOARD.TXT
+                SPONSOR_DASHBOARD.LOG
               </span>
             </div>
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-muted-foreground text-xs">
-              [SPONSORSHIP OVERVIEW]
+            <div className="hidden h-px flex-1 bg-border sm:block" />
+            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+              [LIVE DASHBOARD]
             </span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Analytics Overview */}
         {analytics && (
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-sm">TOTAL_REVENUE</span>
-                </div>
-                <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
-                  ACTIVE
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded border border-border p-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-foreground font-mono text-lg font-bold">{formatCurrency(analytics.totalAmount)}</span>
-                  </div>
-                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                    MONTHLY
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-sm">TOTAL_SPONSORS</span>
-                </div>
-                <div className="rounded border border-border bg-blue-500/20 px-2 py-1 text-xs text-blue-600">
-                  COUNT
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded border border-border p-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-foreground font-mono text-lg font-bold">{analytics.totalSponsors}</span>
-                  </div>
-                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                    SPONSORS
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-sm">GROWTH_RATE</span>
-                </div>
-                <div className="rounded border border-border bg-yellow-500/20 px-2 py-1 text-xs text-yellow-600">
-                  TRENDING
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded border border-border p-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-foreground font-mono text-lg font-bold">+{analytics.monthlyGrowth}%</span>
-                  </div>
-                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                    MONTHLY
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex h-full flex-col justify-between rounded border border-border p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-sm">TOP_TIER</span>
-                </div>
-                <div className="rounded border border-border bg-purple-500/20 px-2 py-1 text-xs text-purple-600">
-                  PREMIUM
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded border border-border p-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-foreground font-mono text-lg font-bold">{analytics.topTier}</span>
-                  </div>
-                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                    TIER
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AnalyticsSection analytics={analytics} />
         )}
 
-        {/* Refresh Controls */}
-        <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="group flex h-full cursor-pointer flex-col justify-between rounded border border-border p-4 transition-colors hover:bg-muted/10" onClick={fetchSponsorsData}>
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Github className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
-                <span className="font-semibold text-sm">REFRESH_SPONSORS</span>
-              </div>
-              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                {loading.sponsors ? "LOADING" : "READY"}
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between rounded border border-border p-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <RefreshCw className={`h-4 w-4 text-primary ${loading.sponsors ? 'animate-spin' : ''}`} />
-                  <span className="text-foreground">Update sponsor data from GitHub</span>
-                </div>
-                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                  FETCH
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* GitHub Sponsors Section */}
+        <motion.div className="mb-8" variants={containerVariants}>
+          <GitHubSponsorsSection sponsorsData={mockGitHubSponsorsData} />
+        </motion.div>
 
-          <div className="group flex h-full cursor-pointer flex-col justify-between rounded border border-border p-4 transition-colors hover:bg-muted/10" onClick={fetchTweetsData}>
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Twitter className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
-                <span className="font-semibold text-sm">REFRESH_TWITTER</span>
-              </div>
-              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                {loading.twitter ? "LOADING" : "READY"}
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between rounded border border-border p-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <RefreshCw className={`h-4 w-4 text-primary ${loading.twitter ? 'animate-spin' : ''}`} />
-                  <span className="text-foreground">Update Twitter mentions</span>
-                </div>
-                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                  FETCH
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Tabs */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-          <div className="flex items-center gap-2">
-            <Heart className="h-4 w-4 text-primary" />
-            <span className="font-bold text-lg sm:text-xl">
-              SPONSORSHIP_SECTIONS.TXT
-            </span>
-          </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
-            [SPONSOR DASHBOARD]
-          </span>
-        </div>
-
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">OVERVIEW</TabsTrigger>
-            <TabsTrigger value="sponsors">SPONSORS</TabsTrigger>
-            <TabsTrigger value="twitter">TWITTER</TabsTrigger>
-          </TabsList>
-
-                  {/* Overview Tab */}
-                  <TabsContent value="overview" className="space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <CurrentSponsorsSection sponsors={sponsors} loading={loading.sponsors} error={error.sponsors} isFallback={true} />
-                      <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} isFallback={true} />
-                    </div>
-          </TabsContent>
-
-          {/* Sponsors Tab */}
-          <TabsContent value="sponsors" className="space-y-6">
-            <CurrentSponsorsSection sponsors={sponsors} loading={loading.sponsors} error={error.sponsors} isFallback={true} />
-            <PotentialSponsorsSection />
-          </TabsContent>
-
-          {/* Twitter Tab */}
-          <TabsContent value="twitter" className="space-y-6">
-            <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} isFallback={true} />
-          </TabsContent>
-        </Tabs>
+        {/* Twitter Feed Section */}
+        <TwitterSection 
+          tweets={tweets} 
+          loading={loading.twitter} 
+          error={error.twitter} 
+        />
 
         {/* Become a Sponsor CTA */}
-        <div className="mt-12 rounded border border-border p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Heart className="h-4 w-4 text-primary" />
-              <span className="font-semibold text-sm">BECOME_A_SPONSOR</span>
-            </div>
-            <div className="rounded border border-border bg-primary/20 px-2 py-1 text-xs text-primary">
-              CALL_TO_ACTION
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div className="rounded border border-border p-4">
-              <div className="text-xs text-muted-foreground mb-2">SPONSORSHIP_OPPORTUNITIES</div>
-              <div className="text-sm text-foreground mb-4">
-                Support js-stack development and get featured recognition across our platforms. 
-                Help us build the best full-stack development tool for the community.
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="default" className="font-mono">
-                  <Heart className="h-4 w-4" />
-                  SPONSOR ON GITHUB
-                </Button>
-                <Button variant="outline" className="font-mono">
-                  <ExternalLink className="h-4 w-4" />
-                  LEARN MORE
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CTASection />
 
         {/* End of File */}
-        <div className="mb-4 mt-8">
+        <motion.div className="mb-4 mt-8" variants={containerVariants}>
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-muted-foreground" />
+              <Terminal className="h-5 w-5 text-muted-foreground" />
               <span className="font-bold text-lg sm:text-xl text-muted-foreground">
                 END_OF_FILE
               </span>
             </div>
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-muted-foreground text-xs">
-              [SPONSORS]
+            <div className="hidden h-px flex-1 bg-border sm:block" />
+            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+              [SPONSORS.LOG]
             </span>
           </div>
-        </div>
-      </main>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
