@@ -10,6 +10,8 @@ export interface Sponsor {
   amount: number;
   tier: string;
   duration: string;
+  frequency: 'one-time' | 'monthly' | 'yearly';
+  startDate: string;
   website?: string;
   github?: string;
   isActive: boolean;
@@ -38,6 +40,8 @@ export async function GET() {
         amount: 500,
         tier: "Gold",
         duration: "6 months",
+        frequency: "monthly",
+        startDate: "2024-01-15",
         website: "https://acme.com",
         github: "https://github.com/acme",
         isActive: true
@@ -49,6 +53,8 @@ export async function GET() {
         amount: 200,
         tier: "Silver",
         duration: "3 months",
+        frequency: "monthly",
+        startDate: "2024-02-01",
         website: "https://techstart.io",
         github: "https://github.com/techstart",
         isActive: true
@@ -60,6 +66,8 @@ export async function GET() {
         amount: 100,
         tier: "Bronze",
         duration: "1 month",
+        frequency: "one-time",
+        startDate: "2024-03-01",
         website: "https://devtools.dev",
         isActive: true
       },
@@ -70,6 +78,8 @@ export async function GET() {
         amount: 1000,
         tier: "Platinum",
         duration: "12 months",
+        frequency: "yearly",
+        startDate: "2024-01-01",
         website: "https://opensource.org",
         isActive: true
       },
@@ -80,6 +90,8 @@ export async function GET() {
         amount: 150,
         tier: "Silver",
         duration: "4 months",
+        frequency: "monthly",
+        startDate: "2024-02-15",
         website: "https://edutech.edu",
         isActive: true
       },
@@ -90,7 +102,33 @@ export async function GET() {
         amount: 300,
         tier: "Gold",
         duration: "8 months",
+        frequency: "monthly",
+        startDate: "2024-01-20",
         github: "https://github.com/cloudnative",
+        isActive: true
+      },
+      {
+        id: "7",
+        name: "StartupXYZ",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=startup",
+        amount: 250,
+        tier: "Silver",
+        duration: "2 months",
+        frequency: "one-time",
+        startDate: "2024-03-10",
+        website: "https://startupxyz.io",
+        isActive: true
+      },
+      {
+        id: "8",
+        name: "Enterprise Corp",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=enterprise",
+        amount: 2000,
+        tier: "Platinum",
+        duration: "24 months",
+        frequency: "yearly",
+        startDate: "2024-01-01",
+        website: "https://enterprise.com",
         isActive: true
       }
     ];

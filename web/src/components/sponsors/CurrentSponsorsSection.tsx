@@ -13,6 +13,8 @@ interface Sponsor {
   amount: number;
   tier: string;
   duration: string;
+  frequency: 'one-time' | 'monthly' | 'yearly';
+  startDate: string;
   website?: string;
   github?: string;
 }
@@ -32,20 +34,45 @@ export default function CurrentSponsorsSection({ sponsors, loading, error }: Cur
     }).format(amount);
   };
 
-  const getTierColor = (tier: string) => {
-    switch (tier.toLowerCase()) {
-      case 'platinum':
-        return 'bg-purple-500/20 text-purple-600 border-purple-500/30';
-      case 'gold':
-        return 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30';
-      case 'silver':
-        return 'bg-gray-500/20 text-gray-600 border-gray-500/30';
-      case 'bronze':
-        return 'bg-orange-500/20 text-orange-600 border-orange-500/30';
+  const getFrequencyIcon = (frequency: string) => {
+    switch (frequency) {
+      case 'one-time':
+        return '💳';
+      case 'monthly':
+        return '📅';
+      case 'yearly':
+        return '🗓️';
       default:
-        return 'bg-blue-500/20 text-blue-600 border-blue-500/30';
+        return '💰';
     }
   };
+
+  const getFrequencyLabel = (frequency: string) => {
+    switch (frequency) {
+      case 'one-time':
+        return 'ONE-TIME';
+      case 'monthly':
+        return 'MONTHLY';
+      case 'yearly':
+        return 'YEARLY';
+      default:
+        return 'SPONSOR';
+    }
+  };
+
+  const getFrequencyColor = (frequency: string) => {
+    switch (frequency) {
+      case 'one-time':
+        return 'bg-blue-500/20 text-blue-600 border-blue-500/30';
+      case 'monthly':
+        return 'bg-green-500/20 text-green-600 border-green-500/30';
+      case 'yearly':
+        return 'bg-purple-500/20 text-purple-600 border-purple-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-600 border-gray-500/30';
+    }
+  };
+
 
   const getTierIcon = (tier: string) => {
     switch (tier.toLowerCase()) {
@@ -59,6 +86,21 @@ export default function CurrentSponsorsSection({ sponsors, loading, error }: Cur
         return '🥉';
       default:
         return '⭐';
+    }
+  };
+
+  const getTierColor = (tier: string) => {
+    switch (tier.toLowerCase()) {
+      case 'platinum':
+        return 'bg-purple-500/20 text-purple-600 border-purple-500/30';
+      case 'gold':
+        return 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30';
+      case 'silver':
+        return 'bg-gray-500/20 text-gray-600 border-gray-500/30';
+      case 'bronze':
+        return 'bg-orange-500/20 text-orange-600 border-orange-500/30';
+      default:
+        return 'bg-blue-500/20 text-blue-600 border-blue-500/30';
     }
   };
 
@@ -128,13 +170,26 @@ export default function CurrentSponsorsSection({ sponsors, loading, error }: Cur
                       {formatCurrency(sponsor.amount)}
                     </span>
                     <span className="text-xs text-muted-foreground font-mono">
-                      /mo
+                      {sponsor.frequency === 'one-time' ? '' : 
+                       sponsor.frequency === 'monthly' ? '/mo' : 
+                       sponsor.frequency === 'yearly' ? '/yr' : ''}
                     </span>
                   </div>
                 </div>
 
                 {/* Sponsor Details */}
-                <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="flex items-center justify-between rounded border border-border p-2">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <span className="font-mono">FREQUENCY</span>
+                    </div>
+                    <Badge 
+                      variant="outline" 
+                      className={cn("text-xs font-mono border", getFrequencyColor(sponsor.frequency))}
+                    >
+                      {getFrequencyIcon(sponsor.frequency)} {getFrequencyLabel(sponsor.frequency)}
+                    </Badge>
+                  </div>
                   <div className="flex items-center justify-between rounded border border-border p-2">
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <span className="font-mono">DURATION</span>

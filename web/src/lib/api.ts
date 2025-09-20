@@ -15,6 +15,7 @@ export interface NpmPackageData {
   };
 }
 
+
 export interface GitHubRepoData {
   repo: string;
   info: {

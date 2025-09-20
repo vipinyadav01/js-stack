@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TwitterFeedSection from "@/components/sponsors/TwitterFeedSection";
 import CurrentSponsorsSection from "@/components/sponsors/CurrentSponsorsSection";
 import PotentialSponsorsSection from "@/components/sponsors/PotentialSponsorsSection";
-import SponsorshipTiers from "@/components/sponsors/SponsorshipTiers";
 import { 
   fetchSponsors, 
   fetchTwitterMentions, 
@@ -250,11 +249,10 @@ export default function SponsorsPage() {
         </div>
 
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">OVERVIEW</TabsTrigger>
             <TabsTrigger value="sponsors">SPONSORS</TabsTrigger>
             <TabsTrigger value="twitter">TWITTER</TabsTrigger>
-            <TabsTrigger value="tiers">TIERS</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -263,7 +261,6 @@ export default function SponsorsPage() {
               <CurrentSponsorsSection sponsors={sponsors} loading={loading.sponsors} error={error.sponsors} />
               <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} />
             </div>
-            <SponsorshipTiers />
           </TabsContent>
 
           {/* Sponsors Tab */}
@@ -275,11 +272,6 @@ export default function SponsorsPage() {
           {/* Twitter Tab */}
           <TabsContent value="twitter" className="space-y-6">
             <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} />
-          </TabsContent>
-
-          {/* Tiers Tab */}
-          <TabsContent value="tiers" className="space-y-6">
-            <SponsorshipTiers />
           </TabsContent>
         </Tabs>
 

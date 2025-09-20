@@ -1,6 +1,6 @@
 "use client";
 
-import { Twitter, Heart, MessageCircle, Repeat2, ExternalLink, RefreshCw, AlertCircle } from "lucide-react";
+import { Twitter, Heart, MessageCircle, Repeat2, ExternalLink, RefreshCw, AlertCircle, Verified } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -11,6 +11,7 @@ interface TwitterTweet {
     name: string;
     username: string;
     avatar: string;
+    verified?: boolean;
   };
   engagement: {
     likes: number;
@@ -71,64 +72,77 @@ export default function TwitterFeedSection({ tweets, loading, error }: TwitterFe
           </div>
         )}
 
-        {/* Tweets */}
+        {/* Tweets - Twitter-like Design */}
         {!loading && !error && tweets.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-1">
             {tweets.map((tweet) => (
-              <div key={tweet.id} className="rounded border border-border p-3 hover:bg-muted/5 transition-colors">
-                {/* Tweet Header */}
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={tweet.user.avatar} alt={tweet.user.name} />
-                      <AvatarFallback className="text-xs">
-                        {tweet.user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <span className="text-xs font-mono font-semibold text-foreground">
+              <div key={tweet.id} className="group relative border-b border-border/50 p-4 hover:bg-muted/30 transition-colors cursor-pointer">
+                {/* Tweet Header - Twitter Style */}
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-10 w-10 flex-shrink-0">
+                    <AvatarImage src={tweet.user.avatar} alt={tweet.user.name} />
+                    <AvatarFallback className="text-xs font-medium">
+                      {tweet.user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex-1 min-w-0">
+                    {/* User Info */}
+                    <div className="flex items-center gap-1 mb-1">
+                      <span className="font-semibold text-sm text-foreground truncate">
                         {tweet.user.name}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      {tweet.user.verified && (
+                        <Verified className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                      )}
+                      <span className="text-sm text-muted-foreground truncate">
                         @{tweet.user.username}
                       </span>
+                      <span className="text-sm text-muted-foreground">·</span>
+                      <span className="text-sm text-muted-foreground">
+                        {tweet.timestamp}
+                      </span>
+                      <a 
+                        href={tweet.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-primary" />
+                      </a>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {tweet.timestamp}
-                    </span>
-                    <a 
-                      href={tweet.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                </div>
 
-                {/* Tweet Content */}
-                <div className="mb-3">
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {tweet.text}
-                  </p>
-                </div>
+                    {/* Tweet Content */}
+                    <div className="mb-3">
+                      <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                        {tweet.text}
+                      </p>
+                    </div>
 
-                {/* Tweet Engagement */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <MessageCircle className="h-3 w-3" />
-                    <span className="font-mono">{formatEngagement(tweet.engagement.replies)}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Repeat2 className="h-3 w-3" />
-                    <span className="font-mono">{formatEngagement(tweet.engagement.retweets)}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Heart className="h-3 w-3" />
-                    <span className="font-mono">{formatEngagement(tweet.engagement.likes)}</span>
+                    {/* Tweet Actions - Twitter Style */}
+                    <div className="flex items-center justify-between max-w-md">
+                      <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-blue-500 transition-colors group/action">
+                        <MessageCircle className="h-4 w-4 group-hover/action:scale-110 transition-transform" />
+                        <span className="text-xs">
+                          {formatEngagement(tweet.engagement.replies)}
+                        </span>
+                      </button>
+                      
+                      <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-green-500 transition-colors group/action">
+                        <Repeat2 className="h-4 w-4 group-hover/action:scale-110 transition-transform" />
+                        <span className="text-xs">
+                          {formatEngagement(tweet.engagement.retweets)}
+                        </span>
+                      </button>
+                      
+                      <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-red-500 transition-colors group/action">
+                        <Heart className="h-4 w-4 group-hover/action:scale-110 transition-transform" />
+                        <span className="text-xs">
+                          {formatEngagement(tweet.engagement.likes)}
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -138,19 +152,20 @@ export default function TwitterFeedSection({ tweets, loading, error }: TwitterFe
 
         {/* Empty State */}
         {!loading && !error && tweets.length === 0 && (
-          <div className="rounded border border-border p-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Twitter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">No recent mentions found</span>
-            </div>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Twitter className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No mentions found</h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              No recent tweets mentioning js-stack were found. Try again later or check back for updates.
+            </p>
           </div>
         )}
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between rounded border border-border p-3">
+        <div className="flex items-center justify-between rounded border border-border p-3 mt-4">
           <div className="flex items-center gap-2 text-sm">
             <Twitter className="h-4 w-4 text-primary" />
-            <span className="text-foreground">Top 20 recent mentions of js-stack</span>
+            <span className="text-foreground">Top {tweets.length} recent mentions of js-stack</span>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="font-mono text-xs">

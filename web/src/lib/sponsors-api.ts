@@ -7,6 +7,8 @@ export interface Sponsor {
   amount: number;
   tier: string;
   duration: string;
+  frequency: 'one-time' | 'monthly' | 'yearly';
+  startDate: string;
   website?: string;
   github?: string;
   isActive: boolean;
@@ -19,6 +21,7 @@ export interface TwitterTweet {
     name: string;
     username: string;
     avatar: string;
+    verified?: boolean;
   };
   engagement: {
     likes: number;
@@ -171,6 +174,8 @@ export function validateSponsor(sponsor: unknown): sponsor is Sponsor {
     typeof (sponsor as Record<string, unknown>).amount === 'number' &&
     typeof (sponsor as Record<string, unknown>).tier === 'string' &&
     typeof (sponsor as Record<string, unknown>).duration === 'string' &&
+    typeof (sponsor as Record<string, unknown>).frequency === 'string' &&
+    typeof (sponsor as Record<string, unknown>).startDate === 'string' &&
     typeof (sponsor as Record<string, unknown>).isActive === 'boolean'
   );
 }

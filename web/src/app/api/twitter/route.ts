@@ -10,6 +10,7 @@ export interface TwitterTweet {
     name: string;
     username: string;
     avatar: string;
+    verified?: boolean;
   };
   engagement: {
     likes: number;
@@ -37,14 +38,15 @@ export async function GET() {
         user: {
           name: "Sarah Developer",
           username: "sarahdev",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah",
+          verified: true
         },
         engagement: {
           likes: 24,
           retweets: 8,
           replies: 3
         },
-        timestamp: "2 hours ago",
+        timestamp: "2h",
         url: "https://twitter.com/sarahdev/status/123456789"
       },
       {
@@ -53,14 +55,15 @@ export async function GET() {
         user: {
           name: "Mike Startup",
           username: "mikestartup",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike",
+          verified: false
         },
         engagement: {
           likes: 18,
           retweets: 5,
           replies: 2
         },
-        timestamp: "5 hours ago",
+        timestamp: "5h",
         url: "https://twitter.com/mikestartup/status/123456788"
       },
       {
@@ -69,14 +72,15 @@ export async function GET() {
         user: {
           name: "Alex Security",
           username: "alexsecurity",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=alex",
+          verified: true
         },
         engagement: {
           likes: 31,
           retweets: 12,
           replies: 7
         },
-        timestamp: "1 day ago",
+        timestamp: "1d",
         url: "https://twitter.com/alexsecurity/status/123456787"
       },
       {
@@ -85,14 +89,15 @@ export async function GET() {
         user: {
           name: "Emma Coder",
           username: "emmacoder",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=emma"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=emma",
+          verified: false
         },
         engagement: {
           likes: 15,
           retweets: 4,
           replies: 1
         },
-        timestamp: "2 days ago",
+        timestamp: "2d",
         url: "https://twitter.com/emmacoder/status/123456786"
       },
       {
@@ -101,14 +106,15 @@ export async function GET() {
         user: {
           name: "Database Dev",
           username: "dbdev",
-          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=database"
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=database",
+          verified: true
         },
         engagement: {
           likes: 22,
           retweets: 6,
           replies: 4
         },
-        timestamp: "3 days ago",
+        timestamp: "3d",
         url: "https://twitter.com/dbdev/status/123456785"
       }
     ];
