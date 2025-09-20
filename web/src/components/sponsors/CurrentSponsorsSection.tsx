@@ -23,9 +23,10 @@ interface CurrentSponsorsSectionProps {
   sponsors: Sponsor[];
   loading: boolean;
   error: string;
+  isFallback?: boolean;
 }
 
-export default function CurrentSponsorsSection({ sponsors, loading, error }: CurrentSponsorsSectionProps) {
+export default function CurrentSponsorsSection({ sponsors, loading, error, isFallback = false }: CurrentSponsorsSectionProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -111,8 +112,15 @@ export default function CurrentSponsorsSection({ sponsors, loading, error }: Cur
           <Users className="h-4 w-4 text-primary" />
           <span className="font-semibold text-sm">CURRENT_SPONSORS</span>
         </div>
-        <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
-          {sponsors.length} ACTIVE
+        <div className="flex items-center gap-2">
+          {isFallback && (
+            <div className="rounded border border-orange-500/30 bg-orange-500/20 px-2 py-1 text-xs text-orange-600">
+              DEMO DATA
+            </div>
+          )}
+          <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
+            {sponsors.length} ACTIVE
+          </div>
         </div>
       </div>
 
@@ -244,10 +252,16 @@ export default function CurrentSponsorsSection({ sponsors, loading, error }: Cur
 
         {/* Empty State */}
         {!loading && !error && sponsors.length === 0 && (
-          <div className="rounded border border-border p-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">No active sponsors found</span>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Users className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No sponsors yet</h3>
+            <p className="text-sm text-muted-foreground max-w-sm mb-4">
+              Be the first to support js-stack development! Your sponsorship helps us build better tools for the community.
+            </p>
+            <div className="rounded border border-orange-500/30 bg-orange-500/20 px-3 py-2">
+              <span className="text-xs text-orange-600 font-mono">
+                🚀 BECOME THE FIRST SPONSOR
+              </span>
             </div>
           </div>
         )}

@@ -53,6 +53,12 @@ export interface ApiResponse<T> {
 export async function fetchSponsors(includeAnalytics: boolean = true): Promise<{
   sponsors: Sponsor[];
   analytics: SponsorAnalytics | null;
+  meta?: {
+    count: number;
+    hasRealData: boolean;
+    isFallback: boolean;
+    timestamp: string;
+  };
 }> {
   try {
     const params = new URLSearchParams();
@@ -63,23 +69,94 @@ export async function fetchSponsors(includeAnalytics: boolean = true): Promise<{
     const response = await fetch(`/api/sponsors?${params.toString()}`);
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.warn(`API returned ${response.status}, using fallback data`);
+      return getFallbackSponsorsData();
     }
 
     const data = await response.json();
     
     return {
       sponsors: data.sponsors || [],
-      analytics: data.analytics || null
+      analytics: data.analytics || null,
+      meta: data.meta || null
     };
   } catch (error) {
-    console.error('Error fetching sponsors:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to fetch sponsors');
+    console.warn('Error fetching sponsors, using fallback data:', error);
+    return getFallbackSponsorsData();
   }
 }
 
+// Fallback sponsors data when API is not available
+function getFallbackSponsorsData(): {
+  sponsors: Sponsor[];
+  analytics: SponsorAnalytics | null;
+  meta: {
+    count: number;
+    hasRealData: boolean;
+    isFallback: boolean;
+    timestamp: string;
+  };
+} {
+  const fallbackSponsors: Sponsor[] = [
+    {
+      id: "fallback-1",
+      name: "Sample Sponsor",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sample1",
+      amount: 100,
+      tier: "Bronze",
+      duration: "1 month",
+      frequency: "one-time",
+      startDate: "2024-01-01",
+      website: "https://example.com",
+      github: "https://github.com/sample1",
+      isActive: true
+    },
+    {
+      id: "fallback-2",
+      name: "Demo Company",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo",
+      amount: 250,
+      tier: "Silver",
+      duration: "3 months",
+      frequency: "monthly",
+      startDate: "2024-02-01",
+      website: "https://demo.com",
+      github: "https://github.com/demo",
+      isActive: true
+    }
+  ];
+
+  return {
+    sponsors: fallbackSponsors,
+    analytics: {
+      totalAmount: fallbackSponsors.reduce((sum, sponsor) => sum + sponsor.amount, 0),
+      totalSponsors: fallbackSponsors.length,
+      monthlyGrowth: 0,
+      topTier: fallbackSponsors.length > 0 ? fallbackSponsors[0].tier : 'none',
+      averageAmount: fallbackSponsors.length > 0 
+        ? Math.round(fallbackSponsors.reduce((sum, sponsor) => sum + sponsor.amount, 0) / fallbackSponsors.length)
+        : 0
+    },
+    meta: {
+      count: fallbackSponsors.length,
+      hasRealData: false,
+      isFallback: true,
+      timestamp: new Date().toISOString()
+    }
+  };
+}
+
 // Fetch Twitter mentions from the API
-export async function fetchTwitterMentions(query: string = 'js-stack', count: number = 20): Promise<TwitterTweet[]> {
+export async function fetchTwitterMentions(query: string = 'js-stack', count: number = 20): Promise<{
+  tweets: TwitterTweet[];
+  meta?: {
+    query: string;
+    count: number;
+    hasRealData: boolean;
+    isFallback: boolean;
+    timestamp: string;
+  };
+}> {
   try {
     const params = new URLSearchParams({
       q: query,
@@ -89,16 +166,80 @@ export async function fetchTwitterMentions(query: string = 'js-stack', count: nu
     const response = await fetch(`/api/twitter?${params.toString()}`);
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.warn(`Twitter API returned ${response.status}, using fallback data`);
+      return getFallbackTwitterData();
     }
 
     const data = await response.json();
     
-    return data.tweets || [];
+    return {
+      tweets: data.tweets || [],
+      meta: data.meta || null
+    };
   } catch (error) {
-    console.error('Error fetching Twitter mentions:', error);
-    throw new Error(error instanceof Error ? error.message : 'Failed to fetch Twitter mentions');
+    console.warn('Error fetching Twitter mentions, using fallback data:', error);
+    return getFallbackTwitterData();
   }
+}
+
+// Fallback Twitter data when API is not available
+function getFallbackTwitterData(): {
+  tweets: TwitterTweet[];
+  meta: {
+    query: string;
+    count: number;
+    hasRealData: boolean;
+    isFallback: boolean;
+    timestamp: string;
+  };
+} {
+  const fallbackTweets: TwitterTweet[] = [
+    {
+      id: "fallback-1",
+      text: "Just discovered js-stack! Amazing CLI tool for scaffolding full-stack apps. The TypeScript integration is seamless 🚀 #JavaScript #FullStack",
+      user: {
+        name: "Sample User",
+        username: "sampleuser",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sample1",
+        verified: false
+      },
+      engagement: {
+        likes: 5,
+        retweets: 2,
+        replies: 1
+      },
+      timestamp: "2h",
+      url: "https://twitter.com/sampleuser/status/123456789"
+    },
+    {
+      id: "fallback-2", 
+      text: "js-stack saved me hours of setup time. The React + Express template with Docker is exactly what I needed for my project 💪",
+      user: {
+        name: "Demo Developer",
+        username: "demodev",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo",
+        verified: false
+      },
+      engagement: {
+        likes: 8,
+        retweets: 3,
+        replies: 2
+      },
+      timestamp: "5h",
+      url: "https://twitter.com/demodev/status/123456788"
+    }
+  ];
+
+  return {
+    tweets: fallbackTweets,
+    meta: {
+      query: "js-stack",
+      count: fallbackTweets.length,
+      hasRealData: false,
+      isFallback: true,
+      timestamp: new Date().toISOString()
+    }
+  };
 }
 
 // Format currency for display

@@ -17,6 +17,7 @@ import {
   ExternalLink,
   ChevronRight,
   Terminal,
+  Code2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -59,6 +60,72 @@ const quickActions = [
   }
 ];
 
+// Logo component with fallback
+function Logo({ size = "md", className }: { size?: "sm" | "md" | "lg", className?: string }) {
+  const [imageError, setImageError] = useState(false);
+  
+  const sizeClasses = {
+    sm: { container: "h-6 w-6", icon: "h-4 w-4", pulse: "w-0.5 h-0.5" },
+    md: { container: "h-8 w-8", icon: "h-5 w-5", pulse: "w-1 h-1" },
+    lg: { container: "h-10 w-10", icon: "h-6 w-6", pulse: "w-1.5 h-1.5" }
+  };
+  
+  const sizes = sizeClasses[size];
+  
+  return (
+    <div className={cn("relative", className)}>
+      <div className={cn(
+        "rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden",
+        sizes.container
+      )}>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5" />
+        
+        {!imageError ? (
+          <Image
+            src="/images/favicon-96x96.png"
+            alt="JS-Stack Logo"
+            width={32}
+            height={32}
+            className={cn("object-contain", sizes.icon)}
+            onError={() => setImageError(true)}
+            priority
+          />
+        ) : (
+          <Code2 className={cn("text-primary", sizes.icon)} />
+        )}
+        
+        <div className={cn(
+          "absolute bottom-0.5 right-0.5 bg-primary animate-pulse rounded-full",
+          sizes.pulse
+        )} />
+      </div>
+      <div className="absolute inset-0 rounded border border-primary/20 blur-sm -z-10" />
+    </div>
+  );
+}
+
+// Brand text component
+function BrandText({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+  const textSizes = {
+    sm: { title: "text-sm", subtitle: "text-xs" },
+    md: { title: "text-lg", subtitle: "text-sm" },
+    lg: { title: "text-xl", subtitle: "text-base" }
+  };
+  
+  const sizes = textSizes[size];
+  
+  return (
+    <div className="flex flex-col">
+      <span className={cn("font-bold font-mono text-foreground", sizes.title)}>
+        JS-Stack
+      </span>
+      <span className={cn("font-mono text-muted-foreground", sizes.subtitle)}>
+        create-js-stack
+      </span>
+    </div>
+  );
+}
+
 export function Navigation() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -88,29 +155,8 @@ export function Navigation() {
             href="/"
             className="hover:opacity-80 transition-all duration-200 group flex items-center gap-3"
           >
-            <div className="relative">
-              <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-                <Image
-                  src="/favicon-96x96.png"
-                  alt="JS-Stack Logo"
-                  width={32}
-                  height={32}
-                  className="h-7 w-7 sm:h-8 sm:w-8 object-contain"
-                  style={{ minWidth: 28, minHeight: 28 }}
-                />
-                <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
-              </div>
-              <div className="absolute inset-0 rounded border border-primary/30 blur-sm" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold font-mono text-foreground text-lg">
-                JS-Stack
-              </span>
-              <span className="font-mono text-muted-foreground text-sm">
-                create-js-stack
-              </span>
-            </div>
+            <Logo size="md" />
+            <BrandText size="md" />
           </Link>
         </div>
 
@@ -120,29 +166,8 @@ export function Navigation() {
             href="/"
             className="hover:opacity-80 transition-opacity group flex items-center gap-2"
           >
-            <div className="relative">
-              <div className="h-6 w-6 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-                <Image
-                  src="/favicon-96x96.png"
-                  alt="JS-Stack Logo"
-                  width={32}
-                  height={32}
-                  className="h-7 w-7 sm:h-8 sm:w-8 object-contain"
-                  style={{ minWidth: 28, minHeight: 28 }}
-                />
-                <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
-              </div>
-              <div className="absolute inset-0 rounded border border-primary/30 blur-sm" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold font-mono text-foreground text-sm">
-                JS-Stack
-              </span>
-              <span className="font-mono text-muted-foreground text-xs">
-                create-js-stack
-              </span>
-            </div>
+            <Logo size="sm" />
+            <BrandText size="sm" />
           </Link>
         </div>
 
@@ -211,6 +236,7 @@ export function Navigation() {
             </SheetTrigger>
             <SheetContent side="right" className="w-80 p-0 bg-background/95 backdrop-blur-xl border-l border-border">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              
               {/* Mobile Header */}
               <div className="p-6 border-b border-border">
                 <Link
@@ -218,29 +244,8 @@ export function Navigation() {
                   className="group flex items-center gap-3"
                   onClick={() => setMobileOpen(false)}
                 >
-                  <div className="relative">
-                    <div className="h-8 w-8 rounded border border-primary bg-background flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-                      <Image
-                        src="/favicon-96x96.png"
-                        alt="JS-Stack Logo"
-                        width={32}
-                        height={32}
-                        className="h-7 w-7 sm:h-8 sm:w-8 object-contain"
-                        style={{ minWidth: 28, minHeight: 28 }}
-                      />
-                      <div className="absolute bottom-1 right-1 w-1 h-1 bg-primary animate-pulse" />
-                    </div>
-                    <div className="absolute inset-0 rounded border border-primary/30 blur-sm" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold font-mono text-foreground text-lg">
-                      JS-Stack
-                    </span>
-                    <span className="font-mono text-muted-foreground text-sm">
-                      create-js-stack
-                    </span>
-                  </div>
+                  <Logo size="md" />
+                  <BrandText size="md" />
                 </Link>
               </div>
 
@@ -322,7 +327,6 @@ export function Navigation() {
             </SheetContent>
           </Sheet>
         </div>
-
       </div>
     </header>
   );

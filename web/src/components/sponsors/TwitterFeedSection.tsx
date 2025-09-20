@@ -26,9 +26,10 @@ interface TwitterFeedSectionProps {
   tweets: TwitterTweet[];
   loading: boolean;
   error: string;
+  isFallback?: boolean;
 }
 
-export default function TwitterFeedSection({ tweets, loading, error }: TwitterFeedSectionProps) {
+export default function TwitterFeedSection({ tweets, loading, error, isFallback = false }: TwitterFeedSectionProps) {
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
@@ -46,8 +47,15 @@ export default function TwitterFeedSection({ tweets, loading, error }: TwitterFe
           <Twitter className="h-4 w-4 text-primary" />
           <span className="font-semibold text-sm">TWITTER_MENTIONS</span>
         </div>
-        <div className="rounded border border-border bg-blue-500/20 px-2 py-1 text-xs text-blue-600">
-          LIVE FEED
+        <div className="flex items-center gap-2">
+          {isFallback && (
+            <div className="rounded border border-orange-500/30 bg-orange-500/20 px-2 py-1 text-xs text-orange-600">
+              DEMO DATA
+            </div>
+          )}
+          <div className="rounded border border-border bg-blue-500/20 px-2 py-1 text-xs text-blue-600">
+            LIVE FEED
+          </div>
         </div>
       </div>
 
@@ -154,9 +162,9 @@ export default function TwitterFeedSection({ tweets, loading, error }: TwitterFe
         {!loading && !error && tweets.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Twitter className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No mentions found</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">No posts or comments yet</h3>
             <p className="text-sm text-muted-foreground max-w-sm">
-              No recent tweets mentioning js-stack were found. Try again later or check back for updates.
+              No recent mentions of &quot;js-stack&quot; found on Twitter. Be the first to share your experience with the community!
             </p>
           </div>
         )}

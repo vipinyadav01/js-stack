@@ -43,9 +43,13 @@ export default function SponsorsPage() {
     setLoading(prev => ({ ...prev, sponsors: true }));
     setError(prev => ({ ...prev, sponsors: "" }));
     try {
-      const { sponsors, analytics } = await fetchSponsors(true);
+      const { sponsors, analytics, meta } = await fetchSponsors(true);
       setSponsors(sponsors);
       setAnalytics(analytics);
+      // Log fallback status for debugging
+      if (meta?.isFallback) {
+        console.log('Using fallback sponsor data');
+      }
     } catch (err) {
       setError(prev => ({ ...prev, sponsors: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
@@ -57,8 +61,12 @@ export default function SponsorsPage() {
     setLoading(prev => ({ ...prev, twitter: true }));
     setError(prev => ({ ...prev, twitter: "" }));
     try {
-      const tweets = await fetchTwitterMentions(twitterQuery, twitterCount);
+      const { tweets, meta } = await fetchTwitterMentions(twitterQuery, twitterCount);
       setTweets(tweets);
+      // Log fallback status for debugging
+      if (meta?.isFallback) {
+        console.log('Using fallback Twitter data');
+      }
     } catch (err) {
       setError(prev => ({ ...prev, twitter: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
@@ -255,23 +263,23 @@ export default function SponsorsPage() {
             <TabsTrigger value="twitter">TWITTER</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <CurrentSponsorsSection sponsors={sponsors} loading={loading.sponsors} error={error.sponsors} />
-              <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} />
-            </div>
+                  {/* Overview Tab */}
+                  <TabsContent value="overview" className="space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <CurrentSponsorsSection sponsors={sponsors} loading={loading.sponsors} error={error.sponsors} isFallback={true} />
+                      <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} isFallback={true} />
+                    </div>
           </TabsContent>
 
           {/* Sponsors Tab */}
           <TabsContent value="sponsors" className="space-y-6">
-            <CurrentSponsorsSection sponsors={sponsors} loading={loading.sponsors} error={error.sponsors} />
+            <CurrentSponsorsSection sponsors={sponsors} loading={loading.sponsors} error={error.sponsors} isFallback={true} />
             <PotentialSponsorsSection />
           </TabsContent>
 
           {/* Twitter Tab */}
           <TabsContent value="twitter" className="space-y-6">
-            <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} />
+            <TwitterFeedSection tweets={tweets} loading={loading.twitter} error={error.twitter} isFallback={true} />
           </TabsContent>
         </Tabs>
 
