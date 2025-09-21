@@ -159,7 +159,7 @@ export async function fetchTwitterMentions(query: string = 'js-stack', count: nu
 }> {
   try {
     const params = new URLSearchParams({
-      q: query,
+      query: query,
       count: count.toString()
     });
 

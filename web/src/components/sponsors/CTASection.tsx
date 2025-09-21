@@ -50,7 +50,7 @@ export default function CTASection() {
               </a>
             </Button>
             <Button variant="outline" className="font-mono" asChild>
-              <a href="mailto:vipinyadav01@example.com">
+              <a href="mailto:vipinxdev@gmail.com">
                 <ExternalLink className="h-4 w-4" />
                 CONTACT US
               </a>

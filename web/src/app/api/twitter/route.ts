@@ -60,90 +60,13 @@ export interface TwitterAPIResponse {
   };
 }
 
-// Helper function to generate realistic timestamps
-function generateRealisticTimestamp(hoursAgo: number): { created_at: string; timestamp: string } {
-  const now = new Date();
-  const tweetTime = new Date(now.getTime() - (hoursAgo * 60 * 60 * 1000));
-  
-  return {
-    created_at: tweetTime.toISOString(),
-    timestamp: hoursAgo < 24 ? `${hoursAgo}h` : `${Math.floor(hoursAgo / 24)}d`
-  };
-}
-
-// Enhanced mock data with realistic engagement patterns
-function generateMockTweets(): TwitterTweet[] {
-
-  
-  return [
-    {
-      id: "1742891234567890123",
-      text: "Just shipped a new feature using js-stack! The development experience is incredible - from zero to production in minutes. The TypeScript + React + Express combo with built-in Docker support is a game changer 🚀\n\n#JavaScript #FullStack #WebDev #TypeScript",
-      user: {
-        id: "987654321",
-        name: "Sarah Chen",
-        username: "sarahbuilds",
-        avatar: "https://api.dicebear.com/8.x/avataaars/svg?seed=sarah&backgroundColor=b6e3f4&eyes=default&mouth=smile",
-        verified: true,
-        followers_count: 15420,
-        following_count: 892,
-        description: "Senior Full Stack Developer @TechCorp | React, Node.js, TypeScript enthusiast | Building the future one commit at a time"
-      },
-      engagement: {
-        likes: 247,
-        retweets: 89,
-        replies: 23,
-        bookmarks: 156,
-        views: 12847
-      },
-      ...generateRealisticTimestamp(3),
-      url: "https://twitter.com/sarahbuilds/status/1742891234567890123",
-      reply_settings: 'everyone',
-      is_retweet: false,
-      is_reply: false,
-      hashtags: ["JavaScript", "FullStack", "WebDev", "TypeScript"],
-      mentions: [],
-      urls: []
-    },
-    {
-      id: "1742789876543210987",
-      text: "Been using js-stack for the past month in production. Here's what I love:\n\n✅ Zero config setup\n✅ Hot reload that actually works\n✅ Built-in testing framework\n✅ Docker integration\n✅ TypeScript out of the box\n\nThis is the future of full-stack development 💪",
-      user: {
-        id: "456789123",
-        name: "Alex Rodriguez",
-        username: "alexcodes",
-        avatar: "https://api.dicebear.com/8.x/avataaars/svg?seed=alex&backgroundColor=ffb3ba&eyes=wink&mouth=smile",
-        verified: false,
-        followers_count: 8934,
-        following_count: 1247,
-        description: "Full Stack Engineer | Open Source Contributor | Coffee-driven development ☕"
-      },
-      engagement: {
-        likes: 189,
-        retweets: 67,
-        replies: 34,
-        bookmarks: 98,
-        views: 8923
-      },
-      ...generateRealisticTimestamp(7),
-      url: "https://twitter.com/alexcodes/status/1742789876543210987",
-      reply_settings: 'everyone',
-      is_retweet: false,
-      is_reply: false,
-      hashtags: [],
-      mentions: [],
-      urls: []
-    }
-  ];
-}
-
 // Simulate Twitter API rate limiting and response structure
 function simulateRateLimit() {
   const resetTime = new Date();
   resetTime.setMinutes(resetTime.getMinutes() + 15);
   
   return {
-    remaining: Math.floor(Math.random() * 100) + 50, // Random remaining requests
+    remaining: Math.floor(Math.random() * 100) + 50,  
     reset_time: resetTime.toISOString()
   };
 }
@@ -151,7 +74,7 @@ function simulateRateLimit() {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('query') || 'js-stack';
+    const query = searchParams.get('query') || searchParams.get('q') || 'js-stack';
     const count = Math.min(parseInt(searchParams.get('count') || '20'), 100);
     const nextToken = searchParams.get('next_token');
 
@@ -202,9 +125,7 @@ export async function GET(request: Request) {
     } catch (error) {
       console.warn('Twitter API not available, using fallback data:', error);
     }
-
-    // Use real data if available, otherwise use enhanced mock data
-    const tweets = hasRealData ? realTweets : generateMockTweets();
+    const tweets = hasRealData ? realTweets : [];
     const filteredTweets = tweets.slice(0, count);
 
     const response: TwitterAPIResponse = {
@@ -246,7 +167,6 @@ export async function GET(request: Request) {
   }
 }
 
-// Helper function to process real Twitter API data
 function processTwitterData(data: unknown): TwitterTweet[] {
   if (!data || typeof data !== 'object' || !('data' in data)) {
     return [];

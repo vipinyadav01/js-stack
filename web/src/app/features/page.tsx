@@ -99,23 +99,89 @@ export default function Features() {
   ];
 
   return (
-    <div className="mx-auto min-h-svh max-w-[1280px]">
-      <main className="mx-auto px-4 pt-12">
+    <div className="w-full max-w-full overflow-hidden px-4">
+      <main className="mx-auto max-w-[1280px]">
         {/* Terminal Header */}
         <div className="mb-8">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-primary" />
+              <Terminal className="h-5 w-5 text-primary" />
               <span className="font-bold text-lg sm:text-xl">
                 FEATURES.TXT
               </span>
             </div>
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-muted-foreground text-xs">
+            <div className="hidden h-px flex-1 bg-border sm:block" />
+            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
               [COMPREHENSIVE TECH STACK]
             </span>
           </div>
-      </div>
+        </div>
+
+        {/* Features Showcase */}
+        <div className="mb-8">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2">
+              <Star className="h-5 w-5 text-primary" />
+              <span className="font-bold text-lg sm:text-xl">
+                FEATURES.SHOWCASE
+              </span>
+            </div>
+            <div className="hidden h-px flex-1 bg-border sm:block" />
+            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+              [AVAILABLE FEATURES]
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Frontend Frameworks */}
+            <div className="rounded border border-border p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Monitor className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">FRONTEND</span>
+              </div>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <div>• React with Vite</div>
+                <div>• Vue.js 3</div>
+                <div>• Angular</div>
+                <div>• SvelteKit</div>
+                <div>• Next.js</div>
+                <div>• Nuxt</div>
+              </div>
+            </div>
+
+            {/* Backend Frameworks */}
+            <div className="rounded border border-border p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Cpu className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">BACKEND</span>
+              </div>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <div>• Express.js</div>
+                <div>• Fastify</div>
+                <div>• Koa.js</div>
+                <div>• Hapi.js</div>
+                <div>• NestJS</div>
+                <div>• Custom APIs</div>
+              </div>
+            </div>
+
+            {/* Database & ORM */}
+            <div className="rounded border border-border p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Database className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">DATABASE</span>
+              </div>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <div>• PostgreSQL</div>
+                <div>• MongoDB</div>
+                <div>• SQLite</div>
+                <div>• MySQL</div>
+                <div>• Prisma ORM</div>
+                <div>• Mongoose</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Feature Status Legend */}
         <div className="mb-8 rounded border border-border p-4">
@@ -153,20 +219,20 @@ export default function Features() {
         {/* Frontend Frameworks */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Monitor className="h-4 w-4 text-primary" />
+            <Monitor className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               FRONTEND_FRAMEWORKS.TXT
             </span>
-                  </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          </div>
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [UI LIBRARIES & FRAMEWORKS]
           </span>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {frontendFrameworks.map((framework, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{framework.name.toUpperCase()}</span>
@@ -178,10 +244,10 @@ export default function Features() {
                 }`}>
                   {framework.available ? '✅ AVAILABLE' : '🚧 COMING SOON'}
                 </div>
-        </div>
+              </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded border border-border p-3">
+              <div className="rounded border border-border p-3">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-foreground">{framework.description}</span>
                   </div>
@@ -189,30 +255,30 @@ export default function Features() {
                     {framework.version}
                   </div>
                 </div>
-                </div>
-                </div>
+              </div>
+            </div>
           ))}
         </div>
 
         {/* Backend Frameworks */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Cpu className="h-4 w-4 text-primary" />
+            <Cpu className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               BACKEND_FRAMEWORKS.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [SERVER-SIDE FRAMEWORKS]
           </span>
-          </div>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {backendFrameworks.map((framework, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{framework.name.toUpperCase()}</span>
                 </div>
                 <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
@@ -220,37 +286,37 @@ export default function Features() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between rounded border border-border p-3">
+              <div className="rounded border border-border p-3">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-foreground">{framework.description}</span>
-                    </div>
+                  </div>
                   <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                      {framework.version}
+                    {framework.version}
                   </div>
                 </div>
               </div>
-                  </div>
-                ))}
-              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Database & Storage */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Database className="h-4 w-4 text-primary" />
+            <Database className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               DATABASE_STORAGE.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [DATA PERSISTENCE LAYERS]
           </span>
-          </div>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {databases.map((database, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{database.name.toUpperCase()}</span>
@@ -264,33 +330,31 @@ export default function Features() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
-                  <div className="text-sm text-foreground">{database.description}</div>
-                </div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="rounded border border-border p-3">
+                <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                <div className="text-sm text-foreground">{database.description}</div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* ORM/ODM Integration */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Layers className="h-4 w-4 text-primary" />
+            <Layers className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               ORM_ODM_INTEGRATION.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [OBJECT RELATIONAL MAPPING]
           </span>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           {orms.map((orm, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{orm.name.toUpperCase()}</span>
@@ -300,33 +364,31 @@ export default function Features() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
-                  <div className="text-sm text-foreground">{orm.description}</div>
-                </div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="rounded border border-border p-3">
+                <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                <div className="text-sm text-foreground">{orm.description}</div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Authentication & Security */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Lock className="h-4 w-4 text-primary" />
+            <Lock className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               AUTHENTICATION_SECURITY.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [IDENTITY & ACCESS MANAGEMENT]
           </span>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           {authMethods.map((auth, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{auth.name.toUpperCase()}</span>
@@ -340,33 +402,31 @@ export default function Features() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
-                  <div className="text-sm text-foreground">{auth.description}</div>
-                </div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="rounded border border-border p-3">
+                <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                <div className="text-sm text-foreground">{auth.description}</div>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Development & DevOps */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Wrench className="h-4 w-4 text-primary" />
+            <Wrench className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               DEVELOPMENT_DEVOPS.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [DEVELOPMENT TOOLS & WORKFLOWS]
           </span>
-      </div>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           {devTools.map((tool, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{tool.name.toUpperCase()}</span>
@@ -378,35 +438,33 @@ export default function Features() {
                 }`}>
                   {tool.available ? '✅ AVAILABLE' : '🚧 COMING SOON'}
                 </div>
-        </div>
+              </div>
 
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
-                  <div className="text-sm text-foreground">{tool.description}</div>
-                </div>
+              <div className="rounded border border-border p-3">
+                <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                <div className="text-sm text-foreground">{tool.description}</div>
               </div>
             </div>
           ))}
-              </div>
+        </div>
 
         {/* Package Managers */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Package className="h-4 w-4 text-primary" />
+            <Package className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               PACKAGE_MANAGERS.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [DEPENDENCY MANAGEMENT]
           </span>
-              </div>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           {packageManagers.map((pm, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{pm.name.toUpperCase()}</span>
@@ -416,33 +474,31 @@ export default function Features() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
-                  <div className="text-sm text-foreground">{pm.description}</div>
-                </div>
+              <div className="rounded border border-border p-3">
+                <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                <div className="text-sm text-foreground">{pm.description}</div>
               </div>
-              </div>
+            </div>
           ))}
         </div>
 
       {/* Additional Features */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Star className="h-4 w-4 text-primary" />
+            <Star className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               ADDITIONAL_FEATURES.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [EXTRA CAPABILITIES & TOOLS]
           </span>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           {additionalFeatures.map((feature, index) => (
-            <div key={index} className="flex h-full flex-col justify-between rounded border border-border p-4">
+            <div key={index} className="rounded border border-border p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm font-mono">{feature.name.toUpperCase()}</span>
@@ -454,13 +510,11 @@ export default function Features() {
                 }`}>
                   {feature.available ? '✅ AVAILABLE' : '🚧 COMING SOON'}
                 </div>
-        </div>
+              </div>
 
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
-                  <div className="text-sm text-foreground">{feature.description}</div>
-                </div>
+              <div className="rounded border border-border p-3">
+                <div className="text-xs text-muted-foreground mb-1">DESCRIPTION</div>
+                <div className="text-sm text-foreground">{feature.description}</div>
               </div>
             </div>
           ))}
@@ -469,13 +523,13 @@ export default function Features() {
         {/* Quick Start Command */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <Rocket className="h-4 w-4 text-primary" />
+            <Rocket className="h-5 w-5 text-primary" />
             <span className="font-bold text-lg sm:text-xl">
               GET_STARTED.TXT
             </span>
           </div>
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-muted-foreground text-xs">
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             [READY TO START]
           </span>
         </div>
@@ -512,16 +566,16 @@ export default function Features() {
         <div className="mb-4 mt-8">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2">
-              <Terminal className="h-4 w-4 text-muted-foreground" />
+              <Terminal className="h-5 w-5 text-muted-foreground" />
               <span className="font-bold text-lg sm:text-xl text-muted-foreground">
                 END_OF_FILE
               </span>
-        </div>
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-muted-foreground text-xs">
-              [FEATURES]
+            </div>
+            <div className="hidden h-px flex-1 bg-border sm:block" />
+            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+              [FEATURES.LOG]
             </span>
-              </div>
+          </div>
         </div>
       </main>
     </div>

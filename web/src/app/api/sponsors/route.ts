@@ -78,55 +78,7 @@ function calculateDuration(startDate: string, endDate?: string): string {
   return `${years} year${years > 1 ? 's' : ''}, ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`;
 }
 
-// Enhanced mock data with realistic sponsorship patterns
-function generateMockSponsors(): Sponsor[] {
-  const sponsors: Sponsor[] = [
-    {
-      id: "sponsor_1742891234567890",
-      name: "TechCorp Solutions",
-      username: "techcorp",
-      avatar: "https://api.dicebear.com/8.x/initials/svg?seed=TechCorp&backgroundColor=4f46e5",
-      amount: 500,
-      tier: "gold",
-      tierName: "Gold Sponsor",
-      duration: calculateDuration("2023-08-15"),
-      frequency: "monthly",
-      startDate: "2023-08-15T10:30:00Z",
-      website: "https://techcorp.example.com",
-      github: "https://github.com/techcorp",
-      isActive: true,
-      totalContributed: 6500,
-      sponsorshipCount: 13,
-      message: "Thanks for your amazing work on js-stack! It's saved our team countless hours.",
-      isPublic: true,
-      location: "San Francisco, CA",
-      company: "TechCorp Solutions"
-    },
-    {
-      id: "sponsor_1742789876543210",
-      name: "Alex Thompson",
-      username: "alexthompson",
-      avatar: "https://api.dicebear.com/8.x/avataaars/svg?seed=alexthompson&backgroundColor=10b981&eyes=default&mouth=smile",
-      amount: 25,
-      tier: "bronze",
-      tierName: "Individual Supporter",
-      duration: calculateDuration("2024-01-20"),
-      frequency: "monthly",
-      startDate: "2024-01-20T14:22:00Z",
-      website: "https://alexthompson.dev",
-      github: "https://github.com/alexthompson",
-      isActive: true,
-      totalContributed: 200,
-      sponsorshipCount: 8,
-      message: "Keep up the great work! js-stack is a game changer for indie developers.",
-      isPublic: true,
-      location: "Toronto, Canada",
-      company: "Freelance Developer"
-    }
-  ];
-
-  return sponsors;
-}
+// Mock data generation removed - now returns empty array when no real data available
 
 // Calculate comprehensive analytics
 function calculateAnalytics(sponsors: Sponsor[]): SponsorAnalytics {
@@ -307,8 +259,8 @@ export async function GET(request: Request) {
       console.warn('GitHub Sponsors API not available, using fallback data:', error);
     }
 
-    // Use real data if available, otherwise use enhanced mock data
-    const sponsors = hasRealData ? realSponsors : generateMockSponsors();
+    // Use real data if available, otherwise return empty array
+    const sponsors = hasRealData ? realSponsors : [];
     
     // Calculate analytics if requested
     const analytics = includeAnalytics ? calculateAnalytics(sponsors) : null;

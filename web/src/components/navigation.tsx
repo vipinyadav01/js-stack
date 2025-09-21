@@ -62,7 +62,7 @@ const quickActions = [
 
 // Logo component with fallback
 function Logo({ size = "md", className }: { size?: "sm" | "md" | "lg", className?: string }) {
-  const [imageError, setImageError] = useState(false);
+  const [imageError, setImageError] = useState(true); // Start with true to use fallback
   
   const sizeClasses = {
     sm: { container: "h-6 w-6", icon: "h-4 w-4", pulse: "w-0.5 h-0.5" },
@@ -148,7 +148,7 @@ export function Navigation() {
           : "bg-background/90 backdrop-blur-md"
       )}
     >
-      <div className="mx-auto max-w-[1280px] px-4 flex h-16 items-center justify-between">
+      <div className="mx-auto max-w-full px-4 flex h-16 items-center justify-between">
         {/* Logo Section - Desktop */}
         <div className="hidden lg:flex items-center">
           <Link
@@ -172,7 +172,7 @@ export function Navigation() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-2 flex-1 justify-center">
+        <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -181,7 +181,7 @@ export function Navigation() {
                 href={item.href}
                 className={cn(
                   "group flex items-center space-x-2 px-3 py-2 rounded border border-border text-sm font-mono transition-all duration-200",
-                  "hover:bg-muted/10 hover:border-primary/50",
+                  "hover:bg-muted/10 hover:border-primary/50 hover:shadow-sm",
                   isActive
                     ? "text-foreground bg-muted/20 border-primary shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
@@ -191,7 +191,7 @@ export function Navigation() {
                   "h-4 w-4 transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                 )} />
-                <span className="uppercase">{item.name}</span>
+                <span className="uppercase tracking-wide">{item.name}</span>
                 {item.badge && (
                   <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                     {item.badge}
@@ -203,17 +203,17 @@ export function Navigation() {
         </nav>
 
         {/* Desktop Actions */}
-        <div className="hidden md:flex items-center space-x-2">
+        <div className="hidden md:flex items-center space-x-1">
           {quickActions.map((action) => (
             <Link
               key={action.name}
               href={action.href}
               target={action.external ? "_blank" : "_self"}
               rel={action.external ? "noopener noreferrer" : ""}
-              className="group flex items-center gap-2 rounded border border-border p-2 transition-colors hover:bg-muted/10 cursor-pointer"
+              className="group flex items-center gap-2 rounded border border-border p-2 transition-all duration-200 hover:bg-muted/10 hover:border-primary/50 hover:shadow-sm cursor-pointer"
             >
               <action.icon className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
-              <span className="text-sm font-mono uppercase">{action.name}</span>
+              <span className="text-sm font-mono uppercase tracking-wide">{action.name}</span>
               {action.external && <ExternalLink className="h-3 w-3 text-muted-foreground" />}
             </Link>
           ))}
@@ -225,11 +225,11 @@ export function Navigation() {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex items-center space-x-2 lg:hidden">
+        <div className="flex items-center space-x-1 lg:hidden">
           <ThemeToggle />
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="rounded border border-border p-2 hover:bg-muted/10">
+              <Button variant="ghost" size="sm" className="rounded border border-border p-2 hover:bg-muted/10 hover:border-primary/50 transition-all duration-200">
                 <Menu className="h-4 w-4" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
@@ -268,7 +268,7 @@ export function Navigation() {
                       onClick={() => setMobileOpen(false)}
                       className={cn(
                         "group flex items-center justify-between p-3 rounded border border-border transition-all duration-200",
-                        "hover:bg-muted/10 hover:border-primary/50",
+                        "hover:bg-muted/10 hover:border-primary/50 hover:shadow-sm",
                         isActive
                           ? "bg-muted/20 border-primary shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -281,7 +281,7 @@ export function Navigation() {
                         )} />
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-sm font-medium uppercase">{item.name}</span>
+                            <span className="font-mono text-sm font-medium uppercase tracking-wide">{item.name}</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-0.5 font-mono">
                             {item.description}
@@ -314,10 +314,10 @@ export function Navigation() {
                         target={action.external ? "_blank" : "_self"}
                         rel={action.external ? "noopener noreferrer" : ""}
                         onClick={() => setMobileOpen(false)}
-                        className="group flex items-center gap-2 w-full rounded border border-border p-3 transition-colors hover:bg-muted/10 cursor-pointer"
+                        className="group flex items-center gap-2 w-full rounded border border-border p-3 transition-all duration-200 hover:bg-muted/10 hover:border-primary/50 hover:shadow-sm cursor-pointer"
                       >
                         <action.icon className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
-                        <span className="flex-1 font-mono text-sm uppercase">{action.name}</span>
+                        <span className="flex-1 font-mono text-sm uppercase tracking-wide">{action.name}</span>
                         {action.external && <ExternalLink className="h-3 w-3 text-muted-foreground" />}
                       </Link>
                     ))}

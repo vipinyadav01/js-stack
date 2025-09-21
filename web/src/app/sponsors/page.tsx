@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import { Terminal, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
-  fetchSponsors, 
   fetchTwitterMentions, 
   type TwitterTweet,
   type SponsorAnalytics
@@ -102,22 +101,28 @@ export default function SponsorsPage() {
   };
 
   // Configuration
-  const twitterQuery = "js-stack";
+  const twitterQuery = "js-stack OR from:vipinyadav9m";
   const twitterCount = 20;
+  const githubUsername = "vipinyadav01";
 
   // Fetch functions
   const fetchSponsorsData = useCallback(async () => {
     setLoading(prev => ({ ...prev, analytics: true }));
     setError(prev => ({ ...prev, analytics: "" }));
     try {
-      const { analytics } = await fetchSponsors(true);
-      setAnalytics(analytics);
+      const response = await fetch(`/api/sponsors?username=${githubUsername}&analytics=true`);
+      const data = await response.json();
+      if (response.ok && data.analytics) {
+        setAnalytics(data.analytics);
+      } else {
+        throw new Error('Failed to fetch sponsor analytics');
+      }
     } catch (err) {
       setError(prev => ({ ...prev, analytics: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
       setLoading(prev => ({ ...prev, analytics: false }));
     }
-  }, []);
+  }, [githubUsername]);
 
   const fetchTweetsData = useCallback(async () => {
     setLoading(prev => ({ ...prev, twitter: true }));
@@ -176,18 +181,28 @@ export default function SponsorsPage() {
 
         {/* GitHub Sponsors Section */}
         <motion.div className="mb-8" variants={containerVariants}>
-          <GitHubSponsorsSection sponsorsData={mockGitHubSponsorsData} />
+          <div className="mx-auto max-w-[1280px]">
+            <GitHubSponsorsSection sponsorsData={mockGitHubSponsorsData} />
+          </div>
         </motion.div>
 
         {/* Twitter Feed Section */}
-        <TwitterSection 
-          tweets={tweets} 
-          loading={loading.twitter} 
-          error={error.twitter} 
-        />
+        <motion.div className="mb-8" variants={containerVariants}>
+          <div className="mx-auto max-w-[1280px]">
+            <TwitterSection 
+              tweets={tweets} 
+              loading={loading.twitter} 
+              error={error.twitter} 
+            />
+          </div>
+        </motion.div>
 
         {/* Become a Sponsor CTA */}
-        <CTASection />
+        <motion.div className="mb-8" variants={containerVariants}>
+          <div className="mx-auto max-w-[1280px]">
+            <CTASection />
+          </div>
+        </motion.div>
 
         {/* End of File */}
         <motion.div className="mb-4 mt-8" variants={containerVariants}>
