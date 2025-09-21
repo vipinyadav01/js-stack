@@ -113,15 +113,15 @@ export async function listOptions() {
     boxen(
       chalk.bold("Example Commands:\n\n") +
         chalk.gray("Interactive mode:\n") +
-        chalk.cyan("  npx create-js-stack init my-app\n\n") +
+        chalk.cyan("  npx create-js-stack@latest my-app\n\n") +
         chalk.gray("With options:\n") +
-        chalk.cyan("  npx create-js-stack init my-app \\\n") +
+        chalk.cyan("  npx create-js-stack@latest my-app \\\n") +
         chalk.cyan("    --backend express \\\n") +
         chalk.cyan("    --frontend react \\\n") +
         chalk.cyan("    --database postgres \\\n") +
         chalk.cyan("    --orm prisma\n\n") +
         chalk.gray("Quick setup:\n") +
-        chalk.cyan("  npx create-js-stack init my-app --yes"),
+        chalk.cyan("  npx create-js-stack@latest my-app --yes"),
       {
         padding: 1,
         margin: 1,

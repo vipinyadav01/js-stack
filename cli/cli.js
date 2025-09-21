@@ -10,7 +10,6 @@ import gradient from "gradient-string";
 import figlet from "figlet";
 import boxen from "boxen";
 import chalkAnimation from "chalk-animation";
-import { initCommand } from "./commands/init.js";
 import {
   enhancedInitCommand,
   listPresetsCommand,
@@ -43,28 +42,22 @@ const icons = {
   sparkles: "✨",
   gear: "⚙️",
   package: "📦",
-  folder: "📁",
-  file: "📄",
   database: "🗄️",
   shield: "🛡️",
   paint: "🎨",
   test: "🧪",
-  docker: "🐳",
   lightning: "⚡",
   check: "✅",
   warning: "⚠️",
   error: "❌",
   info: "ℹ️",
   bulb: "💡",
-  fire: "🔥",
   target: "🎯",
   book: "📚",
   link: "🔗",
   search: "🔍",
   heart: "❤️",
   star: "⭐",
-  crown: "👑",
-  magic: "🪄",
   crystal: "💎",
 };
 
@@ -139,12 +132,6 @@ function getMemoryUsage() {
   return `Memory: ${usage}MB`;
 }
 
-// Enhanced loading animation
-async function showLoadingAnimation(text = "Initializing...", duration = 2000) {
-  const rainbow = chalkAnimation.rainbow(text);
-  await new Promise((resolve) => setTimeout(resolve, duration));
-  rainbow.stop();
-}
 
 // Enhanced error handling with better messages
 function handleCliError(error, command = null) {
@@ -343,11 +330,11 @@ program
     const exampleBox = boxen(
       `${icons.bulb} ${chalk.bold("Usage Examples:")}
 
-${colors.primary("npx create-js-stack init my-app")}                     ${colors.muted("# Interactive setup")}
-${colors.primary("npx create-js-stack init my-app --yes")}               ${colors.muted("# Quick start (recommended)")}
-${colors.primary("npx create-js-stack init --preset saas")}              ${colors.muted("# SaaS application")}
-${colors.primary("npx create-js-stack init api-server --preset api")}    ${colors.muted("# REST API server")}
-${colors.primary("npx create-js-stack init mobile-app --preset mobile")} ${colors.muted("# Mobile application")}
+${colors.primary("npx create-js-stack@latest my-app")}                     ${colors.muted("# Interactive setup")}
+${colors.primary("npx create-js-stack@latest my-app --yes")}               ${colors.muted("# Quick start (recommended)")}
+${colors.primary("npx create-js-stack@latest --preset saas")}              ${colors.muted("# SaaS application")}
+${colors.primary("npx create-js-stack@latest api-server --preset api")}    ${colors.muted("# REST API server")}
+${colors.primary("npx create-js-stack@latest mobile-app --preset mobile")} ${colors.muted("# Mobile application")}
 
 ${icons.target} ${chalk.bold("Popular Presets:")}
   ${colors.success("saas")}      - Full-stack SaaS with auth, database, and payments
@@ -443,8 +430,8 @@ ${chalk.gray("Available Features:")}
   ${chalk.cyan("ci/cd")}       ${chalk.gray("# GitHub Actions workflow")}
 
 ${chalk.gray("Examples:")}
-  ${chalk.cyan("$ npx create-js-stack add auth database")}
-  ${chalk.cyan("$ npx create-js-stack add testing --dev")}
+  ${chalk.cyan("$ npx create-js-stack@latest add auth database")}
+  ${chalk.cyan("$ npx create-js-stack@latest add testing --dev")}
 `,
   )
   .action(async (features, options) => {
@@ -507,6 +494,52 @@ ${chalk.gray("Available Topics:")}
     console.log(chalk.cyan(`   ${docsUrl}\n`));
   });
 
+// Sponsors command
+program
+  .command("sponsors")
+  .alias("sponsor")
+  .description(chalk.cyan("❤️ Show sponsors and supporters"))
+  .action(async () => {
+    const { openUrl } = await import("./utils/open-url.js");
+    const sponsorsUrl = "https://github.com/sponsors/vipinyadav01";
+
+    const g = gradient(["#ff6b6b", "#4ecdc4"]);
+    console.log();
+    console.log(g("❤️ Thank you to our sponsors!"));
+    console.log();
+    console.log(chalk.gray("Support the project development:"));
+    console.log(chalk.cyan(`   ${sponsorsUrl}\n`));
+
+    try {
+      await openUrl(sponsorsUrl);
+      console.log(chalk.green("✅ Sponsors page opened in your browser"));
+    } catch (error) {
+      console.log(chalk.yellow("⚠️  Could not open browser automatically"));
+    }
+  });
+
+// Builder command
+program
+  .command("builder")
+  .alias("build")
+  .description(chalk.cyan("🔧 Show project builder information"))
+  .action(() => {
+    const g = gradient(["#667eea", "#764ba2"]);
+    console.log();
+    console.log(g("🔧 Create JS Stack Builder"));
+    console.log();
+    console.log(chalk.gray("Built with modern tools and best practices:"));
+    console.log(chalk.cyan("  • Node.js + ES Modules"));
+    console.log(chalk.cyan("  • Commander.js for CLI"));
+    console.log(chalk.cyan("  • Handlebars for templating"));
+    console.log(chalk.cyan("  • Yup for validation"));
+    console.log(chalk.cyan("  • Chalk for beautiful output"));
+    console.log();
+    console.log(chalk.gray("Version:"), chalk.green(packageJson.version));
+    console.log(chalk.gray("Node:"), chalk.green(process.version));
+    console.log();
+  });
+
 // Enhanced List command with modern design
 program
   .command("list [category]")
@@ -548,43 +581,6 @@ program
 
 // New Commands
 
-// Update command with modern styling
-program
-  .command("update")
-  .aliases(["upgrade", "u", "refresh"])
-  .description(
-    colors.warning(
-      `${icons.lightning} Update create-js-stack to latest version`,
-    ),
-  )
-  .option("--check", chalk.gray("🔍 Check for updates without installing"))
-  .action(async (options) => {
-    console.log(chalk.yellow("Update command not implemented yet."));
-  });
-
-// Config command with enhanced options
-program
-  .command("config")
-  .aliases(["c", "settings", "preferences"])
-  .description(colors.secondary(`${icons.gear} Manage global configuration`))
-  .option("--set <key=value>", chalk.gray("🔧 Set configuration value"))
-  .option("--get <key>", chalk.gray("📖 Get configuration value"))
-  .option("--list", chalk.gray("📋 List all configuration"))
-  .option("--reset", chalk.gray("🔄 Reset to defaults"))
-  .action(async (options) => {
-    console.log(chalk.yellow("Config command not implemented yet."));
-  });
-
-// Info command with diagnostic capabilities
-program
-  .command("info")
-  .aliases(["status", "diag", "check"])
-  .description(colors.info(`${icons.info} Show project and system information`))
-  .option("--system", chalk.gray("💻 Show system information"))
-  .option("--project", chalk.gray("📦 Show project information"))
-  .action(async (options) => {
-    console.log(chalk.yellow("Info command not implemented yet."));
-  });
 
 // Enhanced help text with modern design
 program.addHelpText("before", () => {
@@ -600,9 +596,9 @@ program.addHelpText("after", () => {
   const quickStartBox = boxen(
     `${icons.target} ${chalk.bold("Quick Start:")}
 
-${colors.primary("npx create-js-stack init my-app")}     ${colors.muted("# Interactive setup")}
-${colors.primary("npx create-js-stack list")}             ${colors.muted("# Browse options")}
-${colors.primary("npx create-js-stack init --preset saas")} ${colors.muted("# Use preset")}`,
+${colors.primary("npx create-js-stack@latest my-app")}     ${colors.muted("# Interactive setup")}
+${colors.primary("npx create-js-stack@latest list")}             ${colors.muted("# Browse options")}
+${colors.primary("npx create-js-stack@latest init --preset saas")} ${colors.muted("# Use preset")}`,
     {
       padding: 1,
       margin: { top: 1, bottom: 0, left: 2, right: 2 },
@@ -648,18 +644,33 @@ ${icons.star} Give us a star: ${colors.accent("⭐ Star on GitHub")}`,
 // Enhanced error handling and execution
 program.exitOverride();
 
-// Global error handler
+// Global error handler with better reliability
 process.on("uncaughtException", (error) => {
   console.error(chalk.red.bold("\n❌ Uncaught Exception:"));
   console.error(chalk.gray(error.message));
-  console.log(chalk.yellow("\n💡 Please report this issue if it persists"));
+  
+  if (error.stack) {
+    console.error(chalk.gray("\nStack trace:"));
+    console.error(chalk.gray(error.stack));
+  }
+  
+  console.log(chalk.yellow("\n💡 Troubleshooting:"));
+  console.log(chalk.gray("  • Check your Node.js version (requires 18+)"));
+  console.log(chalk.gray("  • Try running with --verbose for more details"));
+  console.log(chalk.gray("  • Report this issue: https://github.com/vipinyadav01/js-stack/issues"));
+  
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
   console.error(chalk.red.bold("\n❌ Unhandled Promise Rejection:"));
   console.error(chalk.gray(reason));
-  console.log(chalk.yellow("\n💡 Please report this issue if it persists"));
+  
+  console.log(chalk.yellow("\n💡 Troubleshooting:"));
+  console.log(chalk.gray("  • Check your internet connection"));
+  console.log(chalk.gray("  • Try running with --verbose for more details"));
+  console.log(chalk.gray("  • Report this issue: https://github.com/vipinyadav01/js-stack/issues"));
+  
   process.exit(1);
 });
 

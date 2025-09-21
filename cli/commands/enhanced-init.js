@@ -15,6 +15,9 @@ import {
 } from "../utils/modern-render.js";
 import { performanceUtils } from "../utils/performance.js";
 import { getPresetConfig, listPresets } from "../utils/validation.js";
+import { SmartCompatibility } from "../utils/smart-compatibility.js";
+import { ReproducibleCommands } from "../utils/reproducible-commands.js";
+import { ReliabilityManager } from "../utils/reliability.js";
 
 /**
  * Enhanced initialization command with all improvements
@@ -82,6 +85,27 @@ export async function enhancedInitCommand(projectName, options) {
     // Set project directory
     config.projectDir = path.resolve(process.cwd(), config.projectName);
 
+    // Reliability checks
+    const reliabilityManager = new ReliabilityManager();
+    const reliabilityResults = await reliabilityManager.performReliabilityChecks(config);
+    
+    if (!reliabilityResults.isValid) {
+      reliabilityManager.displayResults(reliabilityResults);
+      throw new Error("Reliability checks failed. Please fix the errors above.");
+    }
+
+    if (options.verbose) {
+      reliabilityManager.displayResults(reliabilityResults);
+    }
+
+    // Smart compatibility checking and auto-adjustments
+    const smartCompatibility = new SmartCompatibility();
+    const compatibilityResult = smartCompatibility.checkAndAdjust(config);
+    
+    if (compatibilityResult.hasAdjustments || compatibilityResult.hasWarnings) {
+      smartCompatibility.displayResults(compatibilityResult);
+    }
+
     // Show configuration summary
     displayConfigSummary(config);
 
@@ -135,6 +159,11 @@ export async function enhancedInitCommand(projectName, options) {
     // Show next steps
     const projectConfig = result.result?.result || config;
     displayNextSteps(projectConfig);
+
+    // Show reproducible commands
+    const reproducibleCommands = new ReproducibleCommands();
+    reproducibleCommands.displayCommands(projectConfig);
+    reproducibleCommands.displayAddCommands(projectConfig);
 
     // Show performance summary
     if (options.verbose) {

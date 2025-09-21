@@ -204,86 +204,14 @@ export class ProjectGenerator {
    * @param {Object} progress - Progress callback
    */
   async processTemplates(transaction, progress) {
-    // Use the original generators for now to ensure compatibility
-    // This will be enhanced in future iterations
-
-    // Generate backend
-    if (this.config.backend !== "none") {
-      if (progress)
-        await progress.nextStep(`Setting up ${this.config.backend}`);
-      await this.generateBackend(transaction);
-    }
-
-    // Generate frontend
-    if (this.config.frontend[0] !== "none") {
-      if (progress)
-        await progress.nextStep(
-          `Configuring ${this.config.frontend.join(", ")}`,
-        );
-      await this.generateFrontend(transaction);
-    }
-
-    // Generate database
-    if (this.config.database !== "none") {
-      if (progress)
-        await progress.nextStep(`Configuring ${this.config.database}`);
-      await this.generateDatabase(transaction);
-    }
-
-    // Generate authentication
-    if (this.config.auth !== "none") {
-      if (progress)
-        await progress.nextStep(`Adding ${this.config.auth} authentication`);
-      await this.generateAuth(transaction);
-    }
-
-    // Generate addons
-    if (this.config.addons.length > 0) {
-      if (progress)
-        await progress.nextStep(`Adding ${this.config.addons.length} tools`);
-      await this.generateAddons(transaction);
+    // Template processing is now handled by the ModularGenerator
+    // This method is kept for compatibility but does nothing
+    if (progress) {
+      await progress.nextStep("Processing templates via ModularGenerator");
     }
   }
 
-  /**
-   * Generate backend using original generator
-   */
-  async generateBackend(transaction) {
-    const { generateBackend } = await import("./backend-generator.js");
-    await generateBackend(this.config);
-  }
-
-  /**
-   * Generate frontend using original generator
-   */
-  async generateFrontend(transaction) {
-    const { generateFrontend } = await import("./frontend-generator.js");
-    await generateFrontend(this.config);
-  }
-
-  /**
-   * Generate database using original generator
-   */
-  async generateDatabase(transaction) {
-    const { generateDatabase } = await import("./database-generator.js");
-    await generateDatabase(this.config);
-  }
-
-  /**
-   * Generate authentication using original generator
-   */
-  async generateAuth(transaction) {
-    const { generateAuth } = await import("./auth-generator.js");
-    await generateAuth(this.config);
-  }
-
-  /**
-   * Generate addons using original generator
-   */
-  async generateAddons(transaction) {
-    const { generateAddons } = await import("./addon-generator.js");
-    await generateAddons(this.config);
-  }
+  // Individual generator methods removed - using ModularGenerator instead
 
   /**
    * Create README file

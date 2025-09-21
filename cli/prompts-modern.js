@@ -505,80 +505,48 @@ export async function promptInstall() {
 }
 
 export async function collectProjectConfig(projectName, options = {}) {
-  // Use the new ConfigManager for better configuration handling
-  const { ConfigManager } = await import("./config/ConfigManager.js");
-  
-  // Create a mock CLI args object for the ConfigManager
-  const cliArgs = {
-    projectName,
-    ...options,
-    // Map pm to packageManager for consistency
-    packageManager: options.pm || options.packageManager,
+  // Display banner if not in CI mode
+  if (!options.ci) {
+    await displayBanner();
+    await displayWelcome();
+  }
+
+  const config = {
+    projectName: projectName || (await promptProjectName()),
+    database: options.database || (await promptDatabase()),
+    backend: options.backend || (await promptBackend()),
+    frontend: options.frontend ? (Array.isArray(options.frontend) ? options.frontend : [options.frontend]) : (await promptFrontend()),
+    auth: options.auth || (await promptAuth()),
+    addons: options.addons ? (Array.isArray(options.addons) ? options.addons : options.addons.split(',').map(s => s.trim())) : (await promptAddons()),
+    packageManager: options.pm || (await promptPackageManager()),
+    git: options.git !== false ? options.git || (await promptGit()) : false,
+    install:
+      options.install !== false
+        ? options.install !== undefined ? options.install : (options.ci ? true : await promptInstall())
+        : true, 
   };
 
-  try {
-    const configManager = await ConfigManager.create(cliArgs);
-    const config = await configManager.resolveInteractively();
-    
-    // Validate the resolved configuration
-    const validation = await configManager.validateConfig(config);
-    
-    if (!validation.isValid) {
-      configManager.displayValidationResults(validation);
-      throw new Error("Configuration validation failed");
-    }
+  // Get ORM based on database selection
+  config.orm = options.orm || (await promptORM(config.database));
 
-    // Display configuration summary
-    configManager.displayConfigSummary(config);
-    
-    return config;
-  } catch (error) {
-    // Fallback to original logic if ConfigManager fails
-    console.warn(chalk.yellow("⚠️  Using fallback configuration collection"));
-    
-    // Display banner if not in CI mode
-    if (!options.ci) {
-      await displayBanner();
-      await displayWelcome();
-    }
-
-    const config = {
-      projectName: projectName || (await promptProjectName()),
-      database: options.database || (await promptDatabase()),
-      backend: options.backend || (await promptBackend()),
-      frontend: options.frontend ? (Array.isArray(options.frontend) ? options.frontend : [options.frontend]) : (await promptFrontend()),
-      auth: options.auth || (await promptAuth()),
-      addons: options.addons ? (Array.isArray(options.addons) ? options.addons : options.addons.split(',').map(s => s.trim())) : (await promptAddons()),
-      packageManager: options.pm || (await promptPackageManager()),
-      git: options.git !== false ? options.git || (await promptGit()) : false,
-      install:
-        options.install !== false
-          ? options.install !== undefined ? options.install : (options.ci ? true : await promptInstall())
-          : true, 
-    };
-
-    // Get ORM based on database selection
-    config.orm = options.orm || (await promptORM(config.database));
-
-    if (!options.ci) {
-      console.log();
-      note(
-        chalk.dim("Project: ") +
-          chalk.cyan(config.projectName) +
-          "\n" +
-          chalk.dim("Stack: ") +
-          chalk.yellow(`${config.backend} + ${config.frontend.join(", ")}`) +
-          "\n" +
-          chalk.dim("Database: ") +
-          chalk.green(
-            `${config.database}${config.orm !== "none" ? " + " + config.orm : ""}`,
-          ),
-        g.success("Configuration Complete!"),
-      );
-    }
-
-    return config;
+  if (!options.ci) {
+    console.log();
+    note(
+      chalk.dim("Project: ") +
+        chalk.cyan(config.projectName) +
+        "\n" +
+        chalk.dim("Stack: ") +
+        chalk.yellow(`${config.backend} + ${config.frontend.join(", ")}`) +
+        "\n" +
+        chalk.dim("Database: ") +
+        chalk.green(
+          `${config.database}${config.orm !== "none" ? " + " + config.orm : ""}`,
+        ),
+      g.success("Configuration Complete!"),
+    );
   }
+
+  return config;
 }
 
 export { spinner, outro, intro, cancel, note, log };

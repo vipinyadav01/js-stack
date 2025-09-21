@@ -249,14 +249,14 @@ function sortObject(obj) {
  * Get template directory path
  */
 export function getTemplateDir() {
-  // Support both dev (src) and build (dist) locations
+  // Support both dev (cli) and build (dist) locations
   const candidates = [
-    // When running from src (development)
-    path.join(__dirname, "../../templates"),
+    // When running from cli (development)
+    path.join(__dirname, "../templates"),
     // When running from dist (published package)
-    path.join(__dirname, "../../../templates"),
+    path.join(__dirname, "../../cli/templates"),
     // Fallback: project root when executed from elsewhere
-    path.join(process.cwd(), "templates"),
+    path.join(process.cwd(), "cli/templates"),
   ];
 
   for (const candidate of candidates) {

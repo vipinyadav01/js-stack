@@ -17,7 +17,7 @@ async function buildCLI() {
 
     // Build the CLI
     await build({
-      entryPoints: [path.join(__dirname, "../src/cli.js")],
+      entryPoints: [path.join(__dirname, "../cli/cli.js")],
       bundle: true,
       platform: "node",
       target: "node18",
@@ -50,7 +50,7 @@ async function buildCLI() {
 
     // Build the library entry point
     await build({
-      entryPoints: [path.join(__dirname, "../src/index.js")],
+      entryPoints: [path.join(__dirname, "../cli/index.js")],
       bundle: true,
       platform: "node",
       target: "node18",
