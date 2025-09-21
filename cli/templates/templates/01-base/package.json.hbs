@@ -1,0 +1,56 @@
+{
+  "name": "{{projectName}}",
+  "version": "1.0.0",
+  "description": "A modern JavaScript full-stack project",
+  "type": "{{#if typescript}}module{{else}}commonjs{{/if}}",
+  "main": "{{#if typescript}}dist/index.js{{else}}index.js{{/if}}",
+  "scripts": {
+    "dev": "{{#if typescript}}tsx watch{{else}}node --watch{{/if}} index.js",
+    "build": "{{#if typescript}}tsc && tsc-alias{{else}}echo 'Build completed'{{/if}}",
+    "start": "{{#if typescript}}node dist/index.js{{else}}node index.js{{/if}}",
+    "test": "echo 'No tests specified'",
+    "lint": "{{#if (includes addons 'eslint')}}eslint .{{else if (includes addons 'biome')}}biome check .{{else}}echo 'No linter configured'{{/if}}",
+    "format": "{{#if (includes addons 'prettier')}}prettier --write .{{else if (includes addons 'biome')}}biome format --write .{{else}}echo 'No formatter configured'{{/if}}"
+  },
+  "keywords": [
+    "javascript",
+    "fullstack",
+    "{{#if (includes frontend 'react')}}react{{/if}}",
+    "{{#if (includes frontend 'vue')}}vue{{/if}}",
+    "{{#if (includes frontend 'nextjs')}}nextjs{{/if}}",
+    "{{#if (eq backend 'express')}}express{{/if}}",
+    "{{#if (eq backend 'fastify')}}fastify{{/if}}",
+    "{{#if (eq database 'postgres')}}postgresql{{/if}}",
+    "{{#if (eq database 'mongodb')}}mongodb{{/if}}"
+  ],
+  "author": "Vipin Yadav",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    {{#if typescript}}
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0",
+    "tsc-alias": "^1.8.0",
+    "@types/node": "^20.0.0"{{#if (eq backend 'express')}},
+    "@types/express": "^4.17.0"{{/if}}{{#if (eq backend 'fastify')}},
+    "@types/fastify": "^4.0.0"{{/if}}{{/if}}
+  },
+  "devDependencies": {
+    {{#if (includes addons 'eslint')}}
+    "eslint": "^8.0.0",
+    "@eslint/js": "^8.0.0"{{#if typescript}},
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"{{/if}}{{#if (or (includes addons 'prettier') (includes addons 'biome') (includes addons 'husky'))}},{{/if}}{{/if}}
+    {{#if (includes addons 'prettier')}}
+    "prettier": "^3.0.0"{{#if (includes addons 'eslint')}},
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0"{{/if}}{{#if (or (includes addons 'biome') (includes addons 'husky'))}},{{/if}}{{/if}}
+    {{#if (includes addons 'biome')}}
+    "@biomejs/biome": "^1.0.0"{{#if (includes addons 'husky')}},{{/if}}{{/if}}
+    {{#if (includes addons 'husky')}}
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0"{{/if}}
+  }
+}

@@ -237,23 +237,41 @@ export class TemplateResolver {
    * @returns {string} - Resolved template path
    */
   resolveTemplatePath(category, technology, config) {
+    // Map old categories to new layered structure
+    const layerMapping = {
+      'backend': '02-frameworks/backend',
+      'frontend': '02-frameworks/frontend',
+      'database': '03-integrations/database',
+      'orm': '03-integrations/database', 
+      'auth': '04-features/auth',
+      'testing': '05-tooling/testing',
+      'docker': '05-tooling/docker',
+      'biome': '05-tooling/biome',
+      'turborepo': '05-tooling/turborepo',
+      'vercel': '06-deployment/vercel',
+      'cloudflare': '06-deployment/cloudflare'
+    };
+
+    // Get the new layer path
+    const layerPath = layerMapping[category] || category;
+    
     // Prefer direct technology folder if present
-    const directPath = path.join(this.templateDir, category, technology);
+    const directPath = path.join(this.templateDir, layerPath, technology);
     if (fs.existsSync(directPath)) return directPath;
 
     // Custom override folder inside technology path
-    const customPath = path.join(this.templateDir, category, technology, "custom");
+    const customPath = path.join(this.templateDir, layerPath, technology, "custom");
     if (fs.existsSync(customPath)) return customPath;
 
     // Fallback to base mapping if defined
     const rules = TEMPLATE_RULES[category]?.[technology];
     if (rules) {
-      const basePath = path.join(this.templateDir, category, rules.base);
+      const basePath = path.join(this.templateDir, layerPath, rules.base);
       if (fs.existsSync(basePath)) return basePath;
     }
 
-    // Final fallback: category root (will result in no files if missing)
-    return path.join(this.templateDir, category, technology);
+    // Final fallback: layer root (will result in no files if missing)
+    return path.join(this.templateDir, layerPath, technology);
   }
 
   /**

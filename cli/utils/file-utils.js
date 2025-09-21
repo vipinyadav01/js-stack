@@ -252,11 +252,11 @@ export function getTemplateDir() {
   // Support both dev (cli) and build (dist) locations
   const candidates = [
     // When running from cli (development)
-    path.join(__dirname, "../templates"),
+    path.join(__dirname, "../templates/templates"),
     // When running from dist (published package)
-    path.join(__dirname, "../../cli/templates"),
+    path.join(__dirname, "../../cli/templates/templates"),
     // Fallback: project root when executed from elsewhere
-    path.join(process.cwd(), "cli/templates"),
+    path.join(process.cwd(), "cli/templates/templates"),
   ];
 
   for (const candidate of candidates) {

@@ -1,0 +1,19 @@
+import { auth } from "./config.js"
+
+// Better Auth API routes
+export const { GET, POST } = auth.handler
+
+// Example protected route
+export async function GET_PROTECTED(request) {
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  })
+
+  if (!session) {
+    return new Response("Unauthorized", { status: 401 })
+  }
+
+  return new Response(JSON.stringify({ user: session.user }), {
+    headers: { "Content-Type": "application/json" },
+  })
+}

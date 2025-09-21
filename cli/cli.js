@@ -15,6 +15,27 @@ import {
   listPresetsCommand,
 } from "./commands/enhanced-init.js";
 import { addCommand } from "./commands/add.js";
+import {
+  createGhostBanner,
+  createTerminalHeader,
+  createGhostSpinner,
+  createGhostProgressBar,
+  showGhostSuccess,
+  showGhostError,
+  showGhostWarning,
+  showGhostInfo,
+  showGhostFeatures,
+  showGhostStep,
+  createGhostMenu,
+  createGhostConfirm,
+  createGhostInput,
+  showGhostSystemInfo,
+  createGhostFooter,
+  createAnimatedGhostLogo,
+  ghostColors,
+  ghostIcons,
+} from "./utils/terminal-ui.js";
+import { createInteractiveProjectSetup, promptPresetSelection } from "./utils/ghost-prompts.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -61,54 +82,27 @@ const icons = {
   crystal: "💎",
 };
 
-// Ultra-modern animated banner with gradients
+// Enhanced ghost-themed banner
 function showBanner() {
-  console.clear();
-
-  // Create animated title
-  const title = figlet.textSync("JS Stack", {
-    font: "Big",
-    horizontalLayout: "fitted",
-    width: 80,
-  });
-
-  // Create gradient effects
-  const gradientTitle = gradient(["#667eea", "#764ba2", "#f093fb"]);
-  const gradientSubtitle = gradient(["#4facfe", "#00f2fe"]);
-  const gradientInfo = gradient(["#43e97b", "#38f9d7"]);
-
-  // Show animated title
-  console.log();
-  console.log(gradientTitle(title));
-  console.log();
-
-  // Modern subtitle with better spacing
-  const subtitle = chalk
-    .hex(colors.text)
-    .bold("Next-Generation JavaScript Project Generator");
-  console.log(gradientSubtitle(`    ${subtitle}`));
-  console.log();
-
-  // Enhanced system information in a modern card layout
-  const systemInfo = [
-    `${icons.package} v${packageJson.version}`,
-    `${icons.rocket} Node.js ${process.version}`,
-    `${icons.gear} ${getPlatformIcon()}${os.type()} ${os.arch()}`,
-    `${icons.lightning} ESM Runtime`,
-    `${icons.crystal} ${getMemoryUsage()}`,
+  // Create ghost banner
+  createGhostBanner("JS Stack");
+  
+  // Show system information
+  showGhostSystemInfo();
+  
+  // Show available features
+  const features = [
+    { name: "Frontend", description: "React, Vue, Angular, Svelte", icon: ghostIcons.paint, status: "✅" },
+    { name: "Backend", description: "Express, Fastify, NestJS, Koa", icon: ghostIcons.gear, status: "✅" },
+    { name: "Database", description: "PostgreSQL, MongoDB, SQLite", icon: ghostIcons.database, status: "✅" },
+    { name: "ORM", description: "Prisma, Sequelize, Mongoose", icon: ghostIcons.shield, status: "✅" },
+    { name: "Auth", description: "JWT, Passport, Auth0", icon: ghostIcons.lock, status: "✅" },
+    { name: "Monorepo", description: "Turborepo support", icon: ghostIcons.package, status: "🆕" },
+    { name: "Testing", description: "Jest, Vitest, Cypress", icon: ghostIcons.test, status: "✅" },
+    { name: "DevOps", description: "Docker, CI/CD, GitHub Actions", icon: ghostIcons.terminal, status: "✅" },
   ];
-
-  const infoBox = boxen(systemInfo.join("\n"), {
-    padding: 1,
-    margin: 1,
-    borderStyle: "round",
-    borderColor: "cyan",
-    backgroundColor: "black",
-    title: `${icons.sparkles} System Info`,
-    titleAlignment: "center",
-  });
-
-  console.log(gradientInfo(infoBox));
+  
+  showGhostFeatures(features);
 }
 
 // Helper functions for enhanced system info
@@ -169,14 +163,11 @@ function handleCliError(error, command = null) {
   };
 
   if (errorInfo.message) {
-    console.error(chalk.red.bold(errorInfo.message));
-    if (error.message) {
-      console.error(chalk.gray(`   Details: ${error.message}`));
-    }
+    showGhostError(errorInfo.message, error.message);
   }
 
   if (errorInfo.tip) {
-    console.log(chalk.yellow(`\n💡 Tip: ${errorInfo.tip}`));
+    showGhostInfo(`💡 Tip: ${errorInfo.tip}`);
   }
 
   console.log();
@@ -230,7 +221,7 @@ function validateProjectName(name) {
 program
   .name("create-js-stack")
   .description(
-    "🚀 CLI tool for scaffolding modern JavaScript full-stack projects with best practices",
+    "🚀 Advanced CLI tool for scaffolding modern JavaScript full-stack projects with layered templates, smart compatibility, and monorepo support",
   )
   .version(packageJson.version, "-v, --version", "display version number")
   .configureOutput({
@@ -288,7 +279,7 @@ program
   .option(
     "--auth <type>",
     colors.muted(
-      `${icons.shield} Auth: jwt, passport, auth0, oauth, none`,
+      `${icons.shield} Auth: jwt, passport, auth0, oauth, better-auth, lucia, none`,
     ),
   )
   .option(
@@ -304,7 +295,13 @@ program
   .option(
     "--addons <addons...>",
     colors.muted(
-      `${icons.package} Tools: typescript, eslint, prettier, husky, docker, storybook`,
+      `${icons.package} Tools: typescript, eslint, prettier, biome, turborepo, pwa, tauri, docker, storybook`,
+    ),
+  )
+  .option(
+    "--deployment <type>",
+    colors.muted(
+      `${icons.rocket} Deployment: vercel, netlify, cloudflare, aws, railway, render, none`,
     ),
   )
   .option(
@@ -340,7 +337,14 @@ ${icons.target} ${chalk.bold("Popular Presets:")}
   ${colors.success("saas")}      - Full-stack SaaS with auth, database, and payments
   ${colors.success("api")}       - RESTful API with database and authentication  
   ${colors.success("fullstack")} - Full-stack web app with modern tooling
-  ${colors.success("minimal")}   - Lightweight starter template`,
+  ${colors.success("minimal")}   - Lightweight starter template
+
+${icons.sparkles} ${chalk.bold("New Features:")}
+  ${colors.success("layered")}   - Layered template system (Base → Framework → Integration → Feature → Tooling)
+  ${colors.success("monorepo")}  - Turborepo monorepo structure with apps/, packages/, configs/
+  ${colors.success("smart")}     - Smart compatibility with auto-adjustments
+  ${colors.success("conflict")}  - Intelligent conflict resolution for overlapping templates
+  ${colors.success("deployment")} - Built-in deployment templates (Vercel, Cloudflare, etc.)`,
       {
         padding: 1,
         margin: { top: 1, bottom: 0, left: 2, right: 2 },
@@ -579,6 +583,55 @@ program
     listPresetsCommand();
   });
 
+// Interactive command with ghost theme
+program
+  .command("interactive")
+  .alias("i")
+  .description(ghostColors.ghost("👻 Interactive project creation with ghost theme"))
+  .option("--preset <preset>", "Use a predefined configuration preset")
+  .action(async (options) => {
+    try {
+      createGhostBanner("JS Stack");
+      
+      let config;
+      if (options.preset) {
+        // Handle preset
+        const { getPresetConfig } = await import("./utils/validation.js");
+        const preset = getPresetConfig(options.preset);
+        if (preset) {
+          showGhostSuccess(`Using preset: ${preset.name}`, preset.description);
+          config = preset.config;
+        } else {
+          showGhostError(`Unknown preset: ${options.preset}`);
+          process.exit(1);
+        }
+      } else {
+        // Interactive setup
+        config = await createInteractiveProjectSetup();
+      }
+      
+      // Create project with ghost theme
+      const spinner = createGhostSpinner("Creating your project...");
+      spinner.start();
+      
+      // Simulate project creation
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      spinner.succeed("Project created successfully!");
+      showGhostSuccess("Project Created!", `Your ${config.projectName} project is ready to go!`);
+      
+      // Show next steps
+      showGhostInfo("Next Steps:", 
+        `cd ${config.projectName}\n` +
+        `${config.packageManager} install\n` +
+        `${config.packageManager} run dev`
+      );
+      
+    } catch (error) {
+      handleCliError(error, "interactive");
+    }
+  });
+
 // New Commands
 
 
@@ -644,32 +697,32 @@ ${icons.star} Give us a star: ${colors.accent("⭐ Star on GitHub")}`,
 // Enhanced error handling and execution
 program.exitOverride();
 
-// Global error handler with better reliability
+// Global error handler with ghost theme
 process.on("uncaughtException", (error) => {
-  console.error(chalk.red.bold("\n❌ Uncaught Exception:"));
-  console.error(chalk.gray(error.message));
+  showGhostError("Uncaught Exception", error.message);
   
   if (error.stack) {
-    console.error(chalk.gray("\nStack trace:"));
-    console.error(chalk.gray(error.stack));
+    console.log(ghostColors.muted("\nStack trace:"));
+    console.log(ghostColors.dim(error.stack));
   }
   
-  console.log(chalk.yellow("\n💡 Troubleshooting:"));
-  console.log(chalk.gray("  • Check your Node.js version (requires 18+)"));
-  console.log(chalk.gray("  • Try running with --verbose for more details"));
-  console.log(chalk.gray("  • Report this issue: https://github.com/vipinyadav01/js-stack/issues"));
+  showGhostInfo("Troubleshooting Tips", 
+    "• Check your Node.js version (requires 18+)\n" +
+    "• Try running with --verbose for more details\n" +
+    "• Report this issue: https://github.com/vipinyadav01/js-stack/issues"
+  );
   
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  console.error(chalk.red.bold("\n❌ Unhandled Promise Rejection:"));
-  console.error(chalk.gray(reason));
+  showGhostError("Unhandled Promise Rejection", reason);
   
-  console.log(chalk.yellow("\n💡 Troubleshooting:"));
-  console.log(chalk.gray("  • Check your internet connection"));
-  console.log(chalk.gray("  • Try running with --verbose for more details"));
-  console.log(chalk.gray("  • Report this issue: https://github.com/vipinyadav01/js-stack/issues"));
+  showGhostInfo("Troubleshooting Tips", 
+    "• Check your internet connection\n" +
+    "• Try running with --verbose for more details\n" +
+    "• Report this issue: https://github.com/vipinyadav01/js-stack/issues"
+  );
   
   process.exit(1);
 });

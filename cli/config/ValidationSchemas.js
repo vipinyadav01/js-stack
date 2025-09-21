@@ -62,6 +62,7 @@ export const TECHNOLOGY_OPTIONS = {
     NEXTAUTH: "nextauth",
     SUPABASE: "supabase",
     LUCIA: "lucia",
+    BETTER_AUTH: "better-auth",
   },
   ADDON: {
     ESLINT: "eslint",
@@ -74,6 +75,23 @@ export const TECHNOLOGY_OPTIONS = {
     SHADCN: "shadcn",
     STORYBOOK: "storybook",
     TYPESCRIPT: "typescript",
+    BIOME: "biome",
+    TURBOREPO: "turborepo",
+    PWA: "pwa",
+    TAURI: "tauri",
+    PLAYWRIGHT: "playwright",
+    CYPRESS: "cypress",
+    VITEST: "vitest",
+    JEST: "jest",
+  },
+  DEPLOYMENT: {
+    NONE: "none",
+    VERCEL: "vercel",
+    NETLIFY: "netlify",
+    CLOUDFLARE: "cloudflare",
+    AWS: "aws",
+    RAILWAY: "railway",
+    RENDER: "render",
   },
 };
 
@@ -152,6 +170,10 @@ export const AddonSchema = yup
     },
   );
 
+export const DeploymentSchema = yup
+  .string()
+  .oneOf(Object.values(TECHNOLOGY_OPTIONS.DEPLOYMENT), "Invalid deployment option");
+
 // Main project configuration schema
 export const ProjectConfigSchema = yup.object().shape({
   projectName: ProjectNameSchema,
@@ -163,6 +185,7 @@ export const ProjectConfigSchema = yup.object().shape({
   packageManager: PackageManagerSchema.required("Package manager is required"),
   auth: AuthSchema.required("Authentication method is required"),
   addons: AddonSchema.default([]),
+  deployment: DeploymentSchema.default("none"),
   git: yup.boolean().default(true),
   install: yup.boolean().default(true),
   typescript: yup.boolean().default(false),
@@ -346,6 +369,7 @@ export const FRONTEND_OPTIONS = TECHNOLOGY_OPTIONS.FRONTEND;
 export const PACKAGE_MANAGER_OPTIONS = TECHNOLOGY_OPTIONS.PACKAGE_MANAGER;
 export const AUTH_OPTIONS = TECHNOLOGY_OPTIONS.AUTH;
 export const ADDON_OPTIONS = TECHNOLOGY_OPTIONS.ADDON;
+export const DEPLOYMENT_OPTIONS = TECHNOLOGY_OPTIONS.DEPLOYMENT;
 
 export default {
   TECHNOLOGY_OPTIONS,
@@ -356,6 +380,7 @@ export default {
   PACKAGE_MANAGER_OPTIONS,
   AUTH_OPTIONS,
   ADDON_OPTIONS,
+  DEPLOYMENT_OPTIONS,
   ProjectNameSchema,
   DatabaseSchema,
   ORMSchema,
@@ -364,6 +389,7 @@ export default {
   PackageManagerSchema,
   AuthSchema,
   AddonSchema,
+  DeploymentSchema,
   ProjectConfigSchema,
   CLIOptionsSchema,
   TechnologyCompatibilitySchema,

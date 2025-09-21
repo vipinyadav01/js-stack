@@ -1,0 +1,47 @@
+name = "{{projectName}}"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "{{projectName}}-prod"
+
+[env.staging]
+name = "{{projectName}}-staging"
+
+{{#if (eq database 'none')}}
+{{else}}
+# Database bindings
+{{#if (eq database 'postgres')}}
+[[env.production.vars]]
+DATABASE_URL = "your-production-database-url"
+
+[[env.staging.vars]]
+DATABASE_URL = "your-staging-database-url"
+{{else if (eq database 'mongodb')}}
+[[env.production.vars]]
+MONGODB_URI = "your-production-mongodb-uri"
+
+[[env.staging.vars]]
+MONGODB_URI = "your-staging-mongodb-uri"
+{{/if}}
+{{/if}}
+
+{{#if (eq auth 'none')}}
+{{else}}
+# Authentication
+{{#if (eq auth 'jwt')}}
+[[env.production.vars]]
+JWT_SECRET = "your-production-jwt-secret"
+
+[[env.staging.vars]]
+JWT_SECRET = "your-staging-jwt-secret"
+{{else if (eq auth 'auth0')}}
+[[env.production.vars]]
+AUTH0_DOMAIN = "your-production-auth0-domain"
+AUTH0_CLIENT_ID = "your-production-auth0-client-id"
+
+[[env.staging.vars]]
+AUTH0_DOMAIN = "your-staging-auth0-domain"
+AUTH0_CLIENT_ID = "your-staging-auth0-client-id"
+{{/if}}
+{{/if}}

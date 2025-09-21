@@ -46,7 +46,7 @@ export class PackageJsonPlugin extends GeneratorPlugin {
       dependencies: {},
       devDependencies: {},
       keywords: [],
-      author: "",
+      author: "Vipin Yadav",
       license: "MIT",
     };
 
@@ -107,7 +107,7 @@ export class PackageJsonPlugin extends GeneratorPlugin {
       dependencies: {},
       devDependencies: {},
       keywords: this.generateKeywords(config),
-      author: "",
+      author: "Vipin Yadav",
       license: "MIT",
       engines: {
         node: ">=18.0.0",

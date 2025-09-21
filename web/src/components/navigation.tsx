@@ -82,7 +82,7 @@ function Logo({ size = "md", className }: { size?: "sm" | "md" | "lg", className
         
         {!imageError ? (
           <Image
-            src="/images/favicon-96x96.png"
+            src="/images/logo.png"
             alt="JS-Stack Logo"
             width={32}
             height={32}

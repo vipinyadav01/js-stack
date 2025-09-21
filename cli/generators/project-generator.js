@@ -8,11 +8,13 @@ import {
   resolveDependencies,
 } from "../utils/validation.js";
 import { getTemplateProcessor } from "../utils/template-resolver.js";
+import { LayeredTemplateProcessor } from "../utils/layered-template-processor.js";
 import { performanceUtils } from "../utils/performance.js";
 import { createHealthValidator } from "../utils/health-validator.js";
 import { initGitRepo } from "../utils/git.js";
 import { installDependencies } from "../utils/package-manager.js";
 import { ModularGenerator } from "./types/ModularGenerator.js";
+import { MonorepoGenerator } from "../utils/monorepo-generator.js";
 
 /**
  * Project generator with enhanced features
@@ -45,10 +47,16 @@ export class ProjectGenerator {
         result = await this.createProjectWithTransaction(progress);
       }
 
-      // Step 3: Run health validation
+      // Step 3: Generate monorepo structure if turborepo is selected
+      const monorepoResult = await this.generateMonorepoStructure(progress);
+      if (monorepoResult) {
+        result.monorepo = monorepoResult;
+      }
+
+      // Step 4: Run health validation
       await this.runHealthValidation(progress);
 
-      // Step 4: Display performance summary
+      // Step 5: Display performance summary
       const performanceSummary = this.performanceMonitor.end();
 
       return {
@@ -96,37 +104,64 @@ export class ProjectGenerator {
   async createProjectWithModularGenerator(progress) {
     try {
       if (progress && typeof progress.start === 'function') {
-        progress.start("🔧 Using modular generator system");
+        progress.start("🔧 Using layered template system");
       }
 
-      // Create modular generator
-      const modularGenerator = new ModularGenerator(this.config);
-      
-      // Set up context
-      modularGenerator.setContext({
-        projectDir: this.config.projectDir,
-        templateDir: path.join(process.cwd(), "templates"),
-        config: this.config,
-      });
-
-      // Generate project
-      const result = await modularGenerator.generateProject(this.config);
+      // Use layered template processor for better organization
+      const layeredProcessor = new LayeredTemplateProcessor(this.config);
+      const result = await layeredProcessor.processTemplates();
 
       if (progress && typeof progress.succeed === 'function') {
-        progress.succeed("✅ Modular generation completed");
+        progress.succeed("✅ Layered template processing completed");
       }
 
       return {
         success: result.success,
         projectDir: this.config.projectDir,
-        stats: result.stats,
-        modular: true,
+        processedFiles: result.processedFiles,
+        conflicts: result.conflicts,
+        layered: true,
       };
     } catch (error) {
       if (progress && typeof progress.fail === 'function') {
-        progress.fail(`❌ Modular generation failed: ${error.message}`);
+        progress.fail(`❌ Layered template processing failed: ${error.message}`);
       }
       throw error;
+    }
+  }
+
+  /**
+   * Generate monorepo structure if turborepo is selected
+   * @param {Object} progress - Progress callback
+   * @returns {Object} - Monorepo generation result
+   */
+  async generateMonorepoStructure(progress) {
+    if (!this.config.addons || !this.config.addons.includes('turborepo')) {
+      return null;
+    }
+
+    if (progress) {
+      progress.next({ icon: "🏗️", title: "Generating monorepo structure" });
+    }
+
+    try {
+      const monorepoGenerator = new MonorepoGenerator(this.config);
+      const structure = monorepoGenerator.generateStructure();
+      
+      // Display the generated structure
+      monorepoGenerator.displayStructure(structure);
+      
+      return {
+        success: true,
+        structure,
+        message: "Monorepo structure generated successfully"
+      };
+    } catch (error) {
+      console.error(chalk.red("Failed to generate monorepo structure:"), error.message);
+      return {
+        success: false,
+        error: error.message
+      };
     }
   }
 
@@ -151,7 +186,7 @@ export class ProjectGenerator {
         main: "index.js",
         scripts: this.getDefaultScripts(),
         keywords: [],
-        author: "",
+        author: "Vipin Yadav",
         license: "MIT",
         dependencies: dependencies.dependencies,
         devDependencies: dependencies.devDependencies,

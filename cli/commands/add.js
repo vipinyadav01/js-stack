@@ -11,20 +11,23 @@ export async function addCommand(features, options) {
 
     // If no features specified, prompt for them
     if (!features || features.length === 0) {
-      const selectedFeatures = await multiselect({
-        message: "What would you like to add?",
-        options: [
-          { value: "auth", label: "🔐 Authentication - JWT, Passport, Auth0" },
-          { value: "database", label: "🗄️ Database - Prisma, Sequelize, Mongoose" },
-          { value: "testing", label: "🧪 Testing - Jest, Vitest, Testing Library" },
-          { value: "docker", label: "🐳 Docker - Containerization setup" },
-          { value: "ci-cd", label: "🔄 CI/CD - GitHub Actions workflows" },
-          { value: "linting", label: "🔍 Linting - ESLint, Prettier" },
-          { value: "styling", label: "🎨 Styling - Tailwind, Styled Components" },
-          { value: "monitoring", label: "📊 Monitoring - Analytics, Logging" },
-          { value: "deployment", label: "🚀 Deployment - Vercel, Netlify, AWS" },
-        ],
-      });
+        const selectedFeatures = await multiselect({
+          message: "What would you like to add?",
+          options: [
+            { value: "auth", label: "🔐 Authentication - JWT, Passport, Auth0, Better Auth" },
+            { value: "database", label: "🗄️ Database - Prisma, Sequelize, Mongoose, Drizzle" },
+            { value: "testing", label: "🧪 Testing - Jest, Vitest, Playwright, Cypress" },
+            { value: "docker", label: "🐳 Docker - Containerization setup" },
+            { value: "ci-cd", label: "🔄 CI/CD - GitHub Actions workflows" },
+            { value: "linting", label: "🔍 Linting - ESLint, Prettier, Biome" },
+            { value: "styling", label: "🎨 Styling - Tailwind, Shadcn, Styled Components" },
+            { value: "monitoring", label: "📊 Monitoring - Analytics, Logging" },
+            { value: "deployment", label: "🚀 Deployment - Vercel, Cloudflare, AWS, Railway" },
+            { value: "turborepo", label: "⚡ Turborepo - Monorepo management" },
+            { value: "pwa", label: "📱 PWA - Progressive Web App features" },
+            { value: "tauri", label: "🖥️ Tauri - Desktop app framework" },
+          ],
+        });
 
       if (isCancel(selectedFeatures)) {
         cancel("Operation cancelled");
@@ -86,6 +89,9 @@ async function addFeature(feature, options) {
       break;
     case "deployment":
       await addDeployment(options);
+      break;
+    case "turborepo":
+      await addTurborepo(options);
       break;
     default:
       console.log(chalk.yellow(`⚠️  Unknown feature: ${feature}`));
@@ -162,6 +168,42 @@ async function addMonitoring(options) {
 async function addDeployment(options) {
   console.log(chalk.green("  ✅ Deployment configuration added"));
   // TODO: Implement deployment setup
+}
+
+/**
+ * Add Turborepo/monorepo feature
+ */
+async function addTurborepo(options) {
+  try {
+    console.log(chalk.blue("  🔧 Setting up Turborepo monorepo structure..."));
+    
+    // Import MonorepoGenerator dynamically to avoid circular dependencies
+    const { MonorepoGenerator } = await import("../utils/monorepo-generator.js");
+    
+    // Create a basic config for monorepo generation
+    const config = {
+      projectName: "my-monorepo",
+      projectDir: process.cwd(),
+      frontend: ["react"],
+      backend: "express",
+      database: "postgres",
+      orm: "prisma",
+      addons: ["turborepo", "typescript", "eslint", "prettier"],
+      packageManager: "npm"
+    };
+    
+    const monorepoGenerator = new MonorepoGenerator(config);
+    const structure = monorepoGenerator.generateStructure();
+    
+    // Display the generated structure
+    monorepoGenerator.displayStructure(structure);
+    
+    console.log(chalk.green("  ✅ Turborepo monorepo structure added"));
+    console.log(chalk.gray("  💡 Your project is now configured as a monorepo with Turborepo"));
+  } catch (error) {
+    console.error(chalk.red("  ❌ Failed to add Turborepo:"), error.message);
+    throw error;
+  }
 }
 
 export default addCommand;

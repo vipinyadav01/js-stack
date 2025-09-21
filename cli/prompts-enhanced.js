@@ -887,32 +887,53 @@ export function displayConfigSummary(config) {
   console.log(colors.secondary(`   Directory: ${colors.muted(config.projectDir)}`));
   console.log();
 
-  // Technology Stack (in logical order)
+  // Technology Stack (in layered order: Base → Framework → Integration → Feature → Tooling → Deployment)
   console.log(colors.accent("🚀 Technology Stack:"));
   
-  // Frontend
+  // Layer 1: Base (always shown)
+  console.log(colors.secondary(`   📦 Base: ${colors.success("JavaScript" + (config.typescript ? " + TypeScript" : ""))}`));
+  
+  // Layer 2: Frameworks
+  const frameworks = [];
   if (config.frontend && config.frontend.length > 0 && !config.frontend.includes('none')) {
-    console.log(colors.secondary(`   Frontend: ${colors.success(config.frontend.join(", "))}`));
+    frameworks.push(`Frontend: ${config.frontend.join(", ")}`);
   }
-  
-  // Backend
   if (config.backend && config.backend !== 'none') {
-    console.log(colors.secondary(`   Backend: ${colors.success(config.backend)}`));
+    frameworks.push(`Backend: ${config.backend}`);
+  }
+  if (frameworks.length > 0) {
+    console.log(colors.secondary(`   🏗️  Frameworks: ${colors.success(frameworks.join(" | "))}`));
   }
   
-  // Database
+  // Layer 3: Integrations
+  const integrations = [];
   if (config.database && config.database !== 'none') {
-    console.log(colors.secondary(`   Database: ${colors.success(config.database)}`));
+    integrations.push(`Database: ${config.database}`);
   }
-  
-  // ORM
   if (config.orm && config.orm !== 'none') {
-    console.log(colors.secondary(`   ORM/ODM: ${colors.success(config.orm)}`));
+    integrations.push(`ORM: ${config.orm}`);
+  }
+  if (integrations.length > 0) {
+    console.log(colors.secondary(`   🔗 Integrations: ${colors.success(integrations.join(" | "))}`));
   }
   
-  // Authentication
+  // Layer 4: Features
+  const features = [];
   if (config.auth && config.auth !== 'none') {
-    console.log(colors.secondary(`   Authentication: ${colors.success(config.auth)}`));
+    features.push(`Auth: ${config.auth}`);
+  }
+  if (features.length > 0) {
+    console.log(colors.secondary(`   ⚡ Features: ${colors.success(features.join(" | "))}`));
+  }
+  
+  // Layer 5: Tooling & Addons
+  if (config.addons && config.addons.length > 0) {
+    console.log(colors.secondary(`   🛠️  Tooling: ${colors.success(config.addons.join(", "))}`));
+  }
+  
+  // Layer 6: Deployment
+  if (config.deployment && config.deployment !== 'none') {
+    console.log(colors.secondary(`   🚀 Deployment: ${colors.success(config.deployment)}`));
   }
 
   console.log();

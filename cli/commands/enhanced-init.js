@@ -18,6 +18,17 @@ import { getPresetConfig, listPresets } from "../utils/validation.js";
 import { SmartCompatibility } from "../utils/smart-compatibility.js";
 import { ReproducibleCommands } from "../utils/reproducible-commands.js";
 import { ReliabilityManager } from "../utils/reliability.js";
+import {
+  createGhostSpinner,
+  createGhostProgressBar,
+  showGhostSuccess,
+  showGhostError,
+  showGhostWarning,
+  showGhostInfo,
+  showGhostStep,
+  ghostColors,
+  ghostIcons,
+} from "../utils/terminal-ui.js";
 
 /**
  * Enhanced initialization command with all improvements
@@ -31,8 +42,7 @@ export async function enhancedInitCommand(projectName, options) {
     if (options.preset) {
       const preset = getPresetConfig(options.preset);
       if (preset) {
-        console.log(chalk.green.bold(`\n🎯 Using preset: ${preset.name}`));
-        console.log(chalk.gray(`   ${preset.description}`));
+        showGhostSuccess(`Using preset: ${preset.name}`, preset.description);
 
         // Merge preset with CLI options
         options = {
@@ -41,11 +51,10 @@ export async function enhancedInitCommand(projectName, options) {
           preset: options.preset,
         };
       } else {
-        console.log(chalk.yellow(`⚠️  Unknown preset: ${options.preset}`));
-        console.log(chalk.gray("Available presets:"));
-        listPresets().forEach((preset) => {
-          console.log(chalk.gray(`  • ${preset.key}: ${preset.name}`));
-        });
+        showGhostError(`Unknown preset: ${options.preset}`);
+        showGhostInfo("Available presets:", 
+          listPresets().map(preset => `• ${preset.key}: ${preset.name}`).join('\n')
+        );
         process.exit(1);
       }
     }
@@ -188,7 +197,7 @@ export async function enhancedInitCommand(projectName, options) {
 async function displayEnhancedSuccess(result) {
   console.log();
   console.log(chalk.green.bold("╭─ Project Created Successfully!"));
-  console.log(chalk.gray("│  Your project is ready to go"));
+  console.log(chalk.gray("      │  Your project is ready to go"));
   console.log(chalk.green.bold("╰─────────────────────────────────────"));
   console.log();
 

@@ -6,6 +6,7 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 
 - ✅ **Available** - Feature is fully implemented and ready to use
 - 🚧 **Coming Soon** - Feature is planned and in development
+- 🆕 **New** - Recently added features
 
 ## ✨ Features
 
@@ -89,6 +90,7 @@ A powerful, modern CLI tool for scaffolding production-ready JavaScript full-sta
 - ✅ **Environment Management** - Complete .env configuration
 - 🚧 **API Documentation** - Auto-generated Swagger/OpenAPI docs (Coming Soon)
 - ✅ **Hot Reload** - Development with instant updates
+- 🆕 **Turborepo** - Monorepo support with workspace management
 
 ## 🚀 Quick Start
 
@@ -168,6 +170,18 @@ npx create-js-stack init mobile-app \
   --addons docker testing
 ```
 
+### Monorepo Setup with Turborepo
+
+```bash
+npx create-js-stack init monorepo-app \
+  --backend express \
+  --frontend react vue \
+  --database postgres \
+  --orm prisma \
+  --auth jwt \
+  --addons turborepo typescript eslint prettier
+```
+
 ## 📋 Commands
 
 ### `init [project-name]`
@@ -222,6 +236,7 @@ Create a new full-stack project with all configurations.
   - `github-actions` - CI/CD workflows ✅
   - `testing` - Testing frameworks ✅
   - `tailwind` - Tailwind CSS ✅
+  - `turborepo` - Monorepo with Turborepo 🆕
   - `material` - Material UI (React/Angular) 🚧 (Coming Soon)
   - `bootstrap` - Bootstrap CSS 🚧 (Coming Soon)
   - `redis` - Redis caching ✅
@@ -258,6 +273,9 @@ create-js-stack add --auth jwt
 
 # Add database with ORM
 create-js-stack add --database postgres --orm prisma
+
+# Add Turborepo monorepo structure
+create-js-stack add --addons turborepo
 ```
 
 ### `list`
@@ -424,6 +442,38 @@ my-awesome-app/
 ├── 📄 .prettierrc              # Prettier configuration
 ├── 📄 turbo.json               # Turbo configuration (if monorepo)
 └── 📄 LICENSE                  # License file
+```
+
+### Monorepo Structure (with Turborepo)
+
+```
+monorepo-app/
+├── 📁 apps/                    # Applications
+│   ├── 📁 web/                 # Web application
+│   │   ├── 📁 src/             # Source code
+│   │   ├── 📄 package.json     # App dependencies
+│   │   └── 📄 next.config.js   # Next.js config
+│   └── 📁 server/              # Server application
+│       ├── 📁 src/             # Source code
+│       ├── 📄 package.json     # App dependencies
+│       └── 📄 server.js        # Main server file
+├── 📁 packages/                # Shared packages
+│   ├── 📁 ui/                  # UI components
+│   │   ├── 📁 src/             # Component source
+│   │   └── 📄 package.json     # Package dependencies
+│   ├── 📁 database/            # Database package
+│   │   ├── 📁 src/             # Database logic
+│   │   └── 📄 package.json     # Package dependencies
+│   └── 📁 shared/              # Shared utilities
+│       ├── 📁 src/             # Shared code
+│       └── 📄 package.json     # Package dependencies
+├── 📁 configs/                 # Shared configurations
+│   ├── 📁 eslint/              # ESLint config
+│   ├── 📁 typescript/          # TypeScript config
+│   └── 📁 prettier/            # Prettier config
+├── 📄 package.json             # Root package.json
+├── 📄 turbo.json               # Turborepo configuration
+└── 📄 README.md                # Project documentation
 ```
 
 ### Framework-Specific Structures
@@ -700,6 +750,8 @@ If this project helped you, please consider:
 - **Package Managers**: 4 supported managers
 - **Authentication**: 4 auth strategies
 - **Development Tools**: 10+ integrated tools
+- **Monorepo Support**: Turborepo integration
+- **Author**: Vipin Yadav
 
 ## 🔗 Useful Links
 
@@ -715,6 +767,6 @@ If this project helped you, please consider:
 
 **Built with ❤️ by [Vipin Yadav](https://vipinyadav01.vercel.app)**
 
-[Website](https://js-stack.https://js-stack.pages.dev) • [Documentation](https://js-stack.pages.dev/docs) • [Examples](https://github.com/js-stack/examples) • [Community](https://discord.gg/js-stack)
+[Website](https://js-stack.pages.dev) • [Documentation](https://js-stack.pages.dev/docs) • [Examples](https://github.com/js-stack/examples) • [Community](https://discord.gg/js-stack)
 
 </div>
