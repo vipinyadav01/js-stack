@@ -270,7 +270,13 @@ export class TemplateResolver {
       if (fs.existsSync(basePath)) return basePath;
     }
 
-    // Final fallback: layer root (will result in no files if missing)
+    // Frontend-specific fallback to a basic static starter
+    if (category === 'frontend') {
+      const basicPath = path.join(this.templateDir, layerPath, 'basic');
+      if (fs.existsSync(basicPath)) return basicPath;
+    }
+
+    // Final fallback: layer root (may be missing)
     return path.join(this.templateDir, layerPath, technology);
   }
 
