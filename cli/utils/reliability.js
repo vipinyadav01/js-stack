@@ -145,18 +145,26 @@ export class ReliabilityManager {
     this.checks.push("Template Availability");
 
     try {
-      // Check if templates directory exists
-      const templatesPath = join(__dirname, "../templates");
-      if (!existsSync(templatesPath)) {
-        this.errors.push({
-          type: "templates",
-          message: "Templates directory not found",
-          solution: "Reinstall the package or check installation",
-        });
-        return;
-      }
+      // Check if templates directory exists (try multiple common locations)
+      const candidateTemplatePaths = [
+        join(__dirname, "../templates"),
+        join(__dirname, "../../cli/templates"),
+        join(process.cwd(), "cli/templates"),
+        join(process.cwd(), "templates"),
+      ];
 
-      this.checks.push("✅ Templates directory found");
+      const foundTemplatesPath = candidateTemplatePaths.find((p) => existsSync(p));
+
+      if (!foundTemplatesPath) {
+        // Do not hard fail here. Allow the generator to fetch remote templates.
+        this.warnings.push({
+          type: "templates",
+          message: "Templates directory not found locally",
+          solution: "Remote templates will be used if available; otherwise reinstall the package",
+        });
+      } else {
+        this.checks.push("✅ Templates directory found");
+      }
 
       // Check specific template requirements
       if (config.frontend && config.frontend.length > 0) {
@@ -203,18 +211,24 @@ export class ReliabilityManager {
     this.checks.push("Dependencies");
 
     try {
-      // Check if package.json exists
-      const packageJsonPath = join(__dirname, "../../package.json");
-      if (!existsSync(packageJsonPath)) {
-        this.errors.push({
-          type: "dependencies",
-          message: "Package.json not found",
-          solution: "Reinstall the package",
-        });
-        return;
-      }
+      // Check if package.json exists (search multiple locations in bundled environments)
+      const candidatePkgPaths = [
+        join(__dirname, "../../package.json"),
+        join(__dirname, "../../../package.json"),
+        join(process.cwd(), "package.json"),
+      ];
+      const pkgPath = candidatePkgPaths.find((p) => existsSync(p));
 
-      this.checks.push("✅ Package.json found");
+      if (!pkgPath) {
+        // Do not block execution; dependencies presence will be checked below.
+        this.warnings.push({
+          type: "dependencies",
+          message: "package.json not found near CLI runtime",
+          solution: "If issues occur, reinstall the package",
+        });
+      } else {
+        this.checks.push("✅ Package.json found");
+      }
 
       // Check critical dependencies
       const criticalDeps = [
