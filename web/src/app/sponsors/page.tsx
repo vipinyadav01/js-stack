@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { 
   fetchTwitterMentions, 
   type TwitterTweet,
-  type SponsorAnalytics
+  type SponsorAnalytics,
+  type Sponsor
 } from "@/lib/sponsors-api";
 
 // Import components
@@ -19,108 +20,81 @@ import { type SponsorsData } from "@/lib/sponsor-utils";
 export default function SponsorsPage() {
   const [tweets, setTweets] = useState<TwitterTweet[]>([]);
   const [analytics, setAnalytics] = useState<SponsorAnalytics | null>(null);
+  const [sponsorsData, setSponsorsData] = useState<SponsorsData | null>(null);
   const [loading, setLoading] = useState({
     twitter: false,
-    analytics: false
+    analytics: false,
+    sponsors: false
   });
   const [error, setError] = useState({
     twitter: "",
-    analytics: ""
+    analytics: "",
+    sponsors: "",
+    global: ""
   });
+  const mapSponsorsToSectionData = (sponsors: Sponsor[]): SponsorsData => {
+    const toEntry = (s: Sponsor) => {
+      const githubUrl = s.github || "";
+      const githubId = (() => {
+        try {
+          const url = new URL(githubUrl);
+          return url.pathname.replace(/\/+/, "").split("/")[0] || s.name;
+        } catch {
+          return s.name;
+        }
+      })();
+      return {
+        githubId,
+        name: s.name,
+        avatarUrl: s.avatar,
+        tierName: s.tier,
+        formattedAmount: `$${s.amount}`,
+        sinceWhen: s.duration,
+        githubUrl: githubUrl,
+        websiteUrl: s.website,
+        isSpecial: s.amount >= 500,
+      };
+    };
+    const specialSponsors = sponsors.filter(s => s.amount >= 500).map(toEntry);
+    const regularSponsors = sponsors.filter(s => s.amount < 500).map(toEntry);
 
-  // Mock GitHub sponsors data
-  const mockGitHubSponsorsData: SponsorsData = {
-    specialSponsors: [
-      {
-        githubId: "acmecorp",
-        name: "Acme Corporation",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=acme",
-        tierName: "Gold Sponsor",
-        formattedAmount: "$500",
-        sinceWhen: "6 months",
-        githubUrl: "https://github.com/acmecorp",
-        websiteUrl: "https://acme.com",
-        isSpecial: true
-      },
-      {
-        githubId: "techstartinc",
-        name: "TechStart Inc",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=techstart",
-        tierName: "Silver Sponsor",
-        formattedAmount: "$200",
-        sinceWhen: "3 months",
-        githubUrl: "https://github.com/techstartinc",
-        websiteUrl: "https://techstart.io",
-        isSpecial: true
-      }
-    ],
-    sponsors: [
-      {
-        githubId: "devtoolsllc",
-        name: "DevTools LLC",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=devtools",
-        tierName: "Bronze Sponsor",
-        formattedAmount: "$100",
-        sinceWhen: "1 month",
-        githubUrl: "https://github.com/devtoolsllc",
-        websiteUrl: "https://devtools.dev"
-      },
-      {
-        githubId: "opensourcefound",
-        name: "OpenSource Foundation",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=opensource",
-        tierName: "Platinum Sponsor",
-        formattedAmount: "$1000",
-        sinceWhen: "12 months",
-        githubUrl: "https://github.com/opensourcefound",
-        websiteUrl: "https://opensource.org"
-      },
-      {
-        githubId: "edutechsolutions",
-        name: "EduTech Solutions",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=edutech",
-        tierName: "Silver Sponsor",
-        formattedAmount: "$150",
-        sinceWhen: "4 months",
-        githubUrl: "https://github.com/edutechsolutions",
-        websiteUrl: "https://edutech.edu"
-      }
-    ],
-    pastSponsors: [
-      {
-        githubId: "oldsponsor1",
-        name: "Previous Sponsor",
-        avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=old1",
-        tierName: "Bronze Sponsor",
-        formattedAmount: "$50",
-        sinceWhen: "past 2 months",
-        githubUrl: "https://github.com/oldsponsor1",
-        websiteUrl: "https://oldsponsor1.com"
-      }
-    ]
+    return {
+      specialSponsors,
+      sponsors: regularSponsors,
+      pastSponsors: [],
+    };
   };
-
-  // Configuration
   const twitterQuery = "js-stack OR from:vipinyadav9m";
   const twitterCount = 20;
   const githubUsername = "vipinyadav01";
 
   // Fetch functions
   const fetchSponsorsData = useCallback(async () => {
-    setLoading(prev => ({ ...prev, analytics: true }));
-    setError(prev => ({ ...prev, analytics: "" }));
+    setLoading(prev => ({ ...prev, analytics: true, sponsors: true }));
+    setError(prev => ({ ...prev, analytics: "", sponsors: "" }));
     try {
       const response = await fetch(`/api/sponsors?username=${githubUsername}&analytics=true`);
       const data = await response.json();
-      if (response.ok && data.analytics) {
-        setAnalytics(data.analytics);
+      if (!response.ok) {
+        throw new Error('Failed to fetch sponsors');
+      }
+      const isFallback = data?.meta?.isFallback === true;
+      const realSponsors: Sponsor[] = Array.isArray(data?.sponsors) ? data.sponsors : [];
+      if (!isFallback) {
+        setAnalytics(data.analytics || null);
+        if (realSponsors.length > 0) {
+          setSponsorsData(mapSponsorsToSectionData(realSponsors));
+        } else {
+          setSponsorsData({ specialSponsors: [], sponsors: [], pastSponsors: [] });
+        }
       } else {
-        throw new Error('Failed to fetch sponsor analytics');
+        setSponsorsData({ specialSponsors: [], sponsors: [], pastSponsors: [] });
+        setError(prev => ({ ...prev, sponsors: "No real sponsor data available yet." }));
       }
     } catch (err) {
-      setError(prev => ({ ...prev, analytics: err instanceof Error ? err.message : 'Unknown error' }));
+      setError(prev => ({ ...prev, analytics: err instanceof Error ? err.message : 'Unknown error', sponsors: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
-      setLoading(prev => ({ ...prev, analytics: false }));
+      setLoading(prev => ({ ...prev, analytics: false, sponsors: false }));
     }
   }, [githubUsername]);
 
@@ -128,8 +102,14 @@ export default function SponsorsPage() {
     setLoading(prev => ({ ...prev, twitter: true }));
     setError(prev => ({ ...prev, twitter: "" }));
     try {
-      const { tweets } = await fetchTwitterMentions(twitterQuery, twitterCount);
-      setTweets(tweets);
+      const { tweets, meta } = await fetchTwitterMentions(twitterQuery, twitterCount);
+      if (meta?.isFallback) {
+        // Ignore demo tweets
+        setTweets([]);
+        setError(prev => ({ ...prev, twitter: "No real tweets available for this query yet." }));
+      } else {
+        setTweets(tweets);
+      }
     } catch (err) {
       setError(prev => ({ ...prev, twitter: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
@@ -158,6 +138,20 @@ export default function SponsorsPage() {
         initial="hidden"
         animate="visible"
       >
+        {/* Global Error Banner when no real data */}
+        {(!loading.twitter && !loading.sponsors) && (() => {
+          const sponsorsCount = (sponsorsData?.specialSponsors.length || 0) + (sponsorsData?.sponsors.length || 0);
+          const noTweets = tweets.length === 0;
+          const noSponsors = sponsorsCount === 0;
+          if (noTweets && noSponsors) {
+            return (
+              <div className="mb-4 rounded border border-destructive/30 bg-destructive/10 p-3 text-destructive text-sm">
+                No real sponsors or tweets found yet. Data will appear once available.
+              </div>
+            );
+          }
+          return null;
+        })()}
         {/* Terminal Header */}
         <motion.div className="mb-8" variants={containerVariants}>
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
@@ -180,11 +174,13 @@ export default function SponsorsPage() {
         )}
 
         {/* GitHub Sponsors Section */}
-        <motion.div className="mb-8" variants={containerVariants}>
-          <div className="mx-auto max-w-[1280px]">
-            <GitHubSponsorsSection sponsorsData={mockGitHubSponsorsData} />
-          </div>
-        </motion.div>
+        {(sponsorsData && ((sponsorsData.specialSponsors.length + sponsorsData.sponsors.length) > 0)) && (
+          <motion.div className="mb-8" variants={containerVariants}>
+            <div className="mx-auto max-w-[1280px]">
+              <GitHubSponsorsSection sponsorsData={sponsorsData} />
+            </div>
+          </motion.div>
+        )}
 
         {/* Twitter Feed Section */}
         <motion.div className="mb-8" variants={containerVariants}>
