@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from 'next/link'
 import { NpmIcon } from "@/components/icons/npm-icon";
 import { GithubIcon } from "./icons/github-icon";
+import favicon from "../Images/logo.png";
 import {
   Menu,
   Zap,
@@ -69,7 +70,7 @@ const quickActions = [
 
 // Logo component with fallback
 function Logo({ size = "md", className }: { size?: "sm" | "md" | "lg", className?: string }) {
-  const [imageError, setImageError] = useState(true); // Start with true to use fallback
+  const [imageError, setImageError] = useState(false);
   
   const sizeClasses = {
     sm: { container: "h-6 w-6", icon: "h-4 w-4", pulse: "w-0.5 h-0.5" },
@@ -89,7 +90,7 @@ function Logo({ size = "md", className }: { size?: "sm" | "md" | "lg", className
         
         {!imageError ? (
           <Image
-            src="/images/logo.png"
+            src={favicon}
             alt="JS-Stack Logo"
             width={32}
             height={32}
@@ -146,6 +147,12 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu on route change for robustness
+  useEffect(() => {
+    if (mobileOpen) setMobileOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
   return (
     <header
       className={cn(
@@ -179,9 +186,9 @@ export function Navigation() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center">
+        <nav role="navigation" aria-label="Primary" className="hidden lg:flex items-center space-x-1 flex-1 justify-center">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive = pathname?.startsWith(item.href);
             return (
               <Link
                 key={item.href}
@@ -193,6 +200,7 @@ export function Navigation() {
                     ? "text-foreground bg-muted/20 border-primary shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 )}
+                aria-current={isActive ? "page" : undefined}
               >
                 <item.icon className={cn(
                   "h-4 w-4 transition-colors",
@@ -236,12 +244,20 @@ export function Navigation() {
           <ThemeToggle />
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="rounded border border-border p-2 hover:bg-muted/10 hover:border-primary/50 transition-all duration-200">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded border border-border p-2 hover:bg-muted/10 hover:border-primary/50 transition-all duration-200"
+                aria-label="Open menu"
+                aria-haspopup="dialog"
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-navigation"
+              >
                 <Menu className="h-4 w-4" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-80 p-0 bg-background/95 backdrop-blur-xl border-l border-border">
+            <SheetContent side="right" className="w-80 p-0 bg-background/95 backdrop-blur-xl border-l border-border" id="mobile-navigation" aria-label="Mobile navigation">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               
               {/* Mobile Header */}
@@ -257,7 +273,7 @@ export function Navigation() {
               </div>
 
               {/* Mobile Navigation Items */}
-              <div className="p-4 space-y-2">
+              <div className="p-4 space-y-2" role="navigation" aria-label="Primary">
                 <div className="px-2 mb-4">
                   <div className="flex items-center gap-2">
                     <Terminal className="h-4 w-4 text-primary" />
@@ -280,6 +296,7 @@ export function Navigation() {
                           ? "bg-muted/20 border-primary shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       )}
+                      aria-current={isActive ? "page" : undefined}
                     >
                       <div className="flex items-center space-x-3">
                         <item.icon className={cn(
