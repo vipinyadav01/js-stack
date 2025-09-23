@@ -66,22 +66,67 @@ export async function fetchSponsors(includeAnalytics: boolean = true): Promise<{
       params.append('analytics', 'true');
     }
 
-    const response = await fetch(`/api/sponsors?${params.toString()}`);
-    
-    if (!response.ok) {
-      console.warn(`API returned ${response.status}, using fallback data`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    try {
+      const response = await fetch(`/api/sponsors?${params.toString()}` as string, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (!response.ok) {
+        console.warn(`API returned ${response.status}, using fallback data`);
+        return getFallbackSponsorsData();
+      }
+      const data = await response.json();
+      return {
+        sponsors: data.sponsors || [],
+        analytics: data.analytics || null,
+        meta: data.meta || null
+      };
+    } catch (error) {
+      clearTimeout(timeout);
+      console.warn('Error fetching sponsors, using fallback data:', error);
       return getFallbackSponsorsData();
     }
+  } catch (error) {
+    console.warn('Unexpected error fetching sponsors:', error);
+    return getFallbackSponsorsData();
+  }
+}
 
+// Prefer demo (fallback) sponsors automatically when running on localhost
+import { isLocalhost as isLocalEnv } from "@/lib/env";
+
+export async function fetchSponsorsPreferDemoOnLocal(includeAnalytics: boolean = true): Promise<{
+  sponsors: Sponsor[];
+  analytics: SponsorAnalytics | null;
+  meta?: {
+    count: number;
+    hasRealData: boolean;
+    isFallback: boolean;
+    timestamp: string;
+  };
+}> {
+  const isLocalhost = isLocalEnv();
+  try {
+    const params = new URLSearchParams();
+    if (includeAnalytics) {
+      params.append('analytics', 'true');
+    }
+    const response = await fetch(`/api/sponsors?${params.toString()}`);
+    if (!response.ok) {
+      // Prefer fallback on local; propagate error semantics by returning fallback meta
+      return getFallbackSponsorsData();
+    }
     const data = await response.json();
-    
+    const hasAnySponsors = Array.isArray(data?.sponsors) && data.sponsors.length > 0;
+    if (isLocalhost && (data?.meta?.isFallback || !hasAnySponsors)) {
+      return getFallbackSponsorsData();
+    }
     return {
       sponsors: data.sponsors || [],
       analytics: data.analytics || null,
       meta: data.meta || null
     };
-  } catch (error) {
-    console.warn('Error fetching sponsors, using fallback data:', error);
+  } catch {
     return getFallbackSponsorsData();
   }
 }
@@ -123,6 +168,32 @@ function getFallbackSponsorsData(): {
       website: "https://demo.com",
       github: "https://github.com/demo",
       isActive: true
+    },
+    {
+      id: "fallback-3",
+      name: "Acme Labs",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=acme",
+      amount: 500,
+      tier: "Gold",
+      duration: "6 months",
+      frequency: "monthly",
+      startDate: "2024-03-15",
+      website: "https://acme.dev",
+      github: "https://github.com/acme",
+      isActive: true
+    },
+    {
+      id: "fallback-4",
+      name: "Widget Corp",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=widget",
+      amount: 1200,
+      tier: "Platinum",
+      duration: "12 months",
+      frequency: "yearly",
+      startDate: "2024-05-01",
+      website: "https://widgetcorp.io",
+      github: "https://github.com/widgetcorp",
+      isActive: true
     }
   ];
 
@@ -163,23 +234,48 @@ export async function fetchTwitterMentions(query: string = 'js-stack', count: nu
       count: count.toString()
     });
 
-    const response = await fetch(`/api/twitter?${params.toString()}`);
-    
-    if (!response.ok) {
-      console.warn(`Twitter API returned ${response.status}, using fallback data`);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    try {
+      const response = await fetch(`/api/twitter?${params.toString()}` as string, { signal: controller.signal });
+      clearTimeout(timeout);
+      if (!response.ok) {
+        console.warn(`Twitter API returned ${response.status}, using fallback data`);
+        return getFallbackTwitterData();
+      }
+      const data = await response.json();
+      return {
+        tweets: data.tweets || [],
+        meta: data.meta || null
+      };
+    } catch (error) {
+      clearTimeout(timeout);
+      console.warn('Error fetching Twitter mentions, using fallback data:', error);
       return getFallbackTwitterData();
     }
-
-    const data = await response.json();
-    
-    return {
-      tweets: data.tweets || [],
-      meta: data.meta || null
-    };
   } catch (error) {
-    console.warn('Error fetching Twitter mentions, using fallback data:', error);
+    console.warn('Unexpected error fetching Twitter mentions:', error);
     return getFallbackTwitterData();
   }
+}
+
+// Prefer demo (fallback) data automatically when running on localhost
+export async function fetchTwitterMentionsPreferDemoOnLocal(query: string = 'js-stack', count: number = 20): Promise<{
+  tweets: TwitterTweet[];
+  meta?: {
+    query: string;
+    count: number;
+    hasRealData: boolean;
+    isFallback: boolean;
+    timestamp: string;
+  };
+}> {
+  const isLocalhost = isLocalEnv();
+  const result = await fetchTwitterMentions(query, count);
+  if (isLocalhost && result?.meta?.isFallback) {
+    return getFallbackTwitterData();
+  }
+  return result;
 }
 
 // Fallback Twitter data when API is not available
@@ -227,6 +323,40 @@ function getFallbackTwitterData(): {
       },
       timestamp: "5h",
       url: "https://twitter.com/demodev/status/123456788"
+    },
+    {
+      id: "fallback-3",
+      text: "Prototyped a SaaS in a weekend using js-stack. Loving the generator and plugin architecture.",
+      user: {
+        name: "SaaS Builder",
+        username: "saasbuilder",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=saas",
+        verified: true
+      },
+      engagement: {
+        likes: 42,
+        retweets: 11,
+        replies: 6
+      },
+      timestamp: "1d",
+      url: "https://twitter.com/saasbuilder/status/123456787"
+    },
+    {
+      id: "fallback-4",
+      text: "The CLI UX in js-stack is top-notch. Defaults are sensible, and templates are modern.",
+      user: {
+        name: "Frontend Fan",
+        username: "frontendfan",
+        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=fan",
+        verified: false
+      },
+      engagement: {
+        likes: 15,
+        retweets: 4,
+        replies: 1
+      },
+      timestamp: "3d",
+      url: "https://twitter.com/frontendfan/status/123456786"
     }
   ];
 
@@ -306,7 +436,6 @@ export function getTimeAgo(dateString: string): string {
 
 // Format time ago for Twitter timestamps (simplified format)
 export function formatTimeAgo(timestamp: string): string {
-  // If timestamp is already in short format (like "2h", "5h"), return as is
   if (/^\d+[hmd]$/.test(timestamp)) {
     return timestamp;
   }

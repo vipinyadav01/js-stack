@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { FullScreenSeparator } from "@/components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 
 interface ResponsiveLayoutProps {
   sidebar: React.ReactNode;
@@ -95,7 +95,7 @@ export function ResponsiveLayout({ sidebar, main, className = "" }: ResponsiveLa
         {sidebar}
       </div>
       
-      <FullScreenSeparator />
+      <Separator />
       
       <div className="lg:h-[calc(100vh-10rem)] overflow-y-auto pr-1">
         {main}

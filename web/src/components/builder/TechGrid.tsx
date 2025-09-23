@@ -83,7 +83,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
     return state[category] === key;
   };
 
-  const isIncompatible = (_category: keyof BuilderState, _key: string): boolean => {
+  const isIncompatible = (): boolean => {
     // Add your compatibility logic here
     return false;
   };
@@ -109,7 +109,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("frontend", item.key)}
-              incompatible={isIncompatible("frontend", item.key)}
+              incompatible={isIncompatible()}
             />
           ))}
         </div>
@@ -125,7 +125,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("backend", item.key)}
-              incompatible={isIncompatible("backend", item.key)}
+              incompatible={isIncompatible()}
             />
           ))}
         </div>
@@ -141,7 +141,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("database", item.key)}
-              incompatible={isIncompatible("database", item.key)}
+              incompatible={isIncompatible()}
             />
           ))}
         </div>
@@ -157,7 +157,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("orm", item.key)}
-              incompatible={isIncompatible("orm", item.key)}
+              incompatible={isIncompatible()}
             />
           ))}
         </div>
@@ -173,7 +173,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("auth", item.key)}
-              incompatible={isIncompatible("auth", item.key)}
+              incompatible={isIncompatible()}
             />
           ))}
         </div>
@@ -189,7 +189,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("addons", item.key)}
-              incompatible={isIncompatible("addons", item.key)}
+              incompatible={isIncompatible()}
             />
           ))}
         </div>
@@ -213,9 +213,9 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
       </Section>
 
       {/* Compatibility Warnings */}
-      {(isIncompatible("orm", state.orm) || 
-        isIncompatible("auth", state.auth) || 
-        state.addons.some((addon: string) => isIncompatible("addons", addon))) && (
+      {(isIncompatible() || 
+        isIncompatible() || 
+        state.addons.some(() => isIncompatible())) && (
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center">

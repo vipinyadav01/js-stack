@@ -4,11 +4,13 @@ import { useEffect, useState, useCallback } from "react";
 import { Terminal, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
-  fetchTwitterMentions, 
+  fetchTwitterMentionsPreferDemoOnLocal,
+  fetchSponsorsPreferDemoOnLocal,
   type TwitterTweet,
   type SponsorAnalytics,
   type Sponsor
 } from "@/lib/sponsors-api";
+import { isLocalhost } from "@/lib/env";
 
 // Import components
 import AnalyticsSection from "@/components/sponsors/AnalyticsSection";
@@ -21,6 +23,8 @@ export default function SponsorsPage() {
   const [tweets, setTweets] = useState<TwitterTweet[]>([]);
   const [analytics, setAnalytics] = useState<SponsorAnalytics | null>(null);
   const [sponsorsData, setSponsorsData] = useState<SponsorsData | null>(null);
+  const [showTweets, setShowTweets] = useState(true);
+  const [showSponsors, setShowSponsors] = useState(true);
   const [loading, setLoading] = useState({
     twitter: false,
     analytics: false,
@@ -52,7 +56,7 @@ export default function SponsorsPage() {
         sinceWhen: s.duration,
         githubUrl: githubUrl,
         websiteUrl: s.website,
-        isSpecial: s.amount >= 500,
+        isSpecial: s.amount >= 300,
       };
     };
     const specialSponsors = sponsors.filter(s => s.amount >= 500).map(toEntry);
@@ -66,48 +70,48 @@ export default function SponsorsPage() {
   };
   const twitterQuery = "js-stack OR from:vipinyadav9m";
   const twitterCount = 20;
-  const githubUsername = "vipinyadav01";
-
-  // Fetch functions
   const fetchSponsorsData = useCallback(async () => {
     setLoading(prev => ({ ...prev, analytics: true, sponsors: true }));
     setError(prev => ({ ...prev, analytics: "", sponsors: "" }));
     try {
-      const response = await fetch(`/api/sponsors?username=${githubUsername}&analytics=true`);
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error('Failed to fetch sponsors');
+      const isLocal = isLocalhost();
+      const { sponsors, analytics, meta } = await fetchSponsorsPreferDemoOnLocal(true);
+      const isFallback = meta?.isFallback === true;
+      if (!isLocal && isFallback) {
+        setSponsorsData({ specialSponsors: [], sponsors: [], pastSponsors: [] });
+        setAnalytics(null);
+        setError(prev => ({ ...prev, sponsors: "No real sponsor data available yet." }));
+        return;
       }
-      const isFallback = data?.meta?.isFallback === true;
-      const realSponsors: Sponsor[] = Array.isArray(data?.sponsors) ? data.sponsors : [];
-      if (!isFallback) {
-        setAnalytics(data.analytics || null);
-        if (realSponsors.length > 0) {
-          setSponsorsData(mapSponsorsToSectionData(realSponsors));
-        } else {
-          setSponsorsData({ specialSponsors: [], sponsors: [], pastSponsors: [] });
-        }
+      setAnalytics(analytics || null);
+      if (Array.isArray(sponsors) && sponsors.length > 0) {
+        setSponsorsData(mapSponsorsToSectionData(sponsors as Sponsor[]));
       } else {
         setSponsorsData({ specialSponsors: [], sponsors: [], pastSponsors: [] });
-        setError(prev => ({ ...prev, sponsors: "No real sponsor data available yet." }));
       }
     } catch (err) {
       setError(prev => ({ ...prev, analytics: err instanceof Error ? err.message : 'Unknown error', sponsors: err instanceof Error ? err.message : 'Unknown error' }));
     } finally {
       setLoading(prev => ({ ...prev, analytics: false, sponsors: false }));
     }
-  }, [githubUsername]);
+  }, []);
 
   const fetchTweetsData = useCallback(async () => {
     setLoading(prev => ({ ...prev, twitter: true }));
     setError(prev => ({ ...prev, twitter: "" }));
     try {
-      const { tweets, meta } = await fetchTwitterMentions(twitterQuery, twitterCount);
+      const isLocal = isLocalhost();
+      const { tweets, meta } = await fetchTwitterMentionsPreferDemoOnLocal(twitterQuery, twitterCount);
       if (meta?.isFallback) {
-        // Ignore demo tweets
-        setTweets([]);
-        setError(prev => ({ ...prev, twitter: "No real tweets available for this query yet." }));
+        if (!isLocal) {
+          setTweets([]);
+          setError(prev => ({ ...prev, twitter: "No real tweets available for this query yet." }));
+          return;
+        }
       } else {
+        setTweets(tweets);
+      }
+      if (isLocal) {
         setTweets(tweets);
       }
     } catch (err) {
@@ -162,19 +166,32 @@ export default function SponsorsPage() {
               </span>
             </div>
             <div className="hidden h-px flex-1 bg-border sm:block" />
-            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-              [LIVE DASHBOARD]
-            </span>
+            <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+              <button
+                type="button"
+                onClick={() => setShowTweets((v) => !v)}
+                className={`rounded border px-2 py-1 text-xs transition-colors ${showTweets ? 'border-primary text-primary' : 'border-border text-muted-foreground'} hover:border-primary/70`}
+                aria-pressed={showTweets}
+              >
+                Show Tweets
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSponsors((v) => !v)}
+                className={`rounded border px-2 py-1 text-xs transition-colors ${showSponsors ? 'border-primary text-primary' : 'border-border text-muted-foreground'} hover:border-primary/70`}
+                aria-pressed={showSponsors}
+              >
+                Show Sponsors
+              </button>
+            </div>
           </div>
         </motion.div>
-
-        {/* Analytics Overview */}
         {analytics && (
           <AnalyticsSection analytics={analytics} />
         )}
 
         {/* GitHub Sponsors Section */}
-        {(sponsorsData && ((sponsorsData.specialSponsors.length + sponsorsData.sponsors.length) > 0)) && (
+        {showSponsors && (sponsorsData && ((sponsorsData.specialSponsors.length + sponsorsData.sponsors.length) > 0)) && (
           <motion.div className="mb-8" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
               <GitHubSponsorsSection sponsorsData={sponsorsData} />
@@ -183,15 +200,17 @@ export default function SponsorsPage() {
         )}
 
         {/* Twitter Feed Section */}
-        <motion.div className="mb-8" variants={containerVariants}>
-          <div className="mx-auto max-w-[1280px]">
-            <TwitterSection 
-              tweets={tweets} 
-              loading={loading.twitter} 
-              error={error.twitter} 
-            />
-          </div>
-        </motion.div>
+        {showTweets && (
+          <motion.div className="mb-8" variants={containerVariants}>
+            <div className="mx-auto max-w-[1280px]">
+              <TwitterSection 
+                tweets={tweets} 
+                loading={loading.twitter} 
+                error={error.twitter} 
+              />
+            </div>
+          </motion.div>
+        )}
 
         {/* Become a Sponsor CTA */}
         <motion.div className="mb-8" variants={containerVariants}>
