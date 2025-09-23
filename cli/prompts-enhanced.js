@@ -34,6 +34,8 @@ import {
   displayWelcome,
   createModernSpinner,
 } from "./utils/modern-render.js";
+import { TemplateManager } from "./templates/TemplateManager.js";
+import { getTemplateDir } from "./utils/file-utils.js";
 
 // Enhanced color scheme with better accessibility
 const colors = {
@@ -51,6 +53,65 @@ const colors = {
 // Progress tracking
 let currentStep = 0;
 const totalSteps = 10;
+
+// Discover available templates on disk
+async function getTemplateAvailability() {
+  const tm = new TemplateManager(getTemplateDir());
+  const entries = {
+    frontend: Object.values(FRONTEND_OPTIONS).filter(v => v && v !== FRONTEND_OPTIONS.NONE),
+    backend: Object.values(BACKEND_OPTIONS).filter(v => v && v !== BACKEND_OPTIONS.NONE),
+    auth: Object.values(AUTH_OPTIONS).filter(v => v && v !== AUTH_OPTIONS.NONE),
+  };
+
+  const available = { frontend: new Set(), backend: new Set(), auth: new Set() };
+
+  // Frontend
+  await Promise.all(entries.frontend.map(async (f) => {
+    const p = tm.resolveFrontend(f);
+    if (await tm.exists(p)) available.frontend.add(f);
+  }));
+
+  // Backend
+  await Promise.all(entries.backend.map(async (b) => {
+    const p = tm.resolveBackend(b);
+    if (await tm.exists(p)) available.backend.add(b);
+  }));
+
+  // Auth
+  await Promise.all(entries.auth.map(async (a) => {
+    const p = tm.resolveAuth(a);
+    if (await tm.exists(p)) available.auth.add(a);
+  }));
+
+  // Tooling/addons discovered via folder presence under 05-tooling
+  const toolingRoot = path.join(tm.getBaseDir(), "05-tooling");
+  let toolingDirs = [];
+  try {
+    toolingDirs = (await fs.readdir(toolingRoot)).filter(Boolean);
+  } catch {}
+
+  available.tooling = new Set(toolingDirs);
+
+  // Databases: validate by mapped folders from integrations
+  const dbRoot = path.join(tm.getBaseDir(), "03-integrations", "database");
+  const dbHas = (sub) => fs.existsSync(path.join(dbRoot, sub));
+  available.database = new Set([
+    DATABASE_OPTIONS.POSTGRES && dbHas("prisma") ? DATABASE_OPTIONS.POSTGRES : null,
+    DATABASE_OPTIONS.MYSQL && dbHas("prisma") ? DATABASE_OPTIONS.MYSQL : null,
+    DATABASE_OPTIONS.SQLITE && dbHas("prisma") ? DATABASE_OPTIONS.SQLITE : null,
+    DATABASE_OPTIONS.MONGODB && dbHas("mongoose") ? DATABASE_OPTIONS.MONGODB : null,
+  ].filter(Boolean));
+
+  // ORMs from available folders
+  available.orm = new Set([
+    ORM_OPTIONS.PRISMA && dbHas("prisma") ? ORM_OPTIONS.PRISMA : null,
+    ORM_OPTIONS.MONGOOSE && dbHas("mongoose") ? ORM_OPTIONS.MONGOOSE : null,
+    ORM_OPTIONS.SEQUELIZE && dbHas("sequelize") ? ORM_OPTIONS.SEQUELIZE : null,
+    ORM_OPTIONS.TYPEORM && dbHas("typeorm") ? ORM_OPTIONS.TYPEORM : null,
+  ].filter(Boolean));
+
+  return available;
+}
 
 /**
  * Enhanced project configuration collection with improved UX
@@ -288,6 +349,8 @@ async function promptPresetChoice() {
 async function promptFrontend() {
   progressHeader(++currentStep, totalSteps, "Frontend Framework", "Choose your client-side technology");
 
+  const available = await getTemplateAvailability();
+
   const frontend = await multiselect({
     message: colors.accent("Select your frontend framework(s)"),
     options: [
@@ -353,7 +416,9 @@ async function promptFrontend() {
         label: colors.muted("⏭️  Skip Frontend"),
         hint: "Backend-only or API project",
       },
-    ],
+    ].filter(opt =>
+      opt.value === FRONTEND_OPTIONS.NONE || available.frontend.has(opt.value)
+    ),
     required: false,
   });
 
@@ -373,6 +438,8 @@ async function promptFrontend() {
  */
 async function promptBackend() {
   progressHeader(++currentStep, totalSteps, "Backend Framework", "Choose your server-side technology");
+
+  const available = await getTemplateAvailability();
 
   const backend = await select({
     message: colors.accent("Select your backend framework"),
@@ -407,7 +474,9 @@ async function promptBackend() {
         label: colors.muted("⏭️  Skip Backend"),
         hint: "Frontend-only, static site, or mobile app",
       },
-    ],
+    ].filter(opt =>
+      opt.value === BACKEND_OPTIONS.NONE || available.backend.has(opt.value)
+    ),
   });
 
   if (isCancel(backend)) {
@@ -424,6 +493,8 @@ async function promptBackend() {
  */
 async function promptDatabase() {
   progressHeader(++currentStep, totalSteps, "Database", "Choose your data storage solution");
+
+  const available = await getTemplateAvailability();
 
   const database = await select({
     message: colors.accent("Select your database"),
@@ -453,7 +524,9 @@ async function promptDatabase() {
         label: colors.muted("⏭️  Skip Database"),
         hint: "Static site, external APIs, or serverless functions only",
       },
-    ],
+    ].filter(opt =>
+      opt.value === DATABASE_OPTIONS.NONE || available.database.has(opt.value)
+    ),
   });
 
   if (isCancel(database)) {
@@ -476,7 +549,8 @@ async function promptORM(database) {
     return ORM_OPTIONS.NONE;
   }
 
-  const compatibleORMs = getCompatibleOptions("orm", null, { database });
+  const available = await getTemplateAvailability();
+  const compatibleORMs = getCompatibleOptions("orm", null, { database }).filter(o => available.orm.has(o));
 
   if (compatibleORMs.length === 0) {
     console.log(colors.warning(`⚠️  No compatible ORMs found for ${database}\n`));
@@ -541,6 +615,8 @@ async function promptAuth(config) {
   const isNextJs = config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS);
   const hasBackend = config.backend && config.backend !== BACKEND_OPTIONS.NONE;
 
+  const available = await getTemplateAvailability();
+
   const auth = await select({
     message: colors.accent("Select authentication method"),
     options: [
@@ -584,7 +660,9 @@ async function promptAuth(config) {
         label: `${colors.highlight("🌐")} OAuth Providers`,
         hint: "Google, GitHub, Discord • Social authentication • Third-party",
       },
-    ],
+    ].filter(opt =>
+      opt.value === AUTH_OPTIONS.NONE || available.auth.has(opt.value)
+    ),
   });
 
   if (isCancel(auth)) {
@@ -646,6 +724,8 @@ async function promptAddons(config) {
   // Smart recommendations based on stack
   const recommendations = getRecommendedAddons(config);
 
+  const available = await getTemplateAvailability();
+
   const addons = await multiselect({
     message: colors.accent("Select development tools and integrations"),
     options: [
@@ -703,7 +783,18 @@ async function promptAddons(config) {
         label: `${colors.primary("🐳")} Docker`,
         hint: "Containerization • Production deployment • Environment consistency",
       },
-    ],
+    ].filter(opt => {
+      // Always allow non-template addons (eslint, prettier, husky, github-actions)
+      const nonTemplateAddons = new Set([
+        ADDON_OPTIONS.ESLINT,
+        ADDON_OPTIONS.PRETTIER,
+        ADDON_OPTIONS.HUSKY,
+        ADDON_OPTIONS.GITHUB_ACTIONS,
+      ]);
+      if (nonTemplateAddons.has(opt.value)) return true;
+      // Otherwise, require a corresponding folder under 05-tooling
+      return available.tooling.has(opt.value);
+    }),
     required: false,
   });
 

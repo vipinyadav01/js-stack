@@ -151,7 +151,7 @@ function getFallbackSponsorsData(): {
       tier: "Bronze",
       duration: "1 month",
       frequency: "one-time",
-      startDate: "2024-01-01",
+      startDate: "2025-01-01",
       website: "https://example.com",
       github: "https://github.com/sample1",
       isActive: true
@@ -164,7 +164,7 @@ function getFallbackSponsorsData(): {
       tier: "Silver",
       duration: "3 months",
       frequency: "monthly",
-      startDate: "2024-02-01",
+      startDate: "2025-02-01",
       website: "https://demo.com",
       github: "https://github.com/demo",
       isActive: true
@@ -177,7 +177,7 @@ function getFallbackSponsorsData(): {
       tier: "Gold",
       duration: "6 months",
       frequency: "monthly",
-      startDate: "2024-03-15",
+      startDate: "2025-03-15",
       website: "https://acme.dev",
       github: "https://github.com/acme",
       isActive: true
@@ -190,7 +190,7 @@ function getFallbackSponsorsData(): {
       tier: "Platinum",
       duration: "12 months",
       frequency: "yearly",
-      startDate: "2024-05-01",
+      startDate: "2025-05-01",
       website: "https://widgetcorp.io",
       github: "https://github.com/widgetcorp",
       isActive: true

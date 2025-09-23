@@ -44,7 +44,7 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
               tier: "Bronze",
               duration: "1 month",
               frequency: "monthly" as const,
-              startDate: "2024-01-01",
+              startDate: "2025-01-01",
               website: "https://example.com",
               github: "https://github.com/supporter1",
               isActive: true

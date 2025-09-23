@@ -20,24 +20,40 @@ export class TemplateManager {
     return this.baseDir;
   }
 
+  // Base layer templates
+  resolveBase() {
+    return path.join(this.baseDir, "01-base");
+  }
+
   resolveBackend(backend) {
-    return path.join(this.baseDir, "backend", backend);
+    // 02-frameworks/backend/<backend>
+    return path.join(this.baseDir, "02-frameworks", "backend", backend);
   }
 
   resolveFrontend(frontend) {
-    return path.join(this.baseDir, "frontend", frontend);
+    // 02-frameworks/frontend/<frontend>
+    return path.join(this.baseDir, "02-frameworks", "frontend", frontend);
   }
 
   resolveDatabase(database, orm) {
-    return path.join(this.baseDir, "database", orm || database);
+    // 03-integrations/database/<orm-or-database>
+    const folder = orm && orm !== "none" ? orm : database;
+    return path.join(this.baseDir, "03-integrations", "database", folder);
   }
 
   resolveAuth(auth) {
-    return path.join(this.baseDir, "auth", auth);
+    // 04-features/auth/<auth>
+    return path.join(this.baseDir, "04-features", "auth", auth);
   }
 
   resolveAddon(addon) {
-    return path.join(this.baseDir, "addons", addon);
+    // 05-tooling/<addon>
+    return path.join(this.baseDir, "05-tooling", addon);
+  }
+
+  // Deployment templates (optional)
+  resolveDeployment(provider) {
+    return path.join(this.baseDir, "06-deployment", provider);
   }
 }
 

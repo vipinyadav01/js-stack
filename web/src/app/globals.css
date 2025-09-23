@@ -125,7 +125,7 @@
 
 .dark {
   /* Dark theme - Rich, modern dark colors with excellent contrast */
-  --background: oklch(0.086 0.011 285.8);
+  --background: #11111b;
   --foreground: oklch(0.96 0.013 285.8);
   --card: oklch(0.135 0.016 285.8);
   --card-foreground: oklch(0.96 0.013 285.8);
