@@ -166,6 +166,13 @@ export class ReliabilityManager {
         this.checks.push("✅ Templates directory found");
       }
 
+      // If templates directory is not found locally, skip specific template checks
+      if (!foundTemplatesPath) {
+        return;
+      }
+
+      const templatesPath = foundTemplatesPath;
+
       // Check specific template requirements
       if (config.frontend && config.frontend.length > 0) {
         for (const frontend of config.frontend) {

@@ -29,6 +29,8 @@ import {
   ghostColors,
   ghostIcons,
 } from "../utils/terminal-ui.js";
+import { CompatibilityEngine } from "../core/CompatibilityEngine.js";
+import { DynamicInstaller } from "../core/DynamicInstaller.js";
 
 /**
  * Enhanced initialization command with all improvements
@@ -109,10 +111,30 @@ export async function enhancedInitCommand(projectName, options) {
 
     // Smart compatibility checking and auto-adjustments
     const smartCompatibility = new SmartCompatibility();
-    const compatibilityResult = smartCompatibility.checkAndAdjust(config);
+    const compatibilityResultSmart = smartCompatibility.checkAndAdjust(config);
     
-    if (compatibilityResult.hasAdjustments || compatibilityResult.hasWarnings) {
-      smartCompatibility.displayResults(compatibilityResult);
+    if (compatibilityResultSmart.hasAdjustments || compatibilityResultSmart.hasWarnings) {
+      smartCompatibility.displayResults(compatibilityResultSmart);
+    }
+
+    // Enhanced compatibility analysis and display
+    const compatibilityEngine = new CompatibilityEngine();
+    const compatibilityReport = compatibilityEngine.checkCompatibility(config);
+    compatibilityEngine.displayCompatibilityReport(compatibilityReport);
+
+    if (!compatibilityReport.isValid) {
+      showGhostWarning("Your selections have compatibility issues");
+      if (options.yes) {
+        showGhostInfo("Continuing despite issues due to --yes flag");
+      } else {
+        const proceedDespite = await confirm({
+          message: chalk.yellow("Proceed anyway?"),
+          initialValue: false,
+        });
+        if (!proceedDespite) {
+          process.exit(1);
+        }
+      }
     }
 
     // Show configuration summary
@@ -152,6 +174,13 @@ export async function enhancedInitCommand(projectName, options) {
 
     if (!result.success) {
       throw new Error(result.error);
+    }
+
+    // Dynamic post-install based on compatibility suggestions
+    if (config.install) {
+      const installer = new DynamicInstaller(config.projectDir, config.packageManager);
+      // Install suggested addons or corrections (placeholder mapping in installer)
+      await installer.installSuggestedAddons(compatibilityReport.suggestions);
     }
 
     // Debug: Log the result structure

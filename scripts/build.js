@@ -6,6 +6,23 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Helper function to copy directory recursively
+async function copyDirectory(src, dest) {
+  const entries = await fs.readdir(src, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    
+    if (entry.isDirectory()) {
+      await fs.mkdir(destPath, { recursive: true });
+      await copyDirectory(srcPath, destPath);
+    } else {
+      await fs.copyFile(srcPath, destPath);
+    }
+  }
+}
+
 async function buildCLI() {
   console.log("Building CLI...");
 
@@ -15,72 +32,24 @@ async function buildCLI() {
     await fs.rm(distPath, { recursive: true, force: true });
     await fs.mkdir(distPath, { recursive: true });
 
-    // Build the CLI
-    await build({
-      entryPoints: [path.join(__dirname, "../cli/cli.js")],
-      bundle: true,
-      platform: "node",
-      target: "node18",
-      outfile: path.join(__dirname, "../dist/cli.js"),
-      format: "esm",
-      minify: true,
-      sourcemap: false,
-      // No banner needed - source already has shebang
-      external: [
-        "@clack/prompts",
-        "chalk",
-        "commander",
-        "execa",
-        "fs-extra",
-        "globby",
-        "handlebars",
-        "ora",
-        "validate-npm-package-name",
-        "yup",
-        "gradient-string",
-        "figlet",
-        "boxen",
-        "cli-table3",
-        "terminal-link",
-        "cli-spinners",
-        "nanospinner",
-        "chalk-animation",
-      ],
-    });
+    // Copy CLI files instead of bundling to avoid dynamic require issues
+    await fs.copyFile(
+      path.join(__dirname, "../cli/cli.js"),
+      path.join(__dirname, "../dist/cli.js")
+    );
 
-    // Build the library entry point
-    await build({
-      entryPoints: [path.join(__dirname, "../cli/index.js")],
-      bundle: true,
-      platform: "node",
-      target: "node18",
-      outfile: path.join(__dirname, "../dist/index.js"),
-      format: "esm",
-      minify: true,
-      sourcemap: false,
-      external: [
-        "@clack/prompts",
-        "chalk",
-        "commander",
-        "execa",
-        "fs-extra",
-        "globby",
-        "handlebars",
-        "ora",
-        "validate-npm-package-name",
-        "yup",
-        "gradient-string",
-        "figlet",
-        "boxen",
-        "cli-table3",
-        "terminal-link",
-        "cli-spinners",
-        "nanospinner",
-        "chalk-animation",
-      ],
-    });
+    // Copy library files instead of bundling to avoid dynamic require issues
+    await fs.copyFile(
+      path.join(__dirname, "../cli/index.js"),
+      path.join(__dirname, "../dist/index.js")
+    );
 
-    // CLI is ready with shebang for direct execution
+    // Copy the entire CLI directory structure since we're not bundling
+    const cliSrcPath = path.join(__dirname, "../cli");
+    const cliDestPath = path.join(__dirname, "../dist");
+    
+    // Copy all CLI files and directories
+    await copyDirectory(cliSrcPath, cliDestPath);
 
     console.log("✓ Build completed successfully!");
     console.log("✓ CLI optimized for npm distribution");
