@@ -30,6 +30,13 @@ const navItems = [
     badge: undefined
   },
   {
+    name: "Builder",
+    href: "/new",
+    icon: Terminal,
+    description: "Visual stack builder",
+    badge: undefined
+  },
+  {
     name: "Analytics",
     href: "/analytics",
     icon: Activity,

@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
-import Footer from "@/components/Footer";
+import { ConditionalFooter } from "@/components/ConditionalFooter";
 
 const jetbrainsMono = localFont({
   src: [
@@ -218,7 +218,7 @@ export default function RootLayout({
             <main className="flex-1">
               {children}
             </main>
-            <Footer />
+            <ConditionalFooter />
           </div>
         </ThemeProvider>
       </body>
