@@ -6,7 +6,7 @@ export const revalidate = 300;
 
 export async function GET() {
   const data = await getTopStacks(3);
-  return NextResponse.json(data, { headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=600" } });
+  return NextResponse.json(data, {
+    headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=600" },
+  });
 }
-
-
