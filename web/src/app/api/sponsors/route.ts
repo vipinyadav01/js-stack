@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
-export const revalidate = 3600; // Revalidate every hour
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export interface Sponsor {
   id: string;
@@ -12,7 +12,7 @@ export interface Sponsor {
   tier: string;
   tierName: string;
   duration: string;
-  frequency: 'one-time' | 'monthly' | 'yearly';
+  frequency: "one-time" | "monthly" | "yearly";
   startDate: string;
   endDate?: string;
   website?: string;
@@ -65,57 +65,69 @@ export interface GitHubSponsorsAPIResponse {
 function calculateDuration(startDate: string, endDate?: string): string {
   const start = new Date(startDate);
   const end = endDate ? new Date(endDate) : new Date();
-  const months = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30));
-  
-  if (months < 1) return 'Less than 1 month';
-  if (months === 1) return '1 month';
+  const months = Math.floor(
+    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30),
+  );
+
+  if (months < 1) return "Less than 1 month";
+  if (months === 1) return "1 month";
   if (months < 12) return `${months} months`;
-  
+
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;
-  
-  if (remainingMonths === 0) return `${years} year${years > 1 ? 's' : ''}`;
-  return `${years} year${years > 1 ? 's' : ''}, ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}`;
+
+  if (remainingMonths === 0) return `${years} year${years > 1 ? "s" : ""}`;
+  return `${years} year${years > 1 ? "s" : ""}, ${remainingMonths} month${remainingMonths > 1 ? "s" : ""}`;
 }
 
 // Mock data generation removed - now returns empty array when no real data available
 
 // Calculate comprehensive analytics
 function calculateAnalytics(sponsors: Sponsor[]): SponsorAnalytics {
-  const activeSponsors = sponsors.filter(s => s.isActive);
-  const monthlySponsors = activeSponsors.filter(s => s.frequency === 'monthly');
-  const oneTimeSponsors = sponsors.filter(s => s.frequency === 'one-time');
-  
-  const monthlyRecurring = monthlySponsors.reduce((sum, s) => sum + s.amount, 0);
+  const activeSponsors = sponsors.filter((s) => s.isActive);
+  const monthlySponsors = activeSponsors.filter(
+    (s) => s.frequency === "monthly",
+  );
+  const oneTimeSponsors = sponsors.filter((s) => s.frequency === "one-time");
+
+  const monthlyRecurring = monthlySponsors.reduce(
+    (sum, s) => sum + s.amount,
+    0,
+  );
   const oneTimeAmount = oneTimeSponsors.reduce((sum, s) => sum + s.amount, 0);
   const totalAmount = sponsors.reduce((sum, s) => sum + s.totalContributed, 0);
-  
+
   // Tier breakdown
-  const tierBreakdown = sponsors.reduce((acc, sponsor) => {
-    acc[sponsor.tier] = (acc[sponsor.tier] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-  
+  const tierBreakdown = sponsors.reduce(
+    (acc, sponsor) => {
+      acc[sponsor.tier] = (acc[sponsor.tier] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
   // Find top tier
-  const topTier = Object.keys(tierBreakdown).length > 0 
-    ? Object.entries(tierBreakdown).reduce((a, b) => 
-        tierBreakdown[a[0]] > tierBreakdown[b[0]] ? a : b
-      )[0] 
-    : 'none';
-  
+  const topTier =
+    Object.keys(tierBreakdown).length > 0
+      ? Object.entries(tierBreakdown).reduce((a, b) =>
+          tierBreakdown[a[0]] > tierBreakdown[b[0]] ? a : b,
+        )[0]
+      : "none";
+
   // Recent sponsors (last 30 days)
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const recentSponsors = sponsors.filter(s => 
-    new Date(s.startDate) >= thirtyDaysAgo
+  const recentSponsors = sponsors.filter(
+    (s) => new Date(s.startDate) >= thirtyDaysAgo,
   ).length;
-  
+
   // Calculate retention rate (simplified)
-  const retentionRate = activeSponsors.length / Math.max(sponsors.length, 1) * 100;
-  
+  const retentionRate =
+    (activeSponsors.length / Math.max(sponsors.length, 1)) * 100;
+
   // Lifetime value
   const lifetimeValue = totalAmount / Math.max(sponsors.length, 1);
-  
+
   return {
     totalAmount,
     monthlyRecurring,
@@ -124,11 +136,13 @@ function calculateAnalytics(sponsors: Sponsor[]): SponsorAnalytics {
     activeSponsors: activeSponsors.length,
     monthlyGrowth: 12.5, // Mock growth rate
     topTier,
-    averageAmount: Math.round(monthlyRecurring / Math.max(monthlySponsors.length, 1)),
+    averageAmount: Math.round(
+      monthlyRecurring / Math.max(monthlySponsors.length, 1),
+    ),
     tierBreakdown,
     recentSponsors,
     retentionRate: Math.round(retentionRate * 100) / 100,
-    lifetimeValue: Math.round(lifetimeValue * 100) / 100
+    lifetimeValue: Math.round(lifetimeValue * 100) / 100,
   };
 }
 
@@ -136,24 +150,26 @@ function calculateAnalytics(sponsors: Sponsor[]): SponsorAnalytics {
 function simulateGraphQLRateLimit() {
   const resetTime = new Date();
   resetTime.setHours(resetTime.getHours() + 1);
-  
+
   return {
     remaining: Math.floor(Math.random() * 4900) + 100, // 100-5000 remaining
     resetTime: resetTime.toISOString(),
-    cost: 1 // GraphQL query cost
+    cost: 1, // GraphQL query cost
   };
 }
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const includeAnalytics = searchParams.get('analytics') === 'true';
-    const username = searchParams.get('username') || 'vipinyadav01';
-    const first = Math.min(parseInt(searchParams.get('first') || '50'), 100);
-    const after = searchParams.get('after'); // Cursor for pagination
+    const includeAnalytics = searchParams.get("analytics") === "true";
+    const username = searchParams.get("username") || "vipinyadav01";
+    const first = Math.min(parseInt(searchParams.get("first") || "50"), 100);
+    const after = searchParams.get("after"); // Cursor for pagination
 
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 150 + Math.random() * 200));
+    await new Promise((resolve) =>
+      setTimeout(resolve, 150 + Math.random() * 200),
+    );
 
     let realSponsors: Sponsor[] = [];
     let hasRealData = false;
@@ -161,7 +177,7 @@ export async function GET(request: Request) {
 
     try {
       const githubToken = process.env.GITHUB_TOKEN;
-      
+
       if (githubToken) {
         // Real GitHub GraphQL API implementation
         const query = `
@@ -215,53 +231,59 @@ export async function GET(request: Request) {
           }
         `;
 
-        const response = await fetch('https://api.github.com/graphql', {
-          method: 'POST',
+        const response = await fetch("https://api.github.com/graphql", {
+          method: "POST",
           headers: {
-            'Authorization': `Bearer ${githubToken}`,
-            'Content-Type': 'application/json',
-            'User-Agent': 'js-stack-sponsors/1.0'
+            Authorization: `Bearer ${githubToken}`,
+            "Content-Type": "application/json",
+            "User-Agent": "js-stack-sponsors/1.0",
           },
           body: JSON.stringify({
             query,
-            variables: { 
+            variables: {
               login: username,
               first,
-              after
-            }
+              after,
+            },
           }),
-          next: { revalidate: 3600 }
+          next: { revalidate: 3600 },
         });
 
         if (response.ok) {
           const data = await response.json();
-          
+
           if (data.errors) {
-            console.warn('GitHub GraphQL errors:', data.errors);
+            console.warn("GitHub GraphQL errors:", data.errors);
           } else {
             realSponsors = processGitHubSponsorsData(data);
             hasRealData = true;
-            
+
             // Extract pagination info
-            const pageInfo = data.data?.user?.sponsorshipsAsMaintainer?.pageInfo;
+            const pageInfo =
+              data.data?.user?.sponsorshipsAsMaintainer?.pageInfo;
             if (pageInfo) {
               pagination = {
                 hasNextPage: pageInfo.hasNextPage,
-                endCursor: pageInfo.endCursor
+                endCursor: pageInfo.endCursor,
               };
             }
           }
         } else {
-          console.warn(`GitHub API error: ${response.status} - ${response.statusText}`);
+          console.warn(
+            `GitHub API error: ${response.status} - ${response.statusText}`,
+          );
         }
       }
     } catch (error) {
-      console.warn('GitHub Sponsors API not available, using fallback data:', error);
+      console.warn(
+        "GitHub Sponsors API not available, using fallback data:",
+        error,
+      );
     }
 
     // Use real data if available, otherwise return empty array
     const sponsors = hasRealData ? realSponsors : [];
-    
+
     // Calculate analytics if requested
     const analytics = includeAnalytics ? calculateAnalytics(sponsors) : null;
 
@@ -274,42 +296,41 @@ export async function GET(request: Request) {
         isFallback: !hasRealData,
         timestamp: new Date().toISOString(),
         rateLimit: hasRealData ? undefined : simulateGraphQLRateLimit(),
-        pagination: hasRealData ? pagination : undefined
-      }
+        pagination: hasRealData ? pagination : undefined,
+      },
     };
 
     return NextResponse.json(response, {
       headers: {
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=1800',
-        'Content-Type': 'application/json',
-      }
-    });
-
-  } catch (error) {
-    console.error('GitHub Sponsors API route error:', error);
-    
-    return NextResponse.json(
-      { 
-        error: 'Failed to fetch sponsor data',
-        message: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=1800",
+        "Content-Type": "application/json",
       },
-      { 
+    });
+  } catch (error) {
+    console.error("GitHub Sponsors API route error:", error);
+
+    return NextResponse.json(
+      {
+        error: "Failed to fetch sponsor data",
+        message: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString(),
+      },
+      {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
-        }
-      }
+          "Content-Type": "application/json",
+        },
+      },
     );
   }
 }
 
 // Helper function to process real GitHub Sponsors API data
 function processGitHubSponsorsData(data: unknown): Sponsor[] {
-  if (!data || typeof data !== 'object' || !('data' in data)) {
+  if (!data || typeof data !== "object" || !("data" in data)) {
     return [];
   }
-  
+
   const apiData = data as {
     data?: {
       user?: {
@@ -350,36 +371,41 @@ function processGitHubSponsorsData(data: unknown): Sponsor[] {
     const sponsor = sponsorship.sponsor;
     const tier = sponsorship.tier;
     const startDate = sponsorship.createdAt;
-    const sponsorshipCount = sponsorship.sponsorEntity?.sponsorshipsAsSponsor?.totalCount || 1;
-    
+    const sponsorshipCount =
+      sponsorship.sponsorEntity?.sponsorshipsAsSponsor?.totalCount || 1;
+
     // Type assertion since we've already filtered above
     const safeSponsor = sponsor!;
     const safeTier = tier!;
-    
+
     // Calculate tier name based on amount
-    let tierName = safeTier.name || 'Custom';
-    let tierKey = 'custom';
-    
+    let tierName = safeTier.name || "Custom";
+    let tierKey = "custom";
+
     const amount = safeTier.monthlyPriceInDollars;
     if (amount >= 500) {
-      tierKey = 'gold';
-      tierName = 'Gold Sponsor';
+      tierKey = "gold";
+      tierName = "Gold Sponsor";
     } else if (amount >= 100) {
-      tierKey = 'silver';
-      tierName = 'Silver Sponsor';
+      tierKey = "silver";
+      tierName = "Silver Sponsor";
     } else if (amount >= 25) {
-      tierKey = 'bronze';
-      tierName = 'Bronze Sponsor';
+      tierKey = "bronze";
+      tierName = "Bronze Sponsor";
     } else {
-      tierKey = 'supporter';
-      tierName = 'Supporter';
+      tierKey = "supporter";
+      tierName = "Supporter";
     }
-    
+
     // Estimate total contributed (simplified calculation)
-    const monthsSinceStart = Math.max(1, Math.floor(
-      (Date.now() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24 * 30)
-    ));
-    const totalContributed = amount * Math.min(monthsSinceStart, 24); 
+    const monthsSinceStart = Math.max(
+      1,
+      Math.floor(
+        (Date.now() - new Date(startDate).getTime()) /
+          (1000 * 60 * 60 * 24 * 30),
+      ),
+    );
+    const totalContributed = amount * Math.min(monthsSinceStart, 24);
 
     return {
       id: sponsorship.id,
@@ -390,7 +416,7 @@ function processGitHubSponsorsData(data: unknown): Sponsor[] {
       tier: tierKey,
       tierName,
       duration: calculateDuration(startDate),
-      frequency: 'monthly' as const, 
+      frequency: "monthly" as const,
       startDate,
       website: safeSponsor.websiteUrl,
       github: safeSponsor.url || `https://github.com/${safeSponsor.login}`,
@@ -399,7 +425,7 @@ function processGitHubSponsorsData(data: unknown): Sponsor[] {
       sponsorshipCount,
       isPublic: true,
       location: safeSponsor.location,
-      company: safeSponsor.company
+      company: safeSponsor.company,
     };
   });
 }

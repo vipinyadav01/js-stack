@@ -42,6 +42,7 @@
     "setup:dev": "echo '🔧 Setting up development environment...' && npm install && echo '🐕 Initializing husky...' && npx husky install && echo '✅ Setup complete!'",
     "release:script": "node scripts/release.js",
     "release:check": "node scripts/release.js check-releases",
+    "release:sync": "node scripts/release.js sync-versions",
     "postinstall": "echo 'Installation complete!'"
   },
   "keywords": [

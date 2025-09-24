@@ -2,36 +2,68 @@
 
 /**
  * Quick Release Script for JS Stack
- * Hand  'check-releases': () => {
-    console.log('🔍 Checking for missing GitHub releases...');
+ * Hand  syncVersions: () => {
+    console.log('� Syncing version references across the project...');
     
     try {
-      // Get all tags
-      const tags = execSync('git tag -l "v*"', { encoding: 'utf8' })
-        .trim()
-        .split('\n')
-        .filter(tag => tag.startsWith('v'))
-        .sort()
-        .reverse();
-
-      console.log(`Found ${tags.length} version tags`);
+      const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+      const currentVersion = packageJson.version;
       
-      // Check if releases exist (this would require GitHub CLI or API)
-      console.log('💡 To check releases: Visit https://github.com/vipinyadav01/js-stack/releases');
-      console.log('💡 To create missing releases: Use the manual release workflow in GitHub Actions');
+      console.log(`📦 Current version: ${currentVersion}`);
       
-      tags.slice(0, 5).forEach(tag => {
-        console.log(`  - ${tag}`);
-      });
+      // Check if web package.json needs updating
+      const webPackagePath = 'web/package.json';
+      if (fs.existsSync(webPackagePath)) {
+        const webPackage = JSON.parse(fs.readFileSync(webPackagePath, 'utf8'));
+        if (webPackage.version !== currentVersion) {
+          console.log(`🔄 Updating web package version: ${webPackage.version} → ${currentVersion}`);
+          webPackage.version = currentVersion;
+          fs.writeFileSync(webPackagePath, JSON.stringify(webPackage, null, 2) + '\n');
+        }
+      }
+      
+      // Check for any hardcoded version references in key files
+      const filesToCheck = [
+        'README.md',
+        'web/README.md',
+        'SCRIPTS.md'
+      ];
+      
+      console.log('� Checking for outdated version references...');
+      let foundOutdated = false;
+      
+      for (const file of filesToCheck) {
+        if (fs.existsSync(file)) {
+          const content = fs.readFileSync(file, 'utf8');
+          const versionRegex = /\b\d+\.\d+\.\d+\b/g;
+          const matches = content.match(versionRegex);
+          
+          if (matches) {
+            const outdatedVersions = matches.filter(v => v !== currentVersion);
+            if (outdatedVersions.length > 0) {
+              console.log(`⚠️  Found potentially outdated versions in ${file}: ${outdatedVersions.join(', ')}`);
+              foundOutdated = true;
+            }
+          }
+        }
+      }
+      
+      if (!foundOutdated) {
+        console.log('✅ No outdated version references found');
+      }
+      
+      console.log('💡 Version sync complete!');
+      console.log(`💡 Current version: ${currentVersion}`);
       
     } catch (error) {
-      console.error('❌ Error checking releases:', error.message);
+      console.error('❌ Error syncing versions:', error.message);
     }
   },development and release workflows
  */
 
 import { execSync } from "child_process";
 import { readFileSync } from "fs";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -133,6 +165,68 @@ const commands = {
       console.error("❌ Error checking releases:", error.message);
     }
   },
+
+  "sync-versions": () => {
+    console.log("🔄 Syncing version references across the project...");
+
+    try {
+      const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
+      const currentVersion = packageJson.version;
+
+      console.log(`📦 Current version: ${currentVersion}`);
+
+      // Check if web package.json needs updating
+      const webPackagePath = "web/package.json";
+      if (fs.existsSync(webPackagePath)) {
+        const webPackage = JSON.parse(fs.readFileSync(webPackagePath, "utf8"));
+        if (webPackage.version !== currentVersion) {
+          console.log(
+            `🔄 Updating web package version: ${webPackage.version} → ${currentVersion}`,
+          );
+          webPackage.version = currentVersion;
+          fs.writeFileSync(
+            webPackagePath,
+            JSON.stringify(webPackage, null, 2) + "\n",
+          );
+        }
+      }
+
+      // Check for any hardcoded version references in key files
+      const filesToCheck = ["README.md", "web/README.md", "SCRIPTS.md"];
+
+      console.log("🔍 Checking for outdated version references...");
+      let foundOutdated = false;
+
+      for (const file of filesToCheck) {
+        if (fs.existsSync(file)) {
+          const content = fs.readFileSync(file, "utf8");
+          const versionRegex = /\b\d+\.\d+\.\d+\b/g;
+          const matches = content.match(versionRegex);
+
+          if (matches) {
+            const outdatedVersions = matches.filter(
+              (v) => v !== currentVersion,
+            );
+            if (outdatedVersions.length > 0) {
+              console.log(
+                `⚠️  Found potentially outdated versions in ${file}: ${outdatedVersions.join(", ")}`,
+              );
+              foundOutdated = true;
+            }
+          }
+        }
+      }
+
+      if (!foundOutdated) {
+        console.log("✅ No outdated version references found");
+      }
+
+      console.log("💡 Version sync complete!");
+      console.log(`💡 Current version: ${currentVersion}`);
+    } catch (error) {
+      console.error("❌ Error syncing versions:", error.message);
+    }
+  },
 };
 
 const args = process.argv.slice(2);
@@ -150,6 +244,7 @@ Commands:
   release        - Full release process (changeset + build + push)
   status         - Show git and changeset status
   check-releases - Check for missing GitHub releases
+  sync-versions  - Sync version references across the project
 
 Examples:
   node scripts/release.js setup
@@ -157,6 +252,7 @@ Examples:
   node scripts/release.js release
   node scripts/release.js status
   node scripts/release.js check-releases
+  node scripts/release.js sync-versions
 `);
   process.exit(0);
 }

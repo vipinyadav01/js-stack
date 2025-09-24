@@ -1,5 +1,10 @@
 # Create JS Stack CLI
 
+[![npm version](https://img.shields.io/npm/v/create-js-stack.svg)](https://www.npmjs.com/package/create-js-stack)
+[![npm downloads](https://img.shields.io/npm/dm/create-js-stack.svg)](https://www.npmjs.com/package/create-js-stack)
+[![GitHub release](https://img.shields.io/github/release/vipinyadav01/js-stack.svg)](https://github.com/vipinyadav01/js-stack/releases)
+[![License](https://img.shields.io/npm/l/create-js-stack.svg)](https://github.com/vipinyadav01/js-stack/blob/main/LICENSE)
+
 A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.
 
 ## 📊 Feature Status

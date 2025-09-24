@@ -1,10 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
   trailingSlash: true,
   images: {
-    unoptimized: true
+    unoptimized: true,
   },
   eslint: {
     // During builds, we'll run ESLint separately
@@ -15,7 +14,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   // Ensure static export works properly
-  distDir: '.next',
+  distDir: ".next",
 };
 
 export default nextConfig;

@@ -1,4 +1,4 @@
-# Next.js Analytics App
+# Create-JS-Stack
 
 A modern web application built with Next.js, featuring analytics, features showcase, and real-time analytics from NPM and GitHub APIs. Styled with shadcn/ui components and Tailwind CSS.
 
@@ -26,12 +26,13 @@ A modern web application built with Next.js, featuring analytics, features showc
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
 
 1. Install dependencies:
+
 ```bash
 npm install
 # or
@@ -39,6 +40,7 @@ yarn install
 ```
 
 2. Run the development server:
+
 ```bash
 npm run dev
 # or
@@ -77,12 +79,14 @@ src/
 ## Pages
 
 ### Home Page (`/`)
+
 - Project introduction and hero section
 - Installation instructions for NPM and Yarn
 - Project integration guides
 - Essential command examples
 
 ### Analytics (`/analytics`)
+
 - Project statistics overview
 - Recent project activities
 - Progress tracking
@@ -90,12 +94,14 @@ src/
 - Health metrics (issues, PRs)
 
 ### Features (`/features`)
+
 - Core capability highlights
 - Framework support matrix
 - Integrated tools showcase
 - Development experience features
 
 ### Analytics (`/analytics`)
+
 - Real NPM package download data
 - GitHub repository statistics
 - Interactive charts and visualizations
@@ -105,7 +111,9 @@ src/
 ## API Routes
 
 ### `/api/npm`
+
 Fetches NPM package information including:
+
 - Download statistics (last 7 days)
 - Package metadata
 - Version information
@@ -113,7 +121,9 @@ Fetches NPM package information including:
 **Usage**: `/api/npm?package=package-name`
 
 ### `/api/github`
+
 Fetches GitHub repository data including:
+
 - Repository statistics (stars, forks, etc.)
 - Recent releases
 - Top contributors
@@ -143,6 +153,7 @@ npx shadcn@latest add component-name
 ### Styling
 
 The project uses Tailwind CSS with shadcn/ui theme system. Customize colors and themes in:
+
 - `tailwind.config.js`
 - `src/app/globals.css`
 
