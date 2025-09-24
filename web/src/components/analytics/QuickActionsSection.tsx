@@ -23,7 +23,7 @@ export default function QuickActionsSection() {
       label: "Create New Project", 
       description: "Initialize a new project with create-js-stack",
       command: "npx create-js-stack init",
-      href: "#"
+      href: "/new"
     },
     { 
       icon: Download, 
@@ -58,12 +58,12 @@ export default function QuickActionsSection() {
         <div className="flex items-center gap-2">
           <Zap className="h-5 w-5 text-primary" />
           <span className="font-bold text-lg sm:text-xl">
-            QUICK_ACTIONS.LOG
+            Quick Actions
           </span>
         </div>
         <div className="hidden h-px flex-1 bg-border sm:block" />
         <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-          [COMMANDS]
+          Developer commands
         </span>
       </div>
       
@@ -76,7 +76,7 @@ export default function QuickActionsSection() {
           <div className="flex items-center gap-2">
             <span className="text-primary text-xs">⚡</span>
             <span className="font-semibold text-xs">
-              [DEVELOPER_COMMANDS]
+              Developer Commands
             </span>
           </div>
         </div>

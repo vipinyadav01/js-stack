@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600;
 export const runtime = 'nodejs';
 
 export interface TwitterUser {

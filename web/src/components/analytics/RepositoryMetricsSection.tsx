@@ -30,12 +30,12 @@ export default function RepositoryMetricsSection({ githubData, formatNumber }: R
         <div className="flex items-center gap-2">
           <Globe className="h-5 w-5 text-primary" />
           <span className="font-bold text-lg sm:text-xl">
-            REPOSITORY_METRICS.LOG
+            Repository Metrics
           </span>
         </div>
         <div className="hidden h-px flex-1 bg-border sm:block" />
         <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-          [REPO_INFO]
+          Repository information
         </span>
       </div>
       
@@ -50,7 +50,7 @@ export default function RepositoryMetricsSection({ githubData, formatNumber }: R
             <div className="flex items-center gap-2">
               <span className="text-primary text-xs">📊</span>
               <span className="font-semibold text-xs">
-                [REPOSITORY_OVERVIEW]
+                Repository Overview
               </span>
             </div>
           </div>
@@ -114,7 +114,7 @@ export default function RepositoryMetricsSection({ githubData, formatNumber }: R
             <div className="flex items-center gap-2">
               <span className="text-primary text-xs">📦</span>
               <span className="font-semibold text-xs">
-                [PACKAGE_INFO]
+                Package Information
               </span>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function RepositoryMetricsSection({ githubData, formatNumber }: R
             </div>
 
             <div className="pt-4 border-t">
-              <div className="text-xs text-muted-foreground mb-2">REPOSITORY_STATUS</div>
+              <div className="text-xs text-muted-foreground mb-2">Repository Status</div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>

@@ -454,8 +454,24 @@ export function validateConfiguration(state: BuilderState): {
 
 // Build CLI command with proper formatting
 export function buildCliCommand(state: BuilderState): string {
+  // Get the correct command prefix based on package manager
+  const getCommandPrefix = (packageManager: PackageManager): string => {
+    switch (packageManager) {
+      case 'npm':
+        return 'npx';
+      case 'yarn':
+        return 'yarn create';
+      case 'pnpm':
+        return 'pnpm create';
+      case 'bun':
+        return 'bunx';
+      default:
+        return 'npx';
+    }
+  };
+
   const parts = [
-    `npx create-js-stack@latest ${state.projectName}`
+    `${getCommandPrefix(state.packageManager)} create-js-stack@latest ${state.projectName}`
   ];
   
   if (state.frontend !== "none") {

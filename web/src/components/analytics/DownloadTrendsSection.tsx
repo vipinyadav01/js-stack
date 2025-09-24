@@ -31,12 +31,12 @@ export default function DownloadTrendsSection({ npmData, formatNumber }: Downloa
         <div className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" />
           <span className="font-bold text-lg sm:text-xl">
-            DOWNLOAD_TRENDS.LOG
+            Download Trends
           </span>
         </div>
         <div className="hidden h-px flex-1 bg-border sm:block" />
         <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-          [7_DAY_CHART]
+          7-day chart
         </span>
       </div>
       
@@ -49,7 +49,7 @@ export default function DownloadTrendsSection({ npmData, formatNumber }: Downloa
           <div className="flex items-center gap-2">
             <span className="text-primary text-xs">📈</span>
             <span className="font-semibold text-xs">
-              [CHART_DATA]
+              Chart Data
             </span>
           </div>
         </div>
