@@ -2,7 +2,32 @@
 
 /**
  * Quick Release Script for JS Stack
- * Handles common development and release workflows
+ * Hand  'check-releases': () => {
+    console.log('🔍 Checking for missing GitHub releases...');
+    
+    try {
+      // Get all tags
+      const tags = execSync('git tag -l "v*"', { encoding: 'utf8' })
+        .trim()
+        .split('\n')
+        .filter(tag => tag.startsWith('v'))
+        .sort()
+        .reverse();
+
+      console.log(`Found ${tags.length} version tags`);
+      
+      // Check if releases exist (this would require GitHub CLI or API)
+      console.log('💡 To check releases: Visit https://github.com/vipinyadav01/js-stack/releases');
+      console.log('💡 To create missing releases: Use the manual release workflow in GitHub Actions');
+      
+      tags.slice(0, 5).forEach(tag => {
+        console.log(`  - ${tag}`);
+      });
+      
+    } catch (error) {
+      console.error('❌ Error checking releases:', error.message);
+    }
+  },development and release workflows
  */
 
 import { execSync } from "child_process";
@@ -78,6 +103,36 @@ const commands = {
       console.log("No pending changesets");
     }
   },
+
+  "check-releases": () => {
+    console.log("🔍 Checking for missing GitHub releases...");
+
+    try {
+      // Get all tags
+      const tags = execSync('git tag -l "v*"', { encoding: "utf8" })
+        .trim()
+        .split("\n")
+        .filter((tag) => tag.startsWith("v"))
+        .sort()
+        .reverse();
+
+      console.log(`Found ${tags.length} version tags`);
+
+      // Check if releases exist (this would require GitHub CLI or API)
+      console.log(
+        "💡 To check releases: Visit https://github.com/vipinyadav01/js-stack/releases",
+      );
+      console.log(
+        "💡 To create missing releases: Use the manual release workflow in GitHub Actions",
+      );
+
+      tags.slice(0, 5).forEach((tag) => {
+        console.log(`  - ${tag}`);
+      });
+    } catch (error) {
+      console.error("❌ Error checking releases:", error.message);
+    }
+  },
 };
 
 const args = process.argv.slice(2);
@@ -90,18 +145,33 @@ if (!command) {
 Usage: node scripts/release.js <command>
 
 Commands:
-  setup    - Install dependencies and setup husky
-  push     - Add, commit, and push all changes
-  release  - Full release process (changeset + build + push)
-  status   - Show git and changeset status
+  setup          - Install dependencies and setup husky
+  push           - Add, commit, and push all changes
+  release        - Full release process (changeset + build + push)
+  status         - Show git and changeset status
+  check-releases - Check for missing GitHub releases
 
 Examples:
   node scripts/release.js setup
   node scripts/release.js push
   node scripts/release.js release
   node scripts/release.js status
+  node scripts/release.js check-releases
 `);
   process.exit(0);
+}
+
+if (commands[command]) {
+  try {
+    commands[command]();
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}`);
+    process.exit(1);
+  }
+} else {
+  console.error(`❌ Unknown command: ${command}`);
+  console.log("Run without arguments to see available commands");
+  process.exit(1);
 }
 
 if (commands[command]) {

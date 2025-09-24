@@ -41,6 +41,7 @@
     "dev:push": "echo '🔍 Checking git status...' && git status --porcelain && echo '📝 Adding all changes...' && git add . && echo '✅ Committing changes...' && git commit -m \"feat: development updates\" && echo '⬆️ Pushing to main...' && git push origin main && echo '🎉 Push complete!'",
     "setup:dev": "echo '🔧 Setting up development environment...' && npm install && echo '🐕 Initializing husky...' && npx husky install && echo '✅ Setup complete!'",
     "release:script": "node scripts/release.js",
+    "release:check": "node scripts/release.js check-releases",
     "postinstall": "echo 'Installation complete!'"
   },
   "keywords": [

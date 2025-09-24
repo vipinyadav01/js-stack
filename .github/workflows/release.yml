@@ -5,17 +5,22 @@ on:
     inputs:
       version:
         description: 'Version to release (e.g., 1.0.10)'
-        required: true
+        required: false
         type: string
       release_type:
         description: 'Type of release'
-        required: true
+        required: false
         default: 'patch'
         type: choice
         options:
           - patch
           - minor
           - major
+      create_github_release:
+        description: 'Create GitHub release'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   release:
@@ -46,8 +51,18 @@ jobs:
           git config --local user.name "GitHub Action"
 
       - name: Update version in package.json
+        if: inputs.version != ''
         run: |
-          npm version ${{ github.event.inputs.release_type }} --no-git-tag-version
+          npm version ${{ inputs.version }} --no-git-tag-version
+          VERSION=${{ inputs.version }}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update version automatically
+        if: inputs.version == ''
+        run: |
+          npm version ${{ inputs.release_type }} --no-git-tag-version
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
@@ -68,23 +83,24 @@ jobs:
           git push origin "v${{ env.VERSION }}"
 
       - name: Create GitHub Release
+        if: inputs.create_github_release == true
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}
           name: Release v${{ env.VERSION }}
           body: |
             ## 🎉 Release v${{ env.VERSION }}
-            
+
             ### 📦 Installation
             ```bash
             npm install -g create-js-stack@${{ env.VERSION }}
             ```
-            
+
             ### 🔗 Links
             - [NPM Package](https://www.npmjs.com/package/create-js-stack)
             - [Documentation](https://github.com/${{ github.repository }})
             - [Web Dashboard](https://js-stack.pages.dev)
-            
+
             ### 📋 What's New
             - Bug fixes and improvements
             - Updated dependencies
