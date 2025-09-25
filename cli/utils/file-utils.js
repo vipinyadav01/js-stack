@@ -3,53 +3,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import Handlebars from "handlebars";
+// Import comprehensive Handlebars helpers
+import "./handlebars-helpers.js";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Register Handlebars helpers
-Handlebars.registerHelper("kebabCase", function (str) {
-  return str
-    ?.replace(/([a-z])([A-Z])/g, "$1-$2")
-    .replace(/[\s_]+/g, "-")
-    .toLowerCase();
-});
-
-Handlebars.registerHelper("camelCase", function (str) {
-  return str
-    ?.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-    .replace(/^[A-Z]/, (g) => g.toLowerCase());
-});
-
-Handlebars.registerHelper("pascalCase", function (str) {
-  return str?.replace(/(^|-)([a-z])/g, (g) => g.slice(-1).toUpperCase());
-});
-
-Handlebars.registerHelper("eq", function (a, b) {
-  return a === b;
-});
-
-Handlebars.registerHelper("ne", function (a, b) {
-  return a !== b;
-});
-
-Handlebars.registerHelper("or", function () {
-  const args = Array.prototype.slice.call(arguments, 0, -1);
-  return args.some(Boolean);
-});
-
-Handlebars.registerHelper("and", function () {
-  const args = Array.prototype.slice.call(arguments, 0, -1);
-  return args.every(Boolean);
-});
-
-Handlebars.registerHelper("includes", function (array, value) {
-  return Array.isArray(array) && array.includes(value);
-});
-
-Handlebars.registerHelper("json", function (context) {
-  return JSON.stringify(context, null, 2);
-});
+const __dirname = dirname(__dirname);
 
 /**
  * Copy directory recursively
@@ -92,29 +50,38 @@ function processFilenameTemplate(filename, context) {
   try {
     // Handle complex conditional patterns first
     if (filename.includes("{{#if") && filename.includes("{{else}}")) {
-      const extension = context.typescript || context.useTypeScript ? "ts" : "js";
-      
+      const extension =
+        context.typescript || context.useTypeScript ? "ts" : "js";
+
       // Match patterns like: {{#if useTypeScript}}ts{{else}}js{{/if}}
-      const conditionalPattern = /\{\{#if\s+[^}]*\}\}[^{]*\{\{else\}\}[^{]*\{\{\/if\}\}/g;
+      const conditionalPattern =
+        /\{\{#if\s+[^}]*\}\}[^{]*\{\{else\}\}[^{]*\{\{\/if\}\}/g;
       return filename.replace(conditionalPattern, extension);
     }
-    
+
     // Handle simple variable substitution
     if (filename.includes("{{") && !filename.includes("{{#")) {
       const template = Handlebars.compile(filename);
       return template(context);
     }
-    
+
     return filename;
   } catch (error) {
-    console.warn(`Warning: Could not process filename template: ${filename}. Using fallback.`);
-    
+    console.warn(
+      `Warning: Could not process filename template: ${filename}. Using fallback.`,
+    );
+
     // Fallback logic for common patterns
-    if (filename.includes("middleware") || filename.includes("routes") || filename.includes("models")) {
-      const extension = context.typescript || context.useTypeScript ? "ts" : "js";
+    if (
+      filename.includes("middleware") ||
+      filename.includes("routes") ||
+      filename.includes("models")
+    ) {
+      const extension =
+        context.typescript || context.useTypeScript ? "ts" : "js";
       return filename.replace(/\{\{[^}]*\}\}/g, extension);
     }
-    
+
     // Remove all template syntax as last resort
     return filename.replace(/\{\{[^}]*\}\}/g, "");
   }
@@ -123,14 +90,18 @@ function processFilenameTemplate(filename, context) {
 /**
  * Get output filename from template filename
  */
-function getOutputFilename(filename, context, processExtensions = [".hbs", ".handlebars"]) {
+function getOutputFilename(
+  filename,
+  context,
+  processExtensions = [".hbs", ".handlebars"],
+) {
   let outputName = filename;
-  
+
   // Process template syntax in filename
   if (filename.includes("{{")) {
     outputName = processFilenameTemplate(filename, context);
   }
-  
+
   // Remove template extensions
   for (const ext of processExtensions) {
     if (outputName.endsWith(ext)) {
@@ -138,20 +109,26 @@ function getOutputFilename(filename, context, processExtensions = [".hbs", ".han
       break;
     }
   }
-  
+
   // Handle .hbs extension specifically
   if (outputName.endsWith(".hbs")) {
     outputName = outputName.slice(0, -4);
   }
-  
+
   return outputName;
 }
 
 /**
  * Determine if file should be processed as template
  */
-function shouldProcessAsTemplate(filename, processExtensions = [".hbs", ".handlebars"]) {
-  return processExtensions.some(ext => filename.endsWith(ext)) || filename.endsWith(".hbs");
+function shouldProcessAsTemplate(
+  filename,
+  processExtensions = [".hbs", ".handlebars"],
+) {
+  return (
+    processExtensions.some((ext) => filename.endsWith(ext)) ||
+    filename.endsWith(".hbs")
+  );
 }
 
 /**
@@ -172,8 +149,12 @@ export async function copyTemplates(
     if (exclude.includes(file)) continue;
 
     // Skip language-specific alternates: prefer .ts.* when TypeScript, else .js.*
-    const isTsTemplate = /\.ts\.(hbs|handlebars)$/.test(file) || /\.tsx\.(hbs|handlebars)$/.test(file);
-    const isJsTemplate = /\.js\.(hbs|handlebars)$/.test(file) || /\.jsx\.(hbs|handlebars)$/.test(file);
+    const isTsTemplate =
+      /\.ts\.(hbs|handlebars)$/.test(file) ||
+      /\.tsx\.(hbs|handlebars)$/.test(file);
+    const isJsTemplate =
+      /\.js\.(hbs|handlebars)$/.test(file) ||
+      /\.jsx\.(hbs|handlebars)$/.test(file);
     const wantsTs = Boolean(context.typescript || context.useTypeScript);
     if (isTsTemplate && !wantsTs) continue;
     if (isJsTemplate && wantsTs) continue;
@@ -186,7 +167,11 @@ export async function copyTemplates(
       const destPath = path.join(outputDir, outputDirName);
       await copyTemplates(srcPath, destPath, context, options);
     } else {
-      const outputFilename = getOutputFilename(file, context, processExtensions);
+      const outputFilename = getOutputFilename(
+        file,
+        context,
+        processExtensions,
+      );
       const destPath = path.join(outputDir, outputFilename);
       const isTemplate = shouldProcessAsTemplate(file, processExtensions);
 

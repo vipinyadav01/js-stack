@@ -1,0 +1,144 @@
+import express from 'express';
+{{#if (includes features "cors")}}
+import cors from 'cors';
+{{/if}}
+{{#if (includes features "helmet")}}
+import helmet from 'helmet';
+{{/if}}
+{{#if (includes features "compression")}}
+import compression from 'compression';
+{{/if}}
+{{#if (includes features "morgan")}}
+import morgan from 'morgan';
+{{/if}}
+{{#switch database}}
+{{#case "mongodb"}}
+import mongoose from 'mongoose';
+{{/case}}
+{{#case "postgresql"}}
+import pkg from 'pg';
+const { Pool } = pkg;
+{{/case}}
+{{#case "mysql"}}
+import mysql from 'mysql2/promise';
+{{/case}}
+{{/switch}}
+
+const app = express();
+const PORT = process.env.PORT || {{port}};
+
+// Middleware
+{{#if (includes features "helmet")}}
+app.use(helmet());
+{{/if}}
+{{#if (includes features "cors")}}
+app.use(cors());
+{{/if}}
+{{#if (includes features "compression")}}
+app.use(compression());
+{{/if}}
+{{#if (includes features "morgan")}}
+app.use(morgan('combined'));
+{{/if}}
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+{{#switch database}}
+{{#case "mongodb"}}
+// MongoDB connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/{{kebabCase projectName}}')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+{{/case}}
+{{#case "postgresql"}}
+// PostgreSQL connection
+const pool = new Pool({
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME || '{{snakeCase projectName}}',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'password'
+});
+{{/case}}
+{{#case "mysql"}}
+// MySQL connection
+const dbConfig = {
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '3306'),
+  database: process.env.DB_NAME || '{{snakeCase projectName}}',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'password'
+};
+{{/case}}
+{{/switch}}
+
+// Routes
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to {{titleCase projectName}} API',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'healthy',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+{{#if database}}
+app.get('/api/{{kebabCase (pluralize entityName)}}', async (req, res) => {
+  try {
+{{#switch database}}
+{{#case "mongodb"}}
+    // MongoDB query example
+    const {{camelCase (pluralize entityName)}} = await {{pascalCase entityName}}.find();
+    res.json({{camelCase (pluralize entityName)}});
+{{/case}}
+{{#case "postgresql"}}
+    // PostgreSQL query example
+    const result = await pool.query('SELECT * FROM {{snakeCase (pluralize entityName)}}');
+    res.json(result.rows);
+{{/case}}
+{{#case "mysql"}}
+    // MySQL query example
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute('SELECT * FROM {{snakeCase (pluralize entityName)}}');
+    await connection.end();
+    res.json(rows);
+{{/case}}
+{{/switch}}
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+{{/if}}
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Something went wrong!',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    error: 'Route not found',
+    path: req.originalUrl
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 {{titleCase projectName}} server running on http://localhost:${PORT}`);
+  console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
+{{#if database}}
+  console.log(`🗄️  Database: {{titleCase database}}`);
+{{/if}}
+});

@@ -80,8 +80,6 @@ function calculateDuration(startDate: string, endDate?: string): string {
   return `${years} year${years > 1 ? "s" : ""}, ${remainingMonths} month${remainingMonths > 1 ? "s" : ""}`;
 }
 
-// Mock data generation removed - now returns empty array when no real data available
-
 // Calculate comprehensive analytics
 function calculateAnalytics(sponsors: Sponsor[]): SponsorAnalytics {
   const activeSponsors = sponsors.filter((s) => s.isActive);
