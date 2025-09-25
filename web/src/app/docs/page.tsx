@@ -1,3 +1,8 @@
+import { Metadata } from "next";
+import { docsPageMetadata } from "@/components/seo";
+
+export const metadata: Metadata = docsPageMetadata;
+
 export default function DocsPage() {
   return (
     <div className="space-y-8">
