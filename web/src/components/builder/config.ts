@@ -16,19 +16,9 @@ export type Backend =
   | "hapi"
   | "nestjs";
 
-export type Database =
-  | "none"
-  | "sqlite"
-  | "postgres"
-  | "mysql"
-  | "mongodb";
+export type Database = "none" | "sqlite" | "postgres" | "mysql" | "mongodb";
 
-export type ORM =
-  | "none"
-  | "prisma"
-  | "sequelize"
-  | "mongoose"
-  | "typeorm";
+export type ORM = "none" | "prisma" | "sequelize" | "mongoose" | "typeorm";
 
 export type Auth =
   | "none"
@@ -38,29 +28,21 @@ export type Auth =
   | "oauth"
   | "better-auth";
 
-export type Addon =
-  | "docker"
-  | "testing"
-  | "biome"
-  | "turborepo";
+export type Addon = "docker" | "testing" | "biome" | "turborepo";
 
-export type PackageManager =
-  | "npm"
-  | "yarn"
-  | "pnpm"
-  | "bun";
+export type PackageManager = "npm" | "yarn" | "pnpm" | "bun";
 
 export interface BuilderState {
   projectName: string;
-  frontend: Frontend; 
-  backend: Backend;   
+  frontend: Frontend;
+  backend: Backend;
   database: Database;
   orm: ORM;
   auth: Auth;
   addons: Addon[];
   packageManager: PackageManager;
   installDependencies: boolean;
-  initializeGit: boolean;      
+  initializeGit: boolean;
 }
 
 export const defaultConfig: BuilderState = {
@@ -72,8 +54,8 @@ export const defaultConfig: BuilderState = {
   auth: "jwt",
   addons: [],
   packageManager: "npm",
-  installDependencies: true,  
-  initializeGit: true,      
+  installDependencies: true,
+  initializeGit: true,
 };
 
 // Comprehensive compatibility matrix based on real-world tested combinations
@@ -84,7 +66,7 @@ export const compatibilityRules = {
     postgres: ["prisma", "sequelize", "typeorm", "none"],
     mysql: ["prisma", "sequelize", "typeorm", "none"],
     sqlite: ["prisma", "sequelize", "typeorm", "none"],
-    none: ["none"]
+    none: ["none"],
   },
 
   // Frontend-Auth compatibility (optimal pairings)
@@ -96,7 +78,7 @@ export const compatibilityRules = {
     angular: ["auth0", "jwt", "oauth", "passport", "none"],
     svelte: ["auth0", "better-auth", "jwt", "oauth", "none"],
     "react-native": ["auth0", "better-auth", "jwt", "oauth", "none"],
-    none: ["none"]
+    none: ["none"],
   },
 
   // Backend-Database compatibility (tested combinations)
@@ -106,7 +88,7 @@ export const compatibilityRules = {
     koa: ["mongodb", "postgres", "mysql", "sqlite", "none"],
     hapi: ["postgres", "mysql", "sqlite", "mongodb", "none"],
     nestjs: ["postgres", "mysql", "sqlite", "mongodb", "none"], // NestJS supports all major DBs
-    none: ["none"]
+    none: ["none"],
   },
 
   // Frontend-Addon compatibility (framework-specific support)
@@ -118,8 +100,8 @@ export const compatibilityRules = {
     svelte: ["testing", "biome", "turborepo", "docker"],
     nuxt: ["testing", "biome", "turborepo", "docker"],
     "react-native": ["testing", "docker"], // Limited addon support for mobile
-    none: ["docker", "testing", "biome", "turborepo"] // Backend-only supports all
-  }
+    none: ["docker", "testing", "biome", "turborepo"], // Backend-only supports all
+  },
 } as const;
 
 // Well-tested, production-ready stack combinations
@@ -132,7 +114,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "prisma",
     auth: "better-auth",
     addons: ["testing", "biome"],
-    packageManager: "npm"
+    packageManager: "npm",
   },
   "react-express-postgres": {
     frontend: "react",
@@ -141,7 +123,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "prisma",
     auth: "jwt",
     addons: ["testing", "docker"],
-    packageManager: "npm"
+    packageManager: "npm",
   },
   "vue-express-mysql": {
     frontend: "vue",
@@ -150,7 +132,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "sequelize",
     auth: "passport",
     addons: ["testing", "biome"],
-    packageManager: "npm"
+    packageManager: "npm",
   },
   // API-only combinations
   "fastify-postgres-prisma": {
@@ -160,7 +142,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "prisma",
     auth: "jwt",
     addons: ["testing", "docker"],
-    packageManager: "npm"
+    packageManager: "npm",
   },
   "nestjs-postgres-typeorm": {
     frontend: "none",
@@ -169,7 +151,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "typeorm",
     auth: "passport",
     addons: ["testing", "docker"],
-    packageManager: "npm"
+    packageManager: "npm",
   },
   // NoSQL combinations
   "react-express-mongo": {
@@ -179,7 +161,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "mongoose",
     auth: "jwt",
     addons: ["testing"],
-    packageManager: "npm"
+    packageManager: "npm",
   },
   // Mobile combinations
   "react-native-express": {
@@ -189,7 +171,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "prisma",
     auth: "auth0",
     addons: ["testing"],
-    packageManager: "npm"
+    packageManager: "npm",
   },
   // Rapid prototyping
   "react-express-sqlite": {
@@ -199,62 +181,202 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     orm: "prisma",
     auth: "none",
     addons: [],
-    packageManager: "npm"
-  }
+    packageManager: "npm",
+  },
 };
 
 export const techCatalog = {
   frontend: [
-    { key: "react", name: "React", desc: "Vite + React app", badge: "Popular" },
-    { key: "nextjs", name: "Next.js", desc: "React meta-framework", badge: "Full-Stack" },
-    { key: "vue", name: "Vue", desc: "Progressive framework" },
-    { key: "nuxt", name: "Nuxt", desc: "Vue meta-framework" },
-    { key: "svelte", name: "Svelte", desc: "Compile-time framework" },
-    { key: "angular", name: "Angular", desc: "Enterprise framework" },
-    { key: "react-native", name: "React Native", desc: "Mobile development" },
-    { key: "none", name: "None", desc: "Backend/API only" },
+    {
+      key: "react",
+      name: "React",
+      desc: "Fast, flexible UI library with Vite",
+      badge: "Popular",
+    },
+    {
+      key: "nextjs",
+      name: "Next.js",
+      desc: "Production-ready React framework",
+      badge: "Full-Stack",
+    },
+    {
+      key: "vue",
+      name: "Vue",
+      desc: "Progressive, approachable framework",
+      badge: "Modern",
+    },
+    {
+      key: "nuxt",
+      name: "Nuxt",
+      desc: "Intuitive Vue meta-framework",
+      badge: "Full-Stack",
+    },
+    {
+      key: "svelte",
+      name: "Svelte",
+      desc: "Compile-time optimized framework",
+      badge: "Fast",
+    },
+    {
+      key: "angular",
+      name: "Angular",
+      desc: "Full-featured enterprise framework",
+      badge: "Enterprise",
+    },
+    {
+      key: "react-native",
+      name: "React Native",
+      desc: "Cross-platform mobile apps",
+      badge: "Mobile",
+    },
+    { key: "none", name: "None", desc: "API-only backend service" },
   ],
   backend: [
-    { key: "express", name: "Express", desc: "Minimal and flexible", badge: "Popular" },
-    { key: "fastify", name: "Fastify", desc: "High performance", badge: "Fast" },
-    { key: "nestjs", name: "NestJS", desc: "Enterprise grade", badge: "Enterprise" },
-    { key: "koa", name: "Koa", desc: "Next-gen Express" },
-    { key: "hapi", name: "Hapi", desc: "Configuration-centric" },
-    { key: "none", name: "None", desc: "Frontend only" },
+    {
+      key: "express",
+      name: "Express",
+      desc: "Minimal, flexible Node.js framework",
+      badge: "Popular",
+    },
+    {
+      key: "fastify",
+      name: "Fastify",
+      desc: "High-performance web framework",
+      badge: "Fast",
+    },
+    {
+      key: "nestjs",
+      name: "NestJS",
+      desc: "Scalable enterprise framework",
+      badge: "Enterprise",
+    },
+    { key: "koa", name: "Koa", desc: "Expressive middleware framework" },
+    { key: "hapi", name: "Hapi", desc: "Rich configuration framework" },
+    { key: "none", name: "None", desc: "Frontend-only application" },
   ],
   database: [
-    { key: "postgres", name: "PostgreSQL", desc: "Advanced relational", badge: "Popular" },
-    { key: "mysql", name: "MySQL", desc: "Widely adopted" },
-    { key: "mongodb", name: "MongoDB", desc: "Document database", badge: "NoSQL" },
-    { key: "sqlite", name: "SQLite", desc: "Embedded database" },
-    { key: "none", name: "None", desc: "No persistence" },
+    {
+      key: "postgres",
+      name: "PostgreSQL",
+      desc: "Advanced open-source database",
+      badge: "Popular",
+    },
+    {
+      key: "mysql",
+      name: "MySQL",
+      desc: "Reliable relational database",
+      badge: "Stable",
+    },
+    {
+      key: "mongodb",
+      name: "MongoDB",
+      desc: "Flexible document database",
+      badge: "NoSQL",
+    },
+    {
+      key: "sqlite",
+      name: "SQLite",
+      desc: "Lightweight embedded database",
+      badge: "Dev",
+    },
+    { key: "none", name: "None", desc: "No database persistence" },
   ],
   orm: [
-    { key: "prisma", name: "Prisma", desc: "Type-safe ORM", badge: "Modern" },
-    { key: "mongoose", name: "Mongoose", desc: "MongoDB ODM", badge: "MongoDB" },
-    { key: "sequelize", name: "Sequelize", desc: "SQL ORM" },
-    { key: "typeorm", name: "TypeORM", desc: "ActiveRecord/DataMapper" },
-    { key: "none", name: "None", desc: "Raw queries" },
+    {
+      key: "prisma",
+      name: "Prisma",
+      desc: "Next-gen type-safe ORM",
+      badge: "Modern",
+    },
+    {
+      key: "mongoose",
+      name: "Mongoose",
+      desc: "Elegant MongoDB ODM",
+      badge: "MongoDB",
+    },
+    {
+      key: "sequelize",
+      name: "Sequelize",
+      desc: "Feature-rich SQL ORM",
+      badge: "Mature",
+    },
+    {
+      key: "typeorm",
+      name: "TypeORM",
+      desc: "TypeScript-first ORM",
+      badge: "TypeScript",
+    },
+    { key: "none", name: "None", desc: "Direct database queries" },
   ],
   auth: [
-    { key: "better-auth", name: "Better Auth", desc: "Modern auth toolkit", badge: "New" },
-    { key: "auth0", name: "Auth0", desc: "Authentication as a service", badge: "Hosted" },
-    { key: "jwt", name: "JWT", desc: "Stateless tokens", badge: "Simple" },
-    { key: "passport", name: "Passport", desc: "Authentication middleware" },
-    { key: "oauth", name: "OAuth", desc: "Third-party login" },
-    { key: "none", name: "None", desc: "No authentication" },
+    {
+      key: "better-auth",
+      name: "Better Auth",
+      desc: "Modern, flexible auth solution",
+      badge: "New",
+    },
+    {
+      key: "auth0",
+      name: "Auth0",
+      desc: "Complete identity platform",
+      badge: "Hosted",
+    },
+    {
+      key: "jwt",
+      name: "JWT",
+      desc: "Simple stateless authentication",
+      badge: "Simple",
+    },
+    {
+      key: "passport",
+      name: "Passport",
+      desc: "Extensible auth middleware",
+      badge: "Flexible",
+    },
+    {
+      key: "oauth",
+      name: "OAuth",
+      desc: "Industry-standard authorization",
+      badge: "Standard",
+    },
+    { key: "none", name: "None", desc: "No user authentication" },
   ],
   addons: [
-    { key: "testing", name: "Testing", desc: "Jest/Vitest setup", badge: "Recommended" },
-    { key: "biome", name: "Biome", desc: "Fast linter & formatter", badge: "Fast" },
-    { key: "docker", name: "Docker", desc: "Containerization" },
-    { key: "turborepo", name: "Turborepo", desc: "Monorepo tooling" },
+    {
+      key: "testing",
+      name: "Testing",
+      desc: "Jest/Vitest testing framework",
+      badge: "Recommended",
+    },
+    {
+      key: "biome",
+      name: "Biome",
+      desc: "Ultra-fast linter & formatter",
+      badge: "Fast",
+    },
+    {
+      key: "docker",
+      name: "Docker",
+      desc: "Application containerization",
+      badge: "DevOps",
+    },
+    {
+      key: "turborepo",
+      name: "Turborepo",
+      desc: "High-performance monorepo",
+      badge: "Monorepo",
+    },
   ],
   packageManager: [
     { key: "npm", name: "npm", desc: "Node Package Manager", badge: "Default" },
     { key: "yarn", name: "Yarn", desc: "Fast, reliable, secure" },
     { key: "pnpm", name: "pnpm", desc: "Fast, disk space efficient" },
-    { key: "bun", name: "Bun", desc: "All-in-one JavaScript runtime", badge: "Fast" },
+    {
+      key: "bun",
+      name: "Bun",
+      desc: "All-in-one JavaScript runtime",
+      badge: "Fast",
+    },
   ],
 } as const;
 
@@ -268,31 +390,33 @@ export function normalizeState(input: Partial<BuilderState>): BuilderState {
     auth: input.auth || defaultConfig.auth,
     addons: Array.isArray(input.addons) ? input.addons : defaultConfig.addons,
     packageManager: input.packageManager || defaultConfig.packageManager,
-    installDependencies: input.installDependencies ?? defaultConfig.installDependencies,
+    installDependencies:
+      input.installDependencies ?? defaultConfig.installDependencies,
     initializeGit: input.initializeGit ?? defaultConfig.initializeGit,
   };
 }
 
 // Check if two technologies are compatible
 export function isCompatible(
-  type: 'databaseOrm' | 'frontendAuth' | 'backendDatabase' | 'frontendAddons',
+  type: "databaseOrm" | "frontendAuth" | "backendDatabase" | "frontendAddons",
   primary: string,
-  secondary: string | string[]
+  secondary: string | string[],
 ): boolean {
   const rules = compatibilityRules[type];
-  const compatibleOptions = (rules as Record<string, readonly string[]>)[primary] || [];
-  
+  const compatibleOptions =
+    (rules as Record<string, readonly string[]>)[primary] || [];
+
   if (Array.isArray(secondary)) {
-    return secondary.every(item => compatibleOptions.includes(item));
+    return secondary.every((item) => compatibleOptions.includes(item));
   }
-  
+
   return compatibleOptions.includes(secondary);
 }
 
 // Get compatible options for a given selection
 export function getCompatibleOptions<T extends string>(
-  type: 'databaseOrm' | 'frontendAuth' | 'backendDatabase' | 'frontendAddons',
-  primary: string
+  type: "databaseOrm" | "frontendAuth" | "backendDatabase" | "frontendAddons",
+  primary: string,
 ): T[] {
   const rules = compatibilityRules[type];
   return ((rules as Record<string, readonly string[]>)[primary] || []) as T[];
@@ -310,17 +434,22 @@ export function findBestTestedCombination(state: BuilderState): {
 
   for (const [key, combo] of Object.entries(testedStackCombinations)) {
     let score = 0;
-    const maxScore = 6; 
+    const maxScore = 6;
 
     if (state.frontend === combo.frontend) score++;
     if (state.backend === combo.backend) score++;
     if (state.database === combo.database) score++;
     if (state.orm === combo.orm) score++;
     if (state.auth === combo.auth) score++;
-    if (state.addons.length > 0 && combo.addons && combo.addons.some(addon => state.addons.includes(addon))) score++;
+    if (
+      state.addons.length > 0 &&
+      combo.addons &&
+      combo.addons.some((addon) => state.addons.includes(addon))
+    )
+      score++;
 
     const confidence = score / maxScore;
-    
+
     if (confidence > bestScore) {
       bestScore = confidence;
       bestMatch = key;
@@ -331,45 +460,60 @@ export function findBestTestedCombination(state: BuilderState): {
   return {
     match: bestMatch,
     confidence: bestScore,
-    suggestions: bestSuggestions
+    suggestions: bestSuggestions,
   };
 }
 
 // Apply compatibility rules and fix conflicts with intelligent suggestions
 export function applyCompatibility(state: BuilderState): BuilderState {
   const next = { ...state };
-  
+
   // Check if current combination is a known tested stack
   // const testedCombo = findBestTestedCombination(next);
-  
+
   // Fix database-ORM compatibility (critical - must be compatible)
-  if (!isCompatible('databaseOrm', next.database, next.orm)) {
-    const compatibleOrms = getCompatibleOptions<ORM>('databaseOrm', next.database);
-    next.orm = compatibleOrms[0] || 'none';
+  if (!isCompatible("databaseOrm", next.database, next.orm)) {
+    const compatibleOrms = getCompatibleOptions<ORM>(
+      "databaseOrm",
+      next.database,
+    );
+    next.orm = compatibleOrms[0] || "none";
   }
-  
+
   // Fix frontend-auth compatibility (prefer optimal pairings)
-  if (!isCompatible('frontendAuth', next.frontend, next.auth)) {
-    const compatibleAuth = getCompatibleOptions<Auth>('frontendAuth', next.frontend);
-    next.auth = compatibleAuth[0] || 'none';
+  if (!isCompatible("frontendAuth", next.frontend, next.auth)) {
+    const compatibleAuth = getCompatibleOptions<Auth>(
+      "frontendAuth",
+      next.frontend,
+    );
+    next.auth = compatibleAuth[0] || "none";
   }
-  
+
   // Fix backend-database compatibility (ensure supported combination)
-  if (!isCompatible('backendDatabase', next.backend, next.database)) {
-    const compatibleDbs = getCompatibleOptions<Database>('backendDatabase', next.backend);
-    next.database = compatibleDbs[0] || 'none';
-    
+  if (!isCompatible("backendDatabase", next.backend, next.database)) {
+    const compatibleDbs = getCompatibleOptions<Database>(
+      "backendDatabase",
+      next.backend,
+    );
+    next.database = compatibleDbs[0] || "none";
+
     // Recheck ORM compatibility after database change
-    if (!isCompatible('databaseOrm', next.database, next.orm)) {
-      const compatibleOrms = getCompatibleOptions<ORM>('databaseOrm', next.database);
-      next.orm = compatibleOrms[0] || 'none';
+    if (!isCompatible("databaseOrm", next.database, next.orm)) {
+      const compatibleOrms = getCompatibleOptions<ORM>(
+        "databaseOrm",
+        next.database,
+      );
+      next.orm = compatibleOrms[0] || "none";
     }
   }
-  
+
   // Filter incompatible addons based on frontend framework
-  const compatibleAddons = getCompatibleOptions<Addon>('frontendAddons', next.frontend);
-  next.addons = next.addons.filter(addon => compatibleAddons.includes(addon));
-  
+  const compatibleAddons = getCompatibleOptions<Addon>(
+    "frontendAddons",
+    next.frontend,
+  );
+  next.addons = next.addons.filter((addon) => compatibleAddons.includes(addon));
+
   return next;
 }
 
@@ -386,60 +530,83 @@ export function validateConfiguration(state: BuilderState): {
 } {
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   // Critical compatibility checks
-  if (!isCompatible('databaseOrm', state.database, state.orm)) {
-    errors.push(`${state.orm} ORM is not compatible with ${state.database} database`);
+  if (!isCompatible("databaseOrm", state.database, state.orm)) {
+    errors.push(
+      `${state.orm} ORM is not compatible with ${state.database} database`,
+    );
   }
-  
-  if (!isCompatible('backendDatabase', state.backend, state.database)) {
-    errors.push(`${state.database} database is not well-supported with ${state.backend} backend`);
+
+  if (!isCompatible("backendDatabase", state.backend, state.database)) {
+    errors.push(
+      `${state.database} database is not well-supported with ${state.backend} backend`,
+    );
   }
-  
+
   // Optimization suggestions
-  if (!isCompatible('frontendAuth', state.frontend, state.auth)) {
-    warnings.push(`Consider using a different auth solution for better ${state.frontend} integration`);
+  if (!isCompatible("frontendAuth", state.frontend, state.auth)) {
+    warnings.push(
+      `Consider using a different auth solution for better ${state.frontend} integration`,
+    );
   }
-  
+
   // Check for tested combinations
   const testedCombo = findBestTestedCombination(state);
   const isWellTested = testedCombo.confidence >= 0.7;
-  
+
   if (!isWellTested && testedCombo.confidence > 0.3) {
-    warnings.push(`This combination is experimental. Consider using a tested stack for production`);
+    warnings.push(
+      `This combination is experimental. Consider using a tested stack for production`,
+    );
   }
-  
+
   // Specific technology warnings
-  if (state.database === 'sqlite' && state.backend !== 'none') {
-    warnings.push('SQLite is great for development but consider PostgreSQL for production');
+  if (state.database === "sqlite" && state.backend !== "none") {
+    warnings.push(
+      "SQLite is great for development but consider PostgreSQL for production",
+    );
   }
-  
-  if (state.frontend === 'angular' && state.addons.includes('biome')) {
-    warnings.push('Angular has built-in linting. Biome may conflict with Angular CLI tools');
+
+  if (state.frontend === "angular" && state.addons.includes("biome")) {
+    warnings.push(
+      "Angular has built-in linting. Biome may conflict with Angular CLI tools",
+    );
   }
-  
-  if (state.frontend === 'react-native' && state.addons.includes('turborepo')) {
-    warnings.push('Turborepo setup for React Native requires additional configuration');
+
+  if (state.frontend === "react-native" && state.addons.includes("turborepo")) {
+    warnings.push(
+      "Turborepo setup for React Native requires additional configuration",
+    );
   }
-  
+
   // Setup warnings
   if (!state.installDependencies) {
-    warnings.push('Manual dependency installation required after project creation');
+    warnings.push(
+      "Manual dependency installation required after project creation",
+    );
   }
-  
+
   if (!state.initializeGit) {
-    warnings.push('Manual git repository initialization required');
+    warnings.push("Manual git repository initialization required");
   }
-  
+
   // Database-specific warnings
-  if ((state.database === 'postgres' || state.database === 'mysql') && !state.installDependencies) {
-    warnings.push('Database connection setup required before running the application');
+  if (
+    (state.database === "postgres" || state.database === "mysql") &&
+    !state.installDependencies
+  ) {
+    warnings.push(
+      "Database connection setup required before running the application",
+    );
   }
-  
-  if (state.auth === 'auth0' && !state.installDependencies) {
-    warnings.push('Auth0 configuration and environment variables setup required');
+
+  if (state.auth === "auth0" && !state.installDependencies) {
+    warnings.push(
+      "Auth0 configuration and environment variables setup required",
+    );
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -447,8 +614,8 @@ export function validateConfiguration(state: BuilderState): {
     testedCombination: {
       match: testedCombo.match,
       confidence: testedCombo.confidence,
-      isWellTested
-    }
+      isWellTested,
+    },
   };
 }
 
@@ -457,61 +624,61 @@ export function buildCliCommand(state: BuilderState): string {
   // Get the correct command prefix based on package manager
   const getCommandPrefix = (packageManager: PackageManager): string => {
     switch (packageManager) {
-      case 'npm':
-        return 'npx';
-      case 'yarn':
-        return 'yarn create';
-      case 'pnpm':
-        return 'pnpm create';
-      case 'bun':
-        return 'bunx';
+      case "npm":
+        return "npx";
+      case "yarn":
+        return "yarn create";
+      case "pnpm":
+        return "pnpm create";
+      case "bun":
+        return "bunx";
       default:
-        return 'npx';
+        return "npx";
     }
   };
 
   const parts = [
-    `${getCommandPrefix(state.packageManager)} create-js-stack@latest ${state.projectName}`
+    `${getCommandPrefix(state.packageManager)} create-js-stack@latest ${state.projectName}`,
   ];
-  
+
   if (state.frontend !== "none") {
     parts.push(`--frontend ${state.frontend}`);
   }
-  
+
   if (state.backend !== "none") {
     parts.push(`--backend ${state.backend}`);
   }
-  
+
   if (state.database !== "none") {
     parts.push(`--database ${state.database}`);
   }
-  
+
   if (state.orm !== "none") {
     parts.push(`--orm ${state.orm}`);
   }
-  
+
   if (state.auth !== "none") {
     parts.push(`--auth ${state.auth}`);
   }
-  
+
   if (state.addons.length > 0) {
-    parts.push(`--addons ${state.addons.join(',')}`);
+    parts.push(`--addons ${state.addons.join(",")}`);
   }
-  
+
   // Add package manager
   parts.push(`--package-manager ${state.packageManager}`);
-  
+
   // Add git flag
   if (state.initializeGit) {
-    parts.push('--git');
+    parts.push("--git");
   }
-  
+
   // Add install flag
   if (state.installDependencies) {
-    parts.push('--install');
+    parts.push("--install");
   }
-  
-  return parts.join(' ');
+
+  return parts.join(" ");
 }
 
 // Build separate commands for post-setup actions
@@ -530,97 +697,100 @@ export function buildPostSetupCommands(state: BuilderState): {
     databaseSetup?: string[];
   } = {
     cdCommand: `cd ${state.projectName}`,
-    startCommand: state.frontend === 'none' ? `${state.packageManager} start` : `${state.packageManager} run dev`
+    startCommand:
+      state.frontend === "none"
+        ? `${state.packageManager} start`
+        : `${state.packageManager} run dev`,
   };
-  
+
   if (!state.installDependencies) {
     commands.installCommand = `${state.packageManager} install`;
   }
-  
+
   if (!state.initializeGit) {
     commands.gitCommands = [
-      'git init',
-      'git add .',
-      'git commit -m "Initial commit"'
+      "git init",
+      "git add .",
+      'git commit -m "Initial commit"',
     ];
   }
-  
+
   // Add database setup commands for local databases
-  if (state.database === 'postgres') {
+  if (state.database === "postgres") {
     commands.databaseSetup = [
-      'createdb ' + state.projectName,
-      'npx prisma migrate dev' // if using Prisma
+      "createdb " + state.projectName,
+      "npx prisma migrate dev", // if using Prisma
     ];
-  } else if (state.database === 'mysql') {
+  } else if (state.database === "mysql") {
     commands.databaseSetup = [
       'mysql -e "CREATE DATABASE ' + state.projectName + '"',
-      'npx prisma migrate dev' // if using Prisma
+      "npx prisma migrate dev", // if using Prisma
     ];
   }
-  
+
   return commands;
 }
 
 // Get recommended stack for common use cases with tested combinations
 export function getRecommendedStack(useCase: string): Partial<BuilderState> {
   const stacks = {
-    'fullstack-web': {
-      frontend: 'nextjs' as Frontend,
-      backend: 'none' as Backend,
-      database: 'postgres' as Database,
-      orm: 'prisma' as ORM,
-      auth: 'better-auth' as Auth,
-      addons: ['testing', 'biome'] as Addon[],
-      packageManager: 'npm' as PackageManager,
+    "fullstack-web": {
+      frontend: "nextjs" as Frontend,
+      backend: "none" as Backend,
+      database: "postgres" as Database,
+      orm: "prisma" as ORM,
+      auth: "better-auth" as Auth,
+      addons: ["testing", "biome"] as Addon[],
+      packageManager: "npm" as PackageManager,
       installDependencies: true,
-      initializeGit: true
+      initializeGit: true,
     },
-    'react-api': {
-      frontend: 'react' as Frontend,
-      backend: 'express' as Backend,
-      database: 'postgres' as Database,
-      orm: 'prisma' as ORM,
-      auth: 'jwt' as Auth,
-      addons: ['testing', 'docker'] as Addon[],
-      packageManager: 'npm' as PackageManager,
+    "react-api": {
+      frontend: "react" as Frontend,
+      backend: "express" as Backend,
+      database: "postgres" as Database,
+      orm: "prisma" as ORM,
+      auth: "jwt" as Auth,
+      addons: ["testing", "docker"] as Addon[],
+      packageManager: "npm" as PackageManager,
       installDependencies: true,
-      initializeGit: true
+      initializeGit: true,
     },
-    'api-only': {
-      frontend: 'none' as Frontend,
-      backend: 'fastify' as Backend,
-      database: 'postgres' as Database,
-      orm: 'prisma' as ORM,
-      auth: 'jwt' as Auth,
-      addons: ['testing', 'docker'] as Addon[],
-      packageManager: 'npm' as PackageManager,
+    "api-only": {
+      frontend: "none" as Frontend,
+      backend: "fastify" as Backend,
+      database: "postgres" as Database,
+      orm: "prisma" as ORM,
+      auth: "jwt" as Auth,
+      addons: ["testing", "docker"] as Addon[],
+      packageManager: "npm" as PackageManager,
       installDependencies: true,
-      initializeGit: true
+      initializeGit: true,
     },
-    'mobile': {
-      frontend: 'react-native' as Frontend,
-      backend: 'express' as Backend,
-      database: 'postgres' as Database,
-      orm: 'prisma' as ORM,
-      auth: 'auth0' as Auth,
-      addons: ['testing'] as Addon[],
-      packageManager: 'npm' as PackageManager,
+    mobile: {
+      frontend: "react-native" as Frontend,
+      backend: "express" as Backend,
+      database: "postgres" as Database,
+      orm: "prisma" as ORM,
+      auth: "auth0" as Auth,
+      addons: ["testing"] as Addon[],
+      packageManager: "npm" as PackageManager,
       installDependencies: true,
-      initializeGit: true
+      initializeGit: true,
     },
-    'prototype': {
-      frontend: 'react' as Frontend,
-      backend: 'express' as Backend,
-      database: 'sqlite' as Database,
-      orm: 'prisma' as ORM,
-      auth: 'none' as Auth,
+    prototype: {
+      frontend: "react" as Frontend,
+      backend: "express" as Backend,
+      database: "sqlite" as Database,
+      orm: "prisma" as ORM,
+      auth: "none" as Auth,
       addons: [] as Addon[],
-      packageManager: 'npm' as PackageManager,
+      packageManager: "npm" as PackageManager,
       installDependencies: true,
-      initializeGit: false
-    }
+      initializeGit: false,
+    },
   };
-  
+
   return stacks[useCase as keyof typeof stacks] || {};
 }
 
@@ -632,58 +802,65 @@ export function generateSetupInstructions(state: BuilderState): {
 } {
   const commands = buildPostSetupCommands(state);
   const validation = validateConfiguration(state);
-  
+
   const steps = [
     `Run: ${buildCliCommand(state)}`,
-    `Navigate to project: ${commands.cdCommand}`
+    `Navigate to project: ${commands.cdCommand}`,
   ];
-  
+
   if (commands.installCommand) {
     steps.push(`Install dependencies: ${commands.installCommand}`);
   }
-  
+
   if (commands.databaseSetup && commands.databaseSetup.length > 0) {
     steps.push(`Setup database:`);
-    commands.databaseSetup.forEach(cmd => steps.push(`  ${cmd}`));
+    commands.databaseSetup.forEach((cmd) => steps.push(`  ${cmd}`));
   }
-  
+
   if (commands.gitCommands) {
     steps.push(`Initialize git repository:`);
-    commands.gitCommands.forEach(cmd => steps.push(`  ${cmd}`));
+    commands.gitCommands.forEach((cmd) => steps.push(`  ${cmd}`));
   }
-  
+
   steps.push(`Start development server: ${commands.startCommand}`);
-  
+
   const notes = [...validation.warnings];
-  
+
   // Add tested combination info
   if (validation.testedCombination?.isWellTested) {
-    notes.unshift(`✅ This is a well-tested, production-ready stack combination`);
-  } else if (validation.testedCombination?.confidence && validation.testedCombination.confidence > 0.3) {
-    notes.unshift(`⚠️ This combination is experimental. Consider a tested stack for production`);
+    notes.unshift(
+      `✅ This is a well-tested, production-ready stack combination`,
+    );
+  } else if (
+    validation.testedCombination?.confidence &&
+    validation.testedCombination.confidence > 0.3
+  ) {
+    notes.unshift(
+      `⚠️ This combination is experimental. Consider a tested stack for production`,
+    );
   }
-  
+
   // Technology-specific setup notes
-  if (state.auth === 'auth0') {
-    notes.push('Configure Auth0 domain and client ID in environment variables');
+  if (state.auth === "auth0") {
+    notes.push("Configure Auth0 domain and client ID in environment variables");
   }
-  
-  if (state.auth === 'better-auth') {
-    notes.push('Configure Better Auth providers and database URL');
+
+  if (state.auth === "better-auth") {
+    notes.push("Configure Better Auth providers and database URL");
   }
-  
-  if (state.addons.includes('docker')) {
-    notes.push('Docker compose file included for development environment');
+
+  if (state.addons.includes("docker")) {
+    notes.push("Docker compose file included for development environment");
   }
-  
-  if (state.addons.includes('turborepo')) {
-    notes.push('Turborepo workspace configured for monorepo development');
+
+  if (state.addons.includes("turborepo")) {
+    notes.push("Turborepo workspace configured for monorepo development");
   }
-  
+
   return {
     title: `Setup Instructions for ${state.projectName}`,
     steps,
-    notes
+    notes,
   };
 }
 
@@ -693,37 +870,37 @@ export function requiresManualSetup(state: BuilderState): {
   steps: string[];
 } {
   const manualSteps: string[] = [];
-  
+
   if (!state.installDependencies) {
-    manualSteps.push('Install dependencies manually');
+    manualSteps.push("Install dependencies manually");
   }
-  
+
   if (!state.initializeGit) {
-    manualSteps.push('Initialize git repository');
+    manualSteps.push("Initialize git repository");
   }
-  
-  if (state.database === 'postgres' || state.database === 'mysql') {
-    manualSteps.push('Set up and configure database server');
+
+  if (state.database === "postgres" || state.database === "mysql") {
+    manualSteps.push("Set up and configure database server");
   }
-  
-  if (state.auth === 'auth0') {
-    manualSteps.push('Configure Auth0 credentials and environment variables');
+
+  if (state.auth === "auth0") {
+    manualSteps.push("Configure Auth0 credentials and environment variables");
   }
-  
-  if (state.auth === 'better-auth') {
-    manualSteps.push('Configure Better Auth providers and settings');
+
+  if (state.auth === "better-auth") {
+    manualSteps.push("Configure Better Auth providers and settings");
   }
-  
-  if (state.addons.includes('docker')) {
-    manualSteps.push('Build and run Docker containers');
+
+  if (state.addons.includes("docker")) {
+    manualSteps.push("Build and run Docker containers");
   }
-  
-  if (state.addons.includes('turborepo')) {
-    manualSteps.push('Configure turborepo workspace settings');
+
+  if (state.addons.includes("turborepo")) {
+    manualSteps.push("Configure turborepo workspace settings");
   }
-  
+
   return {
     hasManualSteps: manualSteps.length > 0,
-    steps: manualSteps
+    steps: manualSteps,
   };
 }

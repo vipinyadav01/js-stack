@@ -7,6 +7,10 @@ import {
   AUTH_OPTIONS,
   ADDON_OPTIONS,
 } from "../types.js";
+import SmartCompatibility, {
+  getStackRecommendations,
+  calculateStackScore,
+} from "./smart-compatibility.js";
 
 /**
  * Technology compatibility matrix
@@ -233,125 +237,68 @@ export const DEPENDENCY_VERSIONS = {
 };
 
 /**
- * Validate technology compatibility
+ * Enhanced technology compatibility validation using Smart Compatibility system
  * @param {Object} config - Project configuration
- * @returns {Object} - Validation result with errors and warnings
+ * @returns {Object} - Enhanced validation result with scores and recommendations
  */
 export function validateCompatibility(config) {
+  // Use the enhanced smart compatibility system
+  const smartCompatibility = new SmartCompatibility();
+  const result = smartCompatibility.checkAndAdjust(config);
+
+  // Convert smart compatibility results to legacy format for backward compatibility
+  const errors = result.adjustments
+    .filter((adj) => adj.score < 6)
+    .map((adj) => ({
+      type: "incompatible",
+      message: `${adj.type}: ${adj.from} → ${adj.to}`,
+      suggestion: adj.reason,
+      score: adj.score,
+    }));
+
+  const warnings = [
+    ...result.warnings.map((warn) => ({
+      type: warn.type || "suboptimal",
+      message: warn.message,
+      suggestion: warn.suggestion,
+    })),
+    ...result.recommendations
+      .filter((rec) => rec.priority === "high")
+      .map((rec) => ({
+        type: rec.type || "recommendation",
+        message: `Consider ${rec.recommended}: ${rec.reason}`,
+        suggestion: rec.current ? `Current: ${rec.current}` : undefined,
+        score: rec.recommendedScore,
+      })),
+  ];
+
+  // Add legacy compatibility checks for critical issues
+  const legacyErrors = performLegacyValidation(config);
+  errors.push(...legacyErrors);
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    // Enhanced information
+    stackScore: result.stackScore,
+    stackRating: result.stackRating,
+    recommendations: result.recommendations,
+    adjustments: result.adjustments,
+    complexity: smartCompatibility.calculateProjectComplexity(config),
+    modernityScore: smartCompatibility.calculateModernityScore(config),
+  };
+}
+
+/**
+ * Perform legacy validation for critical compatibility issues
+ * @param {Object} config - Project configuration
+ * @returns {Array} - Array of critical errors
+ */
+function performLegacyValidation(config) {
   const errors = [];
-  const warnings = [];
 
-  // Check database-ORM compatibility
-  if (
-    config.database !== DATABASE_OPTIONS.NONE &&
-    config.orm !== ORM_OPTIONS.NONE
-  ) {
-    const compatibleORMs = COMPATIBILITY_MATRIX.database_orm[config.database];
-    if (!compatibleORMs.includes(config.orm)) {
-      errors.push({
-        type: "incompatible",
-        message: `${config.database} database is not compatible with ${config.orm} ORM`,
-        suggestion: `Use one of: ${compatibleORMs.join(", ")}`,
-      });
-    }
-  }
-
-  // Check backend-database compatibility
-  if (
-    config.backend !== BACKEND_OPTIONS.NONE &&
-    config.database !== DATABASE_OPTIONS.NONE
-  ) {
-    const compatibleDatabases =
-      COMPATIBILITY_MATRIX.backend_database[config.backend];
-    if (!compatibleDatabases.includes(config.database)) {
-      warnings.push({
-        type: "suboptimal",
-        message: `${config.backend} backend with ${config.database} database is not optimal`,
-        suggestion: `Consider using: ${compatibleDatabases.join(", ")}`,
-      });
-    }
-  }
-
-  // Check frontend-backend compatibility
-  if (config.frontend && config.frontend.length > 0) {
-    for (const frontend of config.frontend) {
-      if (frontend !== FRONTEND_OPTIONS.NONE) {
-        const compatibleBackends =
-          COMPATIBILITY_MATRIX.frontend_backend[frontend];
-        if (
-          config.backend !== BACKEND_OPTIONS.NONE &&
-          !compatibleBackends.includes(config.backend)
-        ) {
-          warnings.push({
-            type: "suboptimal",
-            message: `${frontend} frontend with ${config.backend} backend is not optimal`,
-            suggestion: `Consider using: ${compatibleBackends.join(", ")}`,
-          });
-        }
-      }
-    }
-  }
-
-  // Check auth-frontend compatibility
-  if (config.auth && config.auth !== AUTH_OPTIONS.NONE) {
-    const allowedFrontends = COMPATIBILITY_MATRIX.auth_frontend[config.auth];
-    if (allowedFrontends && config.frontend && config.frontend.length > 0) {
-      const invalid = config.frontend.filter(
-        (f) => f !== FRONTEND_OPTIONS.NONE && !allowedFrontends.includes(f),
-      );
-      if (invalid.length > 0) {
-        errors.push({
-          type: "incompatible",
-          message: `${config.auth} is not compatible with: ${invalid.join(", ")}`,
-        });
-      }
-    }
-  }
-
-  // Addon-frontend compatibility
-  if (config.addons && Array.isArray(config.addons)) {
-    for (const addon of config.addons) {
-      const allowedFrontends = COMPATIBILITY_MATRIX.addon_frontend[addon];
-      if (allowedFrontends && config.frontend && config.frontend.length > 0) {
-        const invalid = config.frontend.filter(
-          (f) => f !== FRONTEND_OPTIONS.NONE && !allowedFrontends.includes(f),
-        );
-        if (invalid.length > 0) {
-          warnings.push({
-            type: "suboptimal",
-            message: `${addon} works best with: ${allowedFrontends.join(", ")}`,
-          });
-        }
-      }
-    }
-  }
-
-  // Check for full-stack frameworks
-  if (
-    config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS) &&
-    config.backend !== BACKEND_OPTIONS.NONE
-  ) {
-    warnings.push({
-      type: "redundant",
-      message:
-        "Next.js includes backend functionality, separate backend may be redundant",
-      suggestion: "Consider using Next.js API routes instead",
-    });
-  }
-
-  if (
-    config.frontend?.includes(FRONTEND_OPTIONS.NUXT) &&
-    config.backend !== BACKEND_OPTIONS.NONE
-  ) {
-    warnings.push({
-      type: "redundant",
-      message:
-        "Nuxt.js includes backend functionality, separate backend may be redundant",
-      suggestion: "Consider using Nuxt.js server routes instead",
-    });
-  }
-
-  // Prevent conflicting meta-frameworks in the same selection
+  // Prevent conflicting meta-frameworks
   const metaFrameworks = [
     FRONTEND_OPTIONS.NEXTJS,
     FRONTEND_OPTIONS.NUXT,
@@ -359,22 +306,37 @@ export function validateCompatibility(config) {
     FRONTEND_OPTIONS.REMIX,
     FRONTEND_OPTIONS.ASTRO,
   ];
+
   if (config.frontend && config.frontend.length > 1) {
-    const chosenMeta = config.frontend.filter((f) => metaFrameworks.includes(f));
+    const chosenMeta = config.frontend.filter((f) =>
+      metaFrameworks.includes(f),
+    );
     if (chosenMeta.length > 1) {
       errors.push({
         type: "incompatible",
         message: `Conflicting meta-frameworks selected: ${chosenMeta.join(", ")}`,
         suggestion: "Choose only one meta-framework",
+        critical: true,
       });
     }
   }
 
-  return {
-    isValid: errors.length === 0,
-    errors,
-    warnings,
-  };
+  // Check for completely incompatible combinations
+  if (
+    config.database === DATABASE_OPTIONS.MONGODB &&
+    config.orm !== ORM_OPTIONS.MONGOOSE &&
+    config.orm !== ORM_OPTIONS.PRISMA &&
+    config.orm !== ORM_OPTIONS.NONE
+  ) {
+    errors.push({
+      type: "incompatible",
+      message: `MongoDB requires Mongoose or Prisma ORM, not ${config.orm}`,
+      suggestion: "Use Mongoose for MongoDB or switch to a SQL database",
+      critical: true,
+    });
+  }
+
+  return errors;
 }
 
 /**
@@ -528,16 +490,65 @@ export function resolveDependencies(config) {
 }
 
 /**
- * Display validation results in a user-friendly format
- * @param {Object} validation - Validation result
+ * Enhanced display of validation results with smart compatibility insights
+ * @param {Object} validation - Enhanced validation result
  */
 export function displayValidationResults(validation) {
-  if (validation.errors.length > 0) {
-    console.log(chalk.red.bold("\n❌ Configuration Errors:"));
-    validation.errors.forEach((error, index) => {
+  // Show stack score if available
+  if (validation.stackScore && validation.stackRating) {
+    const rating = validation.stackRating;
+    console.log(
+      chalk[rating.color].bold(
+        `\n${rating.emoji} Stack Compatibility: ${validation.stackScore}/10 (${rating.rating})`,
+      ),
+    );
+
+    if (validation.modernityScore) {
+      const modernityRating =
+        validation.modernityScore >= 8
+          ? "Modern"
+          : validation.modernityScore >= 6
+            ? "Current"
+            : "Outdated";
+      const modernityColor =
+        validation.modernityScore >= 8
+          ? "green"
+          : validation.modernityScore >= 6
+            ? "yellow"
+            : "red";
+      console.log(
+        chalk[modernityColor](
+          `📅 Stack Modernity: ${validation.modernityScore}/10 (${modernityRating})`,
+        ),
+      );
+    }
+  }
+
+  // Show critical errors first
+  const criticalErrors = validation.errors.filter((e) => e.critical);
+  const regularErrors = validation.errors.filter((e) => !e.critical);
+
+  if (criticalErrors.length > 0) {
+    console.log(chalk.red.bold("\n🚨 Critical Configuration Issues:"));
+    criticalErrors.forEach((error, index) => {
       console.log(chalk.red(`  ${index + 1}. ${error.message}`));
       if (error.suggestion) {
         console.log(chalk.gray(`     💡 ${error.suggestion}`));
+      }
+    });
+  }
+
+  if (regularErrors.length > 0) {
+    console.log(chalk.red.bold("\n❌ Configuration Errors:"));
+    regularErrors.forEach((error, index) => {
+      console.log(chalk.red(`  ${index + 1}. ${error.message}`));
+      if (error.suggestion) {
+        console.log(chalk.gray(`     💡 ${error.suggestion}`));
+      }
+      if (error.score) {
+        console.log(
+          chalk.gray(`     📊 Compatibility Score: ${error.score}/10`),
+        );
       }
     });
   }
@@ -549,11 +560,59 @@ export function displayValidationResults(validation) {
       if (warning.suggestion) {
         console.log(chalk.gray(`     💡 ${warning.suggestion}`));
       }
+      if (warning.score) {
+        console.log(
+          chalk.gray(`     📊 Recommended Score: ${warning.score}/10`),
+        );
+      }
     });
   }
 
+  // Show top recommendations
+  if (validation.recommendations && validation.recommendations.length > 0) {
+    const topRecommendations = validation.recommendations
+      .filter((r) => r.priority !== "low")
+      .slice(0, 3);
+
+    if (topRecommendations.length > 0) {
+      console.log(chalk.blue.bold("\n💡 Top Recommendations:"));
+      topRecommendations.forEach((rec, index) => {
+        const priorityIcon = rec.priority === "high" ? "🔥" : "📈";
+        console.log(
+          chalk.blue(`  ${index + 1}. ${priorityIcon} ${rec.reason}`),
+        );
+        if (rec.current && rec.recommended) {
+          console.log(chalk.gray(`     ${rec.current} → ${rec.recommended}`));
+        }
+      });
+    }
+  }
+
   if (validation.isValid && validation.warnings.length === 0) {
+    console.log(chalk.green.bold("\n✅ Configuration is valid and optimized!"));
+  } else if (validation.isValid) {
     console.log(chalk.green.bold("\n✅ Configuration is valid!"));
+  }
+
+  // Show complexity info
+  if (validation.complexity !== undefined) {
+    const complexityLevel =
+      validation.complexity <= 3
+        ? "Simple"
+        : validation.complexity <= 7
+          ? "Moderate"
+          : "Complex";
+    const complexityColor =
+      validation.complexity <= 3
+        ? "green"
+        : validation.complexity <= 7
+          ? "yellow"
+          : "red";
+    console.log(
+      chalk[complexityColor](
+        `\n🎯 Project Complexity: ${complexityLevel} (${validation.complexity}/10)`,
+      ),
+    );
   }
 }
 
@@ -571,7 +630,14 @@ export const PRESET_CONFIGS = {
       orm: ORM_OPTIONS.PRISMA,
       auth: AUTH_OPTIONS.JWT,
       packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "docker", "testing", "tailwind"],
+      addons: [
+        "typescript",
+        "eslint",
+        "prettier",
+        "docker",
+        "testing",
+        "tailwind",
+      ],
     },
   },
   "api-service": {
@@ -610,7 +676,14 @@ export const PRESET_CONFIGS = {
       orm: ORM_OPTIONS.PRISMA,
       auth: AUTH_OPTIONS.NEXTAUTH,
       packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "tailwind", "shadcn", "testing"],
+      addons: [
+        "typescript",
+        "eslint",
+        "prettier",
+        "tailwind",
+        "shadcn",
+        "testing",
+      ],
     },
   },
   "remix-app": {
@@ -681,12 +754,31 @@ export const PRESET_CONFIGS = {
 };
 
 /**
- * Get preset configuration by name
+ * Enhanced preset configuration with smart compatibility validation
  * @param {string} presetName - Name of the preset
- * @returns {Object|null} - Preset configuration or null if not found
+ * @returns {Object|null} - Enhanced preset configuration or null if not found
  */
 export function getPresetConfig(presetName) {
-  return PRESET_CONFIGS[presetName] || null;
+  const preset = PRESET_CONFIGS[presetName];
+  if (!preset) return null;
+
+  // Validate and enhance preset with smart compatibility
+  const smartCompatibility = new SmartCompatibility();
+  const validationResult = smartCompatibility.checkAndAdjust({
+    ...preset.config,
+  });
+
+  return {
+    ...preset,
+    config: validationResult.config,
+    score: validationResult.stackScore,
+    rating: validationResult.stackRating,
+    validated: true,
+    adjustments: validationResult.adjustments,
+    recommendations: validationResult.recommendations.filter(
+      (r) => r.priority !== "low",
+    ),
+  };
 }
 
 /**

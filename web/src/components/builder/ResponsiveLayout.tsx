@@ -11,7 +11,11 @@ interface ResponsiveLayoutProps {
   className?: string;
 }
 
-export function ResponsiveLayout({ sidebar, main, className = "" }: ResponsiveLayoutProps) {
+export function ResponsiveLayout({
+  sidebar,
+  main,
+  className = "",
+}: ResponsiveLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -19,10 +23,10 @@ export function ResponsiveLayout({ sidebar, main, className = "" }: ResponsiveLa
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Close mobile menu when clicking outside
@@ -30,13 +34,16 @@ export function ResponsiveLayout({ sidebar, main, className = "" }: ResponsiveLa
     if (isMobileMenuOpen) {
       const handleClickOutside = (e: MouseEvent) => {
         const target = e.target as Element;
-        if (!target.closest('.mobile-sidebar') && !target.closest('.mobile-menu-button')) {
+        if (
+          !target.closest(".mobile-sidebar") &&
+          !target.closest(".mobile-menu-button")
+        ) {
           setIsMobileMenuOpen(false);
         }
       };
-      
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [isMobileMenuOpen]);
 
@@ -51,7 +58,11 @@ export function ResponsiveLayout({ sidebar, main, className = "" }: ResponsiveLa
               className="mobile-menu-button p-2 rounded-md border border-border bg-background hover:bg-muted/50 transition-colors"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </button>
           </div>
         </div>
@@ -74,29 +85,25 @@ export function ResponsiveLayout({ sidebar, main, className = "" }: ResponsiveLa
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
                 className="mobile-sidebar fixed left-0 top-0 h-full w-80 max-w-[85vw] bg-background border-r border-border z-50 overflow-y-auto"
               >
-                <div className="p-4">
-                  {sidebar}
-                </div>
+                <div className="p-4">{sidebar}</div>
               </motion.div>
             </>
           )}
         </AnimatePresence>
 
         {/* Mobile Main Content */}
-        <div className="lg:hidden p-4">
-          {main}
-        </div>
+        <div className="lg:hidden p-4">{main}</div>
       </div>
     );
   }
   return (
-    <div className={`grid grid-cols-1 gap-6 lg:grid-cols-[380px_auto_1fr] ${className}`}>
-      <div className="lg:sticky lg:top-24 self-start">
-        {sidebar}
-      </div>
-      
+    <div
+      className={`grid grid-cols-1 gap-6 lg:gap-8 lg:grid-cols-[400px_1px_1fr] xl:grid-cols-[420px_1px_1fr] 2xl:grid-cols-[440px_1px_1fr] ${className}`}
+    >
+      <div className="lg:sticky lg:top-24 self-start">{sidebar}</div>
+
       <Separator />
-      
+
       <div className="lg:h-[calc(100vh-10rem)] overflow-y-auto pr-1">
         {main}
       </div>

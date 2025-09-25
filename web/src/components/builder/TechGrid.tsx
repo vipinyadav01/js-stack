@@ -1,13 +1,21 @@
 "use client";
 
+import { useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertTriangle, CheckCircle, Info, Zap } from "lucide-react";
 import { MemoizedCard } from "./MemoizedCard";
-import { type BuilderState, type Addon } from "./config";
+import {
+  type BuilderState,
+  type Addon,
+  isCompatible,
+  validateConfiguration,
+} from "./config";
 
-interface CatalogItem { 
-  key: string; 
-  name: string; 
-  desc?: string; 
-  badge?: string; 
+interface CatalogItem {
+  key: string;
+  name: string;
+  desc?: string;
+  badge?: string;
   default?: boolean;
 }
 
@@ -24,10 +32,19 @@ interface Props {
   state: BuilderState;
   catalog: Catalog;
   onToggle: (category: keyof BuilderState, value: string) => void;
-  onBooleanToggle: (category: 'installDependencies' | 'initializeGit', value: boolean) => void;
+  onBooleanToggle: (
+    category: "installDependencies" | "initializeGit",
+    value: boolean,
+  ) => void;
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="mb-4">
       <div className="mb-2 flex items-center gap-2">
@@ -39,24 +56,25 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-
-function ToggleSwitch({ 
-  enabled, 
-  onChange, 
-  label, 
-  description 
-}: { 
-  enabled: boolean; 
-  onChange: (value: boolean) => void; 
-  label: string; 
-  description?: string; 
+function ToggleSwitch({
+  enabled,
+  onChange,
+  label,
+  description,
+}: {
+  enabled: boolean;
+  onChange: (value: boolean) => void;
+  label: string;
+  description?: string;
 }) {
   return (
     <div className="flex items-center justify-between p-3 rounded border border-border bg-muted/20">
       <div className="flex-1">
         <div className="font-medium text-sm">{label}</div>
         {description && (
-          <div className="text-xs text-muted-foreground mt-1">{description}</div>
+          <div className="text-xs text-muted-foreground mt-1">
+            {description}
+          </div>
         )}
       </div>
       <button
@@ -77,20 +95,37 @@ function ToggleSwitch({
 
 export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
   const isSelected = (category: keyof BuilderState, key: string): boolean => {
-    if (category === 'addons') {
+    if (category === "addons") {
       return state.addons.includes(key as Addon);
     }
     return state[category] === key;
   };
 
-  const isIncompatible = (): boolean => {
-    // Add your compatibility logic here
-    return false;
+  const validation = useMemo(() => validateConfiguration(state), [state]);
+
+  const isIncompatible = (
+    category: keyof BuilderState,
+    key: string,
+  ): boolean => {
+    // Check specific compatibility rules
+    switch (category) {
+      case "orm":
+        return !isCompatible("databaseOrm", state.database, key);
+      case "auth":
+        return !isCompatible("frontendAuth", state.frontend, key);
+      case "database":
+        return !isCompatible("backendDatabase", state.backend, key);
+      case "addons":
+        return !isCompatible("frontendAddons", state.frontend, [key]);
+      default:
+        return false;
+    }
   };
 
+  // Helper functions for section-specific validation (available for future use)
 
   const handleSingleSelection = (category: keyof BuilderState, key: string) => {
-    if (category === 'addons') {
+    if (category === "addons") {
       onToggle(category, key);
     } else {
       onToggle(category, key);
@@ -101,7 +136,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
     <div className="space-y-6">
       <Section title="Frontend Framework">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
-          {catalog.frontend.map(item => (
+          {catalog.frontend.map((item) => (
             <MemoizedCard
               key={item.key}
               selected={isSelected("frontend", item.key)}
@@ -109,7 +144,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("frontend", item.key)}
-              incompatible={isIncompatible()}
+              incompatible={isIncompatible("frontend", item.key)}
             />
           ))}
         </div>
@@ -117,7 +152,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
 
       <Section title="Backend Framework">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
-          {catalog.backend.map(item => (
+          {catalog.backend.map((item) => (
             <MemoizedCard
               key={item.key}
               selected={isSelected("backend", item.key)}
@@ -125,7 +160,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("backend", item.key)}
-              incompatible={isIncompatible()}
+              incompatible={isIncompatible("backend", item.key)}
             />
           ))}
         </div>
@@ -133,7 +168,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
 
       <Section title="Database">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
-          {catalog.database.map(item => (
+          {catalog.database.map((item) => (
             <MemoizedCard
               key={item.key}
               selected={isSelected("database", item.key)}
@@ -141,7 +176,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("database", item.key)}
-              incompatible={isIncompatible()}
+              incompatible={isIncompatible("database", item.key)}
             />
           ))}
         </div>
@@ -149,7 +184,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
 
       <Section title="ORM / ODM">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
-          {catalog.orm.map(item => (
+          {catalog.orm.map((item) => (
             <MemoizedCard
               key={item.key}
               selected={isSelected("orm", item.key)}
@@ -157,7 +192,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("orm", item.key)}
-              incompatible={isIncompatible()}
+              incompatible={isIncompatible("orm", item.key)}
             />
           ))}
         </div>
@@ -165,7 +200,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
 
       <Section title="Authentication">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
-          {catalog.auth.map(item => (
+          {catalog.auth.map((item) => (
             <MemoizedCard
               key={item.key}
               selected={isSelected("auth", item.key)}
@@ -173,7 +208,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("auth", item.key)}
-              incompatible={isIncompatible()}
+              incompatible={isIncompatible("auth", item.key)}
             />
           ))}
         </div>
@@ -181,7 +216,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
 
       <Section title="Development Tools & Addons">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3">
-          {catalog.addons.map(item => (
+          {catalog.addons.map((item) => (
             <MemoizedCard
               key={item.key}
               selected={isSelected("addons", item.key)}
@@ -189,7 +224,7 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
               desc={item.desc}
               badge={item.badge}
               onClick={() => handleSingleSelection("addons", item.key)}
-              incompatible={isIncompatible()}
+              incompatible={isIncompatible("addons", item.key)}
             />
           ))}
         </div>
@@ -199,35 +234,77 @@ export function TechGrid({ state, catalog, onToggle, onBooleanToggle }: Props) {
         <div className="space-y-3">
           <ToggleSwitch
             enabled={state.installDependencies}
-            onChange={(value) => onBooleanToggle('installDependencies', value)}
+            onChange={(value) => onBooleanToggle("installDependencies", value)}
             label="Dependencies will be installed automatically"
             description="Automatically install npm packages after project creation"
           />
           <ToggleSwitch
             enabled={state.initializeGit}
-            onChange={(value) => onBooleanToggle('initializeGit', value)}
+            onChange={(value) => onBooleanToggle("initializeGit", value)}
             label="Initialize Git Repository"
             description="Set up git repository with initial commit"
           />
         </div>
       </Section>
 
-      {/* Compatibility Warnings */}
-      {(isIncompatible() || 
-        isIncompatible() || 
-        state.addons.some(() => isIncompatible())) && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-yellow-400 flex items-center justify-center">
-              <span className="text-yellow-800 text-xs font-bold">!</span>
+      {/* Overall Validation Status */}
+      <AnimatePresence>
+        {(!validation.isValid || validation.warnings.length > 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t border-border p-4 rounded-t-lg"
+          >
+            <div className="flex items-center gap-3">
+              {!validation.isValid ? (
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                  <div>
+                    <div className="font-medium text-red-800 text-sm">
+                      {validation.errors.length} Compatibility Issue
+                      {validation.errors.length > 1 ? "s" : ""}
+                    </div>
+                    <div className="text-red-600 text-xs">
+                      Please resolve the errors above to continue
+                    </div>
+                  </div>
+                </div>
+              ) : validation.warnings.length > 0 ? (
+                <div className="flex items-center gap-2">
+                  <Info className="h-5 w-5 text-amber-600" />
+                  <div>
+                    <div className="font-medium text-amber-800 text-sm">
+                      {validation.warnings.length} Optimization Suggestion
+                      {validation.warnings.length > 1 ? "s" : ""}
+                    </div>
+                    <div className="text-amber-600 text-xs">
+                      Consider these improvements for better performance
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <div className="font-medium text-green-800 text-sm">
+                    Configuration looks great!
+                  </div>
+                </div>
+              )}
+
+              {/* Auto-fix indicator */}
+              {validation.testedCombination?.isWellTested && (
+                <div className="flex items-center gap-1 ml-auto">
+                  <Zap className="h-4 w-4 text-green-600" />
+                  <span className="text-green-700 text-xs font-medium">
+                    Production Ready
+                  </span>
+                </div>
+              )}
             </div>
-            <span className="text-yellow-800 font-medium text-sm">Compatibility Notice</span>
-          </div>
-          <div className="text-yellow-700 text-xs mt-1">
-            Some selected technologies may not be optimally compatible. Consider reviewing your choices for better integration.
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
