@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 export interface Sponsor {
   id: string;
@@ -156,13 +156,13 @@ function simulateGraphQLRateLimit() {
   };
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const includeAnalytics = searchParams.get("analytics") === "true";
-    const username = searchParams.get("username") || "vipinyadav01";
-    const first = Math.min(parseInt(searchParams.get("first") || "50"), 100);
-    const after = searchParams.get("after"); // Cursor for pagination
+    // For static export, use default values
+    const includeAnalytics = true;
+    const username = "vipinyadav01";
+    const first = 50;
+    const after = undefined;
 
     // Simulate API delay
     await new Promise((resolve) =>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 export interface TwitterUser {
   id: string;
@@ -71,13 +71,12 @@ function simulateRateLimit() {
   };
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const query =
-      searchParams.get("query") || searchParams.get("q") || "js-stack";
-    const count = Math.min(parseInt(searchParams.get("count") || "20"), 100);
-    const nextToken = searchParams.get("next_token");
+    // For static export, use default values
+    const query = "js-stack";
+    const count = 20;
+    const nextToken = undefined;
 
     // Simulate API delay for realism
     await new Promise((resolve) =>
