@@ -62,7 +62,7 @@ export function generateSEOMetadata({
       description: fullDescription,
       url: fullUrl,
       siteName: "JS-Stack CLI",
-      type: type as any,
+      type: type as "website" | "article",
       locale: "en_US",
       images: [
         {
