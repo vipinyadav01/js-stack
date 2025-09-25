@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+export const dynamic = "force-static";
+export const revalidate = false;
 
 export const alt = "JS-Stack CLI - Modern Full-Stack Development Tool";
 export const size = {
