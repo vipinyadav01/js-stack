@@ -38,6 +38,10 @@ const navLinks = [
     text: "Features",
     url: "/features",
   },
+  {
+    text: "Sponsors",
+    url: "/sponsors",
+  },
 ];
 
 // Icon-only external links

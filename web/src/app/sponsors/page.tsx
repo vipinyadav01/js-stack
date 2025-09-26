@@ -3,16 +3,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { Terminal, Heart } from "lucide-react";
 import { motion } from "framer-motion";
-import { 
+import {
   fetchTwitterMentionsPreferDemoOnLocal,
   fetchSponsorsPreferDemoOnLocal,
   type TwitterTweet,
   type SponsorAnalytics,
-  type Sponsor
+  type Sponsor,
 } from "@/lib/sponsors-api";
 import { isLocalhost } from "@/lib/env";
-
-// Import components
 import AnalyticsSection from "@/components/sponsors/AnalyticsSection";
 import GitHubSponsorsSection from "@/components/sponsors/GitHubSponsorsSection";
 import TwitterSection from "@/components/sponsors/TwitterSection";
@@ -28,13 +26,17 @@ export default function SponsorsPage() {
   const [loading, setLoading] = useState({
     twitter: false,
     analytics: false,
-    sponsors: false
+    sponsors: false,
   });
-  const [error, setError] = useState({
+  const [error, setError] = useState<{
+    twitter?: string;
+    analytics?: string;
+    sponsors?: string;
+    global?: string;
+  }>({});
+  const [notice, setNotice] = useState({
     twitter: "",
-    analytics: "",
     sponsors: "",
-    global: ""
   });
   const mapSponsorsToSectionData = (sponsors: Sponsor[]): SponsorsData => {
     const toEntry = (s: Sponsor) => {
@@ -59,8 +61,10 @@ export default function SponsorsPage() {
         isSpecial: s.amount >= 300,
       };
     };
-    const specialSponsors = sponsors.filter(s => s.amount >= 500).map(toEntry);
-    const regularSponsors = sponsors.filter(s => s.amount < 500).map(toEntry);
+    const specialSponsors = sponsors
+      .filter((s) => s.amount >= 500)
+      .map(toEntry);
+    const regularSponsors = sponsors.filter((s) => s.amount < 500).map(toEntry);
 
     return {
       specialSponsors,
@@ -71,41 +75,63 @@ export default function SponsorsPage() {
   const twitterQuery = "js-stack OR from:vipinyadav9m";
   const twitterCount = 20;
   const fetchSponsorsData = useCallback(async () => {
-    setLoading(prev => ({ ...prev, analytics: true, sponsors: true }));
-    setError(prev => ({ ...prev, analytics: "", sponsors: "" }));
+    setLoading((prev) => ({ ...prev, analytics: true, sponsors: true }));
+    setError((prev) => ({ ...prev, analytics: "", sponsors: "" }));
     try {
       const isLocal = isLocalhost();
-      const { sponsors, analytics, meta } = await fetchSponsorsPreferDemoOnLocal(true);
+      const { sponsors, analytics, meta } =
+        await fetchSponsorsPreferDemoOnLocal(true);
       const isFallback = meta?.isFallback === true;
       if (!isLocal && isFallback) {
-        setSponsorsData({ specialSponsors: [], sponsors: [], pastSponsors: [] });
+        setSponsorsData({
+          specialSponsors: [],
+          sponsors: [],
+          pastSponsors: [],
+        });
         setAnalytics(null);
-        setError(prev => ({ ...prev, sponsors: "No real sponsor data available yet." }));
+        setNotice((prev) => ({
+          ...prev,
+          sponsors: "Sponsor data will appear here once available.",
+        }));
         return;
       }
       setAnalytics(analytics || null);
       if (Array.isArray(sponsors) && sponsors.length > 0) {
         setSponsorsData(mapSponsorsToSectionData(sponsors as Sponsor[]));
       } else {
-        setSponsorsData({ specialSponsors: [], sponsors: [], pastSponsors: [] });
+        setSponsorsData({
+          specialSponsors: [],
+          sponsors: [],
+          pastSponsors: [],
+        });
       }
     } catch (err) {
-      setError(prev => ({ ...prev, analytics: err instanceof Error ? err.message : 'Unknown error', sponsors: err instanceof Error ? err.message : 'Unknown error' }));
+      setError((prev) => ({
+        ...prev,
+        analytics: err instanceof Error ? err.message : "Unknown error",
+        sponsors: err instanceof Error ? err.message : "Unknown error",
+      }));
     } finally {
-      setLoading(prev => ({ ...prev, analytics: false, sponsors: false }));
+      setLoading((prev) => ({ ...prev, analytics: false, sponsors: false }));
     }
   }, []);
 
   const fetchTweetsData = useCallback(async () => {
-    setLoading(prev => ({ ...prev, twitter: true }));
-    setError(prev => ({ ...prev, twitter: "" }));
+    setLoading((prev) => ({ ...prev, twitter: true }));
+    setError((prev) => ({ ...prev, twitter: "" }));
     try {
       const isLocal = isLocalhost();
-      const { tweets, meta } = await fetchTwitterMentionsPreferDemoOnLocal(twitterQuery, twitterCount);
+      const { tweets, meta } = await fetchTwitterMentionsPreferDemoOnLocal(
+        twitterQuery,
+        twitterCount,
+      );
       if (meta?.isFallback) {
         if (!isLocal) {
           setTweets([]);
-          setError(prev => ({ ...prev, twitter: "No real tweets available for this query yet." }));
+          setNotice((prev) => ({
+            ...prev,
+            twitter: "Tweets will appear here once available.",
+          }));
           return;
         }
       } else {
@@ -115,9 +141,12 @@ export default function SponsorsPage() {
         setTweets(tweets);
       }
     } catch (err) {
-      setError(prev => ({ ...prev, twitter: err instanceof Error ? err.message : 'Unknown error' }));
+      setError((prev) => ({
+        ...prev,
+        twitter: err instanceof Error ? err.message : "Unknown error",
+      }));
     } finally {
-      setLoading(prev => ({ ...prev, twitter: false }));
+      setLoading((prev) => ({ ...prev, twitter: false }));
     }
   }, [twitterQuery, twitterCount]);
 
@@ -142,20 +171,26 @@ export default function SponsorsPage() {
         initial="hidden"
         animate="visible"
       >
-        {/* Global Error Banner when no real data */}
-        {(!loading.twitter && !loading.sponsors) && (() => {
-          const sponsorsCount = (sponsorsData?.specialSponsors.length || 0) + (sponsorsData?.sponsors.length || 0);
-          const noTweets = tweets.length === 0;
-          const noSponsors = sponsorsCount === 0;
-          if (noTweets && noSponsors) {
-            return (
-              <div className="mb-4 rounded border border-destructive/30 bg-destructive/10 p-3 text-destructive text-sm">
-                No real sponsors or tweets found yet. Data will appear once available.
-              </div>
-            );
-          }
-          return null;
-        })()}
+        {/* Global Notice when no real data */}
+        {!loading.twitter &&
+          !loading.sponsors &&
+          (() => {
+            const sponsorsCount =
+              (sponsorsData?.specialSponsors.length || 0) +
+              (sponsorsData?.sponsors.length || 0);
+            const noTweets = tweets.length === 0;
+            const noSponsors = sponsorsCount === 0;
+            if (noTweets && noSponsors) {
+              return (
+                <div className="mb-4 rounded border border-border bg-muted/30 p-3 text-muted-foreground text-sm">
+                  {notice.sponsors ||
+                    notice.twitter ||
+                    "Content will appear here once available."}
+                </div>
+              );
+            }
+            return null;
+          })()}
         {/* Terminal Header */}
         <motion.div className="mb-8" variants={containerVariants}>
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
@@ -170,7 +205,7 @@ export default function SponsorsPage() {
               <button
                 type="button"
                 onClick={() => setShowTweets((v) => !v)}
-                className={`rounded border px-2 py-1 text-xs transition-colors ${showTweets ? 'border-primary text-primary' : 'border-border text-muted-foreground'} hover:border-primary/70`}
+                className={`rounded border px-2 py-1 text-xs transition-colors ${showTweets ? "border-primary text-primary" : "border-border text-muted-foreground"} hover:border-primary/70`}
                 aria-pressed={showTweets}
               >
                 Show Tweets
@@ -178,7 +213,7 @@ export default function SponsorsPage() {
               <button
                 type="button"
                 onClick={() => setShowSponsors((v) => !v)}
-                className={`rounded border px-2 py-1 text-xs transition-colors ${showSponsors ? 'border-primary text-primary' : 'border-border text-muted-foreground'} hover:border-primary/70`}
+                className={`rounded border px-2 py-1 text-xs transition-colors ${showSponsors ? "border-primary text-primary" : "border-border text-muted-foreground"} hover:border-primary/70`}
                 aria-pressed={showSponsors}
               >
                 Show Sponsors
@@ -186,27 +221,28 @@ export default function SponsorsPage() {
             </div>
           </div>
         </motion.div>
-        {analytics && (
-          <AnalyticsSection analytics={analytics} />
-        )}
+        {analytics && <AnalyticsSection analytics={analytics} />}
 
         {/* GitHub Sponsors Section */}
-        {showSponsors && (sponsorsData && ((sponsorsData.specialSponsors.length + sponsorsData.sponsors.length) > 0)) && (
-          <motion.div className="mb-8" variants={containerVariants}>
-            <div className="mx-auto max-w-[1280px]">
-              <GitHubSponsorsSection sponsorsData={sponsorsData} />
-            </div>
-          </motion.div>
-        )}
+        {showSponsors &&
+          sponsorsData &&
+          sponsorsData.specialSponsors.length + sponsorsData.sponsors.length >
+            0 && (
+            <motion.div className="mb-8" variants={containerVariants}>
+              <div className="mx-auto max-w-[1280px]">
+                <GitHubSponsorsSection sponsorsData={sponsorsData} />
+              </div>
+            </motion.div>
+          )}
 
         {/* Twitter Feed Section */}
         {showTweets && (
           <motion.div className="mb-8" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
-              <TwitterSection 
-                tweets={tweets} 
-                loading={loading.twitter} 
-                error={error.twitter} 
+              <TwitterSection
+                tweets={tweets}
+                loading={loading.twitter}
+                error={error.twitter || ""}
               />
             </div>
           </motion.div>
