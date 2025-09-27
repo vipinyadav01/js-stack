@@ -44,7 +44,6 @@ const navLinks = [
   },
 ];
 
-// Icon-only external links
 const iconLinks = [
   {
     text: "NPM",
@@ -101,12 +100,10 @@ export function Navigation() {
   const [isMounted, setIsMounted] = useState(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Handle mounting to prevent hydration issues
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Enhanced scroll handling with progress tracking
   useEffect(() => {
     if (!isMounted) return;
 
@@ -137,8 +134,6 @@ export function Navigation() {
       }
     };
   }, [isMounted]);
-
-  // Mobile menu handling
   const handleMobileMenuClose = useCallback(() => {
     setMobileOpen(false);
   }, []);
@@ -165,28 +160,22 @@ export function Navigation() {
     handleMobileMenuClose();
   }, [pathname, handleMobileMenuClose]);
 
-  // Enhanced keyboard shortcut handling with Windows-specific optimizations
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Detect platform for accurate key handling
       const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
       const isWindows =
         /Win/i.test(navigator.platform) || /Windows/i.test(navigator.userAgent);
 
-      // Handle platform-specific shortcuts
       if (e.key === "q" || e.key === "Q") {
         if (isMac && e.metaKey && !e.ctrlKey) {
-          // Mac: Cmd+Q (but we'll use Cmd+K for Mac)
           e.preventDefault();
           setSearchOpen(true);
         } else if ((isWindows || !isMac) && e.ctrlKey && !e.metaKey) {
-          // Windows/Linux: Ctrl+Q
           e.preventDefault();
           setSearchOpen(true);
         }
       }
 
-      // Keep Cmd+K for Mac users (more familiar)
       if (
         (e.key === "k" || e.key === "K") &&
         isMac &&
@@ -197,7 +186,6 @@ export function Navigation() {
         setSearchOpen(true);
       }
 
-      // Handle '/' key for quick search (like GitHub)
       if (
         e.key === "/" &&
         !e.metaKey &&
@@ -205,7 +193,6 @@ export function Navigation() {
         !e.altKey &&
         !e.shiftKey
       ) {
-        // Only if not typing in an input field
         const activeElement = document.activeElement;
         const isInInput =
           activeElement?.tagName === "INPUT" ||
@@ -222,8 +209,6 @@ export function Navigation() {
     document.addEventListener("keydown", handleKeyDown, { passive: false });
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  // Loading state
   if (!isMounted) {
     return (
       <header className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-md border-b border-border">
@@ -243,185 +228,169 @@ export function Navigation() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300 border-b",
-        isScrolled
-          ? "bg-background/95 backdrop-blur-xl shadow-sm border-border"
-          : "bg-background/90 backdrop-blur-md border-border/60",
+        "sticky top-0 z-50 w-full transition-all duration-300 pb-4",
+        isScrolled ? "bg-transparent" : "",
       )}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center gap-6">
-          {/* Logo and Brand */}
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="group flex items-center gap-3 hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg p-1 -m-1"
-              aria-label="JS-Stack Home"
-            >
-              <Logo />
-              <span className="font-medium font-mono text-lg tracking-tighter hidden sm:block">
-                JS Stack
-              </span>
-            </Link>
-          </div>
-
-          {/* Search Bar */}
-          <div className="flex-1 max-w-md mx-4">
-            <SearchTrigger onClick={() => setSearchOpen(true)} />
-          </div>
-
-          {/* Main Navigation - Text Only */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => {
-              const isActive =
-                link.active === "nested-url"
-                  ? pathname?.startsWith(link.url)
-                  : pathname === link.url;
-
-              return (
-                <Link
-                  key={link.url}
-                  href={link.url}
-                  className={cn(
-                    "font-mono text-sm font-medium transition-colors duration-200 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-2 py-1",
-                    isActive ? "text-foreground" : "text-muted-foreground",
-                  )}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {link.text}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Icon Links and Actions */}
-          <div className="flex items-center space-x-2">
-            {/* Icon-only external links */}
-            <div className="hidden md:flex items-center space-x-1">
-              {iconLinks.map((link) => (
-                <Link
-                  key={link.url}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group p-2 rounded-lg border border-border bg-background hover:bg-muted/50 hover:border-primary/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  aria-label={link.label}
-                  title={link.label}
-                >
-                  <link.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                </Link>
-              ))}
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-6">
+        <div
+          className={cn(
+            "backdrop-blur-sm border border-border px-4 sm:px-6 lg:px-8 shadow-sm transition-all duration-300",
+            isScrolled
+              ? "bg-background/80 rounded-2xl"
+              : "bg-background/80 rounded-2xl",
+          )}
+        >
+          <div className="flex h-16 items-center gap-6">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link
+                href="/"
+                className="group flex items-center gap-2 hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg p-1 -m-1 whitespace-nowrap"
+                aria-label="JS-Stack Home"
+              >
+                <Logo />
+                <span className="font-medium font-mono text-lg tracking-tighter whitespace-nowrap">
+                  JS Stack
+                </span>
+              </Link>
             </div>
-
-            {/* Theme Toggle */}
-            <div className="hidden md:block ml-2">
-              <ThemeToggle />
+            <div className="flex-1 max-w-sm mx-2 sm:mx-4">
+              <SearchTrigger onClick={() => setSearchOpen(true)} />
             </div>
+            <nav className="hidden md:flex items-center space-x-4">
+              {navLinks.map((link) => {
+                const isActive =
+                  link.active === "nested-url"
+                    ? pathname?.startsWith(link.url)
+                    : pathname === link.url;
 
-            {/* Mobile Menu */}
-            <div className="md:hidden flex items-center space-x-2">
-              <ThemeToggle />
-              <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-2 rounded-lg border border-border hover:bg-muted/50 transition-all duration-200"
-                    aria-label="Open menu"
+                return (
+                  <Link
+                    key={link.url}
+                    href={link.url}
+                    className={cn(
+                      "font-mono text-sm font-medium transition-colors duration-200 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-2 py-1",
+                      isActive ? "text-foreground" : "text-muted-foreground",
+                    )}
+                    aria-current={isActive ? "page" : undefined}
                   >
-                    <Menu className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent
-                  side="right"
-                  className="w-full sm:w-80 p-0 bg-background border-l border-border"
-                >
-                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                    {link.text}
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-1">
+                {iconLinks.map((link) => (
+                  <Link
+                    key={link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group p-2 rounded-lg border border-border bg-background hover:bg-muted/50 hover:border-primary/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    aria-label={link.label}
+                    title={link.label}
+                  >
+                    <link.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </Link>
+                ))}
+              </div>
+              <div className="hidden md:block ml-2">
+                <ThemeToggle />
+              </div>
 
-                  {/* Mobile Header */}
-                  <div className="p-6 border-b border-border">
-                    <Link
-                      href="/"
-                      className="flex items-center gap-3"
-                      onClick={handleMobileMenuClose}
+              <div className="md:hidden flex items-center space-x-2">
+                <ThemeToggle />
+                <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-2 rounded-lg border border-border hover:bg-muted/50 transition-all duration-200"
+                      aria-label="Open menu"
                     >
-                      <Logo />
-                      <span className="font-medium font-mono text-lg tracking-tighter">
-                        JS Stack
-                      </span>
-                    </Link>
-                  </div>
+                      <Menu className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="right"
+                    className="w-full sm:w-80 p-0 bg-background border-l border-border"
+                  >
+                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                    <div className="p-6 border-b border-border">
+                      <Link
+                        href="/"
+                        className="flex items-center gap-3"
+                        onClick={handleMobileMenuClose}
+                      >
+                        <Logo />
+                        <span className="font-medium font-mono text-lg tracking-tighter">
+                          JS Stack
+                        </span>
+                      </Link>
+                    </div>
+                    <div className="flex flex-col h-full">
+                      <div className="flex-1 overflow-y-auto p-4">
+                        <div className="space-y-2">
+                          {navLinks.map((link) => {
+                            const isActive =
+                              link.active === "nested-url"
+                                ? pathname?.startsWith(link.url)
+                                : pathname === link.url;
 
-                  {/* Mobile Navigation */}
-                  <div className="flex flex-col h-full">
-                    <div className="flex-1 overflow-y-auto p-4">
-                      <div className="space-y-2">
-                        {navLinks.map((link) => {
-                          const isActive =
-                            link.active === "nested-url"
-                              ? pathname?.startsWith(link.url)
-                              : pathname === link.url;
+                            return (
+                              <Link
+                                key={link.url}
+                                href={link.url}
+                                onClick={handleMobileMenuClose}
+                                className={cn(
+                                  "flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50",
+                                  isActive
+                                    ? "bg-primary/5 text-primary"
+                                    : "text-muted-foreground hover:text-foreground",
+                                )}
+                                aria-current={isActive ? "page" : undefined}
+                              >
+                                <span className="font-mono text-sm font-medium">
+                                  {link.text}
+                                </span>
+                                <ChevronRight className="h-4 w-4" />
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
 
-                          return (
+                      {/* Mobile External Links */}
+                      <div className="border-t border-border p-4">
+                        <div className="space-y-2">
+                          <p className="text-xs text-muted-foreground font-mono uppercase tracking-wide mb-3">
+                            External Links
+                          </p>
+                          {iconLinks.map((link) => (
                             <Link
                               key={link.url}
                               href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               onClick={handleMobileMenuClose}
-                              className={cn(
-                                "flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50",
-                                isActive
-                                  ? "bg-primary/5 text-primary"
-                                  : "text-muted-foreground hover:text-foreground",
-                              )}
-                              aria-current={isActive ? "page" : undefined}
+                              className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 hover:border-primary/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
                             >
-                              <span className="font-mono text-sm font-medium">
+                              <link.icon className="h-4 w-4 text-primary" />
+                              <span className="flex-1 font-mono text-sm font-medium">
                                 {link.text}
                               </span>
-                              <ChevronRight className="h-4 w-4" />
+                              <ExternalLink className="h-3 w-3 text-muted-foreground" />
                             </Link>
-                          );
-                        })}
+                          ))}
+                        </div>
                       </div>
                     </div>
-
-                    {/* Mobile External Links */}
-                    <div className="border-t border-border p-4">
-                      <div className="space-y-2">
-                        <p className="text-xs text-muted-foreground font-mono uppercase tracking-wide mb-3">
-                          External Links
-                        </p>
-                        {iconLinks.map((link) => (
-                          <Link
-                            key={link.url}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={handleMobileMenuClose}
-                            className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 hover:border-primary/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                          >
-                            <link.icon className="h-4 w-4 text-primary" />
-                            <span className="flex-1 font-mono text-sm font-medium">
-                              {link.text}
-                            </span>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
           </div>
-        </div>
-
-        {/* Scroll Progress Indicator */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-border/20">
-          <div
-            className="h-full bg-gradient-to-r from-primary/80 via-primary to-primary/80 transition-all duration-150 ease-out"
-            style={{ width: `${scrollProgress}%` }}
-          />
         </div>
       </div>
 

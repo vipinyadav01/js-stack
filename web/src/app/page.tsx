@@ -49,54 +49,44 @@ export default function Home() {
   return (
     <>
       <FAQStructuredData faqs={faqs} />
-      <div className="w-full max-w-full overflow-hidden px-4">
+      <div className="w-full max-w-full overflow-hidden px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           {/* Terminal Header */}
-          <motion.div className="mb-8" variants={containerVariants}>
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-5 w-5 text-primary" />
-                <h1 className="font-bold text-lg sm:text-xl">
-                  JS_STACK_CLI.LOG
-                </h1>
-              </div>
-              <div className="hidden h-px flex-1 bg-border sm:block" />
-              <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                [PROJECT INITIALIZATION]
-              </span>
-            </div>
-          </motion.div>
+          <motion.div
+            className="mb-8"
+            variants={containerVariants}
+          ></motion.div>
 
           {/* Hero Section */}
-          <motion.div className="mb-8" variants={containerVariants}>
+          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
             <Hero />
           </motion.div>
 
           {/* Command Section */}
-          <motion.div className="mb-8" variants={containerVariants}>
+          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
               <Command />
             </div>
           </motion.div>
 
           {/* Integration Guide */}
-          <motion.div className="mb-8" variants={containerVariants}>
+          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
               <ProjectInt />
             </div>
           </motion.div>
 
           {/* Top Sponsors & Comments */}
-          <motion.div className="mb-8" variants={containerVariants}>
+          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
                 <div className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-primary" />
-                  <h2 className="font-bold text-lg sm:text-xl">
+                  <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
                     COMMUNITY_HIGHLIGHTS.LOG
                   </h2>
                 </div>
@@ -106,7 +96,7 @@ export default function Home() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <TopSponsors repository="vipinyadav01" limit={10} />
                 <TopComments repository="js-stack" limit={10} />
               </div>
@@ -114,12 +104,12 @@ export default function Home() {
           </motion.div>
 
           {/* Community Section */}
-          <motion.div className="mb-8" variants={containerVariants}>
+          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
                 <div className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-primary" />
-                  <h2 className="font-bold text-lg sm:text-xl">
+                  <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
                     COMMUNITY.SUPPORT
                   </h2>
                 </div>
@@ -129,12 +119,12 @@ export default function Home() {
                 </span>
               </div>
 
-              <div className="rounded border border-border p-6">
-                <div className="text-center space-y-4">
-                  <div className="text-sm text-foreground">
+              <div className="rounded border border-border p-4 sm:p-6">
+                <div className="text-center space-y-3 sm:space-y-4">
+                  <div className="text-sm sm:text-base text-foreground">
                     Built with ❤️ by the open source community
                   </div>
-                  <div className="flex justify-center gap-4">
+                  <div className="flex justify-center gap-3 sm:gap-4">
                     <a
                       href="https://github.com/vipinyadav01/js-stack"
                       className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors"
@@ -152,22 +142,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-
-          {/* End of File */}
-          <motion.div className="mb-4 mt-8" variants={containerVariants}>
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-5 w-5 text-muted-foreground" />
-                <span className="font-bold text-lg sm:text-xl text-muted-foreground">
-                  END_OF_FILE
-                </span>
-              </div>
-              <div className="hidden h-px flex-1 bg-border sm:block" />
-              <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                [HOME.LOG]
-              </span>
             </div>
           </motion.div>
         </motion.div>
