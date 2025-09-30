@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Terminal, Github, Heart } from "lucide-react";
+import { Github, Heart } from "lucide-react";
 import Hero from "@/components/hero";
 import Command from "@/components/command";
 import ProjectInt from "@/components/ProjectInt";

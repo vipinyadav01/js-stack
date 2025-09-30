@@ -1,619 +1,752 @@
 "use client";
-import { useMemo, useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import {
-  Copy,
   Check,
-  AlertTriangle,
-  Info,
-  Download,
-  GitBranch,
-  Zap,
+  ClipboardCopy,
+  AlertCircle,
+  Settings,
+  Terminal,
   Star,
-  TrendingUp,
-  Shield,
+  Zap,
   RefreshCw,
   Sparkles,
+  Package,
+  GitBranch,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  Info,
 } from "lucide-react";
-import { useDebounce } from "@/hooks/useDebounce";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   type BuilderState,
+  techCatalog,
+  defaultConfig,
   validateConfiguration,
-  buildPostSetupCommands,
-  generateSetupInstructions,
-  requiresManualSetup,
-} from "./config";
+} from "@/components/builder/config";
+import { cn } from "@/lib/utils";
 
 interface Props {
   state: BuilderState;
   command: string;
   onNameChange: (name: string) => void;
   onPackageManagerChange: (pm: string) => void;
+  onStackChange: (stack: BuilderState) => void;
 }
+
+const CATEGORY_ORDER = [
+  "frontend",
+  "backend",
+  "database",
+  "orm",
+  "auth",
+  "addons",
+];
+
+// Removed unused function
+
+const validateProjectName = (name: string): string | null => {
+  if (!name.trim()) return "Project name is required";
+  if (name.length < 2) return "Must be at least 2 characters";
+  if (name.length > 50) return "Must be less than 50 characters";
+  if (!/^[a-zA-Z0-9-_\s]+$/.test(name))
+    return "Only letters, numbers, hyphens, underscores, and spaces allowed";
+  return null;
+};
+
+const getBadgeColors = (category: string): string => {
+  const colors: Record<string, string> = {
+    frontend: "bg-blue-500/10 text-blue-700 border-blue-500/20",
+    backend: "bg-green-500/10 text-green-700 border-green-500/20",
+    database: "bg-purple-500/10 text-purple-700 border-purple-500/20",
+    orm: "bg-orange-500/10 text-orange-700 border-orange-500/20",
+    auth: "bg-red-500/10 text-red-700 border-red-500/20",
+    addons: "bg-gray-500/10 text-gray-700 border-gray-500/20",
+  };
+  return colors[category] || "bg-gray-500/10 text-gray-700 border-gray-500/20";
+};
+
+const PACKAGE_MANAGERS = [
+  { key: "npm", name: "npm", desc: "Node Default", icon: "📦", color: "red" },
+  {
+    key: "yarn",
+    name: "yarn",
+    desc: "Fast & Reliable",
+    icon: "🧶",
+    color: "blue",
+  },
+  {
+    key: "pnpm",
+    name: "pnpm",
+    desc: "Disk Efficient",
+    icon: "⚡",
+    color: "amber",
+  },
+  {
+    key: "bun",
+    name: "bun",
+    desc: "Blazing Fast",
+    icon: "🚀",
+    color: "orange",
+  },
+];
 
 export default function BuilderSidebar({
   state,
   command,
   onNameChange,
   onPackageManagerChange,
+  onStackChange,
 }: Props) {
-  const [copySuccess, setCopySuccess] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(false);
-  const [localProjectName, setLocalProjectName] = useState(state.projectName);
+  const [copied, setCopied] = useState(false);
+  const [lastSavedStack, setLastSavedStack] = useState<BuilderState | null>(
+    null,
+  );
+  const [isCommandExpanded, setIsCommandExpanded] = useState(false);
 
-  // Debounce project name changes to avoid excessive URL updates
-  const debouncedProjectName = useDebounce(localProjectName, 300);
+  const validation = validateConfiguration(state);
+  const projectNameError = validateProjectName(state.projectName || "");
 
-  const validation = useMemo(() => validateConfiguration(state), [state]);
-  const postCommands = useMemo(() => buildPostSetupCommands(state), [state]);
-  const setupInstructions = useMemo(() => {
-    const instructions = generateSetupInstructions(state);
-    return typeof instructions === "string"
-      ? instructions
-      : instructions.steps.join("\n");
-  }, [state]);
-  const manualSetup = useMemo(() => requiresManualSetup(state), [state]);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(command);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-    } catch {}
+  const formatProjectName = (name: string): string => {
+    return name.replace(/\s+/g, "-").toLowerCase();
   };
 
-  // Update parent when debounced name changes
-  useEffect(() => {
-    if (
-      debouncedProjectName !== state.projectName &&
-      debouncedProjectName.trim()
-    ) {
-      onNameChange(debouncedProjectName);
-    }
-  }, [debouncedProjectName, state.projectName, onNameChange]);
+  const getRandomStack = () => {
+    const randomStack: BuilderState = {
+      projectName: state.projectName || "my-better-t-app",
+      frontend:
+        techCatalog.frontend[
+          Math.floor(Math.random() * techCatalog.frontend.length)
+        ].key,
+      backend:
+        techCatalog.backend[
+          Math.floor(Math.random() * techCatalog.backend.length)
+        ].key,
+      database:
+        techCatalog.database[
+          Math.floor(Math.random() * techCatalog.database.length)
+        ].key,
+      orm: techCatalog.orm[Math.floor(Math.random() * techCatalog.orm.length)]
+        .key,
+      auth: techCatalog.auth[
+        Math.floor(Math.random() * techCatalog.auth.length)
+      ].key,
+      addons: [],
+      packageManager: state.packageManager,
+      installDependencies: state.installDependencies,
+      initializeGit: state.initializeGit,
+    };
 
-  // Update local state when prop changes
-  useEffect(() => {
-    if (state.projectName !== localProjectName) {
-      setLocalProjectName(state.projectName);
-    }
-  }, [state.projectName, localProjectName]);
+    onStackChange(randomStack);
+    toast.success("Random stack configuration generated!");
+  };
 
-  const copyInstructions = useCallback(async () => {
+  const selectedTechnologies = (() => {
+    const technologies: Array<{ name: string; category: string }> = [];
+
+    for (const category of CATEGORY_ORDER) {
+      const categoryKey = category as keyof BuilderState;
+      const options = techCatalog[category as keyof typeof techCatalog];
+      const selectedValue = state[categoryKey];
+
+      if (!options) continue;
+
+      if (Array.isArray(selectedValue)) {
+        for (const id of selectedValue) {
+          const tech = options.find(
+            (opt: { key: string; name: string }) => opt.key === id,
+          );
+          if (tech) {
+            technologies.push({ name: tech.name, category });
+          }
+        }
+      } else {
+        const tech = options.find(
+          (opt: { key: string; name: string }) => opt.key === selectedValue,
+        );
+        if (tech && tech.key !== "none") {
+          technologies.push({ name: tech.name, category });
+        }
+      }
+    }
+    return technologies;
+  })();
+
+  useEffect(() => {
+    const savedStack = localStorage.getItem("JS-STACKPreference");
+    if (savedStack) {
+      try {
+        const parsedStack = JSON.parse(savedStack) as BuilderState;
+        setLastSavedStack(parsedStack);
+      } catch {
+        console.error("Failed to parse saved stack");
+        localStorage.removeItem("JS-STACKPreference");
+      }
+    }
+  }, []);
+
+  const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(setupInstructions);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-    } catch {}
-  }, [setupInstructions]);
+      await navigator.clipboard.writeText(command);
+      setCopied(true);
+      toast.success("Command copied to clipboard!");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Failed to copy command");
+    }
+  };
+
+  const resetStack = () => {
+    onStackChange(defaultConfig);
+    toast.success("Stack reset to default configuration");
+  };
+
+  const saveCurrentStack = () => {
+    const projectName = state.projectName || "my-better-t-app";
+    const formattedProjectName = formatProjectName(projectName);
+    const stackToSave = { ...state, projectName: formattedProjectName };
+    localStorage.setItem("JS-STACKPreference", JSON.stringify(stackToSave));
+    setLastSavedStack(stackToSave);
+    toast.success("Stack configuration saved successfully");
+  };
+
+  const loadSavedStack = () => {
+    if (lastSavedStack) {
+      onStackChange(lastSavedStack);
+      toast.success("Saved configuration loaded");
+    }
+  };
+
+  const toggleSetupOption = (
+    option: "installDependencies" | "initializeGit",
+  ) => {
+    onStackChange({
+      ...state,
+      [option]: !state[option],
+    });
+  };
 
   return (
-    <div className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-4 space-y-6 shadow-sm">
-      {/* Header Status Section */}
-      <div className="space-y-4">
-        {/* Stack Quality Score */}
-        <div className="p-4 rounded-lg bg-gradient-to-r from-primary/5 to-blue-500/5 border border-primary/20">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-primary" />
-              <span className="font-semibold text-sm">Stack Quality</span>
-            </div>
-            <div className="flex items-center gap-1">
-              {validation.testedCombination?.isWellTested && (
-                <motion.div
-                  className="flex items-center gap-1 text-green-600"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Shield className="h-3 w-3" />
-                  <span className="text-xs font-medium">Production Ready</span>
-                </motion.div>
-              )}
-            </div>
-          </div>
-
-          {/* Quality Indicators */}
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div
-              className={`flex items-center gap-1 ${
-                validation.isValid ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              <motion.div
-                className={`w-2 h-2 rounded-full ${
-                  validation.isValid ? "bg-green-500" : "bg-red-500"
-                }`}
-                animate={{ opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              />
-              <span className="font-medium">
-                {validation.isValid
-                  ? "Valid"
-                  : `${validation.errors.length} Issues`}
-              </span>
-            </div>
-
-            <div
-              className={`flex items-center gap-1 ${
-                manualSetup.hasManualSteps ? "text-amber-600" : "text-blue-600"
-              }`}
-            >
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  manualSetup.hasManualSteps ? "bg-amber-500" : "bg-blue-500"
-                }`}
-              />
-              <span className="font-medium">
-                {manualSetup.hasManualSteps ? "Manual Setup" : "Auto Setup"}
-              </span>
-            </div>
-          </div>
-
-          {/* Compatibility Score */}
-          {validation.testedCombination && (
-            <div className="mt-3 pt-3 border-t border-border/50">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  Compatibility Score
-                </span>
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3 text-primary" />
-                  <span className="text-xs font-medium text-primary">
-                    {Math.round(validation.testedCombination.confidence * 100)}%
-                  </span>
+    <TooltipProvider>
+      <div className="h-full overflow-y-auto bg-gradient-to-b from-background to-muted/20">
+        <div className="space-y-4 p-6">
+          {/* Header */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/20">
+                  <Terminal className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-base font-bold tracking-tight text-foreground">
+                    Stack Builder
+                  </h1>
+                  <p className="text-xs text-muted-foreground">
+                    Configure your project
+                  </p>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="flex items-center gap-2">
-          <motion.button
-            onClick={() => window.location.reload()}
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 hover:border-red-300 transition-all focus:outline-none focus:ring-2 focus:ring-red-200"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <RefreshCw className="h-3 w-3" />
-            Reset
-          </motion.button>
-
-          <motion.button
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-medium text-primary hover:bg-primary/20 transition-all focus:outline-none focus:ring-2 focus:ring-primary/20"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Sparkles className="h-3 w-3" />
-            Optimize
-          </motion.button>
-        </div>
-      </div>
-      {/* Project Name Input */}
-      <div>
-        <label className="mb-1 block text-xs text-muted-foreground font-medium">
-          PROJECT NAME
-        </label>
-        <input
-          value={localProjectName}
-          onChange={(e) => setLocalProjectName(e.target.value)}
-          className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/50 transition-all placeholder:text-muted-foreground/60"
-          placeholder="my-awesome-app"
-        />
-      </div>
-
-      {/* Current Stack Summary */}
-      <div>
-        <label className="mb-3 block text-xs text-muted-foreground font-medium">
-          CURRENT STACK OVERVIEW
-        </label>
-        <div className="space-y-2">
-          {[
-            { label: "Frontend", value: state.frontend, icon: "🎨" },
-            { label: "Backend", value: state.backend, icon: "⚙️" },
-            { label: "Database", value: state.database, icon: "🗄️" },
-            { label: "ORM", value: state.orm, icon: "🔗" },
-            { label: "Auth", value: state.auth, icon: "🔐" },
-          ].map(({ label, value, icon }) => (
-            <div
-              key={label}
-              className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-sm">{icon}</span>
-                <span className="text-xs font-medium text-muted-foreground">
-                  {label}
+              <div className="flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1 ring-1 ring-green-500/20">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-xs font-medium text-green-700">
+                  Ready
                 </span>
               </div>
-              <span
-                className={`text-xs font-medium capitalize px-2 py-1 rounded-full ${
-                  value === "none"
-                    ? "text-muted-foreground bg-muted/50"
-                    : "text-primary bg-primary/10"
-                }`}
-              >
-                {value === "none" ? "None" : value}
+            </div>
+          </div>
+
+          {/* Project Configuration */}
+          <motion.div
+            className="space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <div className="flex items-center gap-2">
+              <Settings className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">
+                Project Configuration
+              </h3>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground">
+                Project Name
+              </label>
+              <input
+                type="text"
+                value={state.projectName || ""}
+                onChange={(e) => onNameChange(e.target.value)}
+                className={cn(
+                  "w-full rounded-lg border px-3 py-2.5 text-sm font-mono transition-all focus:outline-none focus:ring-2",
+                  projectNameError
+                    ? "border-red-300 bg-red-50 text-red-900 focus:ring-red-200"
+                    : "border-input bg-background focus:border-primary focus:ring-primary/20",
+                )}
+                placeholder="my-awesome-project"
+              />
+              <AnimatePresence>
+                {projectNameError && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex items-start gap-1.5 text-xs text-red-600"
+                  >
+                    <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                    <span>{projectNameError}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              {!projectNameError &&
+                state.projectName &&
+                state.projectName.includes(" ") && (
+                  <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
+                    <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                    <span>
+                      Will be formatted as:{" "}
+                      <code className="rounded bg-muted px-1.5 py-0.5 font-mono">
+                        {formatProjectName(state.projectName)}
+                      </code>
+                    </span>
+                  </div>
+                )}
+            </div>
+          </motion.div>
+
+          {/* Stack Overview */}
+          <motion.div
+            className="space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4 text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">
+                  Stack Overview
+                </h3>
+              </div>
+              <span className="text-xs font-medium text-muted-foreground">
+                {selectedTechnologies.length} selected
               </span>
             </div>
-          ))}
 
-          {/* Addons */}
-          {state.addons.length > 0 && (
-            <div className="flex items-start justify-between py-2 px-3 rounded-lg bg-muted/20">
-              <div className="flex items-center gap-2">
-                <span className="text-sm">🛠️</span>
-                <span className="text-xs font-medium text-muted-foreground">
-                  Addons
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-1 max-w-[120px]">
-                {state.addons.map((addon) => (
-                  <span
-                    key={addon}
-                    className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full"
+            {selectedTechnologies.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {selectedTechnologies.map((tech, index) => (
+                  <motion.span
+                    key={`${tech.category}-${tech.name}`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium",
+                      getBadgeColors(tech.category),
+                    )}
                   >
-                    {addon}
-                  </span>
+                    {tech.name}
+                  </motion.span>
                 ))}
               </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Package Manager Selection */}
-      <div>
-        <label className="mb-2 block text-xs text-muted-foreground font-medium">
-          PACKAGE MANAGER
-        </label>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { key: "npm", name: "npm", desc: "Default" },
-            { key: "yarn", name: "Yarn", desc: "Fast" },
-            { key: "pnpm", name: "pnpm", desc: "Efficient" },
-            { key: "bun", name: "Bun", desc: "Ultra Fast" },
-          ].map((pm) => (
-            <motion.button
-              key={pm.key}
-              onClick={() => onPackageManagerChange(pm.key)}
-              className={`rounded-lg border px-3 py-2.5 text-xs font-medium transition-all focus:outline-none focus:ring-2 focus:ring-primary/20 ${
-                state.packageManager === pm.key
-                  ? "border-primary bg-primary/10 text-primary shadow-sm"
-                  : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground hover:bg-muted/30"
-              }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="font-medium">{pm.name}</div>
-              <div className="text-xs opacity-70">{pm.desc}</div>
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* Enhanced Setup Configuration */}
-      <div>
-        <label className="mb-3 block text-xs text-muted-foreground font-medium">
-          SETUP CONFIGURATION
-        </label>
-        <div className="space-y-3">
-          {/* Auto Install Toggle */}
-          <motion.div
-            className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
-              state.installDependencies
-                ? "border-green-200 bg-green-50"
-                : "border-amber-200 bg-amber-50"
-            }`}
-            whileHover={{ scale: 1.01 }}
-          >
-            <div className="flex items-center gap-2">
-              <Download
-                className={`h-4 w-4 ${
-                  state.installDependencies
-                    ? "text-green-600"
-                    : "text-amber-600"
-                }`}
-              />
-              <div>
-                <div className="font-medium text-sm">
-                  {state.installDependencies
-                    ? "Auto-Install Dependencies"
-                    : "Manual Installation"}
-                </div>
-                <div
-                  className={`text-xs ${
-                    state.installDependencies
-                      ? "text-green-600"
-                      : "text-amber-600"
-                  }`}
-                >
-                  {state.installDependencies
-                    ? "Packages installed automatically"
-                    : "Run install command manually"}
+            ) : (
+              <div className="flex items-center justify-center py-6 text-center">
+                <div className="space-y-2">
+                  <AlertCircle className="h-8 w-8 text-muted-foreground/50 mx-auto" />
+                  <p className="text-xs text-muted-foreground">
+                    No technologies selected
+                  </p>
                 </div>
               </div>
-            </div>
-            <div
-              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                state.installDependencies
-                  ? "bg-green-100 text-green-700"
-                  : "bg-amber-100 text-amber-700"
-              }`}
-            >
-              {state.installDependencies ? "AUTO" : "MANUAL"}
+            )}
+
+            {/* Quality Indicator */}
+            <div className="mt-3 rounded-lg bg-gradient-to-r from-primary/5 to-blue-500/5 p-3 ring-1 ring-primary/10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {validation.isValid ? (
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-600" />
+                  )}
+                  <span className="text-xs font-medium">
+                    Configuration Status
+                  </span>
+                </div>
+                <span
+                  className={cn(
+                    "text-xs font-semibold",
+                    validation.isValid ? "text-green-600" : "text-red-600",
+                  )}
+                >
+                  {validation.isValid
+                    ? "Valid"
+                    : `${validation.errors.length} Issue${validation.errors.length > 1 ? "s" : ""}`}
+                </span>
+              </div>
             </div>
           </motion.div>
 
-          {/* Git Init Toggle */}
+          {/* Generated Command */}
           <motion.div
-            className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
-              state.initializeGit
-                ? "border-green-200 bg-green-50"
-                : "border-amber-200 bg-amber-50"
-            }`}
-            whileHover={{ scale: 1.01 }}
+            className="space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
           >
-            <div className="flex items-center gap-2">
-              <GitBranch
-                className={`h-4 w-4 ${
-                  state.initializeGit ? "text-green-600" : "text-amber-600"
-                }`}
-              />
-              <div>
-                <div className="font-medium text-sm">
-                  {state.initializeGit
-                    ? "Auto-Initialize Git"
-                    : "Manual Git Setup"}
-                </div>
-                <div
-                  className={`text-xs ${
-                    state.initializeGit ? "text-green-600" : "text-amber-600"
-                  }`}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Terminal className="h-4 w-4 text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">
+                  Generated Command
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsCommandExpanded(!isCommandExpanded)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {isCommandExpanded ? "Collapse" : "Expand"}
+              </button>
+            </div>
+
+            <div className="rounded-lg border bg-muted/30 p-3">
+              <div className="flex items-start gap-2">
+                <span className="select-none text-green-500 font-mono text-sm mt-0.5">
+                  $
+                </span>
+                <code
+                  className={cn(
+                    "flex-1 text-xs font-mono text-foreground/90 leading-relaxed",
+                    !isCommandExpanded && "line-clamp-2",
+                  )}
                 >
-                  {state.initializeGit
-                    ? "Git repo created automatically"
-                    : "Initialize git repository manually"}
-                </div>
+                  {command}
+                </code>
               </div>
             </div>
-            <div
-              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                state.initializeGit
-                  ? "bg-green-100 text-green-700"
-                  : "bg-amber-100 text-amber-700"
-              }`}
-            >
-              {state.initializeGit ? "AUTO" : "MANUAL"}
+
+            <div className="flex justify-end">
+              <motion.button
+                type="button"
+                onClick={copyToClipboard}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-all focus:outline-none focus:ring-2",
+                  copied
+                    ? "bg-green-500/10 text-green-700 ring-1 ring-green-500/20"
+                    : "bg-primary/10 text-primary hover:bg-primary/20 ring-1 ring-primary/20",
+                )}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <AnimatePresence mode="wait">
+                  {copied ? (
+                    <motion.div
+                      key="check"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="flex items-center gap-1.5"
+                    >
+                      <Check className="h-3.5 w-3.5" />
+                      <span>Copied!</span>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="copy"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      exit={{ scale: 0 }}
+                      className="flex items-center gap-1.5"
+                    >
+                      <ClipboardCopy className="h-3.5 w-3.5" />
+                      <span>Copy Command</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             </div>
           </motion.div>
-        </div>
-      </div>
 
-      {/* Comprehensive Validation & Recommendations */}
-      <div className="space-y-4">
-        <label className="block text-xs text-muted-foreground font-medium">
-          CONFIGURATION STATUS
-        </label>
-
-        {/* Validation Summary */}
-        <div className="space-y-3">
-          {/* Errors */}
+          {/* Validation Status */}
           <AnimatePresence>
             {!validation.isValid && (
               <motion.div
-                className="p-3 bg-red-50 border border-red-200 rounded-lg"
-                initial={{ x: -10, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -10, opacity: 0 }}
+                className="space-y-2 rounded-xl border border-red-200 bg-red-50 p-4"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
               >
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <div className="font-medium text-red-800 text-sm mb-2">
-                      {validation.errors.length} Critical Issue
-                      {validation.errors.length > 1 ? "s" : ""}
-                    </div>
-                    <div className="space-y-1">
-                      {validation.errors.slice(0, 3).map((error, index) => (
-                        <div
-                          key={index}
-                          className="text-red-600 text-xs leading-relaxed"
-                        >
-                          • {error}
-                        </div>
-                      ))}
-                      {validation.errors.length > 3 && (
-                        <div className="text-red-500 text-xs font-medium">
-                          +{validation.errors.length - 3} more issues
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <h3 className="text-sm font-semibold text-red-900">
+                    Configuration Issues
+                  </h3>
                 </div>
+                <ul className="space-y-1.5 pl-6">
+                  {validation.errors.map((error, index) => (
+                    <li key={index} className="text-xs text-red-700 list-disc">
+                      {error}
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Warnings */}
-          <AnimatePresence>
-            {validation.warnings.length > 0 && (
-              <motion.div
-                className="p-3 bg-amber-50 border border-amber-200 rounded-lg"
-                initial={{ x: -10, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -10, opacity: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <div className="flex items-start gap-3">
-                  <Info className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1">
-                    <div className="font-medium text-amber-800 text-sm mb-2">
-                      {validation.warnings.length} Optimization Tip
-                      {validation.warnings.length > 1 ? "s" : ""}
-                    </div>
-                    <div className="space-y-1">
-                      {validation.warnings.slice(0, 3).map((warning, index) => (
-                        <div
-                          key={index}
-                          className="text-amber-600 text-xs leading-relaxed"
-                        >
-                          • {warning}
-                        </div>
-                      ))}
-                      {validation.warnings.length > 3 && (
-                        <div className="text-amber-500 text-xs font-medium">
-                          +{validation.warnings.length - 3} more suggestions
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Success State */}
-          <AnimatePresence>
-            {validation.isValid && validation.warnings.length === 0 && (
-              <motion.div
-                className="p-3 bg-green-50 border border-green-200 rounded-lg"
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-              >
-                <div className="flex items-center gap-3">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                  >
-                    <Zap className="h-4 w-4 text-green-600" />
-                  </motion.div>
-                  <div>
-                    <div className="font-medium text-green-800 text-sm">
-                      Perfect Configuration!
-                    </div>
-                    <div className="text-green-600 text-xs">
-                      Your stack is optimized and ready to build
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Generated Command */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-xs text-muted-foreground font-medium">
-            GENERATED COMMAND
-          </label>
-          {manualSetup.hasManualSteps && (
-            <button
-              onClick={() => setShowInstructions(!showInstructions)}
-              className="text-xs text-primary hover:text-primary/80 underline"
-            >
-              {showInstructions ? "Hide" : "Show"} Instructions
-            </button>
-          )}
-        </div>
-        <div className="relative">
-          <pre className="rounded-lg border border-border bg-muted/30 p-4 text-xs font-mono text-foreground whitespace-pre-wrap break-words pr-14 leading-relaxed">
-            {command}
-          </pre>
-          <motion.button
-            onClick={copy}
-            className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-md border border-border bg-background/90 backdrop-blur px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-background transition-all shadow-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <AnimatePresence mode="wait">
-              {copySuccess ? (
-                <motion.div
-                  key="success"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
-                  className="flex items-center gap-1 text-green-600"
-                >
-                  <Check className="h-3 w-3" />
-                  Copied
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="copy"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
-                  className="flex items-center gap-1"
-                >
-                  <Copy className="h-3 w-3" />
-                  Copy
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
-        </div>
-      </div>
-
-      {/* Setup Instructions (expandable) */}
-      <AnimatePresence>
-        {showInstructions && (
+          {/* Package Manager */}
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
+            className="space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
           >
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs text-muted-foreground font-medium">
-                  SETUP INSTRUCTIONS
-                </label>
-                <button
-                  onClick={copyInstructions}
-                  className="text-xs text-primary hover:text-primary/80 underline"
-                >
-                  Copy All
-                </button>
-              </div>
-              <div className="rounded border border-border bg-muted/20 p-3 text-xs font-mono text-foreground whitespace-pre-wrap">
-                {setupInstructions}
-              </div>
+            <div className="flex items-center gap-2">
+              <Package className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">
+                Package Manager
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {PACKAGE_MANAGERS.map((pm) => {
+                const isSelected = state.packageManager === pm.key;
+                return (
+                  <motion.button
+                    key={pm.key}
+                    type="button"
+                    onClick={() => onPackageManagerChange(pm.key)}
+                    className={cn(
+                      "flex flex-col gap-1.5 rounded-lg border p-3 text-left transition-all focus:outline-none focus:ring-2",
+                      isSelected
+                        ? "border-primary bg-primary/10 ring-2 ring-primary/20"
+                        : "border-input bg-background hover:border-primary/40 hover:bg-muted/50",
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{pm.icon}</span>
+                      <span className="text-sm font-semibold font-mono">
+                        {pm.name}
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {pm.desc}
+                    </span>
+                  </motion.button>
+                );
+              })}
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Additional Commands (if manual setup required) */}
-      {manualSetup.hasManualSteps && (
-        <div>
-          <label className="mb-2 block text-xs text-muted-foreground font-medium">
-            ADDITIONAL COMMANDS
-          </label>
-          <div className="space-y-2">
-            {Array.isArray(postCommands) ? (
-              postCommands.map((cmd: string, index: number) => (
-                <div
-                  key={index}
-                  className="rounded border border-border bg-muted/20 p-2 text-xs font-mono text-foreground"
-                >
-                  {cmd}
+          {/* Setup Options */}
+          <motion.div
+            className="space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">
+                Setup Options
+              </h3>
+            </div>
+            <div className="space-y-2">
+              {/* Install Dependencies */}
+              <motion.button
+                onClick={() => toggleSetupOption("installDependencies")}
+                className={cn(
+                  "w-full flex items-center justify-between rounded-lg border p-3 transition-all focus:outline-none focus:ring-2",
+                  state.installDependencies
+                    ? "border-green-200 bg-green-50 focus:ring-green-200"
+                    : "border-amber-200 bg-amber-50 focus:ring-amber-200",
+                )}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg ring-1",
+                      state.installDependencies
+                        ? "bg-green-100 text-green-600 ring-green-200"
+                        : "bg-amber-100 text-amber-600 ring-amber-200",
+                    )}
+                  >
+                    <Package className="h-4 w-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium">
+                      Install Dependencies
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {state.installDependencies
+                        ? "Auto-install packages"
+                        : "Manual installation"}
+                    </div>
+                  </div>
                 </div>
-              ))
-            ) : (
-              <div className="rounded border border-border bg-muted/20 p-2 text-xs font-mono text-foreground">
-                {postCommands.cdCommand}
-              </div>
-            )}
-          </div>
+                <div
+                  className={cn(
+                    "relative h-5 w-9 rounded-full transition-all ring-1",
+                    state.installDependencies
+                      ? "bg-green-500 ring-green-600/20"
+                      : "bg-gray-300 ring-gray-400/20",
+                  )}
+                >
+                  <motion.div
+                    className="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm"
+                    animate={{ x: state.installDependencies ? 18 : 2 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                </div>
+              </motion.button>
+
+              {/* Initialize Git */}
+              <motion.button
+                onClick={() => toggleSetupOption("initializeGit")}
+                className={cn(
+                  "w-full flex items-center justify-between rounded-lg border p-3 transition-all focus:outline-none focus:ring-2",
+                  state.initializeGit
+                    ? "border-green-200 bg-green-50 focus:ring-green-200"
+                    : "border-amber-200 bg-amber-50 focus:ring-amber-200",
+                )}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg ring-1",
+                      state.initializeGit
+                        ? "bg-green-100 text-green-600 ring-green-200"
+                        : "bg-amber-100 text-amber-600 ring-amber-200",
+                    )}
+                  >
+                    <GitBranch className="h-4 w-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-medium">Initialize Git</div>
+                    <div className="text-xs text-muted-foreground">
+                      {state.initializeGit
+                        ? "Auto-initialize repo"
+                        : "Manual setup"}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className={cn(
+                    "relative h-5 w-9 rounded-full transition-all ring-1",
+                    state.initializeGit
+                      ? "bg-green-500 ring-green-600/20"
+                      : "bg-gray-300 ring-gray-400/20",
+                  )}
+                >
+                  <motion.div
+                    className="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm"
+                    animate={{ x: state.initializeGit ? 18 : 2 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Quick Actions */}
+          <motion.div
+            className="space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">
+                Quick Actions
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.button
+                    onClick={saveCurrentStack}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-xs font-medium text-primary hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Star className="h-3.5 w-3.5" />
+                    Save
+                  </motion.button>
+                </TooltipTrigger>
+                <TooltipContent>Save current configuration</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.button
+                    onClick={loadSavedStack}
+                    disabled={!lastSavedStack}
+                    className={cn(
+                      "flex items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium focus:outline-none focus:ring-2",
+                      lastSavedStack
+                        ? "border-input bg-background text-foreground hover:bg-muted/50 focus:ring-primary/20"
+                        : "border-input bg-muted/30 text-muted-foreground/50 cursor-not-allowed",
+                    )}
+                    whileHover={lastSavedStack ? { scale: 1.02 } : {}}
+                    whileTap={lastSavedStack ? { scale: 0.98 } : {}}
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Load
+                  </motion.button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {lastSavedStack
+                    ? "Load saved configuration"
+                    : "No saved configuration"}
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.button
+                    onClick={getRandomStack}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2.5 text-xs font-medium text-purple-700 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Random
+                  </motion.button>
+                </TooltipTrigger>
+                <TooltipContent>Generate random stack</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.button
+                    onClick={resetStack}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Reset
+                  </motion.button>
+                </TooltipTrigger>
+                <TooltipContent>Reset to defaults</TooltipContent>
+              </Tooltip>
+            </div>
+          </motion.div>
         </div>
-      )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }

@@ -19,57 +19,65 @@ import { Menu, ExternalLink, ChevronRight, Code2 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { SearchDialog, SearchTrigger } from "@/components/search-dialog";
 
-// Main navigation links - text only
-const navLinks = [
-  {
-    text: "Docs",
-    url: "/docs",
-    active: "nested-url",
-  },
-  {
-    text: "Builder",
-    url: "/new",
-  },
-  {
-    text: "Analytics",
-    url: "/analytics",
-  },
-  {
-    text: "Features",
-    url: "/features",
-  },
-  {
-    text: "Sponsors",
-    url: "/sponsors",
-  },
-];
+// Navigation types
+type NavLink = {
+  text: string;
+  url: string;
+  active?: "nested-url";
+};
 
-const iconLinks = [
-  {
-    text: "NPM",
-    icon: NpmIcon,
-    label: "NPM Package",
-    url: "https://www.npmjs.com/package/create-js-stack",
-    external: true,
-  },
-  {
-    text: "GitHub",
-    icon: GithubIcon,
-    label: "GitHub Repository",
-    url: "https://github.com/vipinyadav01/js-stack",
-    external: true,
-  },
-  {
-    text: "Docs",
-    icon: Code2,
-    label: "Documentation",
-    url: "https://github.com/vipinyadav01/js-stack#readme",
-    external: true,
-  },
-];
+type ExternalLink = {
+  text: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  url: string;
+};
 
-// Enhanced Logo component
-function Logo({ className }: { className?: string }) {
+// Navigation configuration
+const NAV_CONFIG: {
+  mainLinks: NavLink[];
+  externalLinks: ExternalLink[];
+} = {
+  mainLinks: [
+    { text: "Docs", url: "/docs", active: "nested-url" },
+    { text: "Builder", url: "/new" },
+    { text: "Analytics", url: "/analytics" },
+    { text: "Features", url: "/features" },
+    { text: "Sponsors", url: "/sponsors" },
+  ],
+  externalLinks: [
+    {
+      text: "NPM",
+      icon: NpmIcon,
+      label: "NPM Package",
+      url: "https://www.npmjs.com/package/create-js-stack",
+    },
+    {
+      text: "GitHub",
+      icon: GithubIcon,
+      label: "GitHub Repository",
+      url: "https://github.com/vipinyadav01/js-stack",
+    },
+    {
+      text: "Docs",
+      icon: Code2,
+      label: "Documentation",
+      url: "https://github.com/vipinyadav01/js-stack#readme",
+    },
+  ],
+} as const;
+
+// Constants
+const SCROLL_THRESHOLD = 10;
+const SCROLL_DEBOUNCE = 16;
+const HEADER_HEIGHT = "h-14";
+
+// Logo Component
+interface LogoProps {
+  className?: string;
+}
+
+function Logo({ className }: LogoProps) {
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -77,33 +85,239 @@ function Logo({ className }: { className?: string }) {
       {!imageError ? (
         <Image
           src={favicon}
-          alt="JS-Stack"
+          alt="JS-Stack Logo"
           width={32}
           height={32}
-          className="w-8 h-8 object-contain"
+          className="h-8 w-8 object-contain"
           onError={() => setImageError(true)}
           priority
         />
       ) : (
-        <Code2 className="w-8 h-8 text-primary" />
+        <Code2 className="h-8 w-8 text-primary" aria-hidden="true" />
       )}
     </div>
   );
 }
 
+// Desktop Navigation Links
+interface DesktopNavProps {
+  pathname: string | null;
+}
+
+function DesktopNav({ pathname }: DesktopNavProps) {
+  return (
+    <nav
+      className="hidden lg:flex items-center gap-1"
+      aria-label="Main navigation"
+    >
+      {NAV_CONFIG.mainLinks.map((link) => {
+        const isActive =
+          link.active === "nested-url"
+            ? pathname?.startsWith(link.url)
+            : pathname === link.url;
+
+        return (
+          <Link
+            key={link.url}
+            href={link.url}
+            className={cn(
+              "relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200",
+              "hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+              isActive
+                ? "text-foreground bg-muted/50"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+            aria-current={isActive ? "page" : undefined}
+          >
+            {link.text}
+            {isActive && (
+              <span
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 w-8 bg-primary rounded-full"
+                aria-hidden="true"
+              />
+            )}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+// External Links Component
+interface ExternalLinksProps {
+  className?: string;
+}
+
+function ExternalLinks({ className }: ExternalLinksProps) {
+  return (
+    <div className={cn("flex items-center gap-1", className)}>
+      {NAV_CONFIG.externalLinks.map((link) => (
+        <Link
+          key={link.url}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            "inline-flex items-center justify-center h-9 w-9 rounded-lg",
+            "border border-border bg-background",
+            "hover:bg-muted/50 hover:border-primary/30",
+            "transition-all duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+          )}
+          aria-label={link.label}
+          title={link.label}
+        >
+          <link.icon
+            className="h-4 w-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+// Mobile Menu Component
+interface MobileMenuProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  pathname: string | null;
+}
+
+function MobileMenu({ open, onOpenChange, pathname }: MobileMenuProps) {
+  const handleClose = useCallback(() => {
+    onOpenChange(false);
+  }, [onOpenChange]);
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-9 w-9 rounded-lg border border-border",
+            "hover:bg-muted/50 transition-all duration-200",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+          )}
+          aria-label="Open navigation menu"
+        >
+          <Menu className="h-4 w-4" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="right"
+        className="w-full sm:w-80 p-0 bg-background border-l border-border"
+      >
+        <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+          <Link
+            href="/"
+            className="flex items-center gap-3 group"
+            onClick={handleClose}
+          >
+            <Logo />
+            <span className="font-semibold text-lg tracking-tight">
+              JS Stack
+            </span>
+          </Link>
+        </div>
+
+        <div className="flex flex-col h-[calc(100%-73px)]">
+          {/* Main Navigation */}
+          <nav
+            className="flex-1 overflow-y-auto px-4 py-6"
+            aria-label="Mobile navigation"
+          >
+            <div className="space-y-1">
+              {NAV_CONFIG.mainLinks.map((link) => {
+                const isActive =
+                  link.active === "nested-url"
+                    ? pathname?.startsWith(link.url)
+                    : pathname === link.url;
+
+                return (
+                  <Link
+                    key={link.url}
+                    href={link.url}
+                    onClick={handleClose}
+                    className={cn(
+                      "flex items-center justify-between px-4 py-3 rounded-lg",
+                      "transition-all duration-200",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                    )}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <span className="text-sm font-medium">{link.text}</span>
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+
+          {/* Mobile External Links */}
+          <div className="border-t border-border px-4 py-6 bg-muted/20">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3 px-4">
+              Resources
+            </p>
+            <div className="space-y-2">
+              {NAV_CONFIG.externalLinks.map((link) => (
+                <Link
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleClose}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg",
+                    "border border-border bg-background",
+                    "hover:bg-muted/50 hover:border-primary/30",
+                    "transition-all duration-200",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
+                  )}
+                >
+                  <link.icon
+                    className="h-4 w-4 text-primary flex-shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span className="flex-1 text-sm font-medium">
+                    {link.text}
+                  </span>
+                  <ExternalLink
+                    className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0"
+                    aria-hidden="true"
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+// Main Navigation Component
 export function Navigation() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Mount effect
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Scroll handler
   useEffect(() => {
     if (!isMounted) return;
 
@@ -113,15 +327,8 @@ export function Navigation() {
       }
 
       scrollTimeoutRef.current = setTimeout(() => {
-        const scrollTop = window.scrollY;
-        const documentHeight =
-          document.documentElement.scrollHeight - window.innerHeight;
-        const progress =
-          documentHeight > 0 ? (scrollTop / documentHeight) * 100 : 0;
-
-        setIsScrolled(scrollTop > 10);
-        setScrollProgress(Math.min(progress, 100));
-      }, 16);
+        setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
+      }, SCROLL_DEBOUNCE);
     };
 
     handleScroll();
@@ -134,6 +341,8 @@ export function Navigation() {
       }
     };
   }, [isMounted]);
+
+  // Mobile menu handlers
   const handleMobileMenuClose = useCallback(() => {
     setMobileOpen(false);
   }, []);
@@ -141,9 +350,7 @@ export function Navigation() {
   useEffect(() => {
     if (mobileOpen) {
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-          handleMobileMenuClose();
-        }
+        if (e.key === "Escape") handleMobileMenuClose();
       };
 
       document.addEventListener("keydown", handleKeyDown);
@@ -160,65 +367,62 @@ export function Navigation() {
     handleMobileMenuClose();
   }, [pathname, handleMobileMenuClose]);
 
+  // Search keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isMac = /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
-      const isWindows =
-        /Win/i.test(navigator.platform) || /Windows/i.test(navigator.userAgent);
+      const activeElement = document.activeElement;
+      const isInInput =
+        activeElement?.tagName === "INPUT" ||
+        activeElement?.tagName === "TEXTAREA" ||
+        activeElement?.getAttribute("contenteditable") === "true";
 
-      if (e.key === "q" || e.key === "Q") {
-        if (isMac && e.metaKey && !e.ctrlKey) {
-          e.preventDefault();
-          setSearchOpen(true);
-        } else if ((isWindows || !isMac) && e.ctrlKey && !e.metaKey) {
-          e.preventDefault();
-          setSearchOpen(true);
-        }
+      // Cmd/Ctrl + K
+      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen(true);
+        return;
       }
 
+      // Cmd/Ctrl + Q (alternative)
+      if ((e.key === "q" || e.key === "Q") && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen(true);
+        return;
+      }
+
+      // Forward slash (/) - only if not in input
       if (
-        (e.key === "k" || e.key === "K") &&
-        isMac &&
-        e.metaKey &&
-        !e.ctrlKey
+        e.key === "/" &&
+        !isInInput &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey
       ) {
         e.preventDefault();
         setSearchOpen(true);
       }
-
-      if (
-        e.key === "/" &&
-        !e.metaKey &&
-        !e.ctrlKey &&
-        !e.altKey &&
-        !e.shiftKey
-      ) {
-        const activeElement = document.activeElement;
-        const isInInput =
-          activeElement?.tagName === "INPUT" ||
-          activeElement?.tagName === "TEXTAREA" ||
-          activeElement?.getAttribute("contenteditable") === "true";
-
-        if (!isInInput) {
-          e.preventDefault();
-          setSearchOpen(true);
-        }
-      }
     };
 
-    document.addEventListener("keydown", handleKeyDown, { passive: false });
+    document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Loading state
   if (!isMounted) {
     return (
-      <header className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-md border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 flex h-16 items-center justify-between">
+      <header
+        className={cn(
+          "sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b border-border",
+          HEADER_HEIGHT,
+        )}
+      >
+        <div className="container mx-auto flex items-center justify-between h-full px-4">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded bg-muted/20 animate-pulse" />
-            <div className="h-5 w-24 bg-muted/20 rounded animate-pulse" />
+            <div className="h-8 w-8 rounded bg-muted/30 animate-pulse" />
+            <div className="h-5 w-24 bg-muted/30 rounded animate-pulse" />
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded border border-border bg-muted/20 animate-pulse" />
+            <div className="h-9 w-9 rounded-lg border border-border bg-muted/20 animate-pulse" />
           </div>
         </div>
       </header>
@@ -226,176 +430,77 @@ export function Navigation() {
   }
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300 pb-4",
-        isScrolled ? "bg-transparent" : "",
-      )}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-4 md:pt-6">
-        <div
-          className={cn(
-            "backdrop-blur-sm border border-border px-4 sm:px-6 lg:px-8 shadow-sm transition-all duration-300",
-            isScrolled
-              ? "bg-background/80 rounded-2xl"
-              : "bg-background/80 rounded-2xl",
-          )}
-        >
-          <div className="flex h-16 items-center gap-6">
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Link
-                href="/"
-                className="group flex items-center gap-2 hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg p-1 -m-1 whitespace-nowrap"
-                aria-label="JS-Stack Home"
-              >
-                <Logo />
-                <span className="font-medium font-mono text-lg tracking-tighter whitespace-nowrap">
-                  JS Stack
-                </span>
-              </Link>
-            </div>
-            <div className="flex-1 max-w-sm mx-2 sm:mx-4">
+    <>
+      <header
+        className={cn(
+          "sticky top-0 z-50 w-full transition-all duration-300",
+          isScrolled
+            ? "bg-background/95 backdrop-blur-md shadow-sm border-b border-border"
+            : "bg-background/80 backdrop-blur-sm border-b border-border",
+        )}
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            className={cn(
+              "flex items-center justify-between gap-4",
+              HEADER_HEIGHT,
+            )}
+          >
+            {/* Logo */}
+            <Link
+              href="/"
+              className={cn(
+                "flex items-center gap-2 flex-shrink-0",
+                "hover:opacity-90 transition-opacity duration-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-lg",
+                "p-1 -m-1",
+              )}
+              aria-label="JS Stack - Home"
+            >
+              <Logo />
+              <span className="font-semibold text-lg tracking-tight whitespace-nowrap">
+                JS Stack
+              </span>
+            </Link>
+
+            {/* Search Bar */}
+            <div className="flex-1 max-w-md mx-4 hidden md:block">
               <SearchTrigger onClick={() => setSearchOpen(true)} />
             </div>
-            <nav className="hidden md:flex items-center space-x-4">
-              {navLinks.map((link) => {
-                const isActive =
-                  link.active === "nested-url"
-                    ? pathname?.startsWith(link.url)
-                    : pathname === link.url;
 
-                return (
-                  <Link
-                    key={link.url}
-                    href={link.url}
-                    className={cn(
-                      "font-mono text-sm font-medium transition-colors duration-200 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-2 py-1",
-                      isActive ? "text-foreground" : "text-muted-foreground",
-                    )}
-                    aria-current={isActive ? "page" : undefined}
-                  >
-                    {link.text}
-                  </Link>
-                );
-              })}
-            </nav>
-            <div className="flex items-center space-x-2">
-              <div className="hidden md:flex items-center space-x-1">
-                {iconLinks.map((link) => (
-                  <Link
-                    key={link.url}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group p-2 rounded-lg border border-border bg-background hover:bg-muted/50 hover:border-primary/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    aria-label={link.label}
-                    title={link.label}
-                  >
-                    <link.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                  </Link>
-                ))}
+            {/* Desktop Navigation */}
+            <DesktopNav pathname={pathname} />
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-2">
+              {/* Desktop External Links */}
+              <div className="hidden lg:flex">
+                <ExternalLinks />
               </div>
-              <div className="hidden md:block ml-2">
+
+              {/* Theme Toggle */}
+              <div className="hidden sm:block">
                 <ThemeToggle />
               </div>
 
-              <div className="md:hidden flex items-center space-x-2">
-                <ThemeToggle />
-                <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-                  <SheetTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-2 rounded-lg border border-border hover:bg-muted/50 transition-all duration-200"
-                      aria-label="Open menu"
-                    >
-                      <Menu className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent
-                    side="right"
-                    className="w-full sm:w-80 p-0 bg-background border-l border-border"
-                  >
-                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                    <div className="p-6 border-b border-border">
-                      <Link
-                        href="/"
-                        className="flex items-center gap-3"
-                        onClick={handleMobileMenuClose}
-                      >
-                        <Logo />
-                        <span className="font-medium font-mono text-lg tracking-tighter">
-                          JS Stack
-                        </span>
-                      </Link>
-                    </div>
-                    <div className="flex flex-col h-full">
-                      <div className="flex-1 overflow-y-auto p-4">
-                        <div className="space-y-2">
-                          {navLinks.map((link) => {
-                            const isActive =
-                              link.active === "nested-url"
-                                ? pathname?.startsWith(link.url)
-                                : pathname === link.url;
-
-                            return (
-                              <Link
-                                key={link.url}
-                                href={link.url}
-                                onClick={handleMobileMenuClose}
-                                className={cn(
-                                  "flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50",
-                                  isActive
-                                    ? "bg-primary/5 text-primary"
-                                    : "text-muted-foreground hover:text-foreground",
-                                )}
-                                aria-current={isActive ? "page" : undefined}
-                              >
-                                <span className="font-mono text-sm font-medium">
-                                  {link.text}
-                                </span>
-                                <ChevronRight className="h-4 w-4" />
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Mobile External Links */}
-                      <div className="border-t border-border p-4">
-                        <div className="space-y-2">
-                          <p className="text-xs text-muted-foreground font-mono uppercase tracking-wide mb-3">
-                            External Links
-                          </p>
-                          {iconLinks.map((link) => (
-                            <Link
-                              key={link.url}
-                              href={link.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={handleMobileMenuClose}
-                              className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 hover:border-primary/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            >
-                              <link.icon className="h-4 w-4 text-primary" />
-                              <span className="flex-1 font-mono text-sm font-medium">
-                                {link.text}
-                              </span>
-                              <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
+              {/* Mobile Menu */}
+              <div className="lg:hidden flex items-center gap-2">
+                <div className="sm:hidden">
+                  <ThemeToggle />
+                </div>
+                <MobileMenu
+                  open={mobileOpen}
+                  onOpenChange={setMobileOpen}
+                  pathname={pathname}
+                />
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Search Dialog */}
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
-    </header>
+    </>
   );
 }
