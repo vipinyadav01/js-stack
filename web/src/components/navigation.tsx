@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
-import { Menu, Search, Github, Code2, ExternalLink } from "lucide-react";
+import { Menu, Search, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { SearchDialog, SearchTrigger } from "@/components/search-dialog";
@@ -23,6 +23,8 @@ interface ExternalLink {
   label: string;
 }
 import logo from "../Images/logo.png";
+import { NpmIcon } from "@/components/icons/npm-icon";
+import { GithubIcon } from "@/components/icons/github-icon";
 
 const NAV_LINKS: NavLink[] = [
   { text: "Docs", url: "/docs" },
@@ -34,12 +36,12 @@ const NAV_LINKS: NavLink[] = [
 
 const EXTERNAL_LINKS: ExternalLink[] = [
   {
-    icon: Code2,
+    icon: NpmIcon,
     url: "https://www.npmjs.com/package/create-js-stack",
     label: "NPM",
   },
   {
-    icon: Github,
+    icon: GithubIcon,
     url: "https://github.com/vipinyadav01/js-stack",
     label: "GitHub",
   },
