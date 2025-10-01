@@ -65,9 +65,10 @@ export default function GitHubSponsorsSection({
           <div className="rounded border border-border p-8">
             <div className="text-center">
               <div className="mb-4 flex items-center justify-center gap-2">
-                <span className="text-muted-foreground">
-                  NO_SPONSORS_FOUND.NULL
-                </span>
+                <span className="text-muted-foreground">No sponsors found</span>
+              </div>
+              <div className="mb-2 text-sm text-muted-foreground">
+                No active sponsors found for vipinyadav01
               </div>
               <div className="flex items-center justify-center gap-2 text-sm">
                 <span className="text-primary">$</span>
@@ -79,13 +80,13 @@ export default function GitHubSponsorsSection({
           </div>
           <div className="rounded border border-border p-4">
             <a
-              href="https://github.com/sponsors/vipinyadav01/js-stack"
+              href="https://github.com/sponsors/vipinyadav01"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 text-primary transition-colors hover:text-accent"
             >
               <Heart className="h-4 w-4" />
-              <span>SUPPORT_PROJECT.SH</span>
+              <span>Become a Sponsor</span>
             </a>
           </div>
         </div>

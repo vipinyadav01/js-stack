@@ -230,14 +230,11 @@ export default function SponsorsPage() {
           {analytics && <AnalyticsSection analytics={analytics} />}
 
           {/* GitHub Sponsors Section */}
-          {showSponsors &&
-            sponsorsData &&
-            sponsorsData.specialSponsors.length + sponsorsData.sponsors.length >
-              0 && (
-              <motion.div className="mb-12" variants={containerVariants}>
-                <GitHubSponsorsSection sponsorsData={sponsorsData} />
-              </motion.div>
-            )}
+          {showSponsors && sponsorsData && (
+            <motion.div className="mb-12" variants={containerVariants}>
+              <GitHubSponsorsSection sponsorsData={sponsorsData} />
+            </motion.div>
+          )}
 
           {/* Twitter Feed Section */}
           {showTweets && (
