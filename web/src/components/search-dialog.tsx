@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -116,7 +116,7 @@ const searchItems: SearchItem[] = [
     external: true,
   },
 
-  // Stack Technologies (for quick access)
+  // Stack Technologies
   {
     id: "react",
     title: "React Setup",
@@ -164,44 +164,56 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
+  useEffect(() => {
+    if (!open) {
+      setSearchQuery("");
+    }
+  }, [open]);
+
   const handleSelect = useCallback(
     (item: SearchItem) => {
-      onOpenChange(false);
-      setSearchQuery("");
+      try {
+        onOpenChange(false);
+        setSearchQuery("");
 
-      if (item.external) {
-        window.open(item.url, "_blank", "noopener,noreferrer");
-      } else {
-        router.push(item.url);
+        if (item.external) {
+          window.open(item.url, "_blank", "noopener,noreferrer");
+        } else {
+          router.push(item.url);
+        }
+      } catch (error) {
+        console.error("Navigation error:", error);
       }
     },
     [onOpenChange, router],
   );
 
-  const filteredItems =
-    searchQuery.length > 0
-      ? searchItems.filter(
-          (item) =>
-            item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            item.keywords.some((keyword) =>
-              keyword.toLowerCase().includes(searchQuery.toLowerCase()),
-            ),
-        )
-      : searchItems;
+  const groupedItems = useMemo(() => {
+    const filtered =
+      searchQuery.length > 0
+        ? searchItems.filter((item) => {
+            const query = searchQuery.toLowerCase();
+            return (
+              item.title.toLowerCase().includes(query) ||
+              item.description.toLowerCase().includes(query) ||
+              item.keywords.some((keyword) =>
+                keyword.toLowerCase().includes(query),
+              )
+            );
+          })
+        : searchItems;
 
-  const groupedItems = filteredItems.reduce(
-    (acc, item) => {
-      if (!acc[item.category]) {
-        acc[item.category] = [];
-      }
-      acc[item.category].push(item);
-      return acc;
-    },
-    {} as Record<string, SearchItem[]>,
-  );
+    return filtered.reduce(
+      (acc, item) => {
+        if (!acc[item.category]) {
+          acc[item.category] = [];
+        }
+        acc[item.category].push(item);
+        return acc;
+      },
+      {} as Record<string, SearchItem[]>,
+    );
+  }, [searchQuery]);
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
@@ -224,30 +236,33 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
 
         {Object.entries(groupedItems).map(([category, items]) => (
           <CommandGroup key={category} heading={category}>
-            {items.map((item) => (
-              <CommandItem
-                key={item.id}
-                value={`${item.title} ${item.description} ${item.keywords.join(" ")}`}
-                onSelect={() => handleSelect(item)}
-                className="flex items-center gap-3 p-3 cursor-pointer"
-              >
-                <div className="flex-shrink-0 p-1.5 rounded-md bg-primary/10">
-                  <item.icon className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{item.title}</span>
-                    {item.external && (
-                      <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                    )}
+            {items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <CommandItem
+                  key={item.id}
+                  value={`${item.title} ${item.description} ${item.keywords.join(" ")}`}
+                  onSelect={() => handleSelect(item)}
+                  className="flex items-center gap-3 p-3 cursor-pointer"
+                >
+                  <div className="flex-shrink-0 p-1.5 rounded-md bg-primary/10">
+                    <Icon className="h-4 w-4 text-primary" />
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {item.description}
-                  </p>
-                </div>
-                <ArrowRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-              </CommandItem>
-            ))}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{item.title}</span>
+                      {item.external && (
+                        <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {item.description}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                </CommandItem>
+              );
+            })}
           </CommandGroup>
         ))}
       </CommandList>
@@ -255,7 +270,6 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   );
 }
 
-// Search trigger button component
 export function SearchTrigger({
   onClick,
   className,
@@ -264,25 +278,57 @@ export function SearchTrigger({
   className?: string;
 }) {
   const [isMac, setIsMac] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Enhanced platform detection for accurate Windows/Mac detection
+    setMounted(true);
+
     const detectPlatform = () => {
-      // Check multiple indicators for Mac
-      const isMacPlatform = /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
-      const isMacUserAgent = /Mac OS X|macOS/i.test(navigator.userAgent);
-      const hasMetaKey = "metaKey" in KeyboardEvent.prototype;
-
-      // For Windows specifically
+      if (typeof window === "undefined") return false;
+      const platform = navigator.platform?.toLowerCase() || "";
+      const userAgent = navigator.userAgent?.toLowerCase() || "";
+      const platformChecks = [
+        platform.includes("mac"),
+        userAgent.includes("mac"),
+        userAgent.includes("macintosh"),
+        navigator.maxTouchPoints > 1 && platform === "",
+      ];
       const isWindows =
-        /Win/i.test(navigator.platform) || /Windows/i.test(navigator.userAgent);
+        platform.includes("win") ||
+        userAgent.includes("windows") ||
+        userAgent.includes("win32") ||
+        userAgent.includes("win64");
 
-      // Return true only if definitely Mac, otherwise assume Windows/Linux (Ctrl)
-      return (isMacPlatform || isMacUserAgent) && hasMetaKey && !isWindows;
+      return platformChecks.some((check) => check) && !isWindows;
     };
 
     setIsMac(detectPlatform());
   }, []);
+
+  const shortcutDisplay = mounted ? (
+    <div className="hidden sm:flex items-center gap-1 ml-auto">
+      <div className="flex items-center gap-1">
+        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+          {isMac ? (
+            <>
+              <span className="text-xs">⌘</span>
+              <span>K</span>
+            </>
+          ) : (
+            <>
+              <span className="text-[9px]">Ctrl</span>
+              <span className="text-[8px]">+</span>
+              <span>K</span>
+            </>
+          )}
+        </kbd>
+        <span className="text-muted-foreground text-[10px]">or</span>
+        <kbd className="pointer-events-none inline-flex h-5 w-5 select-none items-center justify-center rounded border bg-muted font-mono text-[10px] font-medium text-muted-foreground">
+          /
+        </kbd>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <button
@@ -294,32 +340,11 @@ export function SearchTrigger({
         "backdrop-blur-sm",
         className,
       )}
-      aria-label={`Open search (${isMac ? "⌘K" : "Ctrl+Q"} or /)`}
+      aria-label={`Open search (${isMac ? "⌘K" : "Ctrl+K"} or /)`}
     >
       <Search className="h-4 w-4" />
       <span className="hidden sm:inline font-mono">Search...</span>
-      <div className="hidden sm:flex items-center gap-1 ml-auto">
-        <div className="flex items-center gap-1">
-          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-            {isMac ? (
-              <>
-                <span className="text-xs">⌘</span>
-                <span>K</span>
-              </>
-            ) : (
-              <>
-                <span className="text-[9px]">Ctrl</span>
-                <span className="text-[8px]">+</span>
-                <span>Q</span>
-              </>
-            )}
-          </kbd>
-          <span className="text-muted-foreground text-[10px]">or</span>
-          <kbd className="pointer-events-none inline-flex h-5 w-5 select-none items-center justify-center rounded border bg-muted font-mono text-[10px] font-medium text-muted-foreground">
-            /
-          </kbd>
-        </div>
-      </div>
+      {shortcutDisplay}
     </button>
   );
 }

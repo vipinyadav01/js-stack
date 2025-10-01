@@ -50,9 +50,6 @@ const CATEGORY_ORDER = [
   "auth",
   "addons",
 ];
-
-// Removed unused function
-
 const validateProjectName = (name: string): string | null => {
   if (!name.trim()) return "Project name is required";
   if (name.length < 2) return "Must be at least 2 characters";
@@ -238,31 +235,6 @@ export default function BuilderSidebar({
     <TooltipProvider>
       <div className="h-full overflow-y-auto bg-gradient-to-b from-background to-muted/20">
         <div className="space-y-4 p-6">
-          {/* Header */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/20">
-                  <Terminal className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h1 className="text-base font-bold tracking-tight text-foreground">
-                    Stack Builder
-                  </h1>
-                  <p className="text-xs text-muted-foreground">
-                    Configure your project
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 rounded-full bg-green-500/10 px-2.5 py-1 ring-1 ring-green-500/20">
-                <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-xs font-medium text-green-700">
-                  Ready
-                </span>
-              </div>
-            </div>
-          </div>
-
           {/* Project Configuration */}
           <motion.div
             className="space-y-3 rounded-xl border bg-card p-4 shadow-sm"
