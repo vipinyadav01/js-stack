@@ -35,7 +35,10 @@ import {
   ghostColors,
   ghostIcons,
 } from "./utils/terminal-ui.js";
-import { createInteractiveProjectSetup, promptPresetSelection } from "./utils/ghost-prompts.js";
+import {
+  createInteractiveProjectSetup,
+  promptPresetSelection,
+} from "./utils/ghost-prompts.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -86,22 +89,62 @@ const icons = {
 function showBanner() {
   // Create ghost banner
   createGhostBanner("JS Stack");
-  
+
   // Show system information
   showGhostSystemInfo();
-  
+
   // Show available features
   const features = [
-    { name: "Frontend", description: "React, Vue, Angular, Svelte", icon: ghostIcons.paint, status: "✅" },
-    { name: "Backend", description: "Express, Fastify, NestJS, Koa", icon: ghostIcons.gear, status: "✅" },
-    { name: "Database", description: "PostgreSQL, MongoDB, SQLite", icon: ghostIcons.database, status: "✅" },
-    { name: "ORM", description: "Prisma, Sequelize, Mongoose", icon: ghostIcons.shield, status: "✅" },
-    { name: "Auth", description: "JWT, Passport, Auth0", icon: ghostIcons.lock, status: "✅" },
-    { name: "Monorepo", description: "Turborepo support", icon: ghostIcons.package, status: "🆕" },
-    { name: "Testing", description: "Jest, Vitest, Cypress", icon: ghostIcons.test, status: "✅" },
-    { name: "DevOps", description: "Docker, CI/CD, GitHub Actions", icon: ghostIcons.terminal, status: "✅" },
+    {
+      name: "Frontend",
+      description: "React, Vue, Angular, Svelte",
+      icon: ghostIcons.paint,
+      status: "✅",
+    },
+    {
+      name: "Backend",
+      description: "Express, Fastify, NestJS, Koa",
+      icon: ghostIcons.gear,
+      status: "✅",
+    },
+    {
+      name: "Database",
+      description: "PostgreSQL, MongoDB, SQLite",
+      icon: ghostIcons.database,
+      status: "✅",
+    },
+    {
+      name: "ORM",
+      description: "Prisma, Sequelize, Mongoose",
+      icon: ghostIcons.shield,
+      status: "✅",
+    },
+    {
+      name: "Auth",
+      description: "JWT, Passport, Auth0",
+      icon: ghostIcons.lock,
+      status: "✅",
+    },
+    {
+      name: "Monorepo",
+      description: "Turborepo support",
+      icon: ghostIcons.package,
+      status: "🆕",
+    },
+    {
+      name: "Testing",
+      description: "Jest, Vitest, Cypress",
+      icon: ghostIcons.test,
+      status: "✅",
+    },
+    {
+      name: "DevOps",
+      description: "Docker, CI/CD, GitHub Actions",
+      icon: ghostIcons.terminal,
+      status: "✅",
+    },
   ];
-  
+
   showGhostFeatures(features);
 }
 
@@ -125,7 +168,6 @@ function getMemoryUsage() {
   const usage = Math.round((used.heapUsed / 1024 / 1024) * 100) / 100;
   return `Memory: ${usage}MB`;
 }
-
 
 // Enhanced error handling with better messages
 function handleCliError(error, command = null) {
@@ -232,6 +274,167 @@ program
   .showHelpAfterError(
     chalk.yellow("💡 Add --help for detailed usage information"),
   );
+
+// Main command configuration for project creation
+program
+  .argument("[projectName]", "Name of the project to create")
+  .option(
+    "-y, --yes",
+    colors.muted(`${icons.lightning} Use default configuration (quick start)`),
+  )
+  .option(
+    "-p, --preset <name>",
+    colors.muted(
+      `${icons.target} Use preset: saas, api, mobile, fullstack, minimal`,
+    ),
+  )
+  .option(
+    "-t, --template <name>",
+    colors.muted(`${icons.file} Use specific template`),
+  )
+  .option(
+    "--database <type>",
+    colors.muted(
+      `${icons.database} Database: sqlite, postgres, mysql, mongodb, supabase, planetscale`,
+    ),
+  )
+  .option(
+    "--orm <type>",
+    colors.muted(
+      `${icons.gear} ORM: prisma, drizzle, sequelize, mongoose, typeorm`,
+    ),
+  )
+  .option(
+    "--backend <type>",
+    colors.muted(`${icons.gear} Backend: express, fastify, nestjs, trpc, hono`),
+  )
+  .option(
+    "--frontend <types...>",
+    colors.muted(
+      `${icons.paint} Frontend: react, vue, svelte, solid, nextjs, nuxt, astro`,
+    ),
+  )
+  .option(
+    "--auth <type>",
+    colors.muted(
+      `${icons.shield} Auth: jwt, passport, auth0, oauth, better-auth, lucia, none`,
+    ),
+  )
+  .option(
+    "--styling <type>",
+    colors.muted(
+      `${icons.paint} Styling: tailwind, shadcn, chakra, mantine, styled-components`,
+    ),
+  )
+  .option(
+    "--testing <type>",
+    colors.muted(`${icons.test} Testing: vitest, jest, playwright, cypress`),
+  )
+  .option(
+    "--addons <addons...>",
+    colors.muted(
+      `${icons.package} Tools: typescript, eslint, prettier, biome, turborepo, pwa, tauri, docker, storybook`,
+    ),
+  )
+  .option(
+    "--deployment <type>",
+    colors.muted(
+      `${icons.rocket} Deployment: vercel, netlify, cloudflare, aws, railway, render, none`,
+    ),
+  )
+  .option(
+    "--pm <manager>",
+    colors.muted(`${icons.package} Package manager: npm, yarn, pnpm, bun`),
+  )
+  .option("--typescript", colors.muted(`${icons.crystal} Enable TypeScript`))
+  .option("--no-git", colors.muted(`${icons.cross} Skip git initialization`))
+  .option(
+    "--no-install",
+    colors.muted(`${icons.cross} Skip dependency installation`),
+  )
+  .option("--verbose", colors.muted(`${icons.search} Show detailed output`))
+  .option(
+    "--dry-run",
+    colors.muted(`${icons.bulb} Preview changes without creating files`),
+  )
+  .option(
+    "--interactive",
+    colors.muted(`${icons.sparkles} Enhanced interactive mode`),
+  )
+  .addHelpText("after", () => {
+    const exampleBox = boxen(
+      `${icons.bulb} ${chalk.bold("Usage Examples:")}
+
+${colors.primary("npx create-js-stack@latest my-app")}                     ${colors.muted("# Interactive setup")}
+${colors.primary("npx create-js-stack@latest my-app --yes")}               ${colors.muted("# Quick start (recommended)")}
+${colors.primary("npx create-js-stack@latest --preset saas")}              ${colors.muted("# SaaS application")}
+${colors.primary("npx create-js-stack@latest api-server --preset api")}    ${colors.muted("# REST API server")}
+${colors.primary("npx create-js-stack@latest mobile-app --preset mobile")} ${colors.muted("# Mobile application")}
+
+${icons.target} ${chalk.bold("Popular Presets:")}
+  ${colors.success("saas")}      - Full-stack SaaS with auth, database, and payments
+  ${colors.success("api")}       - RESTful API with database and authentication  
+  ${colors.success("fullstack")} - Full-stack web app with modern tooling
+  ${colors.success("minimal")}   - Lightweight starter template
+
+${icons.sparkles} ${chalk.bold("New Features:")}
+  ${colors.success("layered")}   - Layered template system (Base → Framework → Integration → Feature → Tooling)
+  ${colors.success("monorepo")}  - Turborepo monorepo structure with apps/, packages/, configs/
+  ${colors.success("smart")}     - Smart compatibility with auto-adjustments
+  ${colors.success("conflict")}  - Intelligent conflict resolution for overlapping templates
+  ${colors.success("deployment")} - Built-in deployment templates (Vercel, Cloudflare, etc.)`,
+      {
+        padding: 1,
+        margin: { top: 1, bottom: 0, left: 2, right: 2 },
+        borderStyle: "round",
+        borderColor: "magenta",
+        backgroundColor: colors.bg,
+      },
+    );
+    return exampleBox;
+  })
+  .action(async (projectName, options) => {
+    // Validate project name if provided
+    if (projectName) {
+      projectName = validateProjectName(projectName);
+    }
+
+    // Show banner for interactive mode
+    if (!options.yes && !projectName && process.argv.length === 3) {
+      showBanner();
+    }
+
+    // Enhanced debug output
+    if (options.verbose) {
+      console.log(chalk.gray("📋 Debug Information:"));
+      console.log(
+        chalk.gray("  Project Name:"),
+        chalk.cyan(projectName || "Not specified"),
+      );
+      console.log(
+        chalk.gray("  Options:"),
+        chalk.cyan(JSON.stringify(options, null, 2)),
+      );
+      console.log(chalk.gray("  Node Version:"), chalk.green(process.version));
+      console.log(
+        chalk.gray("  Working Directory:"),
+        chalk.yellow(process.cwd()),
+      );
+      console.log();
+    }
+
+    try {
+      // Use enhanced init command for better features
+      await enhancedInitCommand(projectName, options);
+    } catch (error) {
+      console.error(chalk.red.bold("❌ Project initialization failed:"));
+      console.error(chalk.gray(`   ${error.message}`));
+      if (options.verbose) {
+        console.error(chalk.gray("   Stack trace:"), error.stack);
+      }
+      process.exit(1);
+    }
+  });
 
 // Modern Init command with enhanced UX and comprehensive options
 program
@@ -587,12 +790,14 @@ program
 program
   .command("interactive")
   .alias("i")
-  .description(ghostColors.ghost("👻 Interactive project creation with ghost theme"))
+  .description(
+    ghostColors.ghost("👻 Interactive project creation with ghost theme"),
+  )
   .option("--preset <preset>", "Use a predefined configuration preset")
   .action(async (options) => {
     try {
       createGhostBanner("JS Stack");
-      
+
       let config;
       if (options.preset) {
         // Handle preset
@@ -609,31 +814,33 @@ program
         // Interactive setup
         config = await createInteractiveProjectSetup();
       }
-      
+
       // Create project with ghost theme
       const spinner = createGhostSpinner("Creating your project...");
       spinner.start();
-      
+
       // Simulate project creation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       spinner.succeed("Project created successfully!");
-      showGhostSuccess("Project Created!", `Your ${config.projectName} project is ready to go!`);
-      
-      // Show next steps
-      showGhostInfo("Next Steps:", 
-        `cd ${config.projectName}\n` +
-        `${config.packageManager} install\n` +
-        `${config.packageManager} run dev`
+      showGhostSuccess(
+        "Project Created!",
+        `Your ${config.projectName} project is ready to go!`,
       );
-      
+
+      // Show next steps
+      showGhostInfo(
+        "Next Steps:",
+        `cd ${config.projectName}\n` +
+          `${config.packageManager} install\n` +
+          `${config.packageManager} run dev`,
+      );
     } catch (error) {
       handleCliError(error, "interactive");
     }
   });
 
 // New Commands
-
 
 // Enhanced help text with modern design
 program.addHelpText("before", () => {
@@ -700,30 +907,32 @@ program.exitOverride();
 // Global error handler with ghost theme
 process.on("uncaughtException", (error) => {
   showGhostError("Uncaught Exception", error.message);
-  
+
   if (error.stack) {
     console.log(ghostColors.muted("\nStack trace:"));
     console.log(ghostColors.dim(error.stack));
   }
-  
-  showGhostInfo("Troubleshooting Tips", 
+
+  showGhostInfo(
+    "Troubleshooting Tips",
     "• Check your Node.js version (requires 18+)\n" +
-    "• Try running with --verbose for more details\n" +
-    "• Report this issue: https://github.com/vipinyadav01/js-stack/issues"
+      "• Try running with --verbose for more details\n" +
+      "• Report this issue: https://github.com/vipinyadav01/js-stack/issues",
   );
-  
+
   process.exit(1);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
   showGhostError("Unhandled Promise Rejection", reason);
-  
-  showGhostInfo("Troubleshooting Tips", 
+
+  showGhostInfo(
+    "Troubleshooting Tips",
     "• Check your internet connection\n" +
-    "• Try running with --verbose for more details\n" +
-    "• Report this issue: https://github.com/vipinyadav01/js-stack/issues"
+      "• Try running with --verbose for more details\n" +
+      "• Report this issue: https://github.com/vipinyadav01/js-stack/issues",
   );
-  
+
   process.exit(1);
 });
 

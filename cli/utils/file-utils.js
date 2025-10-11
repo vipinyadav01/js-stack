@@ -7,7 +7,7 @@ import Handlebars from "handlebars";
 import "./handlebars-helpers.js";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__dirname);
+const __dirname = dirname(__filename);
 
 /**
  * Copy directory recursively
