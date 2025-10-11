@@ -3,7 +3,7 @@
 import { ChevronDown, Check, X, AlertTriangle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
@@ -99,33 +99,19 @@ const getCategoryColor = (
   );
 };
 
-const generateStackCommand = (state: BuilderState): string => {
-  const parts = [`npx create-js-stack@latest ${state.projectName}`];
-  if (state.frontend !== "none") parts.push(`--frontend ${state.frontend}`);
-  if (state.backend !== "none") parts.push(`--backend ${state.backend}`);
-  if (state.database !== "none") parts.push(`--database ${state.database}`);
-  if (state.orm !== "none") parts.push(`--orm ${state.orm}`);
-  if (state.auth !== "none") parts.push(`--auth ${state.auth}`);
-  if (state.addons.length > 0) parts.push(`--addons ${state.addons.join(",")}`);
-  if (state.packageManager !== "npm")
-    parts.push(`--pm ${state.packageManager}`);
-  if (!state.installDependencies) parts.push("--no-install");
-  if (!state.initializeGit) parts.push("--no-git");
-  return parts.join(" ");
-};
-
 export default function BuilderPage() {
-  const { state, onToggle, onNameChange, onPackageManagerChange, setState } =
-    useBuilderState();
-  const [command, setCommand] = useState("");
+  const {
+    state,
+    command,
+    onToggle,
+    onNameChange,
+    onPackageManagerChange,
+    setState,
+  } = useBuilderState();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(CATEGORY_ORDER),
   );
   const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setCommand(generateStackCommand(state));
-  }, [state]);
 
   const handleTechSelect = (category: keyof BuilderState, techId: string) => {
     onToggle(category, techId);
