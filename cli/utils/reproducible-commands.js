@@ -1,245 +1,219 @@
-import chalk from "chalk";
 import { TECHNOLOGY_OPTIONS } from "../config/ValidationSchemas.js";
 
 /**
- * Generate reproducible commands for project recreation
+ * Generate reproducible CLI command from project configuration
+ * Similar to the example you showed, but adapted for JS-Stack
  */
-export class ReproducibleCommands {
-  constructor() {
-    this.commands = [];
+export function generateReproducibleCommand(config) {
+  const flags = [];
+
+  // Frontend
+  if (
+    config.frontend &&
+    config.frontend.length > 0 &&
+    config.frontend[0] !== "none"
+  ) {
+    flags.push(`--frontend ${config.frontend.join(" ")}`);
+  } else {
+    flags.push("--frontend none");
   }
 
-  /**
-   * Generate the exact command to recreate the project
-   * @param {Object} config - Project configuration
-   * @returns {string} - Reproducible command
-   */
-  generateCommand(config) {
-    const parts = ["npx create-js-stack@latest", config.projectName];
+  // Backend
+  flags.push(`--backend ${config.backend || "none"}`);
 
-    // Add flags based on configuration
-    if (config.database && config.database !== "none") {
-      parts.push(`--database ${config.database}`);
-    }
+  // Database
+  flags.push(`--database ${config.database || "none"}`);
 
-    if (config.orm && config.orm !== "none") {
-      parts.push(`--orm ${config.orm}`);
-    }
+  // ORM
+  flags.push(`--orm ${config.orm || "none"}`);
 
-    if (config.backend && config.backend !== "none") {
-      parts.push(`--backend ${config.backend}`);
-    }
+  // Auth
+  flags.push(`--auth ${config.auth || "none"}`);
 
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes("none")) {
-      const frontendStr = config.frontend.join(",");
-      parts.push(`--frontend ${frontendStr}`);
-    }
-
-    if (config.auth && config.auth !== "none") {
-      parts.push(`--auth ${config.auth}`);
-    }
-
-    if (config.addons && config.addons.length > 0) {
-      const addonsStr = config.addons.join(",");
-      parts.push(`--addons ${addonsStr}`);
-    }
-
-    if (config.packageManager && config.packageManager !== "npm") {
-      parts.push(`--pm ${config.packageManager}`);
-    }
-
-    if (config.typescript) {
-      parts.push("--typescript");
-    }
-
-    if (config.git === false) {
-      parts.push("--no-git");
-    }
-
-    if (config.install === false) {
-      parts.push("--no-install");
-    }
-
-    return parts.join(" ");
+  // Addons
+  if (config.addons && config.addons.length > 0) {
+    flags.push(`--addons ${config.addons.join(",")}`);
+  } else {
+    flags.push("--addons none");
   }
 
-  /**
-   * Generate alternative commands for different scenarios
-   * @param {Object} config - Project configuration
-   * @returns {Object} - Different command variations
-   */
-  generateAlternatives(config) {
-    const alternatives = {
-      minimal: this.generateMinimalCommand(config),
-      full: this.generateFullCommand(config),
-      preset: this.generatePresetCommand(config),
-      interactive: this.generateInteractiveCommand(config),
-    };
+  // Package manager
+  flags.push(`--package-manager ${config.packageManager || "npm"}`);
 
-    return alternatives;
+  // Git initialization
+  flags.push(config.git !== false ? "--git" : "--no-git");
+
+  // Install dependencies
+  flags.push(config.install !== false ? "--install" : "--no-install");
+
+  // Build base command based on package manager
+  let baseCommand = "npx create-js-stack@latest";
+  const pkgManager = config.packageManager || "npm";
+
+  switch (pkgManager) {
+    case "bun":
+      baseCommand = "bunx create-js-stack@latest";
+      break;
+    case "pnpm":
+      baseCommand = "pnpm create js-stack@latest";
+      break;
+    case "yarn":
+      baseCommand = "yarn create js-stack@latest";
+      break;
+    case "npm":
+    default:
+      baseCommand = "npx create-js-stack@latest";
+      break;
   }
 
-  /**
-   * Generate minimal command (only essential flags)
-   */
-  generateMinimalCommand(config) {
-    const parts = ["npx create-js-stack@latest", config.projectName];
+  const projectPathArg = config.projectName ? ` ${config.projectName}` : "";
 
-    // Only include non-default values
-    if (config.database && config.database !== "sqlite") {
-      parts.push(`--database ${config.database}`);
-    }
+  return `${baseCommand}${projectPathArg} ${flags.join(" ")}`;
+}
 
-    if (config.backend && config.backend !== "express") {
-      parts.push(`--backend ${config.backend}`);
-    }
+/**
+ * Generate multiple reproducible commands for different scenarios
+ */
+export function generateMultipleCommands(config) {
+  const commands = {
+    // Main command with all options
+    full: generateReproducibleCommand(config),
 
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes("react")) {
-      const frontendStr = config.frontend.join(",");
-      parts.push(`--frontend ${frontendStr}`);
-    }
+    // Simplified command (only essential options)
+    simple: generateSimpleCommand(config),
 
-    return parts.join(" ");
+    // Quick start command
+    quick: generateQuickCommand(config),
+  };
+
+  return commands;
+}
+
+/**
+ * Generate simplified command with only essential options
+ */
+export function generateSimpleCommand(config) {
+  const flags = [];
+
+  // Only include non-default values
+  if (
+    config.frontend &&
+    config.frontend.length > 0 &&
+    config.frontend[0] !== "react"
+  ) {
+    flags.push(`--frontend ${config.frontend.join(" ")}`);
   }
 
-  /**
-   * Generate full command (all flags)
-   */
-  generateFullCommand(config) {
-    return this.generateCommand(config);
+  if (config.backend && config.backend !== "express") {
+    flags.push(`--backend ${config.backend}`);
   }
 
-  /**
-   * Generate preset-based command
-   */
-  generatePresetCommand(config) {
-    // Try to match to a preset
-    const preset = this.detectPreset(config);
-    if (preset) {
-      return `npx create-js-stack@latest ${config.projectName} --preset ${preset}`;
-    }
-    return this.generateCommand(config);
+  if (config.database && config.database !== "mongodb") {
+    flags.push(`--database ${config.database}`);
   }
 
-  /**
-   * Generate interactive command
-   */
-  generateInteractiveCommand(config) {
-    return `npx create-js-stack@latest ${config.projectName}`;
+  if (config.orm && config.orm !== "mongoose") {
+    flags.push(`--orm ${config.orm}`);
   }
 
-  /**
-   * Detect if configuration matches a preset
-   */
-  detectPreset(config) {
-    const presets = {
-      saas: {
-        frontend: ["nextjs"],
-        backend: "none",
-        database: "postgres",
-        orm: "prisma",
-        auth: "nextauth",
-        addons: ["typescript", "tailwind", "eslint", "prettier"],
-      },
-      api: {
-        frontend: ["none"],
-        backend: "express",
-        database: "postgres",
-        orm: "prisma",
-        auth: "jwt",
-        addons: ["typescript", "eslint", "prettier"],
-      },
-      fullstack: {
-        frontend: ["react"],
-        backend: "express",
-        database: "sqlite",
-        orm: "prisma",
-        auth: "jwt",
-        addons: ["typescript", "eslint", "prettier"],
-      },
-      minimal: {
-        frontend: ["react"],
-        backend: "none",
-        database: "none",
-        orm: "none",
-        auth: "none",
-        addons: [],
-      },
-    };
-
-    for (const [presetName, presetConfig] of Object.entries(presets)) {
-      if (this.configMatchesPreset(config, presetConfig)) {
-        return presetName;
-      }
-    }
-
-    return null;
+  if (config.auth && config.auth !== "jwt") {
+    flags.push(`--auth ${config.auth}`);
   }
 
-  /**
-   * Check if config matches a preset
-   */
-  configMatchesPreset(config, presetConfig) {
-    return (
-      config.frontend.every(f => presetConfig.frontend.includes(f)) &&
-      config.backend === presetConfig.backend &&
-      config.database === presetConfig.database &&
-      config.orm === presetConfig.orm &&
-      config.auth === presetConfig.auth &&
-      config.addons.every(a => presetConfig.addons.includes(a))
-    );
+  if (config.addons && config.addons.length > 0) {
+    flags.push(`--addons ${config.addons.join(",")}`);
   }
 
-  /**
-   * Display reproducible commands
-   */
-  displayCommands(config) {
-    const command = this.generateCommand(config);
-    const alternatives = this.generateAlternatives(config);
-
-    console.log(chalk.green.bold("\n🔄 Reproducible Commands:"));
-    console.log(chalk.gray("Copy and run this exact command to recreate your project:"));
-    console.log();
-    console.log(chalk.cyan.bold("📋 Exact Command:"));
-    console.log(chalk.white(`  ${command}`));
-    console.log();
-
-    console.log(chalk.blue.bold("🎯 Alternative Commands:"));
-    console.log(chalk.gray("  Minimal (essential flags only):"));
-    console.log(chalk.white(`    ${alternatives.minimal}`));
-    console.log();
-    console.log(chalk.gray("  Interactive (prompts for all options):"));
-    console.log(chalk.white(`    ${alternatives.interactive}`));
-    console.log();
-
-    if (alternatives.preset !== command) {
-      console.log(chalk.gray("  Preset-based (if available):"));
-      console.log(chalk.white(`    ${alternatives.preset}`));
-      console.log();
-    }
-
-    // Add copy instruction
-    console.log(chalk.yellow("💡 Tip: Click to copy the command above"));
+  if (config.packageManager && config.packageManager !== "npm") {
+    flags.push(`--package-manager ${config.packageManager}`);
   }
 
-  /**
-   * Generate command for adding features to existing project
-   */
-  generateAddCommand(features) {
-    return `npx create-js-stack@latest add ${features.join(" ")}`;
-  }
+  // Always include git and install flags for clarity
+  flags.push(config.git !== false ? "--git" : "--no-git");
+  flags.push(config.install !== false ? "--install" : "--no-install");
 
-  /**
-   * Display add commands
-   */
-  displayAddCommands(config) {
-    if (config.addons && config.addons.length > 0) {
-      console.log(chalk.blue.bold("\n➕ Add More Features:"));
-      console.log(chalk.gray("Add these features to your existing project:"));
-      console.log(chalk.white(`  ${this.generateAddCommand(config.addons)}`));
-      console.log();
-    }
+  const projectPathArg = config.projectName ? ` ${config.projectName}` : "";
+  const baseCommand = getBaseCommand(config.packageManager);
+
+  return `${baseCommand}${projectPathArg} ${flags.join(" ")}`;
+}
+
+/**
+ * Generate quick start command (minimal options)
+ */
+export function generateQuickCommand(config) {
+  const projectPathArg = config.projectName ? ` ${config.projectName}` : "";
+  const baseCommand = getBaseCommand(config.packageManager);
+
+  // --yes automatically includes --git and --install
+  return `${baseCommand}${projectPathArg} --yes`;
+}
+
+/**
+ * Get base command based on package manager
+ */
+function getBaseCommand(packageManager = "npm") {
+  switch (packageManager) {
+    case "bun":
+      return "bunx create-js-stack@latest";
+    case "pnpm":
+      return "pnpm create js-stack@latest";
+    case "yarn":
+      return "yarn create js-stack@latest";
+    case "npm":
+    default:
+      return "npx create-js-stack@latest";
   }
 }
 
-export default ReproducibleCommands;
+/**
+ * Display reproducible commands in a formatted way
+ */
+export function displayReproducibleCommands(config, options = {}) {
+  const { showSimple = true, showQuick = true } = options;
+  const commands = generateMultipleCommands(config);
+
+  console.log("\n🔁 Reproducible Commands:");
+  console.log("═══════════════════════════════════════");
+
+  if (showQuick) {
+    console.log(`\n📦 Quick Start:`);
+    console.log(`  ${commands.quick}`);
+  }
+
+  if (showSimple) {
+    console.log(`\n⚡ Simple (essential options only):`);
+    console.log(`  ${commands.simple}`);
+  }
+
+  console.log(`\n🔧 Full Command (all options):`);
+  console.log(`  ${commands.full}`);
+
+  console.log(
+    "\n💡 Tip: Use the simple command for sharing, full command for exact reproduction",
+  );
+}
+
+/**
+ * Export command as environment variable for easy copying
+ */
+export function exportCommandAsEnv(config, commandType = "full") {
+  const commands = generateMultipleCommands(config);
+  const command = commands[commandType];
+
+  // Replace spaces with escaped spaces for environment variable
+  const envCommand = command.replace(/ /g, "\\ ");
+
+  console.log(`\n📋 Export as environment variable:`);
+  console.log(`  export JS_STACK_COMMAND="${envCommand}"`);
+  console.log(`  eval $JS_STACK_COMMAND`);
+}
+
+export default {
+  generateReproducibleCommand,
+  generateMultipleCommands,
+  generateSimpleCommand,
+  generateQuickCommand,
+  displayReproducibleCommands,
+  exportCommandAsEnv,
+};

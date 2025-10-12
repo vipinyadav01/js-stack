@@ -1,5 +1,12 @@
 import chalk from "chalk";
-import { existsSync, statSync, writeFileSync, unlinkSync, mkdirSync, rmdirSync } from "fs";
+import {
+  existsSync,
+  statSync,
+  writeFileSync,
+  unlinkSync,
+  mkdirSync,
+  rmdirSync,
+} from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import os from "os";
@@ -29,16 +36,16 @@ export class ReliabilityManager {
 
     // Check system requirements
     await this.checkSystemRequirements();
-    
+
     // Check project directory
     await this.checkProjectDirectory(config);
-    
+
     // Check template availability
     await this.checkTemplateAvailability(config);
-    
+
     // Check dependencies
     await this.checkDependencies();
-    
+
     // Check permissions
     await this.checkPermissions(config);
 
@@ -58,8 +65,8 @@ export class ReliabilityManager {
 
     // Check Node.js version
     const nodeVersion = process.version;
-    const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0]);
-    
+    const majorVersion = parseInt(nodeVersion.slice(1).split(".")[0]);
+
     if (majorVersion < 18) {
       this.errors.push({
         type: "system",
@@ -91,7 +98,8 @@ export class ReliabilityManager {
       this.errors.push({
         type: "system",
         message: "Cannot access current directory. Check permissions.",
-        solution: "Ensure you have read/write permissions in the current directory",
+        solution:
+          "Ensure you have read/write permissions in the current directory",
       });
     }
   }
@@ -111,7 +119,8 @@ export class ReliabilityManager {
       return;
     }
 
-    const projectPath = config.projectDir || join(process.cwd(), config.projectName);
+    const projectPath =
+      config.projectDir || join(process.cwd(), config.projectName);
 
     // Check if directory already exists
     if (existsSync(projectPath)) {
@@ -153,14 +162,17 @@ export class ReliabilityManager {
         join(process.cwd(), "templates"),
       ];
 
-      const foundTemplatesPath = candidateTemplatePaths.find((p) => existsSync(p));
+      const foundTemplatesPath = candidateTemplatePaths.find((p) =>
+        existsSync(p),
+      );
 
       if (!foundTemplatesPath) {
         // Do not hard fail here. Allow the generator to fetch remote templates.
         this.warnings.push({
           type: "templates",
           message: "Templates directory not found locally",
-          solution: "Remote templates will be used if available; otherwise reinstall the package",
+          solution:
+            "Remote templates will be used if available; otherwise reinstall the package",
         });
       } else {
         this.checks.push("✅ Templates directory found");
@@ -176,7 +188,11 @@ export class ReliabilityManager {
       // Check specific template requirements
       if (config.frontend && config.frontend.length > 0) {
         for (const frontend of config.frontend) {
-          const frontendPath = join(templatesPath, "templates/frontend", frontend);
+          const frontendPath = join(
+            templatesPath,
+            "02-frameworks/frontend",
+            frontend,
+          );
           if (!existsSync(frontendPath)) {
             this.warnings.push({
               type: "templates",
@@ -190,7 +206,11 @@ export class ReliabilityManager {
       }
 
       if (config.backend && config.backend !== "none") {
-        const backendPath = join(templatesPath, "templates/backend", config.backend);
+        const backendPath = join(
+          templatesPath,
+          "02-frameworks/backend",
+          config.backend,
+        );
         if (!existsSync(backendPath)) {
           this.warnings.push({
             type: "templates",
@@ -201,7 +221,6 @@ export class ReliabilityManager {
           this.checks.push(`✅ Backend template '${config.backend}' available`);
         }
       }
-
     } catch (error) {
       this.errors.push({
         type: "templates",
@@ -259,7 +278,6 @@ export class ReliabilityManager {
           });
         }
       }
-
     } catch (error) {
       this.errors.push({
         type: "dependencies",
@@ -293,11 +311,11 @@ export class ReliabilityManager {
           this.errors.push({
             type: "permissions",
             message: "Cannot create project directory",
-            solution: "Check directory permissions or choose a different location",
+            solution:
+              "Check directory permissions or choose a different location",
           });
         }
       }
-
     } catch (error) {
       this.errors.push({
         type: "permissions",
@@ -313,14 +331,14 @@ export class ReliabilityManager {
   displayResults(results) {
     if (results.checks.length > 0) {
       console.log(chalk.blue.bold("\n🔍 Reliability Checks:"));
-      results.checks.forEach(check => {
+      results.checks.forEach((check) => {
         console.log(chalk.gray(`  ${check}`));
       });
     }
 
     if (results.warnings.length > 0) {
       console.log(chalk.yellow.bold("\n⚠️  Warnings:"));
-      results.warnings.forEach(warning => {
+      results.warnings.forEach((warning) => {
         console.log(chalk.yellow(`  • ${warning.message}`));
         if (warning.solution) {
           console.log(chalk.gray(`    Solution: ${warning.solution}`));
@@ -330,7 +348,7 @@ export class ReliabilityManager {
 
     if (results.errors.length > 0) {
       console.log(chalk.red.bold("\n❌ Errors:"));
-      results.errors.forEach(error => {
+      results.errors.forEach((error) => {
         console.log(chalk.red(`  • ${error.message}`));
         if (error.solution) {
           console.log(chalk.gray(`    Solution: ${error.solution}`));
@@ -341,7 +359,11 @@ export class ReliabilityManager {
     if (results.isValid) {
       console.log(chalk.green.bold("\n✅ All reliability checks passed!"));
     } else {
-      console.log(chalk.red.bold("\n❌ Reliability checks failed. Please fix the errors above."));
+      console.log(
+        chalk.red.bold(
+          "\n❌ Reliability checks failed. Please fix the errors above.",
+        ),
+      );
     }
 
     console.log();
@@ -356,8 +378,14 @@ export class ReliabilityManager {
       totalChecks: results.checks.length,
       warnings: results.warnings.length,
       errors: results.errors.length,
-      successRate: results.checks.length > 0 ? 
-        ((results.checks.length - results.errors.length) / results.checks.length * 100).toFixed(1) : 0,
+      successRate:
+        results.checks.length > 0
+          ? (
+              ((results.checks.length - results.errors.length) /
+                results.checks.length) *
+              100
+            ).toFixed(1)
+          : 0,
     };
   }
 }

@@ -13,8 +13,6 @@ export const TECHNOLOGY_OPTIONS = {
     POSTGRES: "postgres",
     MYSQL: "mysql",
     MONGODB: "mongodb",
-    SUPABASE: "supabase",
-    PLANETSCALE: "planetscale",
   },
   ORM: {
     NONE: "none",
@@ -22,7 +20,6 @@ export const TECHNOLOGY_OPTIONS = {
     SEQUELIZE: "sequelize",
     MONGOOSE: "mongoose",
     TYPEORM: "typeorm",
-    DRIZZLE: "drizzle",
   },
   BACKEND: {
     NONE: "none",
@@ -31,8 +28,6 @@ export const TECHNOLOGY_OPTIONS = {
     KOA: "koa",
     HAPI: "hapi",
     NESTJS: "nestjs",
-    TRPC: "trpc",
-    HONO: "hono",
   },
   FRONTEND: {
     NONE: "none",
@@ -43,9 +38,6 @@ export const TECHNOLOGY_OPTIONS = {
     NEXTJS: "nextjs",
     NUXT: "nuxt",
     REACT_NATIVE: "react-native",
-    REMIX: "remix",
-    ASTRO: "astro",
-    SVELTEKIT: "sveltekit",
   },
   PACKAGE_MANAGER: {
     NPM: "npm",
@@ -59,30 +51,13 @@ export const TECHNOLOGY_OPTIONS = {
     PASSPORT: "passport",
     AUTH0: "auth0",
     OAUTH: "oauth",
-    NEXTAUTH: "nextauth",
-    SUPABASE: "supabase",
-    LUCIA: "lucia",
     BETTER_AUTH: "better-auth",
   },
   ADDON: {
-    ESLINT: "eslint",
-    PRETTIER: "prettier",
-    HUSKY: "husky",
     DOCKER: "docker",
-    GITHUB_ACTIONS: "github-actions",
     TESTING: "testing",
-    TAILWIND: "tailwind",
-    SHADCN: "shadcn",
-    STORYBOOK: "storybook",
-    TYPESCRIPT: "typescript",
     BIOME: "biome",
     TURBOREPO: "turborepo",
-    PWA: "pwa",
-    TAURI: "tauri",
-    PLAYWRIGHT: "playwright",
-    CYPRESS: "cypress",
-    VITEST: "vitest",
-    JEST: "jest",
   },
   DEPLOYMENT: {
     NONE: "none",
@@ -133,7 +108,10 @@ export const FrontendSchema = yup
   .of(
     yup
       .string()
-      .oneOf(Object.values(TECHNOLOGY_OPTIONS.FRONTEND), "Invalid frontend option"),
+      .oneOf(
+        Object.values(TECHNOLOGY_OPTIONS.FRONTEND),
+        "Invalid frontend option",
+      ),
   )
   .min(1, "At least one frontend framework must be selected")
   .test(
@@ -162,17 +140,16 @@ export const AddonSchema = yup
       .string()
       .oneOf(Object.values(TECHNOLOGY_OPTIONS.ADDON), "Invalid addon option"),
   )
-  .test(
-    "no-duplicates",
-    "Duplicate addons not allowed",
-    (value) => {
-      return value && new Set(value).size === value.length;
-    },
-  );
+  .test("no-duplicates", "Duplicate addons not allowed", (value) => {
+    return value && new Set(value).size === value.length;
+  });
 
 export const DeploymentSchema = yup
   .string()
-  .oneOf(Object.values(TECHNOLOGY_OPTIONS.DEPLOYMENT), "Invalid deployment option");
+  .oneOf(
+    Object.values(TECHNOLOGY_OPTIONS.DEPLOYMENT),
+    "Invalid deployment option",
+  );
 
 // Main project configuration schema
 export const ProjectConfigSchema = yup.object().shape({
@@ -315,8 +292,19 @@ export class ValidationHelper {
       }
     }
 
-    if ([TECHNOLOGY_OPTIONS.DATABASE.POSTGRES, TECHNOLOGY_OPTIONS.DATABASE.SQLITE].includes(config.database)) {
-      if (![TECHNOLOGY_OPTIONS.ORM.PRISMA, TECHNOLOGY_OPTIONS.ORM.SEQUELIZE, TECHNOLOGY_OPTIONS.ORM.TYPEORM].includes(config.orm)) {
+    if (
+      [
+        TECHNOLOGY_OPTIONS.DATABASE.POSTGRES,
+        TECHNOLOGY_OPTIONS.DATABASE.SQLITE,
+      ].includes(config.database)
+    ) {
+      if (
+        ![
+          TECHNOLOGY_OPTIONS.ORM.PRISMA,
+          TECHNOLOGY_OPTIONS.ORM.SEQUELIZE,
+          TECHNOLOGY_OPTIONS.ORM.TYPEORM,
+        ].includes(config.orm)
+      ) {
         errors.push(
           `${config.database} is not compatible with ${config.orm} ORM`,
         );

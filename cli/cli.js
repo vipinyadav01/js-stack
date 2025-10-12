@@ -14,6 +14,7 @@ import {
   enhancedInitCommand,
   listPresetsCommand,
 } from "./commands/enhanced-init.js";
+import { displayDebugInfo } from "./utils/debug-display.js";
 import { addCommand } from "./commands/add.js";
 import {
   createGhostBanner,
@@ -295,29 +296,27 @@ program
   .option(
     "--database <type>",
     colors.muted(
-      `${icons.database} Database: sqlite, postgres, mysql, mongodb, supabase, planetscale`,
+      `${icons.database} Database: sqlite, postgres, mysql, mongodb`,
     ),
   )
   .option(
     "--orm <type>",
-    colors.muted(
-      `${icons.gear} ORM: prisma, drizzle, sequelize, mongoose, typeorm`,
-    ),
+    colors.muted(`${icons.gear} ORM: prisma, sequelize, mongoose, typeorm`),
   )
   .option(
     "--backend <type>",
-    colors.muted(`${icons.gear} Backend: express, fastify, nestjs, trpc, hono`),
+    colors.muted(`${icons.gear} Backend: express, fastify, koa, hapi, nestjs`),
   )
   .option(
     "--frontend <types...>",
     colors.muted(
-      `${icons.paint} Frontend: react, vue, svelte, solid, nextjs, nuxt, astro`,
+      `${icons.paint} Frontend: react, vue, angular, svelte, nextjs, nuxt, react-native`,
     ),
   )
   .option(
     "--auth <type>",
     colors.muted(
-      `${icons.shield} Auth: jwt, passport, auth0, oauth, better-auth, lucia, none`,
+      `${icons.shield} Auth: jwt, passport, auth0, oauth, better-auth, none`,
     ),
   )
   .option(
@@ -332,9 +331,7 @@ program
   )
   .option(
     "--addons <addons...>",
-    colors.muted(
-      `${icons.package} Tools: typescript, eslint, prettier, biome, turborepo, pwa, tauri, docker, storybook`,
-    ),
+    colors.muted(`${icons.package} Tools: docker, testing, biome, turborepo`),
   )
   .option(
     "--deployment <type>",
@@ -417,21 +414,7 @@ ${icons.sparkles} ${chalk.bold("New Features:")}
 
     // Enhanced debug output
     if (options.verbose) {
-      console.log(chalk.gray("📋 Debug Information:"));
-      console.log(
-        chalk.gray("  Project Name:"),
-        chalk.cyan(projectName || "Not specified"),
-      );
-      console.log(
-        chalk.gray("  Options:"),
-        chalk.cyan(JSON.stringify(options, null, 2)),
-      );
-      console.log(chalk.gray("  Node Version:"), chalk.green(process.version));
-      console.log(
-        chalk.gray("  Working Directory:"),
-        chalk.yellow(process.cwd()),
-      );
-      console.log();
+      displayDebugInfo(projectName, options);
     }
 
     try {
@@ -471,29 +454,27 @@ program
   .option(
     "--database <type>",
     colors.muted(
-      `${icons.database} Database: sqlite, postgres, mysql, mongodb, supabase, planetscale`,
+      `${icons.database} Database: sqlite, postgres, mysql, mongodb`,
     ),
   )
   .option(
     "--orm <type>",
-    colors.muted(
-      `${icons.gear} ORM: prisma, drizzle, sequelize, mongoose, typeorm`,
-    ),
+    colors.muted(`${icons.gear} ORM: prisma, sequelize, mongoose, typeorm`),
   )
   .option(
     "--backend <type>",
-    colors.muted(`${icons.gear} Backend: express, fastify, nestjs, trpc, hono`),
+    colors.muted(`${icons.gear} Backend: express, fastify, koa, hapi, nestjs`),
   )
   .option(
     "--frontend <types...>",
     colors.muted(
-      `${icons.paint} Frontend: react, vue, svelte, solid, nextjs, nuxt, astro`,
+      `${icons.paint} Frontend: react, vue, angular, svelte, nextjs, nuxt, react-native`,
     ),
   )
   .option(
     "--auth <type>",
     colors.muted(
-      `${icons.shield} Auth: jwt, passport, auth0, oauth, better-auth, lucia, none`,
+      `${icons.shield} Auth: jwt, passport, auth0, oauth, better-auth, none`,
     ),
   )
   .option(
@@ -508,9 +489,7 @@ program
   )
   .option(
     "--addons <addons...>",
-    colors.muted(
-      `${icons.package} Tools: typescript, eslint, prettier, biome, turborepo, pwa, tauri, docker, storybook`,
-    ),
+    colors.muted(`${icons.package} Tools: docker, testing, biome, turborepo`),
   )
   .option(
     "--deployment <type>",
@@ -588,21 +567,7 @@ ${icons.sparkles} ${chalk.bold("New Features:")}
 
     // Enhanced debug output
     if (options.verbose) {
-      console.log(chalk.gray("📋 Debug Information:"));
-      console.log(
-        chalk.gray("  Project Name:"),
-        chalk.cyan(projectName || "Not specified"),
-      );
-      console.log(
-        chalk.gray("  Options:"),
-        chalk.cyan(JSON.stringify(options, null, 2)),
-      );
-      console.log(chalk.gray("  Node Version:"), chalk.green(process.version));
-      console.log(
-        chalk.gray("  Working Directory:"),
-        chalk.yellow(process.cwd()),
-      );
-      console.log();
+      displayDebugInfo(projectName, options);
     }
 
     try {

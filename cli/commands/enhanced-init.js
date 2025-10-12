@@ -19,10 +19,11 @@ import {
   displayError,
   createStepProgress,
 } from "../utils/modern-render.js";
+import { displayResultInfo } from "../utils/debug-display.js";
 import { performanceUtils } from "../utils/performance.js";
 import { getPresetConfig, listPresets } from "../utils/validation.js";
 import { SmartCompatibility } from "../utils/smart-compatibility.js";
-import { ReproducibleCommands } from "../utils/reproducible-commands.js";
+import reproducibleCommands from "../utils/reproducible-commands.js";
 import { ReliabilityManager } from "../utils/reliability.js";
 import {
   createGhostSpinner,
@@ -72,10 +73,12 @@ export async function enhancedInitCommand(projectName, options) {
 
     // If --yes flag is provided, respect provided flags and set CI mode; only fill missing values
     if (options.yes) {
+      const originalOptions = { ...options };
+
       options = {
+        ...options,
         ci: true,
         packageManager: options.packageManager || options.pm || "npm",
-        // Do NOT override selections provided via flags
         database: options.database ?? undefined,
         orm: options.orm ?? undefined,
         backend: options.backend ?? undefined,
@@ -83,9 +86,7 @@ export async function enhancedInitCommand(projectName, options) {
         auth: options.auth ?? undefined,
         addons: options.addons ?? undefined,
         git: options.git !== false,
-        // Per requirement: always install even if --no-install passed
         install: true,
-        ...options,
       };
     }
 
@@ -239,12 +240,9 @@ export async function enhancedInitCommand(projectName, options) {
       await installer.installSuggestedAddons(compatibilityReport.suggestions);
     }
 
-    // Debug: Log the result structure
+    // Debug: Log the result structure in a more readable format
     if (options.verbose) {
-      console.log(
-        chalk.gray("Debug - Result structure:"),
-        JSON.stringify(result, null, 2),
-      );
+      displayResultInfo(result);
     }
 
     // Show success message with enhanced details
@@ -255,9 +253,9 @@ export async function enhancedInitCommand(projectName, options) {
     displayNextSteps(projectConfig);
 
     // Show reproducible commands
-    const reproducibleCommands = new ReproducibleCommands();
-    reproducibleCommands.displayCommands(projectConfig);
-    reproducibleCommands.displayAddCommands(projectConfig);
+    const { generateReproducibleCommand } = reproducibleCommands;
+    console.log("\n🔁 Reproducible command:");
+    console.log(`  ${generateReproducibleCommand(projectConfig)}`);
 
     // Show performance summary
     if (options.verbose) {
@@ -307,15 +305,40 @@ async function displayEnhancedSuccess(result) {
   }
 
   if (result.health) {
-    console.log(chalk.cyan.bold("🔍 Health Check:"));
-    console.log(chalk.gray(`  Passed: ${result.health.passed}`));
-    console.log(chalk.gray(`  Warnings: ${result.health.warnings}`));
-    console.log(chalk.gray(`  Failed: ${result.health.failed}`));
+    console.log(chalk.cyan.bold("🔍 Health Check Summary:"));
+    console.log(chalk.gray("─".repeat(40)));
+    console.log(chalk.green(`   ✅ Passed: ${result.health.passed}`));
+    console.log(chalk.yellow(`   ⚠️  Warnings: ${result.health.warnings}`));
+    console.log(chalk.red(`   ❌ Failed: ${result.health.failed}`));
     console.log(
-      chalk.gray(
-        `  Success Rate: ${result.health.summary.successRate.toFixed(1)}%`,
+      chalk.blue(
+        `   📊 Success Rate: ${result.health.summary?.successRate?.toFixed(1) || 0}%`,
       ),
     );
+
+    // Show detailed health check results if available
+    if (result.health.checks && result.health.checks.length > 0) {
+      console.log(chalk.gray("\n   Detailed Results:"));
+      result.health.checks.forEach((check) => {
+        const icon =
+          check.status === "passed"
+            ? "✅"
+            : check.status === "warning"
+              ? "⚠️"
+              : "❌";
+        const color =
+          check.status === "passed"
+            ? chalk.green
+            : check.status === "warning"
+              ? chalk.yellow
+              : chalk.red;
+        console.log(
+          chalk.gray(`   ${icon} `) + color(`${check.name}: ${check.message}`),
+        );
+      });
+    }
+
+    console.log(chalk.gray("─".repeat(40)));
     console.log();
   }
 }

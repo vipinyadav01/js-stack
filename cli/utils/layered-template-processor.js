@@ -1,8 +1,15 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } from "fs";
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  copyFileSync,
+} from "fs";
 import { join, dirname, basename } from "path";
 import Handlebars from "handlebars";
 import chalk from "chalk";
 import { ConflictResolver } from "./conflict-resolver.js";
+import { getTemplateDir } from "./file-utils.js";
 
 // Register Handlebars helpers
 Handlebars.registerHelper("eq", function (a, b) {
@@ -33,11 +40,28 @@ Handlebars.registerHelper("and", function () {
 export class LayeredTemplateProcessor {
   constructor(config) {
     this.config = config;
-    this.templateDir = join(process.cwd(), "cli/templates/templates");
+    this.templateDir = getTemplateDir();
     this.projectDir = config.projectDir;
     this.conflictResolver = new ConflictResolver();
     this.processedFiles = [];
     this.conflicts = [];
+  }
+
+  /**
+   * Get human-readable description for a layer
+   * @param {string} layerName - Layer name
+   * @returns {string} - Description
+   */
+  getLayerDescription(layerName) {
+    const descriptions = {
+      "01-base": "Base project structure and configuration",
+      "02-frameworks": "Frontend and backend frameworks",
+      "03-integrations": "Database and external integrations",
+      "04-features": "Authentication and feature modules",
+      "05-tooling": "Development tools and configurations",
+      "06-deployment": "Deployment and production configs",
+    };
+    return descriptions[layerName] || "Processing templates";
   }
 
   /**
@@ -46,12 +70,12 @@ export class LayeredTemplateProcessor {
    */
   async processTemplates() {
     const layers = [
-      "01-base",        // Base layer - always copied
-      "02-frameworks",  // Framework layer - React, Express, etc.
+      "01-base", // Base layer - always copied
+      "02-frameworks", // Framework layer - React, Express, etc.
       "03-integrations", // Integration layer - Database, API
-      "04-features",    // Feature layer - Auth, examples
-      "05-tooling",     // Tooling layer - Biome, Docker, etc.
-      "06-deployment"   // Deployment layer - Vercel, Cloudflare
+      "04-features", // Feature layer - Auth, examples
+      "05-tooling", // Tooling layer - Biome, Docker, etc.
+      "06-deployment", // Deployment layer - Vercel, Cloudflare
     ];
 
     console.log(chalk.blue.bold("\n🎨 Processing Templates in Layers:"));
@@ -67,7 +91,7 @@ export class LayeredTemplateProcessor {
     return {
       success: true,
       processedFiles: this.processedFiles,
-      conflicts: this.conflicts
+      conflicts: this.conflicts,
     };
   }
 
@@ -77,13 +101,15 @@ export class LayeredTemplateProcessor {
    */
   async processLayer(layerName) {
     const layerPath = join(this.templateDir, layerName);
-    
+
     if (!existsSync(layerPath)) {
-      console.log(chalk.gray(`  ⏭️  ${layerName} - No templates`));
+      console.log(chalk.gray(`  ⏭️  ${layerName} - No templates available`));
       return;
     }
 
-    console.log(chalk.cyan(`  📁 ${layerName} - Processing...`));
+    // Get layer description
+    const layerDescription = this.getLayerDescription(layerName);
+    console.log(chalk.cyan(`  📁 ${layerName} - ${layerDescription}`));
 
     // Process based on layer type
     switch (layerName) {
@@ -126,23 +152,23 @@ export class LayeredTemplateProcessor {
       for (const frontend of this.config.frontend) {
         const frontendPath = join(layerPath, "frontend", frontend);
         if (existsSync(frontendPath)) {
-          const targetPath = this.config.addons.includes('turborepo') 
+          const targetPath = this.config.addons.includes("turborepo")
             ? join(this.projectDir, "apps", "web")
             : join(this.projectDir, "frontend");
-          
+
           await this.processDirectory(frontendPath, targetPath);
         }
       }
     }
 
     // Process backend frameworks
-    if (this.config.backend && this.config.backend !== 'none') {
+    if (this.config.backend && this.config.backend !== "none") {
       const backendPath = join(layerPath, "backend", this.config.backend);
       if (existsSync(backendPath)) {
-        const targetPath = this.config.addons.includes('turborepo')
+        const targetPath = this.config.addons.includes("turborepo")
           ? join(this.projectDir, "apps", "server")
           : join(this.projectDir, "backend");
-        
+
         await this.processDirectory(backendPath, targetPath);
       }
     }
@@ -154,13 +180,13 @@ export class LayeredTemplateProcessor {
    */
   async processIntegrationLayer(layerPath) {
     // Process database integration
-    if (this.config.database && this.config.database !== 'none') {
+    if (this.config.database && this.config.database !== "none") {
       const dbPath = join(layerPath, "database", this.config.orm);
       if (existsSync(dbPath)) {
-        const targetPath = this.config.addons.includes('turborepo')
+        const targetPath = this.config.addons.includes("turborepo")
           ? join(this.projectDir, "packages", "database")
           : join(this.projectDir, "database");
-        
+
         await this.processDirectory(dbPath, targetPath);
       }
     }
@@ -172,13 +198,13 @@ export class LayeredTemplateProcessor {
    */
   async processFeatureLayer(layerPath) {
     // Process authentication
-    if (this.config.auth && this.config.auth !== 'none') {
+    if (this.config.auth && this.config.auth !== "none") {
       const authPath = join(layerPath, "auth", this.config.auth);
       if (existsSync(authPath)) {
-        const targetPath = this.config.addons.includes('turborepo')
+        const targetPath = this.config.addons.includes("turborepo")
           ? join(this.projectDir, "packages", "auth")
           : join(this.projectDir, "auth");
-        
+
         await this.processDirectory(authPath, targetPath);
       }
     }
@@ -190,7 +216,11 @@ export class LayeredTemplateProcessor {
    */
   async processToolingLayer(layerPath) {
     // Process testing
-    if (this.config.addons.includes('testing') || this.config.addons.includes('jest') || this.config.addons.includes('vitest')) {
+    if (
+      this.config.addons.includes("testing") ||
+      this.config.addons.includes("jest") ||
+      this.config.addons.includes("vitest")
+    ) {
       const testingPath = join(layerPath, "testing", "jest"); // Default to jest
       if (existsSync(testingPath)) {
         await this.processDirectory(testingPath, this.projectDir);
@@ -198,7 +228,7 @@ export class LayeredTemplateProcessor {
     }
 
     // Process Docker
-    if (this.config.addons.includes('docker')) {
+    if (this.config.addons.includes("docker")) {
       const dockerPath = join(layerPath, "docker");
       if (existsSync(dockerPath)) {
         await this.processDirectory(dockerPath, this.projectDir);
@@ -206,7 +236,7 @@ export class LayeredTemplateProcessor {
     }
 
     // Process Biome
-    if (this.config.addons.includes('biome')) {
+    if (this.config.addons.includes("biome")) {
       const biomePath = join(layerPath, "biome");
       if (existsSync(biomePath)) {
         await this.processDirectory(biomePath, this.projectDir);
@@ -214,7 +244,7 @@ export class LayeredTemplateProcessor {
     }
 
     // Process Turborepo
-    if (this.config.addons.includes('turborepo')) {
+    if (this.config.addons.includes("turborepo")) {
       const turborepoPath = join(layerPath, "turborepo");
       if (existsSync(turborepoPath)) {
         await this.processDirectory(turborepoPath, this.projectDir);
@@ -227,7 +257,7 @@ export class LayeredTemplateProcessor {
    * @param {string} layerPath - Deployment layer path
    */
   async processDeploymentLayer(layerPath) {
-    if (this.config.deployment && this.config.deployment !== 'none') {
+    if (this.config.deployment && this.config.deployment !== "none") {
       const deploymentPath = join(layerPath, this.config.deployment);
       if (existsSync(deploymentPath)) {
         await this.processDirectory(deploymentPath, this.projectDir);
@@ -242,13 +272,13 @@ export class LayeredTemplateProcessor {
    */
   async processDirectory(sourcePath, targetPath) {
     const { readdirSync, statSync } = await import("fs");
-    
+
     if (!existsSync(targetPath)) {
       mkdirSync(targetPath, { recursive: true });
     }
 
     const items = readdirSync(sourcePath);
-    
+
     for (const item of items) {
       const sourceItemPath = join(sourcePath, item);
       const targetItemPath = join(targetPath, item);
@@ -269,39 +299,43 @@ export class LayeredTemplateProcessor {
    */
   async processFile(sourcePath, targetPath) {
     // Remove .hbs extension from target path if it's a Handlebars template
-    if (sourcePath.endsWith('.hbs')) {
-      targetPath = targetPath.replace(/\.hbs$/, '');
+    if (sourcePath.endsWith(".hbs")) {
+      targetPath = targetPath.replace(/\.hbs$/, "");
     }
 
     // Check for conflicts
     if (existsSync(targetPath)) {
-      const conflict = this.conflictResolver.resolveConflict(targetPath, sourcePath, "template");
+      const conflict = this.conflictResolver.resolveConflict(
+        targetPath,
+        sourcePath,
+        "template",
+      );
       this.conflicts.push({
         file: targetPath,
         action: conflict.action,
         reason: conflict.reason,
-        newPath: conflict.newPath
+        newPath: conflict.newPath,
       });
 
       // Handle conflict based on action
       switch (conflict.action) {
-        case 'override':
+        case "override":
           // Continue with normal processing (override)
           break;
-        case 'merge':
+        case "merge":
           await this.mergeFile(sourcePath, targetPath);
           return;
-        case 'append':
+        case "append":
           await this.appendToFile(sourcePath, targetPath);
           return;
-        case 'rename':
+        case "rename":
           targetPath = join(dirname(targetPath), conflict.newPath);
           break;
       }
     }
 
     // Process Handlebars template
-    if (sourcePath.endsWith('.hbs')) {
+    if (sourcePath.endsWith(".hbs")) {
       await this.processHandlebarsTemplate(sourcePath, targetPath);
     } else {
       // Copy file as-is
@@ -317,20 +351,20 @@ export class LayeredTemplateProcessor {
    * @param {string} targetPath - Target file path
    */
   async processHandlebarsTemplate(sourcePath, targetPath) {
-    const templateContent = readFileSync(sourcePath, 'utf-8');
+    const templateContent = readFileSync(sourcePath, "utf-8");
     const template = Handlebars.compile(templateContent);
-    
+
     // Prepare template context
     const context = this.prepareTemplateContext();
-    
+
     // Render template
     const renderedContent = template(context);
-    
+
     // Ensure target directory exists
     mkdirSync(dirname(targetPath), { recursive: true });
-    
+
     // Write rendered content
-    writeFileSync(targetPath, renderedContent, 'utf-8');
+    writeFileSync(targetPath, renderedContent, "utf-8");
   }
 
   /**
@@ -339,12 +373,15 @@ export class LayeredTemplateProcessor {
    * @param {string} targetPath - Target file path
    */
   async mergeFile(sourcePath, targetPath) {
-    if (basename(targetPath) === 'package.json') {
-      const sourceContent = JSON.parse(readFileSync(sourcePath, 'utf-8'));
-      const targetContent = JSON.parse(readFileSync(targetPath, 'utf-8'));
-      
-      const merged = this.conflictResolver.mergePackageJson(targetContent, sourceContent);
-      writeFileSync(targetPath, JSON.stringify(merged, null, 2), 'utf-8');
+    if (basename(targetPath) === "package.json") {
+      const sourceContent = JSON.parse(readFileSync(sourcePath, "utf-8"));
+      const targetContent = JSON.parse(readFileSync(targetPath, "utf-8"));
+
+      const merged = this.conflictResolver.mergePackageJson(
+        targetContent,
+        sourceContent,
+      );
+      writeFileSync(targetPath, JSON.stringify(merged, null, 2), "utf-8");
     }
   }
 
@@ -354,7 +391,7 @@ export class LayeredTemplateProcessor {
    * @param {string} targetPath - Target file path
    */
   async appendToFile(sourcePath, targetPath) {
-    const sourceContent = readFileSync(sourcePath, 'utf-8');
+    const sourceContent = readFileSync(sourcePath, "utf-8");
     this.conflictResolver.appendToFile(targetPath, sourceContent);
   }
 
@@ -364,20 +401,22 @@ export class LayeredTemplateProcessor {
    */
   prepareTemplateContext() {
     const addons = Array.isArray(this.config.addons) ? this.config.addons : [];
-    const frontend = Array.isArray(this.config.frontend) ? this.config.frontend : [];
-    
+    const frontend = Array.isArray(this.config.frontend)
+      ? this.config.frontend
+      : [];
+
     return {
       projectName: this.config.projectName,
-      database: this.config.database || 'none',
-      orm: this.config.orm || 'none',
-      backend: this.config.backend || 'none',
+      database: this.config.database || "none",
+      orm: this.config.orm || "none",
+      backend: this.config.backend || "none",
       frontend: frontend,
-      auth: this.config.auth || 'none',
+      auth: this.config.auth || "none",
       addons: addons,
-      deployment: this.config.deployment || 'none',
-      packageManager: this.config.packageManager || 'npm',
-      typescript: this.config.typescript || addons.includes('typescript'),
-      useTypeScript: this.config.typescript || addons.includes('typescript')
+      deployment: this.config.deployment || "none",
+      packageManager: this.config.packageManager || "npm",
+      typescript: this.config.typescript || addons.includes("typescript"),
+      useTypeScript: this.config.typescript || addons.includes("typescript"),
     };
   }
 
@@ -387,8 +426,12 @@ export class LayeredTemplateProcessor {
    */
   displaySummary(result) {
     console.log(chalk.green.bold("\n✅ Template Processing Complete!"));
-    console.log(chalk.gray(`  • Files processed: ${result.processedFiles.length}`));
-    console.log(chalk.gray(`  • Conflicts resolved: ${result.conflicts.length}`));
+    console.log(
+      chalk.gray(`  • Files processed: ${result.processedFiles.length}`),
+    );
+    console.log(
+      chalk.gray(`  • Conflicts resolved: ${result.conflicts.length}`),
+    );
     console.log();
   }
 }

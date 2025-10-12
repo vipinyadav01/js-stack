@@ -681,6 +681,98 @@ export function buildCliCommand(state: BuilderState): string {
   return parts.join(" ");
 }
 
+// Compact CLI command generator (similar to the example you showed)
+export function generateReproducibleCommand(config: BuilderState): string {
+  const flags: string[] = [];
+
+  // Frontend
+  if (config.frontend && config.frontend !== "none") {
+    flags.push(`--frontend ${config.frontend}`);
+  } else {
+    flags.push("--frontend none");
+  }
+
+  // Backend
+  flags.push(`--backend ${config.backend}`);
+
+  // Database
+  flags.push(`--database ${config.database}`);
+
+  // ORM
+  flags.push(`--orm ${config.orm}`);
+
+  // Auth
+  flags.push(`--auth ${config.auth}`);
+
+  // Addons
+  if (config.addons && config.addons.length > 0) {
+    flags.push(`--addons ${config.addons.join(",")}`);
+  } else {
+    flags.push("--addons none");
+  }
+
+  // Package manager
+  flags.push(`--package-manager ${config.packageManager}`);
+
+  // Git initialization
+  flags.push(config.initializeGit ? "--git" : "--no-git");
+
+  // Install dependencies
+  flags.push(config.installDependencies ? "--install" : "--no-install");
+
+  // Build base command based on package manager
+  let baseCommand = "npx create-js-stack@latest";
+  const pkgManager = config.packageManager;
+
+  switch (pkgManager) {
+    case "bun":
+      baseCommand = "bunx create-js-stack@latest";
+      break;
+    case "pnpm":
+      baseCommand = "pnpm create js-stack@latest";
+      break;
+    case "yarn":
+      baseCommand = "yarn create js-stack@latest";
+      break;
+    case "npm":
+    default:
+      baseCommand = "npx create-js-stack@latest";
+      break;
+  }
+
+  const projectPathArg = config.projectName ? ` ${config.projectName}` : "";
+
+  return `${baseCommand}${projectPathArg} ${flags.join(" ")}`;
+}
+
+// Generate quick start command with --yes flag
+export function generateQuickStartCommand(config: BuilderState): string {
+  const projectPathArg = config.projectName ? ` ${config.projectName}` : "";
+
+  // Build base command based on package manager
+  let baseCommand = "npx create-js-stack@latest";
+  const pkgManager = config.packageManager;
+
+  switch (pkgManager) {
+    case "bun":
+      baseCommand = "bunx create-js-stack@latest";
+      break;
+    case "pnpm":
+      baseCommand = "pnpm create js-stack@latest";
+      break;
+    case "yarn":
+      baseCommand = "yarn create js-stack@latest";
+      break;
+    case "npm":
+    default:
+      baseCommand = "npx create-js-stack@latest";
+      break;
+  }
+
+  // --yes automatically includes --git and --install
+  return `${baseCommand}${projectPathArg} --yes`;
+}
+
 // Build separate commands for post-setup actions
 export function buildPostSetupCommands(state: BuilderState): {
   cdCommand: string;
