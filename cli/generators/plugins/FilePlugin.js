@@ -13,7 +13,7 @@ export class FilePlugin extends GeneratorPlugin {
     super("FilePlugin", "1.0.0");
     this.priority = 20; // Medium priority
     this.dependencies = [];
-    
+
     this.registerHook(HOOK_TYPES.PRE_GENERATE, this.preGenerate);
     this.registerHook(HOOK_TYPES.GENERATE_FILES, this.generateFiles);
     this.registerHook(HOOK_TYPES.PROCESS_TEMPLATES, this.processTemplates);
@@ -36,7 +36,7 @@ export class FilePlugin extends GeneratorPlugin {
    */
   async preGenerate(context) {
     console.log("📁 FilePlugin: Preparing file operations");
-    
+
     // Initialize file system operations
     context.fileOperations = {
       created: [],
@@ -88,7 +88,6 @@ export class FilePlugin extends GeneratorPlugin {
    * @param {Object} context - Generation context
    */
   async createProjectStructure(config, context) {
-
     const projectDir = context.projectDir;
     const directories = [];
 
@@ -105,7 +104,11 @@ export class FilePlugin extends GeneratorPlugin {
     }
 
     // Frontend-specific directories
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)) {
+    if (
+      config.frontend &&
+      config.frontend.length > 0 &&
+      !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)
+    ) {
       directories.push("frontend");
       directories.push("frontend/src");
       directories.push("frontend/src/components");
@@ -129,7 +132,10 @@ export class FilePlugin extends GeneratorPlugin {
     }
 
     // Testing directories
-    if (config.addons && config.addons.includes(TECHNOLOGY_OPTIONS.ADDON.TESTING)) {
+    if (
+      config.addons &&
+      config.addons.includes(TECHNOLOGY_OPTIONS.ADDON.TESTING)
+    ) {
       directories.push("tests");
       directories.push("tests/unit");
       directories.push("tests/integration");
@@ -142,85 +148,55 @@ export class FilePlugin extends GeneratorPlugin {
         await fs.ensureDir(dirPath);
         context.fileOperations.created.push(dirPath);
       } catch (error) {
-        context.fileOperations.errors.push(`Failed to create directory ${dir}: ${error.message}`);
+        context.fileOperations.errors.push(
+          `Failed to create directory ${dir}: ${error.message}`,
+        );
       }
     }
   }
 
   /**
-   * Process templates
+   * Process templates using layered template processor
    * @param {Object} config - Project configuration
    * @param {Object} context - Generation context
    */
   async processTemplates(config, context) {
-    const { copyTemplates } = await import("../../utils/file-utils.js");
-    const { TemplateManager } = await import("../../templates/TemplateManager.js");
-
-    const tm = new TemplateManager(context.templateDir || path.join(process.cwd(), "templates"));
-    const projectDir = context.projectDir;
+    const { LayeredTemplateProcessor } = await import(
+      "../../utils/layered-template-processor.js"
+    );
 
     try {
-      // Process backend templates
-      if (config.backend !== TECHNOLOGY_OPTIONS.BACKEND.NONE) {
-        const backendTemplateDir = tm.resolveBackend(config.backend);
-        const backendOutputDir = path.join(projectDir, "backend");
-        
-        if (await tm.exists(backendTemplateDir)) {
-          await copyTemplates(backendTemplateDir, backendOutputDir, config);
-          context.fileOperations.created.push(backendOutputDir);
-        }
+      // Create layered template processor
+      const templateProcessor = new LayeredTemplateProcessor({
+        projectDir: context.projectDir,
+        frontend: config.frontend,
+        backend: config.backend,
+        database: config.database,
+        orm: config.orm,
+        auth: config.auth,
+        addons: config.addons,
+        packageManager: config.packageManager,
+        projectName: config.projectName,
+        ...config,
+      });
+
+      // Process templates in layers
+      const result = await templateProcessor.processTemplates();
+
+      if (result.success) {
+        console.log("✅ Templates processed successfully");
+        context.fileOperations.created.push(...result.result.processedFiles);
+      } else {
+        console.log("❌ Template processing failed:", result.error);
+        context.fileOperations.errors.push(result.error);
       }
 
-      // Process frontend templates
-      if (config.frontend && config.frontend.length > 0 && !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)) {
-        for (const frontend of config.frontend) {
-          const frontendTemplateDir = tm.resolveFrontend(frontend);
-          const frontendOutputDir = path.join(projectDir, "frontend");
-          
-          if (await tm.exists(frontendTemplateDir)) {
-            await copyTemplates(frontendTemplateDir, frontendOutputDir, config);
-            context.fileOperations.created.push(frontendOutputDir);
-          }
-        }
-      }
-
-      // Process database templates
-      if (config.database !== TECHNOLOGY_OPTIONS.DATABASE.NONE) {
-        const dbTemplateDir = tm.resolveDatabase(config.database, config.orm);
-        const dbOutputDir = path.join(projectDir, "database");
-        
-        if (await tm.exists(dbTemplateDir)) {
-          await copyTemplates(dbTemplateDir, dbOutputDir, config);
-          context.fileOperations.created.push(dbOutputDir);
-        }
-      }
-
-      // Process auth templates
-      if (config.auth !== TECHNOLOGY_OPTIONS.AUTH.NONE) {
-        const authTemplateDir = tm.resolveAuth(config.auth);
-        const authOutputDir = path.join(projectDir, "auth");
-        
-        if (await tm.exists(authTemplateDir)) {
-          await copyTemplates(authTemplateDir, authOutputDir, config);
-          context.fileOperations.created.push(authOutputDir);
-        }
-      }
-
-      // Process addon templates
-      if (config.addons && config.addons.length > 0) {
-        for (const addon of config.addons) {
-          const addonTemplateDir = tm.resolveAddon(addon);
-          const addonOutputDir = path.join(projectDir, ".");
-          
-          if (await tm.exists(addonTemplateDir)) {
-            await copyTemplates(addonTemplateDir, addonOutputDir, config);
-            context.fileOperations.modified.push(addonOutputDir);
-          }
-        }
-      }
-
+      return context;
     } catch (error) {
-      context.fileOperations.errors.push(`Template processing failed: ${error.message}`);
+      console.log("❌ Template processing failed:", error.message);
+      context.fileOperations.errors.push(
+        `Template processing failed: ${error.message}`,
+      );
     }
   }
 
@@ -230,7 +206,6 @@ export class FilePlugin extends GeneratorPlugin {
    * @param {Object} context - Generation context
    */
   async createMainEntryPoint(config, context) {
-
     const projectDir = context.projectDir;
     const mainEntryContent = this.generateMainEntryContent(config);
 
@@ -239,7 +214,9 @@ export class FilePlugin extends GeneratorPlugin {
       await fs.writeFile(mainEntryPath, mainEntryContent);
       context.fileOperations.created.push(mainEntryPath);
     } catch (error) {
-      context.fileOperations.errors.push(`Failed to create main entry point: ${error.message}`);
+      context.fileOperations.errors.push(
+        `Failed to create main entry point: ${error.message}`,
+      );
     }
   }
 
@@ -307,7 +284,6 @@ console.log('\\n🎉 Happy coding!');
     console.log("📁 FilePlugin: Generating files");
     return context;
   }
-
 
   /**
    * Post-generation hook

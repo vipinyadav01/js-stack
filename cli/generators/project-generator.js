@@ -7,7 +7,6 @@ import {
   displayValidationResults,
   resolveDependencies,
 } from "../utils/validation.js";
-import { getTemplateProcessor } from "../utils/template-resolver.js";
 import { LayeredTemplateProcessor } from "../utils/layered-template-processor.js";
 import { performanceUtils } from "../utils/performance.js";
 import { createHealthValidator } from "../utils/health-validator.js";
@@ -103,7 +102,7 @@ export class ProjectGenerator {
    */
   async createProjectWithModularGenerator(progress) {
     try {
-      if (progress && typeof progress.start === 'function') {
+      if (progress && typeof progress.start === "function") {
         progress.start("🔧 Using layered template system");
       }
 
@@ -111,7 +110,7 @@ export class ProjectGenerator {
       const layeredProcessor = new LayeredTemplateProcessor(this.config);
       const result = await layeredProcessor.processTemplates();
 
-      if (progress && typeof progress.succeed === 'function') {
+      if (progress && typeof progress.succeed === "function") {
         progress.succeed("✅ Layered template processing completed");
       }
 
@@ -123,8 +122,10 @@ export class ProjectGenerator {
         layered: true,
       };
     } catch (error) {
-      if (progress && typeof progress.fail === 'function') {
-        progress.fail(`❌ Layered template processing failed: ${error.message}`);
+      if (progress && typeof progress.fail === "function") {
+        progress.fail(
+          `❌ Layered template processing failed: ${error.message}`,
+        );
       }
       throw error;
     }
@@ -136,7 +137,7 @@ export class ProjectGenerator {
    * @returns {Object} - Monorepo generation result
    */
   async generateMonorepoStructure(progress) {
-    if (!this.config.addons || !this.config.addons.includes('turborepo')) {
+    if (!this.config.addons || !this.config.addons.includes("turborepo")) {
       return null;
     }
 
@@ -147,20 +148,23 @@ export class ProjectGenerator {
     try {
       const monorepoGenerator = new MonorepoGenerator(this.config);
       const structure = monorepoGenerator.generateStructure();
-      
+
       // Display the generated structure
       monorepoGenerator.displayStructure(structure);
-      
+
       return {
         success: true,
         structure,
-        message: "Monorepo structure generated successfully"
+        message: "Monorepo structure generated successfully",
       };
     } catch (error) {
-      console.error(chalk.red("Failed to generate monorepo structure:"), error.message);
+      console.error(
+        chalk.red("Failed to generate monorepo structure:"),
+        error.message,
+      );
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
