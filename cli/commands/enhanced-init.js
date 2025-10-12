@@ -1,8 +1,14 @@
 import path from "path";
 import chalk from "chalk";
 import gradient from "gradient-string";
-import { collectProjectConfig, displayConfigSummary } from "../prompts-enhanced.js";
-import { processAndValidateFlags as processFlagsRobust, getProvidedFlags } from "../utils/flag-processing.js";
+import {
+  collectProjectConfig,
+  displayConfigSummary,
+} from "../prompts-enhanced.js";
+import {
+  processAndValidateFlags as processFlagsRobust,
+  getProvidedFlags,
+} from "../utils/flag-processing.js";
 
 import { confirm, outro } from "@clack/prompts";
 import { createEnhancedProject } from "../generators/project-generator.js";
@@ -54,8 +60,11 @@ export async function enhancedInitCommand(projectName, options) {
         };
       } else {
         showGhostError(`Unknown preset: ${options.preset}`);
-        showGhostInfo("Available presets:", 
-          listPresets().map(preset => `• ${preset.key}: ${preset.name}`).join('\n')
+        showGhostInfo(
+          "Available presets:",
+          listPresets()
+            .map((preset) => `• ${preset.key}: ${preset.name}`)
+            .join("\n"),
         );
         process.exit(1);
       }
@@ -90,19 +99,60 @@ export async function enhancedInitCommand(projectName, options) {
       if (!options.packageManager) {
         options.packageManager = "npm";
       }
-      config = await collectProjectConfig(projectName, { ...options, ci: false });
+      config = await collectProjectConfig(projectName, {
+        ...options,
+        ci: false,
+      });
     }
 
     // Set project directory
     config.projectDir = path.resolve(process.cwd(), config.projectName);
 
+    // If dry-run requested, show planned configuration and reproducible command then exit
+    if (options.dryRun) {
+      showGhostInfo("Dry run - planned configuration:");
+      displayConfigSummary(config);
+      const reproducible = `npx create-js-stack@latest ${config.projectName} ${[
+        config.frontend && config.frontend.length
+          ? `--frontend ${Array.isArray(config.frontend) ? config.frontend.join(",") : config.frontend}`
+          : null,
+        config.backend && config.backend !== "none"
+          ? `--backend ${config.backend}`
+          : null,
+        config.database && config.database !== "none"
+          ? `--database ${config.database}`
+          : null,
+        config.orm && config.orm !== "none" ? `--orm ${config.orm}` : null,
+        config.auth && config.auth !== "none" ? `--auth ${config.auth}` : null,
+        config.addons && config.addons.length
+          ? `--addons ${config.addons.join(",")}`
+          : null,
+        config.packageManager
+          ? `--package-manager ${config.packageManager}`
+          : null,
+        config.git ? `--git` : `--no-git`,
+        config.install ? `--install` : `--no-install`,
+      ]
+        .filter(Boolean)
+        .join(" ")}`;
+
+      console.log();
+      console.log("🔁 Reproducible command:");
+      console.log(`  ${reproducible}`);
+      console.log();
+      return { success: true, dryRun: true, config };
+    }
+
     // Reliability checks
     const reliabilityManager = new ReliabilityManager();
-    const reliabilityResults = await reliabilityManager.performReliabilityChecks(config);
-    
+    const reliabilityResults =
+      await reliabilityManager.performReliabilityChecks(config);
+
     if (!reliabilityResults.isValid) {
       reliabilityManager.displayResults(reliabilityResults);
-      throw new Error("Reliability checks failed. Please fix the errors above.");
+      throw new Error(
+        "Reliability checks failed. Please fix the errors above.",
+      );
     }
 
     if (options.verbose) {
@@ -112,8 +162,11 @@ export async function enhancedInitCommand(projectName, options) {
     // Smart compatibility checking and auto-adjustments
     const smartCompatibility = new SmartCompatibility();
     const compatibilityResultSmart = smartCompatibility.checkAndAdjust(config);
-    
-    if (compatibilityResultSmart.hasAdjustments || compatibilityResultSmart.hasWarnings) {
+
+    if (
+      compatibilityResultSmart.hasAdjustments ||
+      compatibilityResultSmart.hasWarnings
+    ) {
       smartCompatibility.displayResults(compatibilityResultSmart);
     }
 
@@ -178,7 +231,10 @@ export async function enhancedInitCommand(projectName, options) {
 
     // Dynamic post-install based on compatibility suggestions
     if (config.install) {
-      const installer = new DynamicInstaller(config.projectDir, config.packageManager);
+      const installer = new DynamicInstaller(
+        config.projectDir,
+        config.packageManager,
+      );
       // Install suggested addons or corrections (placeholder mapping in installer)
       await installer.installSuggestedAddons(compatibilityReport.suggestions);
     }

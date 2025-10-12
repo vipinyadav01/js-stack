@@ -312,6 +312,74 @@ export class SmartCompatibility {
   }
 
   /**
+   * Calculate overall stack score
+   */
+  calculateStackScore(config) {
+    let score = 100;
+
+    // Deduct points for adjustments (major issues)
+    score -= this.adjustments.length * 15;
+
+    // Deduct points for warnings
+    score -= this.warnings.length * 5;
+
+    // Bonus points for recommended combinations
+    // Database-ORM bonus
+    if (config.database && config.orm) {
+      const dbORMMatrix = this.compatibilityMatrix.databaseORM[config.database];
+      if (dbORMMatrix && dbORMMatrix[config.orm]) {
+        score += Math.max(0, dbORMMatrix[config.orm].score - 7);
+      }
+    }
+
+    // Frontend-Backend bonus
+    if (config.frontend && config.backend) {
+      const frontendBackendMatrix =
+        this.compatibilityMatrix.frontendBackend[config.frontend[0]];
+      if (frontendBackendMatrix && frontendBackendMatrix[config.backend]) {
+        score += Math.max(0, frontendBackendMatrix[config.backend].score - 7);
+      }
+    }
+
+    this.stackScore = Math.max(0, Math.min(100, score));
+  }
+
+  /**
+   * Get stack rating based on score
+   */
+  getStackRating(score) {
+    if (score >= 90)
+      return {
+        rating: "Excellent",
+        color: "green",
+        description: "Outstanding stack configuration",
+      };
+    if (score >= 80)
+      return {
+        rating: "Great",
+        color: "cyan",
+        description: "Well-optimized stack",
+      };
+    if (score >= 70)
+      return {
+        rating: "Good",
+        color: "yellow",
+        description: "Solid stack with minor improvements possible",
+      };
+    if (score >= 60)
+      return {
+        rating: "Fair",
+        color: "orange",
+        description: "Decent stack but has optimization opportunities",
+      };
+    return {
+      rating: "Poor",
+      color: "red",
+      description: "Stack needs significant improvements",
+    };
+  }
+
+  /**
    * Enhanced database-ORM compatibility check with scoring
    */
   checkDatabaseORMCompatibility(config) {
@@ -449,23 +517,53 @@ export class SmartCompatibility {
   }
 
   /**
+   * Check authentication compatibility with selected frontends
+   */
+  checkAuthCompatibility(config) {
+    if (
+      config.auth === TECHNOLOGY_OPTIONS.AUTH.NONE ||
+      !config.frontend ||
+      config.frontend.length === 0
+    )
+      return;
+
+    const authMatrix = this.compatibilityMatrix.authFrontend[config.auth];
+
+    if (!authMatrix) return;
+
+    for (const frontendTech of config.frontend) {
+      if (frontendTech === TECHNOLOGY_OPTIONS.FRONTEND.NONE) continue;
+
+      // If there's no entry for this frontend under the chosen auth option, mark as a warning
+      if (!authMatrix[frontendTech]) {
+        this.warnings.push({
+          type: "auth",
+          message: `${config.auth} authentication may not be fully compatible with ${frontendTech}`,
+          suggestion: `Consider using an auth option that supports ${frontendTech}`,
+        });
+      }
+    }
+  }
+
+  /**
    * Check TypeScript recommendations
    */
   checkTypeScriptRecommendations(config) {
-    const { FRONTEND, ADDON } = TECHNOLOGY_OPTIONS;
-
     // TypeScript for modern frameworks
     const modernFrameworks = [
-      FRONTEND.REACT,
-      FRONTEND.NEXTJS,
-      FRONTEND.NUXT,
-      FRONTEND.SVELTEKIT,
+      TECHNOLOGY_OPTIONS.FRONTEND.REACT,
+      TECHNOLOGY_OPTIONS.FRONTEND.NEXTJS,
+      TECHNOLOGY_OPTIONS.FRONTEND.NUXT,
+      TECHNOLOGY_OPTIONS.FRONTEND.SVELTEKIT,
     ];
     const hasModernFramework = config.frontend.some((f) =>
       modernFrameworks.includes(f),
     );
 
-    if (hasModernFramework && !config.addons.includes(ADDON.TYPESCRIPT)) {
+    if (
+      hasModernFramework &&
+      !config.addons.includes(TECHNOLOGY_OPTIONS.ADDON.TYPESCRIPT)
+    ) {
       this.warnings.push({
         type: "addon",
         message: "TypeScript is highly recommended for modern frameworks",
@@ -476,15 +574,15 @@ export class SmartCompatibility {
     // TypeScript for backends
     if (
       config.backend === TECHNOLOGY_OPTIONS.BACKEND.NESTJS &&
-      !config.addons.includes(ADDON.TYPESCRIPT)
+      !config.addons.includes(TECHNOLOGY_OPTIONS.ADDON.TYPESCRIPT)
     ) {
       this.adjustments.push({
         type: "addon",
         from: "not included",
-        to: ADDON.TYPESCRIPT,
+        to: TECHNOLOGY_OPTIONS.ADDON.TYPESCRIPT,
         reason: "NestJS requires TypeScript",
       });
-      config.addons.push(ADDON.TYPESCRIPT);
+      config.addons.push(TECHNOLOGY_OPTIONS.ADDON.TYPESCRIPT);
     }
   }
 
@@ -492,11 +590,9 @@ export class SmartCompatibility {
    * Check package manager optimizations
    */
   checkPackageManagerOptimizations(config) {
-    const { PACKAGE_MANAGER } = TECHNOLOGY_OPTIONS;
-
     // Recommend pnpm for monorepos
     if (config.frontend.length > 1 || config.addons.length > 3) {
-      if (config.packageManager === PACKAGE_MANAGER.NPM) {
+      if (config.packageManager === TECHNOLOGY_OPTIONS.PACKAGE_MANAGER.NPM) {
         this.warnings.push({
           type: "packageManager",
           message:
@@ -509,13 +605,100 @@ export class SmartCompatibility {
 
     // Recommend bun for simple projects
     if (config.frontend.length === 1 && config.addons.length <= 2) {
-      if (config.packageManager === PACKAGE_MANAGER.NPM) {
+      if (config.packageManager === TECHNOLOGY_OPTIONS.PACKAGE_MANAGER.NPM) {
         this.warnings.push({
           type: "packageManager",
           message: "For simple projects, bun offers faster installation",
           suggestion: "Consider using bun for faster development",
         });
       }
+    }
+  }
+
+  /**
+   * Check performance optimizations
+   */
+  checkPerformanceOptimizations(config) {
+    // Recommend TypeScript for performance and DX
+    const modernFrameworks = [
+      TECHNOLOGY_OPTIONS.FRONTEND.REACT,
+      TECHNOLOGY_OPTIONS.FRONTEND.NEXTJS,
+      TECHNOLOGY_OPTIONS.FRONTEND.VUE,
+      TECHNOLOGY_OPTIONS.FRONTEND.NUXT,
+      TECHNOLOGY_OPTIONS.FRONTEND.SVELTE,
+    ];
+    const hasModernFramework =
+      config.frontend &&
+      config.frontend.some((f) => modernFrameworks.includes(f));
+
+    if (
+      hasModernFramework &&
+      !config.addons.includes(TECHNOLOGY_OPTIONS.ADDON.TYPESCRIPT)
+    ) {
+      this.recommendations.push({
+        type: "performance",
+        message:
+          "TypeScript improves development experience and catches errors",
+        suggestion: "Add TypeScript for better type safety",
+        impact: "Developer Experience",
+      });
+    }
+
+    // Recommend build optimizations
+    if (config.frontend && config.frontend.length > 0) {
+      if (
+        !config.addons.includes(TECHNOLOGY_OPTIONS.ADDON.BIOME) &&
+        !config.addons.includes(TECHNOLOGY_OPTIONS.ADDON.ESLINT)
+      ) {
+        this.recommendations.push({
+          type: "performance",
+          message: "Code linting helps maintain code quality",
+          suggestion: "Add ESLint or Biome for code analysis",
+          impact: "Code Quality",
+        });
+      }
+    }
+  }
+
+  /**
+   * Check modern alternatives
+   */
+  checkModernAlternatives(config) {
+    // Suggest modern database options
+    if (config.database === TECHNOLOGY_OPTIONS.DATABASE.MYSQL) {
+      this.recommendations.push({
+        type: "modernization",
+        message: "PostgreSQL offers more advanced features than MySQL",
+        suggestion:
+          "Consider PostgreSQL for better JSON support and advanced features",
+        impact: "Features",
+      });
+    }
+
+    // Suggest modern ORMs
+    if (config.orm === TECHNOLOGY_OPTIONS.ORM.SEQUELIZE) {
+      this.recommendations.push({
+        type: "modernization",
+        message:
+          "Prisma offers better TypeScript support and developer experience",
+        suggestion: "Consider upgrading to Prisma for modern ORM features",
+        impact: "Developer Experience",
+      });
+    }
+
+    // Suggest modern backends
+    if (
+      config.backend === TECHNOLOGY_OPTIONS.BACKEND.EXPRESS &&
+      config.frontend &&
+      config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NEXTJS)
+    ) {
+      this.recommendations.push({
+        type: "architecture",
+        message: "Next.js includes built-in API routes",
+        suggestion:
+          "Consider removing separate backend and using Next.js API routes",
+        impact: "Architecture Simplification",
+      });
     }
   }
 
@@ -566,6 +749,50 @@ export class SmartCompatibility {
       complexity: this.calculateProjectComplexity(config),
       modernityScore: this.calculateModernityScore(config),
     };
+  }
+
+  /**
+   * Calculate project complexity level
+   */
+  calculateProjectComplexity(config) {
+    let complexityPoints = 0;
+
+    // Frontend complexity
+    if (config.frontend && config.frontend.length > 0) {
+      complexityPoints += config.frontend.length;
+      if (config.frontend.length > 1) complexityPoints += 2; // Multi-frontend adds complexity
+    }
+
+    // Backend complexity
+    if (config.backend && config.backend !== TECHNOLOGY_OPTIONS.BACKEND.NONE) {
+      complexityPoints += 2;
+    }
+
+    // Database complexity
+    if (
+      config.database &&
+      config.database !== TECHNOLOGY_OPTIONS.DATABASE.NONE
+    ) {
+      complexityPoints += 2;
+      if (config.orm && config.orm !== TECHNOLOGY_OPTIONS.ORM.NONE) {
+        complexityPoints += 1;
+      }
+    }
+
+    // Auth complexity
+    if (config.auth && config.auth !== TECHNOLOGY_OPTIONS.AUTH.NONE) {
+      complexityPoints += 1;
+    }
+
+    // Addons complexity
+    if (config.addons && config.addons.length > 0) {
+      complexityPoints += Math.min(config.addons.length, 5); // Cap at 5 to avoid over-weighting
+    }
+
+    // Return complexity level
+    if (complexityPoints >= 10) return "complex";
+    if (complexityPoints >= 5) return "moderate";
+    return "simple";
   }
 
   /**

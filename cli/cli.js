@@ -346,12 +346,23 @@ program
     "--pm <manager>",
     colors.muted(`${icons.package} Package manager: npm, yarn, pnpm, bun`),
   )
+  .option(
+    "-m, --package-manager <manager>",
+    colors.muted(
+      `${icons.package} Package manager (long form): npm, yarn, pnpm, bun`,
+    ),
+  )
   .option("--typescript", colors.muted(`${icons.crystal} Enable TypeScript`))
+  .option("--no-git", colors.muted(`${icons.cross} Skip git initialization`))
+  // Accept both positive and negated forms so external UIs can pass --git or --no-git
+  .option("--git", colors.muted(`${icons.check} Initialize git repository`))
   .option("--no-git", colors.muted(`${icons.cross} Skip git initialization`))
   .option(
     "--no-install",
     colors.muted(`${icons.cross} Skip dependency installation`),
   )
+  // Accept explicit --install as well (some callers pass --install)
+  .option("--install", colors.muted(`${icons.package} Install dependencies`))
   .option("--verbose", colors.muted(`${icons.search} Show detailed output`))
   .option(
     "--dry-run",
@@ -510,6 +521,12 @@ program
   .option(
     "--pm <manager>",
     colors.muted(`${icons.package} Package manager: npm, yarn, pnpm, bun`),
+  )
+  .option(
+    "-m, --package-manager <manager>",
+    colors.muted(
+      `${icons.package} Package manager (long form): npm, yarn, pnpm, bun`,
+    ),
   )
   .option("--typescript", colors.muted(`${icons.crystal} Enable TypeScript`))
   .option("--no-git", colors.muted(`${icons.cross} Skip git initialization`))
