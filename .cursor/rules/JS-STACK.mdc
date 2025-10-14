@@ -47,3 +47,173 @@ alwaysApply: true
 - Always test CLI commands with `--dry-run` first
 - Test web interface responsiveness
 - Validate all user inputs
+
+## Template System & Project Structure
+
+### Layered Template Architecture
+Templates follow a hierarchical structure for modular project generation:
+
+```
+cli/templates/templates/
+├── 01-base/              # Core project structure
+│   ├── package.json.hbs
+│   ├── .gitignore.hbs
+│   └── README.md.hbs
+├── 02-frameworks/        # Framework-specific files
+│   ├── frontend/
+│   │   ├── react/
+│   │   ├── nextjs/
+│   │   ├── vue/
+│   │   └── angular/
+│   └── backend/
+│       ├── express/
+│       ├── nestjs/
+│       └── fastify/
+├── 03-integrations/      # Database, auth, etc.
+│   ├── database/
+│   │   ├── mongodb/
+│   │   ├── postgresql/
+│   │   └── mysql/
+│   └── auth/
+│       ├── jwt/
+│       ├── passport/
+│       └── auth0/
+├── 04-features/          # Feature-specific code
+│   ├── api-routes/
+│   ├── middleware/
+│   └── utils/
+├── 05-tooling/          # Dev tools & configs
+│   ├── docker/
+│   ├── testing/
+│   └── biome/
+└── 06-deployment/       # Deployment configs
+    ├── vercel/
+    ├── docker/
+    └── github-actions/
+```
+
+### Template Processing Order
+1. **Base Layer**: Project foundation (package.json, .gitignore, README)
+2. **Framework Layer**: Frontend/backend framework setup
+3. **Integration Layer**: Database, authentication, third-party services
+4. **Feature Layer**: Business logic and application features
+5. **Tooling Layer**: Development tools and configurations
+6. **Deployment Layer**: CI/CD and deployment configurations
+
+### Handlebars Template Syntax
+
+#### Variables
+```handlebars
+{{projectName}}
+{{packageManager}}
+{{database}}
+{{orm}}
+```
+
+#### Conditionals
+```handlebars
+{{#if (eq orm "prisma")}}
+  // Prisma-specific code
+{{else if (eq orm "mongoose")}}
+  // Mongoose-specific code
+{{/if}}
+```
+
+#### Iteration
+```handlebars
+{{#each frontend}}
+  {{this}}
+{{/each}}
+```
+
+#### Helpers
+- `eq`: Equality check
+- `ne`: Not equal
+- `and`: Logical AND
+- `or`: Logical OR
+- `not`: Logical NOT
+- `contains`: Check if array contains value
+
+### Generated Project Structure
+
+#### Full-Stack App (Next.js + Express + MongoDB)
+```
+my-app/
+├── frontend/              # Next.js app
+│   ├── src/
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── lib/
+│   │   └── hooks/
+│   ├── public/
+│   ├── package.json
+│   └── next.config.js
+├── backend/               # Express API
+│   ├── src/
+│   │   ├── routes/
+│   │   ├── controllers/
+│   │   ├── models/
+│   │   ├── middleware/
+│   │   └── utils/
+│   ├── package.json
+│   └── server.js
+├── shared/                # Shared types/utilities
+│   └── types/
+├── .dockerignore
+├── docker-compose.yml
+├── Dockerfile
+├── .gitignore
+└── README.md
+```
+
+#### Monorepo Structure (Turborepo)
+```
+my-app/
+├── apps/
+│   ├── web/              # Next.js frontend
+│   └── api/              # Express backend
+├── packages/
+│   ├── ui/               # Shared UI components
+│   ├── config/           # Shared configs
+│   └── types/            # Shared TypeScript types
+├── turbo.json
+├── package.json
+└── pnpm-workspace.yaml
+```
+
+### Template Variables Reference
+
+#### Core Variables
+- `projectName`: Project name (e.g., "my-app")
+- `packageManager`: npm, yarn, pnpm, or bun
+- `description`: Project description
+
+#### Frontend Variables
+- `frontend`: Array of frontend frameworks
+- `uiLibrary`: UI library choice (if applicable)
+
+#### Backend Variables
+- `backend`: Backend framework
+- `port`: Server port number
+
+#### Database Variables
+- `database`: Database type (mongodb, postgresql, mysql, sqlite)
+- `orm`: ORM/ODM choice (prisma, mongoose, sequelize, typeorm)
+
+#### Authentication Variables
+- `auth`: Authentication method (jwt, passport, auth0, oauth)
+
+#### Feature Flags
+- `git`: Initialize git repository (true/false)
+- `install`: Install dependencies (true/false)
+- `docker`: Include Docker configs (true/false)
+- `testing`: Include testing setup (true/false)
+
+### Best Practices for Templates
+
+1. **Modularity**: Keep templates focused and single-purpose
+2. **Reusability**: Use shared templates for common patterns
+3. **Conditional Logic**: Use explicit Handlebars helpers
+4. **Documentation**: Add comments in templates for clarity
+5. **Testing**: Test template generation with various combinations
+6. **Validation**: Ensure generated code follows project standards
