@@ -1,5 +1,16 @@
 "use client";
 
+import { motion } from "motion/react";
+import type React from "react";
+import { InfoIcon, Terminal } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { TechIcon } from "./tech-icon";
 import { TechOption } from "./tech-options";
 
 interface TechCategoryProps {
@@ -45,80 +56,85 @@ export function TechCategory({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          {getCategoryTitle(category)}
-        </h2>
-        {notes && notes.hasIssue && (
-          <span className="text-xs text-yellow-600 dark:text-yellow-400">
-            ⚠️ {notes.notes.join(", ")}
-          </span>
-        )}
-      </div>
+    <TooltipProvider>
+      <section className="mb-6 scroll-mt-4 sm:mb-8">
+        <div className="mb-3 flex items-center border-border border-b pb-2 text-muted-foreground">
+          <Terminal className="mr-2 h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" />
+          <h2 className="font-semibold text-foreground text-sm sm:text-base">
+            {getCategoryTitle(category)}
+          </h2>
+          {notes?.hasIssue && (
+            <Tooltip delayDuration={100}>
+              <TooltipTrigger asChild>
+                <InfoIcon className="ml-2 h-4 w-4 flex-shrink-0 cursor-help text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent side="top" align="start">
+                <ul className="list-disc space-y-1 pl-4 text-xs">
+                  {notes.notes.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {options.map((option) => (
-          <button
-            key={option.id}
-            onClick={() => onSelect(category, option.id)}
-            className={`
-              relative p-4 rounded-lg border-2 transition-all
-              ${
-                isSelected(option.id)
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                  : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
-              }
-            `}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`
-                  w-12 h-12 rounded-lg flex items-center justify-center
-                  ${option.color || "bg-gray-200 dark:bg-gray-700"}
-                `}
-              >
-                {option.icon ? (
-                  <img
-                    src={option.icon}
-                    alt={option.name}
-                    className="w-8 h-8"
-                  />
-                ) : (
-                  <span className="text-2xl">{option.emoji || "📦"}</span>
-                )}
-              </div>
-              <div className="flex-1 text-left">
-                <div className="font-medium text-gray-900 dark:text-white">
-                  {option.name}
-                </div>
-                {option.description && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {option.description}
-                  </div>
-                )}
-              </div>
-              {isSelected(option.id) && (
-                <div className="text-blue-500">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+        <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+          {options.map((tech) => {
+            const selected = isSelected(tech.id);
+
+            return (
+              <Tooltip key={tech.id} delayDuration={100}>
+                <TooltipTrigger asChild>
+                  <motion.div
+                    className={cn(
+                      "relative cursor-pointer rounded border p-2 transition-all sm:p-3",
+                      selected
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-muted hover:bg-muted",
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => onSelect(category, tech.id)}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              )}
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
+                    <div className="flex items-start">
+                      <div className="flex-grow">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            {tech.icon && (
+                              <TechIcon
+                                icon={tech.icon}
+                                name={tech.name}
+                                className="mr-1.5 h-3 w-3 sm:h-4 sm:w-4"
+                              />
+                            )}
+                            <span
+                              className={cn(
+                                "font-medium text-xs sm:text-sm",
+                                selected ? "text-primary" : "text-foreground",
+                              )}
+                            >
+                              {tech.name}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="mt-0.5 text-muted-foreground text-xs">
+                          {tech.description}
+                        </p>
+                      </div>
+                    </div>
+                    {tech.default && !selected && (
+                      <span className="absolute top-1 right-1 ml-2 flex-shrink-0 rounded bg-muted px-1 py-0.5 text-[10px] text-muted-foreground">
+                        Default
+                      </span>
+                    )}
+                  </motion.div>
+                </TooltipTrigger>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </section>
+    </TooltipProvider>
   );
 }

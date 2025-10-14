@@ -1,5 +1,3 @@
-import { testedStackCombinations } from "../../../components/builder/config";
-
 export interface PresetTemplate {
   id: string;
   name: string;
@@ -7,22 +5,117 @@ export interface PresetTemplate {
   stack: Record<string, string | string[] | boolean>;
 }
 
-// Convert testedStackCombinations to PRESET_TEMPLATES format
-export const PRESET_TEMPLATES: PresetTemplate[] = Object.entries(
-  testedStackCombinations,
-).map(([key, value]) => ({
-  id: key,
-  name: key.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-  description: `${value.frontend || "API"}-only with ${value.database || "no database"}`,
-  stack: {
-    frontend: value.frontend ? [value.frontend] : [],
-    backend: value.backend || "none",
-    database: value.database || "none",
-    orm: value.orm || "none",
-    auth: value.auth || "none",
-    addons: value.addons || [],
-    packageManager: value.packageManager || "npm",
-    git: value.initializeGit ? "true" : "false",
-    install: value.installDependencies ? "true" : "false",
+export const PRESET_TEMPLATES: PresetTemplate[] = [
+  {
+    id: "react-app",
+    name: "React Application",
+    description: "Modern React application with TypeScript and testing",
+    stack: {
+      frontend: ["react"],
+      backend: "none",
+      database: "none",
+      orm: "none",
+      auth: "none",
+      addons: ["testing"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
   },
-}));
+  {
+    id: "nextjs-app",
+    name: "Next.js Application",
+    description: "Full-stack Next.js application with authentication",
+    stack: {
+      frontend: ["nextjs"],
+      backend: "none",
+      database: "postgres",
+      orm: "prisma",
+      auth: "better-auth",
+      addons: ["testing", "biome"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
+  },
+  {
+    id: "express-api",
+    name: "Express API",
+    description: "Express.js REST API with database and authentication",
+    stack: {
+      frontend: [],
+      backend: "express",
+      database: "postgres",
+      orm: "prisma",
+      auth: "jwt",
+      addons: ["testing", "docker"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
+  },
+  {
+    id: "fullstack-app",
+    name: "Full-Stack Application",
+    description: "Complete full-stack application with React and Express",
+    stack: {
+      frontend: ["react"],
+      backend: "express",
+      database: "postgres",
+      orm: "prisma",
+      auth: "jwt",
+      addons: ["testing", "docker"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
+  },
+  {
+    id: "nestjs-api",
+    name: "NestJS API",
+    description: "Enterprise-grade NestJS API with TypeORM and authentication",
+    stack: {
+      frontend: [],
+      backend: "nestjs",
+      database: "postgres",
+      orm: "typeorm",
+      auth: "passport",
+      addons: ["testing", "docker"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
+  },
+  {
+    id: "vue-app",
+    name: "Vue Application",
+    description: "Modern Vue 3 application with Composition API",
+    stack: {
+      frontend: ["vue"],
+      backend: "none",
+      database: "none",
+      orm: "none",
+      auth: "none",
+      addons: ["testing"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
+  },
+  {
+    id: "mobile-app",
+    name: "React Native App",
+    description: "Cross-platform mobile application",
+    stack: {
+      frontend: ["react-native"],
+      backend: "express",
+      database: "postgres",
+      orm: "prisma",
+      auth: "auth0",
+      addons: ["testing"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
+  },
+];

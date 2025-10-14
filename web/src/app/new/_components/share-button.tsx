@@ -1,40 +1,28 @@
 "use client";
 
-import { StackState } from "./use-stack-state";
+import { Share2 } from "lucide-react";
 import { toast } from "sonner";
+import type { StackState } from "./use-stack-state";
 
 interface ShareButtonProps {
-  stack: StackState;
+  stackUrl: string;
+  stackState: StackState;
 }
 
-export function ShareButton({ stack }: ShareButtonProps) {
+export function ShareButton({ stackUrl }: ShareButtonProps) {
   const handleShare = () => {
-    const params = new URLSearchParams();
-
-    // Add all non-default values to URL
-    Object.entries(stack).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        if (value.length > 0) {
-          params.set(key, value.join(","));
-        }
-      } else {
-        params.set(key, value.toString());
-      }
-    });
-
-    const url = `${window.location.origin}/new?${params.toString()}`;
-
-    // Copy to clipboard
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(stackUrl);
     toast.success("Shareable link copied to clipboard!");
   };
 
   return (
     <button
+      type="button"
       onClick={handleShare}
-      className="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+      className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
     >
-      🔗 Share Stack
+      <Share2 className="h-3 w-3" />
+      Share
     </button>
   );
 }

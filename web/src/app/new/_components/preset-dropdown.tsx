@@ -1,61 +1,43 @@
 "use client";
 
-import { useState } from "react";
-import { PresetTemplate } from "./presets";
+import { ChevronDown, Zap } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { PRESET_TEMPLATES } from "./presets";
 
 interface PresetDropdownProps {
-  presets: PresetTemplate[];
-  onSelect: (presetId: string) => void;
+  onApplyPreset: (presetId: string) => void;
 }
 
-export function PresetDropdown({ presets, onSelect }: PresetDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
+export function PresetDropdown({ onApplyPreset }: PresetDropdownProps) {
   return (
-    <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-2 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
-      >
-        <span className="font-medium text-gray-700 dark:text-gray-300">
-          📋 Presets
-        </span>
-        <svg
-          className={`w-5 h-5 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-
-      {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
-          {presets.map((preset) => (
-            <button
-              key={preset.id}
-              onClick={() => {
-                onSelect(preset.id);
-                setIsOpen(false);
-              }}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors first:rounded-t-lg last:rounded-b-lg"
-            >
-              <div className="font-medium text-gray-900 dark:text-white">
-                {preset.name}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {preset.description}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+          <Zap className="h-3 w-3" />
+          Presets
+          <ChevronDown className="ml-auto h-3 w-3" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-64 bg-background">
+        {PRESET_TEMPLATES.map((preset) => (
+          <DropdownMenuItem
+            key={preset.id}
+            onClick={() => onApplyPreset(preset.id)}
+            className="flex flex-col items-start gap-1 p-3"
+          >
+            <div className="font-medium text-sm">{preset.name}</div>
+            <div className="text-xs">{preset.description}</div>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -5,7 +5,6 @@ import {
 } from "../../../components/builder/config";
 
 export function generateStackCommand(stack: StackState): string {
-  // Convert StackState to BuilderState format
   const builderState: BuilderState = {
     projectName: stack.projectName,
     frontend: (stack.frontend[0] || "none") as BuilderState["frontend"],
@@ -19,5 +18,7 @@ export function generateStackCommand(stack: StackState): string {
     initializeGit: stack.git === "true",
   };
 
-  return generateReproducibleCommand(builderState);
+  const command = generateReproducibleCommand(builderState);
+
+  return `${command} --yes`;
 }

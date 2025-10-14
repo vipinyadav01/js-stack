@@ -46,7 +46,7 @@ export interface BuilderState {
 }
 
 export const defaultConfig: BuilderState = {
-  projectName: "my-app",
+  projectName: "Js-Stack",
   frontend: "react",
   backend: "express",
   database: "mongodb",
@@ -466,55 +466,9 @@ export function findBestTestedCombination(state: BuilderState): {
 
 // Apply compatibility rules and fix conflicts with intelligent suggestions
 export function applyCompatibility(state: BuilderState): BuilderState {
-  const next = { ...state };
-
-  // Check if current combination is a known tested stack
-  // const testedCombo = findBestTestedCombination(next);
-
-  // Fix database-ORM compatibility (critical - must be compatible)
-  if (!isCompatible("databaseOrm", next.database, next.orm)) {
-    const compatibleOrms = getCompatibleOptions<ORM>(
-      "databaseOrm",
-      next.database,
-    );
-    next.orm = compatibleOrms[0] || "none";
-  }
-
-  // Fix frontend-auth compatibility (prefer optimal pairings)
-  if (!isCompatible("frontendAuth", next.frontend, next.auth)) {
-    const compatibleAuth = getCompatibleOptions<Auth>(
-      "frontendAuth",
-      next.frontend,
-    );
-    next.auth = compatibleAuth[0] || "none";
-  }
-
-  // Fix backend-database compatibility (ensure supported combination)
-  if (!isCompatible("backendDatabase", next.backend, next.database)) {
-    const compatibleDbs = getCompatibleOptions<Database>(
-      "backendDatabase",
-      next.backend,
-    );
-    next.database = compatibleDbs[0] || "none";
-
-    // Recheck ORM compatibility after database change
-    if (!isCompatible("databaseOrm", next.database, next.orm)) {
-      const compatibleOrms = getCompatibleOptions<ORM>(
-        "databaseOrm",
-        next.database,
-      );
-      next.orm = compatibleOrms[0] || "none";
-    }
-  }
-
-  // Filter incompatible addons based on frontend framework
-  const compatibleAddons = getCompatibleOptions<Addon>(
-    "frontendAddons",
-    next.frontend,
-  );
-  next.addons = next.addons.filter((addon) => compatibleAddons.includes(addon));
-
-  return next;
+  // Return state as-is without automatic adjustments
+  // Let the user make their own choices
+  return { ...state };
 }
 
 // Validate entire configuration with detailed feedback
@@ -531,25 +485,8 @@ export function validateConfiguration(state: BuilderState): {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Critical compatibility checks
-  if (!isCompatible("databaseOrm", state.database, state.orm)) {
-    errors.push(
-      `${state.orm} ORM is not compatible with ${state.database} database`,
-    );
-  }
-
-  if (!isCompatible("backendDatabase", state.backend, state.database)) {
-    errors.push(
-      `${state.database} database is not well-supported with ${state.backend} backend`,
-    );
-  }
-
-  // Optimization suggestions
-  if (!isCompatible("frontendAuth", state.frontend, state.auth)) {
-    warnings.push(
-      `Consider using a different auth solution for better ${state.frontend} integration`,
-    );
-  }
+  // No strict errors - let users make their own choices
+  // Only provide informational warnings
 
   // Check for tested combinations
   const testedCombo = findBestTestedCombination(state);
@@ -558,25 +495,6 @@ export function validateConfiguration(state: BuilderState): {
   if (!isWellTested && testedCombo.confidence > 0.3) {
     warnings.push(
       `This combination is experimental. Consider using a tested stack for production`,
-    );
-  }
-
-  // Specific technology warnings
-  if (state.database === "sqlite" && state.backend !== "none") {
-    warnings.push(
-      "SQLite is great for development but consider PostgreSQL for production",
-    );
-  }
-
-  if (state.frontend === "angular" && state.addons.includes("biome")) {
-    warnings.push(
-      "Angular has built-in linting. Biome may conflict with Angular CLI tools",
-    );
-  }
-
-  if (state.frontend === "react-native" && state.addons.includes("turborepo")) {
-    warnings.push(
-      "Turborepo setup for React Native requires additional configuration",
     );
   }
 
@@ -591,24 +509,8 @@ export function validateConfiguration(state: BuilderState): {
     warnings.push("Manual git repository initialization required");
   }
 
-  // Database-specific warnings
-  if (
-    (state.database === "postgres" || state.database === "mysql") &&
-    !state.installDependencies
-  ) {
-    warnings.push(
-      "Database connection setup required before running the application",
-    );
-  }
-
-  if (state.auth === "auth0" && !state.installDependencies) {
-    warnings.push(
-      "Auth0 configuration and environment variables setup required",
-    );
-  }
-
   return {
-    isValid: errors.length === 0,
+    isValid: true, // Always valid - no blocking errors
     errors,
     warnings,
     testedCombination: {

@@ -1,32 +1,62 @@
 "use client";
 
+import { RefreshCw, Settings, Shuffle, Star } from "lucide-react";
+
 interface ActionButtonsProps {
   onReset: () => void;
   onRandom: () => void;
-  isPending: boolean;
+  onSave: () => void;
+  onLoad: () => void;
+  hasSavedStack: boolean;
 }
 
 export function ActionButtons({
   onReset,
   onRandom,
-  isPending,
+  onSave,
+  onLoad,
+  hasSavedStack,
 }: ActionButtonsProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm space-y-2">
+    <div className="flex gap-1">
       <button
+        type="button"
         onClick={onReset}
-        disabled={isPending}
-        className="w-full px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md transition-colors disabled:opacity-50"
+        className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
+        title="Reset to defaults"
       >
-        🔄 Reset
+        <RefreshCw className="h-3 w-3" />
+        Reset
       </button>
       <button
+        type="button"
         onClick={onRandom}
-        disabled={isPending}
-        className="w-full px-4 py-2 bg-purple-100 dark:bg-purple-900 hover:bg-purple-200 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 rounded-md transition-colors disabled:opacity-50"
+        className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
+        title="Generate a random stack"
       >
-        🎲 Random Stack
+        <Shuffle className="h-3 w-3" />
+        Random
       </button>
+      <button
+        type="button"
+        onClick={onSave}
+        className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
+        title="Save current preferences"
+      >
+        <Star className="h-3 w-3" />
+        Save
+      </button>
+      {hasSavedStack && (
+        <button
+          type="button"
+          onClick={onLoad}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
+          title="Load saved preferences"
+        >
+          <Settings className="h-3 w-3" />
+          Load
+        </button>
+      )}
     </div>
   );
 }

@@ -18,7 +18,7 @@ export interface StackState {
 }
 
 const DEFAULT_STACK: StackState = {
-  projectName: "my-app",
+  projectName: "Js-Stack",
   frontend: [],
   backend: "none",
   database: "none",
@@ -28,7 +28,7 @@ const DEFAULT_STACK: StackState = {
   packageManager: "npm",
   git: "true",
   install: "true",
-  yolo: "false",
+  yolo: "true",
 };
 
 export function useStackState() {
