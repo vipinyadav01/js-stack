@@ -1,4 +1,9 @@
 import { StackState } from "./use-stack-state";
+import {
+  applyCompatibility,
+  validateConfiguration,
+  BuilderState,
+} from "../../../components/builder/config";
 
 export interface CompatibilityResult {
   adjustedStack: Partial<StackState> | null;
@@ -18,90 +23,62 @@ export function analyzeStackCompatibility(
     };
   }
 
-  const adjustedStack: Partial<StackState> = { ...stack };
+  // Convert StackState to BuilderState format
+  const builderState: BuilderState = {
+    projectName: stack.projectName,
+    frontend: (stack.frontend[0] || "none") as BuilderState["frontend"],
+    backend: stack.backend as BuilderState["backend"],
+    database: stack.database as BuilderState["database"],
+    orm: stack.orm as BuilderState["orm"],
+    auth: stack.auth as BuilderState["auth"],
+    addons: stack.addons as BuilderState["addons"],
+    packageManager: stack.packageManager as BuilderState["packageManager"],
+    installDependencies: stack.install === "true",
+    initializeGit: stack.git === "true",
+  };
+
+  // Apply compatibility rules
+  const adjustedBuilderState = applyCompatibility(builderState);
+
+  // Validate configuration
+  const validation = validateConfiguration(adjustedBuilderState);
+
+  // Convert back to StackState format
+  const adjustedStack: Partial<StackState> = {
+    frontend:
+      adjustedBuilderState.frontend !== "none"
+        ? [adjustedBuilderState.frontend]
+        : [],
+    backend: adjustedBuilderState.backend,
+    database: adjustedBuilderState.database,
+    orm: adjustedBuilderState.orm,
+    auth: adjustedBuilderState.auth,
+    addons: adjustedBuilderState.addons,
+    packageManager: adjustedBuilderState.packageManager,
+    git: adjustedBuilderState.initializeGit ? "true" : "false",
+    install: adjustedBuilderState.installDependencies ? "true" : "false",
+  };
+
+  // Build notes from validation
   const notes: Record<string, { notes: string[]; hasIssue: boolean }> = {};
-  const changes: Array<{ category: string; message: string }> = [];
 
-  // Backend "none" rules
-  if (stack.backend === "none") {
-    adjustedStack.auth = "none";
-    adjustedStack.database = "none";
-    adjustedStack.orm = "none";
-    changes.push({
-      category: "backend",
-      message: "Backend set to 'none' - disabling auth, database, and ORM",
-    });
+  if (validation.warnings.length > 0) {
+    notes.general = {
+      notes: validation.warnings,
+      hasIssue: true,
+    };
   }
 
-  // Database "none" rules
-  if (stack.database === "none") {
-    adjustedStack.orm = "none";
-    if (stack.orm !== "none") {
-      changes.push({
-        category: "orm",
-        message: "Database set to 'none' - disabling ORM",
-      });
-    }
-  }
-
-  // MongoDB-specific rules
-  if (stack.database === "mongodb") {
-    if (stack.orm && stack.orm !== "mongoose" && stack.orm !== "none") {
-      adjustedStack.orm = "mongoose";
-      changes.push({
-        category: "orm",
-        message: "MongoDB requires Mongoose ORM",
-      });
-    }
-  }
-
-  // PostgreSQL/MySQL/SQLite rules
-  if (["postgresql", "mysql", "sqlite"].includes(stack.database)) {
-    if (stack.orm === "mongoose") {
-      adjustedStack.orm = "prisma";
-      changes.push({
-        category: "orm",
-        message: "SQL databases require Prisma, Sequelize, or TypeORM",
-      });
-    }
-  }
-
-  // Frontend compatibility notes
-  if (stack.frontend && stack.frontend.length > 0) {
-    const hasReact = stack.frontend.includes("react");
-    const hasVue = stack.frontend.includes("vue");
-    const hasAngular = stack.frontend.includes("angular");
-
-    if (hasReact && hasVue) {
-      notes.frontend = {
-        notes: ["Mixing React and Vue in the same project is unusual"],
-        hasIssue: false,
-      };
-    }
-  }
-
-  // Auth compatibility
-  if (stack.auth === "jwt" && stack.backend === "none") {
-    adjustedStack.auth = "none";
-    changes.push({
-      category: "auth",
-      message: "JWT requires a backend - disabling auth",
-    });
-  }
-
-  // Package manager recommendations
-  if (stack.packageManager === "npm" && stack.addons.includes("turborepo")) {
-    notes.packageManager = {
-      notes: [
-        "Consider using pnpm or yarn with Turborepo for better performance",
-      ],
-      hasIssue: false,
+  if (validation.errors.length > 0) {
+    notes.errors = {
+      notes: validation.errors,
+      hasIssue: true,
     };
   }
 
   return {
-    adjustedStack: Object.keys(adjustedStack).length > 0 ? adjustedStack : null,
+    adjustedStack,
     notes,
-    changes,
+    changes: [],
   };
 }

@@ -43,9 +43,11 @@ export function useStackState() {
       if (key in DEFAULT_STACK) {
         const defaultValue = DEFAULT_STACK[key as keyof StackState];
         if (Array.isArray(defaultValue)) {
-          (state as any)[key] = value ? value.split(",") : [];
+          (state as Record<string, unknown>)[key] = value
+            ? value.split(",")
+            : [];
         } else {
-          (state as any)[key] = value;
+          (state as Record<string, unknown>)[key] = value;
         }
       }
     }

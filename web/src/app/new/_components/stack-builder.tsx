@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 import { StackState, useStackState } from "./use-stack-state";
 import { TechCategory } from "./tech-category";
 import { ActionButtons } from "./action-buttons";
@@ -15,8 +14,6 @@ import { PRESET_TEMPLATES } from "./presets";
 import { toast } from "sonner";
 
 export function StackBuilder() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const [stack, setStack] = useStackState();
   const [isPending, startTransition] = useTransition();
 
@@ -26,39 +23,39 @@ export function StackBuilder() {
   // Get adjusted stack if compatibility changes were made
   const displayStack = compatibilityAnalysis.adjustedStack || stack;
 
-  // Generate command
-  const command = generateStackCommand(displayStack);
+  // Generate command - ensure displayStack has all required fields
+  const command = generateStackCommand(displayStack as StackState);
 
   // Handle technology selection
   const handleTechSelect = (category: string, techId: string) => {
     startTransition(() => {
       if (isMultiSelectCategory(category)) {
         // Multi-select: toggle in/out of array
-        const current = stack[category] || [];
+        const current = (stack[category as keyof StackState] as string[]) || [];
         if (current.includes(techId)) {
           setStack({
             [category]: current.filter((id: string) => id !== techId),
-          });
+          } as Partial<StackState>);
         } else {
           setStack({
             [category]: [...current, techId],
-          });
+          } as Partial<StackState>);
         }
       } else {
         // Single-select: replace value
         setStack({
           [category]: techId,
-        });
+        } as Partial<StackState>);
       }
     });
   };
 
   // Handle preset application
   const handlePresetSelect = (presetId: string) => {
-    const preset = PRESET_TEMPLATES.find((p: any) => p.id === presetId);
+    const preset = PRESET_TEMPLATES.find((p) => p.id === presetId);
     if (preset) {
       startTransition(() => {
-        setStack(preset.stack);
+        setStack(preset.stack as Partial<StackState>);
         toast.success(`Applied preset: ${preset.name}`);
       });
     }
@@ -99,17 +96,20 @@ export function StackBuilder() {
             Math.random() * Math.min(options.length, 3),
           );
           if (numToPick === 0) {
-            (randomStack as any)[category] = [];
+            (randomStack as Record<string, unknown>)[category] = [];
           } else {
             const shuffled = options
-              .filter((opt: any) => opt.id !== "none")
+              .filter((opt) => opt.id !== "none")
               .sort(() => 0.5 - Math.random())
               .slice(0, numToPick);
-            (randomStack as any)[category] = shuffled.map((opt: any) => opt.id);
+            (randomStack as Record<string, unknown>)[category] = shuffled.map(
+              (opt) => opt.id,
+            );
           }
         } else {
           const randomIndex = Math.floor(Math.random() * options.length);
-          (randomStack as any)[category] = options[randomIndex].id;
+          (randomStack as Record<string, unknown>)[category] =
+            options[randomIndex].id;
         }
       }
 
@@ -213,7 +213,7 @@ export function StackBuilder() {
         />
 
         {/* Share */}
-        <ShareButton stack={displayStack} />
+        <ShareButton stack={displayStack as StackState} />
 
         {/* YOLO Mode */}
         <YoloToggle
@@ -230,7 +230,7 @@ export function StackBuilder() {
               Compatibility Notes
             </h3>
             {Object.entries(compatibilityAnalysis.notes).map(
-              ([category, note]: [string, any]) => (
+              ([category, note]) => (
                 <div
                   key={category}
                   className="text-xs text-yellow-700 dark:text-yellow-300"
@@ -252,8 +252,8 @@ export function StackBuilder() {
             options={TECH_OPTIONS[category] || []}
             selected={
               isMultiSelectCategory(category)
-                ? stack[category] || []
-                : stack[category]
+                ? (stack[category as keyof StackState] as string[]) || []
+                : stack[category as keyof StackState]
             }
             onSelect={handleTechSelect}
             isMultiSelect={isMultiSelectCategory(category)}

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { StackBuilder } from "./_components/stack-builder";
 
 export const metadata = {
@@ -19,7 +20,9 @@ export default function NewPage() {
           </p>
         </div>
 
-        <StackBuilder />
+        <Suspense fallback={<div className="text-center py-8">Loading...</div>}>
+          <StackBuilder />
+        </Suspense>
       </div>
     </div>
   );
