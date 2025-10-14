@@ -1,0 +1,49 @@
+---
+alwaysApply: true
+---
+
+## JS-Stack Project Coding Standards
+
+### General Principles
+- Follow the existing code style and patterns in each file
+- Use TypeScript for web interface, JavaScript for CLI
+- Prioritize readability and maintainability
+
+### Web Interface (Next.js/React)
+- Use functional components with arrow functions
+- Use TypeScript interfaces for component props and types
+- Use React hooks for state management (useState, useEffect, useCallback, etc.)
+- Use Tailwind CSS for styling
+- Use shadcn/ui components for UI elements
+- Use Framer Motion for animations
+- Follow Next.js App Router patterns
+
+### CLI Tool
+- Use Commander.js for command parsing
+- Use @clack/prompts for interactive prompts
+- Use Yup schemas for validation
+- Use chalk for terminal styling
+- Classes are acceptable for complex generators (ModularGenerator, etc.)
+- Use function declarations for utility functions
+
+### TypeScript Conventions
+- Use interfaces for object types and component props
+- Avoid explicit return types unless necessary for clarity
+- Use type aliases for complex union/intersection types
+
+### Handlebars Templates
+- Use explicit conditions: `{{#if (eq orm "prisma")}}` instead of generic if/else
+- Use proper Handlebars syntax: `{{variable}}`, `{{#each items}}...{{/each}}`
+- Follow layered template structure: Base → Framework → Integration → Feature → Tooling
+
+### Code Style
+- Use Prettier for formatting
+- Use ESLint for linting
+- Keep functions focused and single-purpose
+- Use descriptive variable and function names
+- Add comments for complex logic
+
+### Testing
+- Always test CLI commands with `--dry-run` first
+- Test web interface responsiveness
+- Validate all user inputs
