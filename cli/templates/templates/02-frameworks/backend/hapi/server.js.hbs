@@ -1,25 +1,10 @@
-{{#if useTypeScript}}import Hapi from '@hapi/hapi';
-import Boom from '@hapi/boom';
-import Joi from '@hapi/joi';
-import dotenv from 'dotenv';
-{{#if useJWT}}import HapiAuthJWT2 from 'hapi-auth-jwt2';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';{{/if}}
-{{#if usePrisma}}import { PrismaClient } from '@prisma/client';{{/if}}
-{{#if useMongoose}}import mongoose from 'mongoose';{{/if}}
-{{#if useRedis}}import { createClient } from 'redis';{{/if}}
-
-dotenv.config();
-
-const PORT = parseInt(process.env.PORT || '{{backendPort}}', 10);
-const HOST = process.env.HOST || 'localhost';
-{{else}}const Hapi = require('@hapi/hapi');
+const Hapi = require('@hapi/hapi');
 const Boom = require('@hapi/boom');
 const Joi = require('@hapi/joi');
 require('dotenv').config();
 {{#if useJWT}}const HapiAuthJWT2 = require('hapi-auth-jwt2');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');{{/if}}
+const bcrypt = require('bcryptjs');
 {{#if usePrisma}}const { PrismaClient } = require('@prisma/client');{{/if}}
 {{#if useMongoose}}const mongoose = require('mongoose');{{/if}}
 {{#if useRedis}}const { createClient } = require('redis');{{/if}}

@@ -1,10 +1,4 @@
-{{#if useTypeScript}}import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
-
-// Database configuration
-const sequelize = new Sequelize({
-  dialect: '{{database}}',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '{{#if database.postgres}}5432{{else}}{{#if database.mysql}}3306{{else}}3306{{/if}}{{/if}}'),
+{{#if database.mysql}}3306{{else}}3306{{/if}}'),
   username: process.env.DB_USER || '{{#if database.postgres}}postgres{{else}}root{{/if}}',
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_NAME || '{{projectName}}',

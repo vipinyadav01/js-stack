@@ -4,22 +4,11 @@
   </div>
 </template>
 
-<script{{#if useTypeScript}} lang="ts"{{/if}} setup>
-{{#if useTypeScript}}
-// Type-safe head management
+<script// Head management
 useHead({
   title: '{{projectName}} - Home',
   meta: [
     { name: 'description', content: 'Welcome to {{projectName}} built with Nuxt.js' }
   ]
 })
-{{else}}
-// Head management
-useHead({
-  title: '{{projectName}} - Home',
-  meta: [
-    { name: 'description', content: 'Welcome to {{projectName}} built with Nuxt.js' }
-  ]
-})
-{{/if}}
 </script>

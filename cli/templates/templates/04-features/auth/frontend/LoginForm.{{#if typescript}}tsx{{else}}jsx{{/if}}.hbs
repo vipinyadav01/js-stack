@@ -151,54 +151,11 @@ export default LoginForm;
   </div>
 </template>
 
-<script{{#if typescript}} lang="ts"{{/if}}>
-{{#if typescript}}
-import { defineComponent, ref } from 'vue';
-
-interface Props {
-  isLoading?: boolean;
-}
-{{else}}
-import { ref } from 'vue';
-{{/if}}
+<scriptimport { ref } from 'vue';
 
 export default defineComponent({
   name: 'LoginForm',
-  {{#if typescript}}
-  props: {
-    isLoading: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['submit'],
-  {{/if}}
-  setup(props, { emit }) {
-    const email = ref('');
-    const password = ref('');
-
-    const handleSubmit = () => {
-      emit('submit', email.value, password.value);
-    };
-
-    return {
-      email,
-      password,
-      handleSubmit,
-      {{#if styling.tailwind}}
-      containerClass: 'max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md',
-      titleClass: 'text-2xl font-bold mb-6 text-center',
-      formClass: 'space-y-4',
-      labelClass: 'block text-sm font-medium text-gray-700 mb-1',
-      inputClass: 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
-      buttonClass: 'w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed',
-      oauthSectionClass: 'mt-6 text-center',
-      oauthTextClass: 'text-sm text-gray-600 mb-4',
-      oauthButtonsClass: 'flex space-x-4',
-      googleButtonClass: 'flex-1 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700',
-      githubButtonClass: 'flex-1 bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900'
-      {{else}}
-      containerClass: 'login-form-container',
+  containerClass: 'login-form-container',
       titleClass: 'login-title',
       formClass: 'login-form',
       labelClass: 'form-label',
@@ -209,7 +166,6 @@ export default defineComponent({
       oauthButtonsClass: 'oauth-buttons',
       googleButtonClass: 'oauth-button google',
       githubButtonClass: 'oauth-button github'
-      {{/if}}
     };
   }
 });

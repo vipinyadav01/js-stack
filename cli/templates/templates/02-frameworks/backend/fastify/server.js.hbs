@@ -1,29 +1,7 @@
-{{#if useTypeScript}}import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
-import rateLimit from '@fastify/rate-limit';
-import autoload from '@fastify/autoload';
-import path from 'path';
-import dotenv from 'dotenv';
-{{#if useJWT}}import jwt from '@fastify/jwt';{{/if}}
-{{#if usePrisma}}import { PrismaClient } from '@prisma/client';{{/if}}
-{{#if useMongoose}}import mongoose from 'mongoose';{{/if}}
-{{#if useRedis}}import { createClient } from 'redis';{{/if}}
-
-dotenv.config();
-
-const server: FastifyInstance = fastify({
-  logger: {
-    level: process.env.LOG_LEVEL || 'info',
-    prettyPrint: process.env.NODE_ENV === 'development'
-  }
-});
-
-const PORT = parseInt(process.env.PORT || '{{backendPort}}', 10);
-{{else}}const fastify = require('fastify');
+const fastify = require('fastify');
 const path = require('path');
 require('dotenv').config();
-{{#if useJWT}}const jwt = require('@fastify/jwt');{{/if}}
+{{#if useJWT}}const jwt = require('@fastify/jwt');
 {{#if usePrisma}}const { PrismaClient } = require('@prisma/client');{{/if}}
 {{#if useMongoose}}const mongoose = require('mongoose');{{/if}}
 {{#if useRedis}}const { createClient } = require('redis');{{/if}}

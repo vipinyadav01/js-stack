@@ -77,9 +77,7 @@
   </div>
 </template>
 
-<script{{#if useTypeScript}} lang="ts"{{/if}} setup>
-{{#if useTypeScript}}
-// SEO and meta tags
+<script// SEO and meta tags
 useHead({
   title: '{{projectName}} - Home',
   meta: [
@@ -87,41 +85,6 @@ useHead({
     { name: 'keywords', content: 'nuxt, vue, {{projectName}}, web app' }
   ]
 })
-
-// Page data
-interface Feature {
-  icon: string;
-  title: string;
-  description: string;
-}
-
-const features: Feature[] = [
-  {
-    icon: '⚡',
-    title: 'Fast',
-    description: 'Server-side rendering and optimized builds'
-  },
-  {
-    icon: '🚀',
-    title: 'Modern',
-    description: 'Vue 3, TypeScript, and latest web standards'
-  },
-  {
-    icon: '📦',
-    title: 'Ready',
-    description: 'Pre-configured with best practices'
-  }
-]
-{{else}}
-// SEO and meta tags
-useHead({
-  title: '{{projectName}} - Home',
-  meta: [
-    { name: 'description', content: 'Welcome to {{projectName}}, a modern web application built with Nuxt.js' },
-    { name: 'keywords', content: 'nuxt, vue, {{projectName}}, web app' }
-  ]
-})
-{{/if}}
 </script>
 
 {{#unless useTailwind}}

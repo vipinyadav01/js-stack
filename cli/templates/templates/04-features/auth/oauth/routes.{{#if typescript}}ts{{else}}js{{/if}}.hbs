@@ -68,13 +68,13 @@ export class OAuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req: Request) {
+  async googleAuth(@Req() req) {
     // Guard redirects to Google
   }
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
+  async googleAuthRedirect(@Req() req, @Res() res) {
     const token = await this.authService.generateToken({
       id: req.user.id,
       email: req.user.email
@@ -85,13 +85,13 @@ export class OAuthController {
 
   @Get('github')
   @UseGuards(AuthGuard('github'))
-  async githubAuth(@Req() req: Request) {
+  async githubAuth(@Req() req) {
     // Guard redirects to GitHub
   }
 
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
-  async githubAuthRedirect(@Req() req: Request, @Res() res: Response) {
+  async githubAuthRedirect(@Req() req, @Res() res) {
     const token = await this.authService.generateToken({
       id: req.user.id,
       email: req.user.email

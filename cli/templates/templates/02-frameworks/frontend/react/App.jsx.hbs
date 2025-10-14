@@ -1,9 +1,4 @@
-{{#if useTypeScript}}import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-{{#if useTanstackQuery}}import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';{{/if}}
-{{#if useZustand}}import { useStore } from './store';{{/if}}
-{{#if useTailwind}}import './index.css';{{else}}import './App.css';{{/if}}
+import './App.css';
 
 {{#if useTanstackQuery}}const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,7 +12,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';{{/if}}
 
 function App(): JSX.Element {
 {{else}}import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter , Routes, Route } from 'react-router-dom';
 {{#if useTanstackQuery}}import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';{{/if}}
 {{#if useZustand}}import { useStore } from './store';{{/if}}

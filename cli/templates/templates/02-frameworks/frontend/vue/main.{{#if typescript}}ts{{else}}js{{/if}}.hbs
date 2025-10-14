@@ -1,17 +1,7 @@
-{{#if typescript}}
 import { createApp } from 'vue';
 import App from './App.vue';
 {{#if styling.tailwind}}
 import './style.css';
-{{/if}}
-
-createApp(App).mount('#app');
-{{else}}
-import { createApp } from 'vue';
-import App from './App.vue';
-{{#if styling.tailwind}}
-import './style.css';
-{{/if}}
 
 createApp(App).mount('#app');
 {{/if}}

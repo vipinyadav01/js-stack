@@ -2,12 +2,12 @@
   "name": "{{projectName}}",
   "version": "1.0.0",
   "description": "A modern JavaScript full-stack project",
-  "type": "{{#if typescript}}module{{else}}commonjs{{/if}}",
-  "main": "{{#if typescript}}dist/index.js{{else}}index.js{{/if}}",
+  "type": "commonjs",
+  "main": "index.js",
   "scripts": {
-    "dev": "{{#if typescript}}tsx watch{{else}}node --watch{{/if}} index.js",
-    "build": "{{#if typescript}}tsc && tsc-alias{{else}}echo 'Build completed'{{/if}}",
-    "start": "{{#if typescript}}node dist/index.js{{else}}node index.js{{/if}}",
+    "dev": "node --watch index.js",
+    "build": "echo 'Build completed'",
+    "start": "node index.js",
     "test": "echo 'No tests specified'",
     "lint": "{{#if (includes addons 'eslint')}}eslint .{{else if (includes addons 'biome')}}biome check .{{else}}echo 'No linter configured'{{/if}}",
     "format": "{{#if (includes addons 'prettier')}}prettier --write .{{else if (includes addons 'biome')}}biome format --write .{{else}}echo 'No formatter configured'{{/if}}"
@@ -29,7 +29,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    {{#if typescript}}
+    {{#if useTypeScript}}
     "typescript": "^5.0.0",
     "tsx": "^4.0.0",
     "tsc-alias": "^1.8.0",
@@ -40,7 +40,7 @@
   "devDependencies": {
     {{#if (includes addons 'eslint')}}
     "eslint": "^8.0.0",
-    "@eslint/js": "^8.0.0"{{#if typescript}},
+    "@eslint/js": "^8.0.0"{{#if useTypeScript}},
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0"{{/if}}{{#if (or (includes addons 'prettier') (includes addons 'biome') (includes addons 'husky'))}},{{/if}}{{/if}}
     {{#if (includes addons 'prettier')}}

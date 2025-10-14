@@ -1,87 +1,4 @@
-{{#if typescript}}import { Request, Response } from 'express'
 import { auth0Config, auth0Routes } from './config'
-
-// Auth0 login route
-export const login = async (req: Request, res: Response) => {
-  const authUrl = `https://${auth0Config.domain}/authorize?` +
-    `response_type=code&` +
-    `client_id=${auth0Config.clientId}&` +
-    `redirect_uri=${auth0Config.callbackUrl}&` +
-    `scope=${auth0Config.scope}&` +
-    `audience=${auth0Config.audience}`
-
-  res.redirect(authUrl)
-}
-
-// Auth0 callback route
-export const callback = async (req: Request, res: Response) => {
-  const { code } = req.query
-
-  if (!code) {
-    return res.status(400).json({ error: 'Authorization code not provided' })
-  }
-
-  try {
-    // Exchange code for tokens
-    const tokenResponse = await fetch(`https://${auth0Config.domain}/oauth/token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        grant_type: 'authorization_code',
-        client_id: auth0Config.clientId,
-        client_secret: auth0Config.clientSecret,
-        code: code,
-        redirect_uri: auth0Config.callbackUrl,
-      }),
-    })
-
-    const tokens = await tokenResponse.json()
-
-    if (tokens.error) {
-      return res.status(400).json({ error: tokens.error_description })
-    }
-
-    // Get user info
-    const userResponse = await fetch(`https://${auth0Config.domain}/userinfo`, {
-      headers: {
-        Authorization: `Bearer ${tokens.access_token}`,
-      },
-    })
-
-    const user = await userResponse.json()
-
-    // Store user session (implement your session management)
-    req.session.user = user
-    req.session.accessToken = tokens.access_token
-
-    res.redirect('/dashboard')
-  } catch (error) {
-    console.error('Auth0 callback error:', error)
-    res.status(500).json({ error: 'Authentication failed' })
-  }
-}
-
-// Auth0 logout route
-export const logout = async (req: Request, res: Response) => {
-  req.session.destroy(() => {
-    const logoutUrl = `https://${auth0Config.domain}/v2/logout?` +
-      `returnTo=${auth0Config.logoutUrl}&` +
-      `client_id=${auth0Config.clientId}`
-    
-    res.redirect(logoutUrl)
-  })
-}
-
-// Auth0 profile route
-export const profile = async (req: Request, res: Response) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Not authenticated' })
-  }
-
-  res.json(req.session.user)
-}{{else}}import { auth0Config, auth0Routes } from './config'
 
 // Auth0 login route
 export const login = async (req, res) => {
@@ -163,4 +80,4 @@ export const profile = async (req, res) => {
   }
 
   res.json(req.session.user)
-}{{/if}}
+}

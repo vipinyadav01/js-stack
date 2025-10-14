@@ -2,18 +2,11 @@
   "name": "{{projectName}}-frontend",
   "version": "1.0.0",
   "description": "Vue.js frontend for {{projectName}}",
-  "main": "src/main.{{#if useTypeScript}}ts{{else}}js{{/if}}",
+  "main": "src/main.js",
   "type": "module",
   "scripts": {
     "dev": "vite --port {{frontendPort}}",
-    "build": "{{#if useTypeScript}}vue-tsc && {{/if}}vite build",
-    "preview": "vite preview",
-    "test:unit": "vitest",
-    "test:e2e": "cypress run",
-    "test:e2e:dev": "cypress open",
-    "lint": "eslint . --ext .vue,.js{{#if useTypeScript}},.ts{{/if}} --fix",
-    "format": "prettier --write \"src/**/*.{vue,js{{#if useTypeScript}},ts{{/if}}}\"",
-    "type-check": "{{#if useTypeScript}}vue-tsc --noEmit{{else}}echo 'TypeScript not configured'{{/if}}"
+    "build": "echo 'TypeScript not configured'"
   },
   "keywords": [
     "vue",

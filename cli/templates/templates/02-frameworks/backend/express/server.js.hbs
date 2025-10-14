@@ -1,26 +1,4 @@
-{{#if useTypeScript}}import express, { Express, Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import compression from 'compression';
-import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
-{{#if useJWT}}import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';{{/if}}
-{{#if usePassport}}import passport from 'passport';
-import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';{{/if}}
-{{#if usePrisma}}import { PrismaClient } from '@prisma/client';{{/if}}
-{{#if useMongoose}}import mongoose from 'mongoose';{{/if}}
-{{#if useRedis}}import { createClient } from 'redis';{{/if}}
-{{#if useSocketIO}}import { createServer } from 'http';
-import { Server } from 'socket.io';{{/if}}
-import 'express-async-errors';
-
-dotenv.config();
-
-const app: Express = express();
-const PORT = process.env.PORT || {{backendPort}};
-{{else}}const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -28,7 +6,7 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 {{#if useJWT}}const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');{{/if}}
+const bcrypt = require('bcryptjs');
 {{#if usePassport}}const passport = require('passport');
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');{{/if}}
 {{#if usePrisma}}const { PrismaClient } = require('@prisma/client');{{/if}}
@@ -124,7 +102,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/{{project
 {{/if}}
 
 // Routes
-app.get('/api/health', ({{#if useTypeScript}}req: Request, res: Response{{else}}req, res{{/if}}) => {
+app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -134,7 +112,7 @@ app.get('/api/health', ({{#if useTypeScript}}req: Request, res: Response{{else}}
 
 {{#if useJWT}}
 // Auth Routes
-app.post('/api/auth/register', async ({{#if useTypeScript}}req: Request, res: Response{{else}}req, res{{/if}}) => {
+app.post('/api/auth/register', async (req, res) => {
   try {
     const { email, password } = req.body;
     
@@ -167,7 +145,7 @@ app.post('/api/auth/register', async ({{#if useTypeScript}}req: Request, res: Re
   }
 });
 
-app.post('/api/auth/login', async ({{#if useTypeScript}}req: Request, res: Response{{else}}req, res{{/if}}) => {
+app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     
@@ -202,7 +180,7 @@ app.post('/api/auth/login', async ({{#if useTypeScript}}req: Request, res: Respo
 // Example protected route
 app.get('/api/protected',
   {{#if usePassport}}passport.authenticate('jwt', { session: false }),{{/if}}
-  ({{#if useTypeScript}}req: Request, res: Response{{else}}req, res{{/if}}) => {
+  (req, res) => {
     res.json({
       message: 'This is a protected route',
       user: {{#if usePassport}}req.user{{else}}{ id: 1, email: 'user@example.com' }{{/if}}
@@ -227,7 +205,7 @@ io.on('connection', (socket) => {
 {{/if}}
 
 // Error handling middleware
-app.use(({{#if useTypeScript}}err: Error, req: Request, res: Response, next: NextFunction{{else}}err, req, res, next{{/if}}) => {
+app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     error: 'Something went wrong!',
@@ -236,7 +214,7 @@ app.use(({{#if useTypeScript}}err: Error, req: Request, res: Response, next: Nex
 });
 
 // 404 handler
-app.use(({{#if useTypeScript}}req: Request, res: Response{{else}}req, res{{/if}}) => {
+app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 

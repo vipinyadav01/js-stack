@@ -1,27 +1,4 @@
-{{#if useTypeScript}}import Koa from 'koa';
-import Router from 'koa-router';
-import bodyParser from 'koa-bodyparser';
-import cors from 'koa-cors';
-import helmet from 'koa-helmet';
-import rateLimit from 'koa-ratelimit';
-import compress from 'koa-compress';
-import logger from 'koa-logger';
-import dotenv from 'dotenv';
-{{#if useJWT}}import jwt from 'koa-jwt';
-import jsonwebtoken from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';{{/if}}
-{{#if usePrisma}}import { PrismaClient } from '@prisma/client';{{/if}}
-{{#if useMongoose}}import mongoose from 'mongoose';{{/if}}
-{{#if useRedis}}import { createClient } from 'redis';{{/if}}
-{{#if useSocketIO}}import { createServer } from 'http';
-import { Server } from 'socket.io';{{/if}}
-
-dotenv.config();
-
-const app = new Koa();
-const router = new Router();
-const PORT = parseInt(process.env.PORT || '{{backendPort}}', 10);
-{{else}}const Koa = require('koa');
+const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 const cors = require('koa-cors');
@@ -32,7 +9,7 @@ const logger = require('koa-logger');
 require('dotenv').config();
 {{#if useJWT}}const jwt = require('koa-jwt');
 const jsonwebtoken = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');{{/if}}
+const bcrypt = require('bcryptjs');
 {{#if usePrisma}}const { PrismaClient } = require('@prisma/client');{{/if}}
 {{#if useMongoose}}const mongoose = require('mongoose');{{/if}}
 {{#if useRedis}}const { createClient } = require('redis');{{/if}}

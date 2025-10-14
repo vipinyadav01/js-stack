@@ -2,21 +2,8 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   
-  {{#if useTypeScript}}
-  typescript: {
-    typeCheck: true
-  },
-  {{/if}}
-  
-  {{#if useTailwind}}
-  modules: [
-    '@nuxtjs/tailwindcss'{{#if usePinia}},
-    '@pinia/nuxt'{{/if}}{{#if useAuth}},
-    '@sidebase/nuxt-auth'{{/if}}
-  ],
-  {{else}}
   modules: [{{#if usePinia}}
-    '@pinia/nuxt'{{/if}}{{#if useAuth}},
+    '@pinia/nuxt'{{#if useAuth}},
     '@sidebase/nuxt-auth'{{/if}}
   ],
   {{/if}}

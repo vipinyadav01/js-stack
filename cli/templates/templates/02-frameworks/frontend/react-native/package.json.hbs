@@ -10,7 +10,7 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json}\"",
-    "type-check": "{{#if useTypeScript}}tsc --noEmit{{else}}echo 'TypeScript not configured'{{/if}}",
+    "type-check": "echo 'TypeScript not configured'",
     "clean": "react-native clean",
     "reset-cache": "react-native start --reset-cache",
     "build:android": "cd android && ./gradlew assembleRelease",

@@ -1,12 +1,8 @@
-{{#if typescript}}
-/** @type {import('jest').Config} */
-module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: '{{#if frontend}}jsdom{{else}}node{{/if}}',
+node',
   roots: ['<rootDir>/src'],
   testMatch: [
-    '**/__tests__/**/*.{{#if typescript}}ts{{else}}js{{/if}}',
-    '**/*.(test|spec).{{#if typescript}}ts{{else}}js{{/if}}'
+    '**/__tests__/**/*.js',
+    '**/*.(test|spec).js'
   ],
   transform: {
     '^.+\\.ts$': 'ts-jest',
@@ -15,14 +11,14 @@ module.exports = {
     {{/if}}
   },
   collectCoverageFrom: [
-    'src/**/*.{{#if typescript}}ts{{else}}js{{/if}}',
+    'src/**/*.js',
     {{#if frontend.react}}
     'src/**/*.tsx',
     {{/if}}
     '!src/**/*.d.ts',
   ],
   {{#if frontend}}
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.{{#if typescript}}ts{{else}}js{{/if}}'],
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
   moduleNameMapping: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },

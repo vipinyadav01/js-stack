@@ -1,24 +1,6 @@
-<script{{#if useTypeScript}} lang="ts"{{/if}}>
-  import { onMount } from 'svelte';
-  import Header from './lib/Header.svelte';
-  import Footer from './lib/Footer.svelte';
-  {{#if useTailwind}}
-  import './app.css';
-  {{/if}}
-
-  {{#if useTypeScript}}
-  interface AppData {
-    message: string;
-  }
-
-  let data: AppData = {
+<scriptlet data = {
     message: 'Welcome to {{projectName}}'
   };
-  {{else}}
-  let data = {
-    message: 'Welcome to {{projectName}}'
-  };
-  {{/if}}
 
   onMount(() => {
     console.log('{{projectName}} app mounted');

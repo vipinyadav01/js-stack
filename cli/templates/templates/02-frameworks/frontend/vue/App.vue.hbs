@@ -22,18 +22,9 @@
   </div>
 </template>
 
-<script{{#if useTypeScript}} lang="ts"{{/if}}>
-{{#if useTypeScript}}
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'App'
-})
-{{else}}
-export default {
+<scriptexport default {
   name: 'App'
 }
-{{/if}}
 </script>
 
 {{#unless useTailwind}}
