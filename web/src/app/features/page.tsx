@@ -3,7 +3,6 @@
 import {
   Rocket,
   Package,
-  Terminal,
   CheckCircle,
   Star,
   Layers,
@@ -12,10 +11,7 @@ import {
   Database,
   Lock,
   Cpu,
-  Badge,
-  Clock,
   Menu,
-  Filter,
   Grid3X3,
   List,
 } from "lucide-react";

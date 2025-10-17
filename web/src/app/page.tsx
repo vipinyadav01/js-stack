@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Github, Heart } from "lucide-react";
-import Hero from "@/components/hero";
-import Command from "@/components/command";
-import ProjectInt from "@/components/ProjectInt";
-import TopSponsors from "@/components/TopSponsors";
-import TopComments from "@/components/TopComments";
+import { Github, Heart, MessageCircle, Play } from "lucide-react";
+import Hero from "@/components/home/hero";
+import Command from "@/components/home/command";
+import ProjectInt from "@/components/home/ProjectInt";
+import TopSponsors from "@/components/home/TopSponsors";
+import TopComments from "@/components/home/TopComments";
+import VideoTutorials from "@/components/home/VideoTutorials";
 import { FAQStructuredData } from "@/components/structured-data";
 
 export default function Home() {
@@ -80,26 +81,63 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Top Sponsors & Comments */}
+          {/* Top Sponsors */}
           <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
               <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
                 <div className="flex items-center gap-2">
                   <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                   <h2 className="font-bold text-base sm:text-lg lg:text-xl">
-                    COMMUNITY_HIGHLIGHTS.LOG
+                    TOP_SPONSORS.LOG
                   </h2>
                 </div>
                 <div className="hidden h-px flex-1 bg-border sm:block" />
                 <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                  [TOP CONTRIBUTORS & FEEDBACK]
+                  [SUPPORTED BY COMMUNITY]
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                <TopSponsors repository="vipinyadav01" limit={10} />
-                <TopComments repository="js-stack" limit={10} />
+              <TopSponsors repository="vipinyadav01" limit={10} />
+            </div>
+          </motion.div>
+
+          {/* Top Comments */}
+          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
+            <div className="mx-auto max-w-[1280px]">
+              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
+                    TOP_COMMENTS.LOG
+                  </h2>
+                </div>
+                <div className="hidden h-px flex-1 bg-border sm:block" />
+                <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+                  [COMMUNITY FEEDBACK & MENTIONS]
+                </span>
               </div>
+
+              <TopComments repository="js-stack" limit={10} />
+            </div>
+          </motion.div>
+
+          {/* Video Tutorials */}
+          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
+            <div className="mx-auto max-w-[1280px]">
+              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+                <div className="flex items-center gap-2">
+                  <Play className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
+                    VIDEO_TUTORIALS.LOG
+                  </h2>
+                </div>
+                <div className="hidden h-px flex-1 bg-border sm:block" />
+                <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+                  [LEARN WITH VIDEOS]
+                </span>
+              </div>
+
+              <VideoTutorials limit={4} />
             </div>
           </motion.div>
 

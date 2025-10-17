@@ -15,9 +15,13 @@ import { useEffect, useState } from "react";
 
 export default function NotFound() {
   const [currentPath, setCurrentPath] = useState("/unknown");
+  const [timestamp, setTimestamp] = useState("");
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     setCurrentPath(window.location.pathname);
+    setTimestamp(new Date().toISOString());
   }, []);
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -111,7 +115,7 @@ export default function NotFound() {
                       <span>
                         Timestamp:{" "}
                         <code className="bg-muted px-1 rounded">
-                          {new Date().toISOString()}
+                          {isClient ? timestamp : "Loading..."}
                         </code>
                       </span>
                     </div>

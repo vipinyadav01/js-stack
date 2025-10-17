@@ -1,5 +1,5 @@
-import NpmVersion from "./NpmVersion";
-import { Terminal, Code2, Zap, Package, Github } from "lucide-react";
+import NpmVersion from "@/components/NpmVersion";
+import { Terminal, Package, Github } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -22,20 +22,7 @@ export default function Hero() {
         {/* ASCII Art Section */}
         <div className="mb-8">
           <div className="rounded border border-border p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Code2 className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-sm">ASCII_ART</span>
-              </div>
-              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                DISPLAY
-              </div>
-            </div>
-
             <div className="rounded border border-border p-4">
-              <div className="text-xs text-muted-foreground mb-3">
-                LOGO_DISPLAY
-              </div>
               <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 w-full">
                 <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
                   {` ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
@@ -71,18 +58,6 @@ export default function Hero() {
         {/* Description Section */}
         <div className="mb-8">
           <div className="rounded border border-border p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-sm">
-                  PROJECT_DESCRIPTION
-                </span>
-              </div>
-              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                INFO
-              </div>
-            </div>
-
             <div className="rounded border border-border p-4">
               <div className="text-xs text-muted-foreground mb-2">
                 DESCRIPTION

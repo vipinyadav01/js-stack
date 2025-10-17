@@ -16,7 +16,6 @@ import {
   Star,
   GitFork,
   Eye,
-  Filter,
   Grid3X3,
   List,
 } from "lucide-react";
