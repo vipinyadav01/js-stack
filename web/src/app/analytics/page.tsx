@@ -28,6 +28,10 @@ import {
   GitHubRepoData,
 } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
 // Dynamic imports for analytics components
 const KPICards = dynamic(() => import("@/components/analytics/KPICards"), {
@@ -314,39 +318,132 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Enhanced Header */}
-      <div className="border-b border-border bg-gradient-to-r from-primary/5 to-blue-500/5">
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              {/* Title Section */}
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
-                  <Activity className="h-8 w-8 text-primary" />
+    <div className="flex h-screen w-full overflow-hidden border-border text-foreground lg:grid lg:grid-cols-[30%_1fr]">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-full flex-col border-border border-r sm:max-w-3xs md:max-w-xs lg:max-w-sm">
+        <ScrollArea className="flex-1">
+          <div className="flex h-full flex-col gap-3 p-3 sm:p-4 md:h-[calc(100vh-64px)]">
+            {/* Analytics Sidebar Content */}
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                  <Activity className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-bold font-mono text-foreground">
-                    Analytics Dashboard
+                  <h1 className="text-lg font-bold font-mono text-foreground">
+                    Analytics
                   </h1>
-                  <p className="text-lg text-muted-foreground mt-1">
-                    Real-time insights and usage metrics
+                  <p className="text-xs text-muted-foreground">
+                    Real-time insights
                   </p>
                 </div>
               </div>
 
-              {/* Controls Section */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              {/* Quick Stats */}
+              {(npmData || githubData) && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Quick Stats
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {githubData && (
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                        <Star className="h-3 w-3 text-yellow-600" />
+                        <div>
+                          <div className="text-xs font-semibold">
+                            {formatNumber(
+                              githubData.info?.stargazersCount || 0,
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Stars
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {githubData && (
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                        <GitFork className="h-3 w-3 text-blue-600" />
+                        <div>
+                          <div className="text-xs font-semibold">
+                            {formatNumber(githubData.info?.forksCount || 0)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Forks
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {npmData && (
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                        <Download className="h-3 w-3 text-green-600" />
+                        <div>
+                          <div className="text-xs font-semibold">
+                            {formatNumber(npmData.totalLast7Days || 0)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Weekly
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {githubData && (
+                      <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                        <Eye className="h-3 w-3 text-purple-600" />
+                        <div>
+                          <div className="text-xs font-semibold">
+                            {formatNumber(githubData.info?.watchersCount || 0)}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Watch
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Section Filters */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Sections
+                </h3>
+                <div className="space-y-2">
+                  {filterCategories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => toggleSection(category.id)}
+                      className={cn(
+                        "w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
+                        visibleSections.has(category.id)
+                          ? "border-primary bg-primary/10 text-primary shadow-sm"
+                          : "border-border text-muted-foreground hover:border-primary/50 hover:bg-muted/50 hover:text-foreground",
+                      )}
+                    >
+                      <category.icon className="h-3 w-3" />
+                      <span>{category.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Controls
+                </h3>
+
                 {/* View Mode Toggle */}
-                <div className="flex items-center gap-2 p-1 rounded-lg border border-border bg-background/50">
+                <div className="flex items-center gap-1 p-1 rounded-lg border border-border bg-background/50">
                   <button
                     onClick={() => setViewMode("grid")}
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all",
+                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
                       viewMode === "grid"
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
@@ -358,7 +455,7 @@ export default function AnalyticsPage() {
                   <button
                     onClick={() => setViewMode("list")}
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all",
+                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
                       viewMode === "list"
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
@@ -369,341 +466,315 @@ export default function AnalyticsPage() {
                   </button>
                 </div>
 
-                {/* Refresh Controls */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span className="hidden sm:inline">Updated:</span>
-                    <span>{format(lastUpdated, "HH:mm")}</span>
+                {/* Refresh Button */}
+                <button
+                  onClick={() => {
+                    fetchNpmData();
+                    fetchGitHubData();
+                  }}
+                  disabled={loading.npm || loading.github}
+                  className="w-full inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium transition-all hover:bg-muted hover:border-primary/40 disabled:opacity-50"
+                >
+                  <RefreshCw
+                    className={cn(
+                      "h-3 w-3",
+                      (loading.npm || loading.github) && "animate-spin",
+                    )}
+                  />
+                  <span>Refresh Data</span>
+                </button>
+
+                {/* Last Updated */}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3" />
+                  <span>Updated: {format(lastUpdated, "HH:mm")}</span>
+                </div>
+              </div>
+
+              {/* Error Display */}
+              <AnimatePresence>
+                {(error.npm || error.github) && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="rounded-lg border border-red-200 bg-red-50 p-3"
+                  >
+                    <div className="text-xs text-red-800">
+                      <div className="font-semibold">Data Issues:</div>
+                      {error.npm && <div>NPM: {error.npm}</div>}
+                      {error.github && <div>GitHub: {error.github}</div>}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </ScrollArea>
+      </aside>
+
+      {/* Mobile Sheet */}
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="fixed top-4 left-4 z-50 lg:hidden h-9 w-9"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-[320px] sm:w-[400px] p-0">
+          <ScrollArea className="flex-1">
+            <div className="flex h-full flex-col gap-3 p-3 sm:p-4 md:h-[calc(100vh-64px)]">
+              {/* Mobile Sidebar Content - Same as desktop */}
+              <div className="space-y-6">
+                {/* Header */}
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                    <Activity className="h-5 w-5 text-primary" />
                   </div>
+                  <div>
+                    <h1 className="text-lg font-bold font-mono text-foreground">
+                      Analytics
+                    </h1>
+                    <p className="text-xs text-muted-foreground">
+                      Real-time insights
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quick Stats */}
+                {(npmData || githubData) && (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold text-foreground">
+                      Quick Stats
+                    </h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {githubData && (
+                        <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                          <Star className="h-3 w-3 text-yellow-600" />
+                          <div>
+                            <div className="text-xs font-semibold">
+                              {formatNumber(
+                                githubData.info?.stargazersCount || 0,
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Stars
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {githubData && (
+                        <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                          <GitFork className="h-3 w-3 text-blue-600" />
+                          <div>
+                            <div className="text-xs font-semibold">
+                              {formatNumber(githubData.info?.forksCount || 0)}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Forks
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {npmData && (
+                        <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                          <Download className="h-3 w-3 text-green-600" />
+                          <div>
+                            <div className="text-xs font-semibold">
+                              {formatNumber(npmData.totalLast7Days || 0)}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Weekly
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {githubData && (
+                        <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
+                          <Eye className="h-3 w-3 text-purple-600" />
+                          <div>
+                            <div className="text-xs font-semibold">
+                              {formatNumber(
+                                githubData.info?.watchersCount || 0,
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Watch
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Section Filters */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Sections
+                  </h3>
+                  <div className="space-y-2">
+                    {filterCategories.map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => toggleSection(category.id)}
+                        className={cn(
+                          "w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
+                          visibleSections.has(category.id)
+                            ? "border-primary bg-primary/10 text-primary shadow-sm"
+                            : "border-border text-muted-foreground hover:border-primary/50 hover:bg-muted/50 hover:text-foreground",
+                        )}
+                      >
+                        <category.icon className="h-3 w-3" />
+                        <span>{category.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Controls */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Controls
+                  </h3>
+
+                  {/* View Mode Toggle */}
+                  <div className="flex items-center gap-1 p-1 rounded-lg border border-border bg-background/50">
+                    <button
+                      onClick={() => setViewMode("grid")}
+                      className={cn(
+                        "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
+                        viewMode === "grid"
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                      )}
+                    >
+                      <Grid3X3 className="h-3 w-3" />
+                      Grid
+                    </button>
+                    <button
+                      onClick={() => setViewMode("list")}
+                      className={cn(
+                        "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
+                        viewMode === "list"
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                      )}
+                    >
+                      <List className="h-3 w-3" />
+                      List
+                    </button>
+                  </div>
+
+                  {/* Refresh Button */}
                   <button
                     onClick={() => {
                       fetchNpmData();
                       fetchGitHubData();
                     }}
                     disabled={loading.npm || loading.github}
-                    className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium transition-all hover:bg-muted hover:border-primary/40 disabled:opacity-50"
+                    className="w-full inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium transition-all hover:bg-muted hover:border-primary/40 disabled:opacity-50"
                   >
                     <RefreshCw
                       className={cn(
-                        "h-4 w-4",
+                        "h-3 w-3",
                         (loading.npm || loading.github) && "animate-spin",
                       )}
                     />
-                    <span className="hidden sm:inline">Refresh</span>
+                    <span>Refresh Data</span>
                   </button>
+
+                  {/* Last Updated */}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>Updated: {format(lastUpdated, "HH:mm")}</span>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Quick Stats Bar */}
-            {(npmData || githubData) && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4"
-              >
-                {githubData && (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50 border border-border">
-                    <Star className="h-4 w-4 text-yellow-600" />
-                    <div>
-                      <div className="text-sm font-semibold">
-                        {formatNumber(githubData.info?.stargazersCount || 0)}
+                {/* Error Display */}
+                <AnimatePresence>
+                  {(error.npm || error.github) && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="rounded-lg border border-red-200 bg-red-50 p-3"
+                    >
+                      <div className="text-xs text-red-800">
+                        <div className="font-semibold">Data Issues:</div>
+                        {error.npm && <div>NPM: {error.npm}</div>}
+                        {error.github && <div>GitHub: {error.github}</div>}
                       </div>
-                      <div className="text-xs text-muted-foreground">Stars</div>
-                    </div>
-                  </div>
-                )}
-
-                {githubData && (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50 border border-border">
-                    <GitFork className="h-4 w-4 text-blue-600" />
-                    <div>
-                      <div className="text-sm font-semibold">
-                        {formatNumber(githubData.info?.forksCount || 0)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Forks</div>
-                    </div>
-                  </div>
-                )}
-
-                {npmData && (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50 border border-border">
-                    <Download className="h-4 w-4 text-green-600" />
-                    <div>
-                      <div className="text-sm font-semibold">
-                        {formatNumber(npmData.totalLast7Days || 0)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Weekly DL
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {githubData && (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50 border border-border">
-                    <Eye className="h-4 w-4 text-purple-600" />
-                    <div>
-                      <div className="text-sm font-semibold">
-                        {formatNumber(githubData.info?.watchersCount || 0)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Watchers
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Enhanced Filter Controls */}
-      <div className="border-b border-border bg-muted/20">
-        <div className="container mx-auto px-4 py-4 max-w-7xl">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-primary" />
-              <span className="font-medium text-sm">Sections:</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {filterCategories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => toggleSection(category.id)}
-                  className={cn(
-                    "inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
-                    visibleSections.has(category.id)
-                      ? "border-primary bg-primary/10 text-primary shadow-sm"
-                      : "border-border text-muted-foreground hover:border-primary/50 hover:bg-muted/50 hover:text-foreground",
+                    </motion.div>
                   )}
-                  title={category.description}
-                >
-                  <category.icon className="h-3 w-3" />
-                  <span className="hidden sm:inline">{category.label}</span>
-                  <span className="sm:hidden">
-                    {category.label.split(" ")[0]}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Error Display */}
-      <AnimatePresence>
-        {(error.npm || error.github) && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="border-b border-red-200 bg-red-50"
-          >
-            <div className="container mx-auto px-4 py-4 max-w-7xl">
-              <div className="flex items-center gap-2 text-red-800">
-                <span className="font-semibold">Data Loading Issues:</span>
-                {error.npm && <span>NPM: {error.npm}</span>}
-                {error.github && <span>GitHub: {error.github}</span>}
+                </AnimatePresence>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-8"
-        >
-          {/* Overview Section */}
-          <AnimatePresence>
-            {visibleSections.has("overview") && (
-              <motion.section
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="space-y-6"
-              >
-                <div className="flex items-center gap-3">
-                  <Activity className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold font-mono">Overview</h2>
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground">
-                    Key Performance Indicators
-                  </span>
-                </div>
-                <KPICards />
-              </motion.section>
-            )}
-          </AnimatePresence>
-
-          {/* Technology Stacks Section */}
-          <AnimatePresence>
-            {visibleSections.has("stacks") && (
-              <motion.section
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="space-y-6"
-              >
-                <div className="flex items-center gap-3">
-                  <BarChart3 className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold font-mono">
-                    Technology Stacks
-                  </h2>
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground">
-                    Usage Analytics
-                  </span>
-                </div>
-
-                <div
-                  className={cn(
-                    "grid gap-6",
-                    viewMode === "grid" ? "lg:grid-cols-2" : "grid-cols-1",
-                  )}
-                >
-                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                    <TopStacksBar />
-                  </div>
-                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                    <StackUsagePie />
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                  <StackTrendsLine />
-                </div>
-              </motion.section>
-            )}
-          </AnimatePresence>
-
-          {/* Systems Section */}
-          <AnimatePresence>
-            {visibleSections.has("systems") && (
-              <motion.section
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="space-y-6"
-              >
-                <div className="flex items-center gap-3">
-                  <Package className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold font-mono">
-                    Systems & Tools
-                  </h2>
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground">
-                    Environment Analytics
-                  </span>
-                </div>
-
-                <div
-                  className={cn(
-                    "grid gap-6",
-                    viewMode === "grid" ? "lg:grid-cols-2" : "grid-cols-1",
-                  )}
-                >
-                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                    <PackageManagerStats />
-                  </div>
-                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                    <SystemMetrics />
-                  </div>
-                </div>
-              </motion.section>
-            )}
-          </AnimatePresence>
-
-          {/* Deployment Section */}
-          <AnimatePresence>
-            {visibleSections.has("deployment") && (
-              <motion.section
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="space-y-6"
-              >
-                <div className="flex items-center gap-3">
-                  <Zap className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold font-mono">
-                    Deployment & Performance
-                  </h2>
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground">
-                    Performance Metrics
-                  </span>
-                </div>
-
-                <div
-                  className={cn(
-                    "grid gap-6",
-                    viewMode === "grid" ? "lg:grid-cols-2" : "grid-cols-1",
-                  )}
-                >
-                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                    <DeploymentAnalytics />
-                  </div>
-                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                    <PerformanceMetrics />
-                  </div>
-                </div>
-              </motion.section>
-            )}
-          </AnimatePresence>
-
-          {/* Repository Section */}
-          <AnimatePresence>
-            {visibleSections.has("repository") && (
-              <motion.section
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="space-y-6"
-              >
-                <div className="flex items-center gap-3">
-                  <Globe className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold font-mono">
-                    Repository & Downloads
-                  </h2>
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground">
-                    Repository Data
-                  </span>
-                </div>
-
-                <div className="space-y-6">
-                  {githubData && (
-                    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                      <RepositoryMetricsSection
-                        githubData={githubData}
-                        formatNumber={formatNumber}
-                      />
+      <main className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="p-3 sm:p-4 lg:p-6">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="space-y-6 sm:space-y-8"
+            >
+              {/* Overview Section */}
+              <AnimatePresence>
+                {visibleSections.has("overview") && (
+                  <motion.section
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Activity className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold font-mono">Overview</h2>
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">
+                        Key Performance Indicators
+                      </span>
                     </div>
-                  )}
+                    <KPICards />
+                  </motion.section>
+                )}
+              </AnimatePresence>
 
-                  {npmData && (
-                    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                      <DownloadTrendsSection
-                        npmData={npmData}
-                        formatNumber={formatNumber}
-                      />
+              {/* Technology Stacks Section */}
+              <AnimatePresence>
+                {visibleSections.has("stacks") && (
+                  <motion.section
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center gap-3">
+                      <BarChart3 className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold font-mono">
+                        Technology Stacks
+                      </h2>
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">
+                        Usage Analytics
+                      </span>
                     </div>
-                  )}
 
-                  {githubData && (
                     <div
                       className={cn(
                         "grid gap-6",
@@ -711,50 +782,194 @@ export default function AnalyticsPage() {
                       )}
                     >
                       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                        <ReleasesSection releases={githubData.releases} />
+                        <TopStacksBar />
                       </div>
                       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                        <QuickActionsSection />
+                        <StackUsagePie />
                       </div>
                     </div>
-                  )}
-                </div>
-              </motion.section>
-            )}
-          </AnimatePresence>
 
-          {/* Community Section */}
-          <AnimatePresence>
-            {visibleSections.has("community") && (
-              <motion.section
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="space-y-6"
-              >
-                <div className="flex items-center gap-3">
-                  <Users className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-bold font-mono">Community</h2>
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground">
-                    Community Engagement
-                  </span>
-                </div>
-
-                {githubData && (
-                  <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                    <ContributorsSection
-                      contributors={githubData.contributors}
-                      formatNumber={formatNumber}
-                    />
-                  </div>
+                    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                      <StackTrendsLine />
+                    </div>
+                  </motion.section>
                 )}
-              </motion.section>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </div>
+              </AnimatePresence>
+
+              {/* Systems Section */}
+              <AnimatePresence>
+                {visibleSections.has("systems") && (
+                  <motion.section
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Package className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold font-mono">
+                        Systems & Tools
+                      </h2>
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">
+                        Environment Analytics
+                      </span>
+                    </div>
+
+                    <div
+                      className={cn(
+                        "grid gap-6",
+                        viewMode === "grid" ? "lg:grid-cols-2" : "grid-cols-1",
+                      )}
+                    >
+                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                        <PackageManagerStats />
+                      </div>
+                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                        <SystemMetrics />
+                      </div>
+                    </div>
+                  </motion.section>
+                )}
+              </AnimatePresence>
+
+              {/* Deployment Section */}
+              <AnimatePresence>
+                {visibleSections.has("deployment") && (
+                  <motion.section
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Zap className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold font-mono">
+                        Deployment & Performance
+                      </h2>
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">
+                        Performance Metrics
+                      </span>
+                    </div>
+
+                    <div
+                      className={cn(
+                        "grid gap-6",
+                        viewMode === "grid" ? "lg:grid-cols-2" : "grid-cols-1",
+                      )}
+                    >
+                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                        <DeploymentAnalytics />
+                      </div>
+                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                        <PerformanceMetrics />
+                      </div>
+                    </div>
+                  </motion.section>
+                )}
+              </AnimatePresence>
+
+              {/* Repository Section */}
+              <AnimatePresence>
+                {visibleSections.has("repository") && (
+                  <motion.section
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Globe className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold font-mono">
+                        Repository & Downloads
+                      </h2>
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">
+                        Repository Data
+                      </span>
+                    </div>
+
+                    <div className="space-y-6">
+                      {githubData && (
+                        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                          <RepositoryMetricsSection
+                            githubData={githubData}
+                            formatNumber={formatNumber}
+                          />
+                        </div>
+                      )}
+
+                      {npmData && (
+                        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                          <DownloadTrendsSection
+                            npmData={npmData}
+                            formatNumber={formatNumber}
+                          />
+                        </div>
+                      )}
+
+                      {githubData && (
+                        <div
+                          className={cn(
+                            "grid gap-6",
+                            viewMode === "grid"
+                              ? "lg:grid-cols-2"
+                              : "grid-cols-1",
+                          )}
+                        >
+                          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                            <ReleasesSection releases={githubData.releases} />
+                          </div>
+                          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                            <QuickActionsSection />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.section>
+                )}
+              </AnimatePresence>
+
+              {/* Community Section */}
+              <AnimatePresence>
+                {visibleSections.has("community") && (
+                  <motion.section
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Users className="h-6 w-6 text-primary" />
+                      <h2 className="text-2xl font-bold font-mono">
+                        Community
+                      </h2>
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">
+                        Community Engagement
+                      </span>
+                    </div>
+
+                    {githubData && (
+                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+                        <ContributorsSection
+                          contributors={githubData.contributors}
+                          formatNumber={formatNumber}
+                        />
+                      </div>
+                    )}
+                  </motion.section>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+        </ScrollArea>
+      </main>
     </div>
   );
 }
