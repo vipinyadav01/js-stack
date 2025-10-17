@@ -1,4 +1,8 @@
-import { GeneratorPlugin, HOOK_TYPES, PluginContext } from "./GeneratorPlugin.js";
+import {
+  GeneratorPlugin,
+  HOOK_TYPES,
+  PluginContext,
+} from "./GeneratorPlugin.js";
 
 /**
  * Plugin Manager for JS Stack Generator
@@ -24,7 +28,9 @@ export class PluginManager {
 
     // Check for duplicate names
     if (this.plugins.has(plugin.name)) {
-      throw new Error(`Plugin with name '${plugin.name}' is already registered`);
+      throw new Error(
+        `Plugin with name '${plugin.name}' is already registered`,
+      );
     }
 
     // Validate plugin dependencies
@@ -39,7 +45,9 @@ export class PluginManager {
     // Update execution order
     this.updateExecutionOrder();
 
-    console.log(`✅ Plugin '${plugin.name}' v${plugin.version} registered successfully`);
+    console.log(
+      `✅ Plugin '${plugin.name}' v${plugin.version} registered successfully`,
+    );
   }
 
   /**
@@ -87,7 +95,7 @@ export class PluginManager {
    * @returns {Array<GeneratorPlugin>} - Array of applicable plugins
    */
   getApplicablePlugins(config) {
-    return this.getAllPlugins().filter(plugin => plugin.canHandle(config));
+    return this.getAllPlugins().filter((plugin) => plugin.canHandle(config));
   }
 
   /**
@@ -136,13 +144,13 @@ export class PluginManager {
 
       try {
         console.log(`🔧 Executing plugin: ${plugin.name}`);
-        
+
         // Initialize plugin
         await plugin.initialize(this.context);
 
         // Execute plugin
         const result = await plugin.execute(config, this.context);
-        
+
         results.success.push({
           plugin: plugin.name,
           result,
@@ -150,8 +158,11 @@ export class PluginManager {
 
         console.log(`✅ Plugin '${plugin.name}' executed successfully`);
       } catch (error) {
-        console.error(`❌ Plugin '${plugin.name}' execution failed:`, error.message);
-        
+        console.error(
+          `❌ Plugin '${plugin.name}' execution failed:`,
+          error.message,
+        );
+
         results.failed.push({
           plugin: plugin.name,
           error: error.message,
@@ -169,7 +180,9 @@ export class PluginManager {
   validateDependencies(plugin) {
     for (const dependency of plugin.dependencies) {
       if (!this.plugins.has(dependency)) {
-        throw new Error(`Plugin '${plugin.name}' requires dependency '${dependency}' which is not registered`);
+        throw new Error(
+          `Plugin '${plugin.name}' requires dependency '${dependency}' which is not registered`,
+        );
       }
     }
   }
@@ -190,7 +203,10 @@ export class PluginManager {
           try {
             return await hookFunction.call(plugin, context);
           } catch (error) {
-            console.error(`❌ Hook '${hookName}' in plugin '${plugin.name}' failed:`, error.message);
+            console.error(
+              `❌ Hook '${hookName}' in plugin '${plugin.name}' failed:`,
+              error.message,
+            );
             throw error;
           }
         };
@@ -219,7 +235,7 @@ export class PluginManager {
    */
   updateExecutionOrder() {
     const plugins = Array.from(this.plugins.values());
-    
+
     // Sort by priority (lower numbers first)
     plugins.sort((a, b) => a.priority - b.priority);
 
@@ -230,9 +246,11 @@ export class PluginManager {
 
     const visit = (plugin) => {
       if (visiting.has(plugin.name)) {
-        throw new Error(`Circular dependency detected involving plugin '${plugin.name}'`);
+        throw new Error(
+          `Circular dependency detected involving plugin '${plugin.name}'`,
+        );
       }
-      
+
       if (visited.has(plugin.name)) {
         return;
       }
@@ -264,7 +282,7 @@ export class PluginManager {
    * @returns {Array<string>} - Array of plugin names in execution order
    */
   getExecutionOrder() {
-    return this.executionOrder.map(plugin => plugin.name);
+    return this.executionOrder.map((plugin) => plugin.name);
   }
 
   /**
@@ -274,9 +292,14 @@ export class PluginManager {
   getStats() {
     return {
       totalPlugins: this.plugins.size,
-      totalHooks: Array.from(this.hooks.values()).reduce((sum, hooks) => sum + hooks.length, 0),
+      totalHooks: Array.from(this.hooks.values()).reduce(
+        (sum, hooks) => sum + hooks.length,
+        0,
+      ),
       executionOrder: this.getExecutionOrder(),
-      plugins: Array.from(this.plugins.values()).map(plugin => plugin.getMetadata()),
+      plugins: Array.from(this.plugins.values()).map((plugin) =>
+        plugin.getMetadata(),
+      ),
     };
   }
 
@@ -289,7 +312,10 @@ export class PluginManager {
       try {
         await plugin.cleanup();
       } catch (error) {
-        console.error(`❌ Plugin '${plugin.name}' cleanup failed:`, error.message);
+        console.error(
+          `❌ Plugin '${plugin.name}' cleanup failed:`,
+          error.message,
+        );
       }
     }
   }

@@ -11,7 +11,7 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
     super("AdvancedDependencyResolver", "1.0.0");
     this.priority = 5; // Very high priority - runs early
     this.dependencies = [];
-    
+
     this.registerHook(HOOK_TYPES.PRE_GENERATE, this.preGenerate);
     this.registerHook(HOOK_TYPES.VALIDATE_CONFIG, this.validateDependencies);
   }
@@ -32,7 +32,7 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
    */
   async preGenerate(context) {
     console.log("🔧 AdvancedDependencyResolver: Analyzing dependencies");
-    
+
     // Initialize dependency analysis
     context.dependencyAnalysis = {
       conflicts: [],
@@ -107,13 +107,19 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
     analysis.conflicts = await this.detectConflicts(allDeps);
 
     // Identify peer dependencies
-    analysis.peerDependencies = await this.identifyPeerDependencies(allDeps, config);
+    analysis.peerDependencies = await this.identifyPeerDependencies(
+      allDeps,
+      config,
+    );
 
     // Find optimization opportunities
     analysis.optimizations = await this.findOptimizations(allDeps);
 
     // Generate recommendations
-    analysis.recommendations = await this.generateRecommendations(analysis, config);
+    analysis.recommendations = await this.generateRecommendations(
+      analysis,
+      config,
+    );
 
     return analysis;
   }
@@ -148,7 +154,11 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
     }
 
     // Frontend dependencies
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)) {
+    if (
+      config.frontend &&
+      config.frontend.length > 0 &&
+      !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)
+    ) {
       for (const frontend of config.frontend) {
         const frontendDeps = this.getFrontendDependencies(frontend);
         this.mergeDependencies(dependencies, frontendDeps);
@@ -377,7 +387,10 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
    */
   mergeDependencies(target, source) {
     target.dependencies = { ...target.dependencies, ...source.dependencies };
-    target.devDependencies = { ...target.devDependencies, ...source.devDependencies };
+    target.devDependencies = {
+      ...target.devDependencies,
+      ...source.devDependencies,
+    };
   }
 
   /**
@@ -387,11 +400,14 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
    */
   async detectConflicts(dependencies) {
     const conflicts = [];
-    const allDeps = { ...dependencies.dependencies, ...dependencies.devDependencies };
+    const allDeps = {
+      ...dependencies.dependencies,
+      ...dependencies.devDependencies,
+    };
 
     // Check for duplicate packages with different versions
     const packageVersions = new Map();
-    
+
     for (const [packageName, version] of Object.entries(allDeps)) {
       if (packageVersions.has(packageName)) {
         const existingVersion = packageVersions.get(packageName);
@@ -421,7 +437,10 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
 
     // React peer dependencies
     if (dependencies.dependencies.react || dependencies.devDependencies.react) {
-      if (!dependencies.dependencies["react-dom"] && !dependencies.devDependencies["react-dom"]) {
+      if (
+        !dependencies.dependencies["react-dom"] &&
+        !dependencies.devDependencies["react-dom"]
+      ) {
         peerDeps.push({
           package: "react-dom",
           version: "^18.2.0",
@@ -432,7 +451,10 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
 
     // TypeScript peer dependencies
     if (config.typescript) {
-      if (!dependencies.dependencies["@types/node"] && !dependencies.devDependencies["@types/node"]) {
+      if (
+        !dependencies.dependencies["@types/node"] &&
+        !dependencies.devDependencies["@types/node"]
+      ) {
         peerDeps.push({
           package: "@types/node",
           version: "^20.10.5",
@@ -453,8 +475,11 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
     const optimizations = [];
 
     // Check for outdated versions
-    const allDeps = { ...dependencies.dependencies, ...dependencies.devDependencies };
-    
+    const allDeps = {
+      ...dependencies.dependencies,
+      ...dependencies.devDependencies,
+    };
+
     for (const [packageName, version] of Object.entries(allDeps)) {
       // This is a simplified check - in practice, you'd query npm registry
       if (version.startsWith("^") && !version.includes("latest")) {
@@ -535,7 +560,7 @@ export class AdvancedDependencyResolver extends GeneratorPlugin {
 
     // Add peer dependencies to devDependencies
     const peerDeps = await this.identifyPeerDependencies(dependencies, config);
-    
+
     for (const peerDep of peerDeps) {
       if (peerDep.dev) {
         withPeerDeps.devDependencies[peerDep.package] = peerDep.version;

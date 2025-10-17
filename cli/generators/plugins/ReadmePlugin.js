@@ -9,7 +9,9 @@ export class ReadmePlugin extends GeneratorPlugin {
     this.registerHook(HOOK_TYPES.POST_GENERATE, this.postGenerate);
   }
 
-  canHandle() { return true; }
+  canHandle() {
+    return true;
+  }
 
   async execute() {
     return { success: true };
@@ -25,27 +27,32 @@ export class ReadmePlugin extends GeneratorPlugin {
   }
 
   renderReadme(config) {
-    const fe = (config.frontend && config.frontend.length) ? config.frontend.join(", ") : "none";
-    return `# ${config.projectName}\n\n` +
-`## Stack\n` +
-`- Backend: ${config.backend}\n` +
-`- Frontend: ${fe}\n` +
-`- Database: ${config.database}${config.orm && config.orm !== 'none' ? ' ('+config.orm+')' : ''}\n` +
-`- Auth: ${config.auth}\n` +
-`- Package Manager: ${config.packageManager}\n` +
-`- Addons: ${(config.addons && config.addons.length) ? config.addons.join(', ') : 'none'}\n\n` +
-`## Getting Started\n` +
-"```bash\n" +
-`cd ${config.projectName}\n` +
-`${config.packageManager} install\n` +
-`${config.packageManager} run dev\n` +
-"```\n\n" +
-`## Scripts\n` +
-"- dev: Start development mode\n" +
-"- build: Build the application\n" +
-"- test: Run tests\n\n" +
-`## Notes\n` +
-`This project was generated with JS Stack Generator (modular).\n`;
+    const fe =
+      config.frontend && config.frontend.length
+        ? config.frontend.join(", ")
+        : "none";
+    return (
+      `# ${config.projectName}\n\n` +
+      `## Stack\n` +
+      `- Backend: ${config.backend}\n` +
+      `- Frontend: ${fe}\n` +
+      `- Database: ${config.database}${config.orm && config.orm !== "none" ? " (" + config.orm + ")" : ""}\n` +
+      `- Auth: ${config.auth}\n` +
+      `- Package Manager: ${config.packageManager}\n` +
+      `- Addons: ${config.addons && config.addons.length ? config.addons.join(", ") : "none"}\n\n` +
+      `## Getting Started\n` +
+      "```bash\n" +
+      `cd ${config.projectName}\n` +
+      `${config.packageManager} install\n` +
+      `${config.packageManager} run dev\n` +
+      "```\n\n" +
+      `## Scripts\n` +
+      "- dev: Start development mode\n" +
+      "- build: Build the application\n" +
+      "- test: Run tests\n\n" +
+      `## Notes\n` +
+      `This project was generated with JS Stack Generator (modular).\n`
+    );
   }
 }
 

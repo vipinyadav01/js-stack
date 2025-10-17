@@ -1,6 +1,9 @@
 import path from "path";
 import { BaseGenerator } from "../core/BaseGenerator.js";
-import { GeneratorPipeline, createStandardPipeline } from "../core/GeneratorPipeline.js";
+import {
+  GeneratorPipeline,
+  createStandardPipeline,
+} from "../core/GeneratorPipeline.js";
 import PackageJsonPlugin from "../plugins/PackageJsonPlugin.js";
 import FilePlugin from "../plugins/FilePlugin.js";
 import DependencyPlugin from "../plugins/DependencyPlugin.js";
@@ -71,12 +74,18 @@ export class ModularGenerator extends BaseGenerator {
       const pluginResults = await this.generate(config);
 
       // Combine results
-      const combinedResults = this.combineResults(pipelineResults, pluginResults);
+      const combinedResults = this.combineResults(
+        pipelineResults,
+        pluginResults,
+      );
 
       console.log("✅ ModularGenerator: Project generation completed");
       return combinedResults;
     } catch (error) {
-      console.error("❌ ModularGenerator: Project generation failed:", error.message);
+      console.error(
+        "❌ ModularGenerator: Project generation failed:",
+        error.message,
+      );
       throw error;
     }
   }
@@ -97,13 +106,17 @@ export class ModularGenerator extends BaseGenerator {
    */
   combineResults(pipelineResults, pluginResults) {
     return {
-      success: pipelineResults.overall.success && pluginResults.success.length > 0,
+      success:
+        pipelineResults.overall.success && pluginResults.success.length > 0,
       pipeline: pipelineResults,
       plugins: pluginResults,
       stats: {
         pipelineStats: this.pipeline.getStats(),
         pluginStats: this.getStats(),
-        totalDuration: this.calculateTotalDuration(pipelineResults, pluginResults),
+        totalDuration: this.calculateTotalDuration(
+          pipelineResults,
+          pluginResults,
+        ),
       },
       summary: this.generateSummary(pipelineResults, pluginResults),
     };
@@ -116,7 +129,10 @@ export class ModularGenerator extends BaseGenerator {
    * @returns {number} - Total duration in milliseconds
    */
   calculateTotalDuration(pipelineResults, pluginResults) {
-    const pipelineDuration = pipelineResults.stages.reduce((sum, stage) => sum + stage.duration, 0);
+    const pipelineDuration = pipelineResults.stages.reduce(
+      (sum, stage) => sum + stage.duration,
+      0,
+    );
     // Plugin duration would need to be tracked in the plugin system
     return pipelineDuration;
   }
@@ -128,7 +144,9 @@ export class ModularGenerator extends BaseGenerator {
    * @returns {Object} - Generation summary
    */
   generateSummary(pipelineResults, pluginResults) {
-    const successfulStages = pipelineResults.stages.filter(stage => stage.success).length;
+    const successfulStages = pipelineResults.stages.filter(
+      (stage) => stage.success,
+    ).length;
     const successfulPlugins = pluginResults.success.length;
     const failedPlugins = pluginResults.failed.length;
 
@@ -138,9 +156,18 @@ export class ModularGenerator extends BaseGenerator {
       totalPlugins: successfulPlugins + failedPlugins,
       successfulPlugins,
       failedPlugins,
-      successRate: ((successfulStages + successfulPlugins) / (pipelineResults.stages.length + successfulPlugins + failedPlugins)) * 100,
-      warnings: [...pipelineResults.overall.warnings, ...pluginResults.warnings],
-      errors: [...pipelineResults.overall.errors, ...pluginResults.failed.map(f => f.error)],
+      successRate:
+        ((successfulStages + successfulPlugins) /
+          (pipelineResults.stages.length + successfulPlugins + failedPlugins)) *
+        100,
+      warnings: [
+        ...pipelineResults.overall.warnings,
+        ...pluginResults.warnings,
+      ],
+      errors: [
+        ...pipelineResults.overall.errors,
+        ...pluginResults.failed.map((f) => f.error),
+      ],
     };
   }
 
@@ -179,7 +206,8 @@ export class ModularGenerator extends BaseGenerator {
       ...this.getStats(),
       pipelineStats: this.pipeline.getStats(),
       pluginCount: this.pluginManager.getAllPlugins().length,
-      applicablePlugins: this.pluginManager.getApplicablePlugins(this.config).length,
+      applicablePlugins: this.pluginManager.getApplicablePlugins(this.config)
+        .length,
     };
   }
 }

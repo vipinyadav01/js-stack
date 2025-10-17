@@ -9,11 +9,11 @@ const __dirname = path.dirname(__filename);
 // Helper function to copy directory recursively
 async function copyDirectory(src, dest) {
   const entries = await fs.readdir(src, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
-    
+
     if (entry.isDirectory()) {
       await fs.mkdir(destPath, { recursive: true });
       await copyDirectory(srcPath, destPath);
@@ -35,19 +35,19 @@ async function buildCLI() {
     // Copy CLI files instead of bundling to avoid dynamic require issues
     await fs.copyFile(
       path.join(__dirname, "../cli/cli.js"),
-      path.join(__dirname, "../dist/cli.js")
+      path.join(__dirname, "../dist/cli.js"),
     );
 
     // Copy library files instead of bundling to avoid dynamic require issues
     await fs.copyFile(
       path.join(__dirname, "../cli/index.js"),
-      path.join(__dirname, "../dist/index.js")
+      path.join(__dirname, "../dist/index.js"),
     );
 
     // Copy the entire CLI directory structure since we're not bundling
     const cliSrcPath = path.join(__dirname, "../cli");
     const cliDestPath = path.join(__dirname, "../dist");
-    
+
     // Copy all CLI files and directories
     await copyDirectory(cliSrcPath, cliDestPath);
 

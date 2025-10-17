@@ -15,7 +15,6 @@ export interface NpmPackageData {
   };
 }
 
-
 export interface GitHubRepoData {
   repo: string;
   info: {
@@ -54,7 +53,9 @@ export interface GitHubRepoData {
 }
 
 // Fetch NPM package data
-export async function fetchNpmPackageData(packageName: string): Promise<NpmPackageData> {
+export async function fetchNpmPackageData(
+  packageName: string,
+): Promise<NpmPackageData> {
   const periodDays = 7;
   const end = new Date();
   const start = new Date();
@@ -87,7 +88,10 @@ export async function fetchNpmPackageData(packageName: string): Promise<NpmPacka
   return {
     package: packageName,
     downloads: downloadsData.downloads || [],
-    totalLast7Days: (downloadsData.downloads || []).reduce((sum: number, d: { downloads?: number }) => sum + (d.downloads || 0), 0),
+    totalLast7Days: (downloadsData.downloads || []).reduce(
+      (sum: number, d: { downloads?: number }) => sum + (d.downloads || 0),
+      0,
+    ),
     info: {
       name: infoData.name,
       description: infoData.description,
@@ -101,17 +105,19 @@ export async function fetchNpmPackageData(packageName: string): Promise<NpmPacka
 }
 
 // Fetch GitHub repository data
-export async function fetchGitHubRepoData(repo: string): Promise<GitHubRepoData> {
+export async function fetchGitHubRepoData(
+  repo: string,
+): Promise<GitHubRepoData> {
   // Sanitize repo path: replace %2F with /
-  const getGithubRepoPath = (r: string) => r.replace(/%2F/g, '/');
+  const getGithubRepoPath = (r: string) => r.replace(/%2F/g, "/");
   const repoPath = getGithubRepoPath(repo);
   const repoUrl = `https://api.github.com/repos/${repoPath}`;
   const releasesUrl = `https://api.github.com/repos/${repoPath}/releases?per_page=5`;
   const contributorsUrl = `https://api.github.com/repos/${repoPath}/contributors?per_page=10`;
 
   const headers: Record<string, string> = {
-    "Accept": "application/vnd.github+json",
-  "User-Agent": "nextjs-analytics-app",
+    Accept: "application/vnd.github+json",
+    "User-Agent": "nextjs-analytics-app",
   };
 
   // Add GitHub token if available (for higher rate limits)
@@ -131,7 +137,9 @@ export async function fetchGitHubRepoData(repo: string): Promise<GitHubRepoData>
 
   const repoData = await repoRes.json();
   const releasesData = releasesRes.ok ? await releasesRes.json() : [];
-  const contributorsData = contributorsRes.ok ? await contributorsRes.json() : [];
+  const contributorsData = contributorsRes.ok
+    ? await contributorsRes.json()
+    : [];
 
   return {
     repo,
@@ -153,20 +161,24 @@ export async function fetchGitHubRepoData(repo: string): Promise<GitHubRepoData>
       topics: repoData.topics || [],
       license: repoData.license,
     },
-    releases: releasesData.slice(0, 5).map((release: Record<string, unknown>) => ({
-      tagName: release.tag_name as string,
-      name: release.name as string,
-      publishedAt: release.published_at as string,
-      htmlUrl: release.html_url as string,
-      draft: release.draft as boolean,
-      prerelease: release.prerelease as boolean,
-    })),
-    contributors: contributorsData.slice(0, 10).map((contributor: Record<string, unknown>) => ({
-      login: contributor.login as string,
-      avatarUrl: contributor.avatar_url as string,
-      htmlUrl: contributor.html_url as string,
-      contributions: contributor.contributions as number,
-      type: contributor.type as string,
-    })),
+    releases: releasesData
+      .slice(0, 5)
+      .map((release: Record<string, unknown>) => ({
+        tagName: release.tag_name as string,
+        name: release.name as string,
+        publishedAt: release.published_at as string,
+        htmlUrl: release.html_url as string,
+        draft: release.draft as boolean,
+        prerelease: release.prerelease as boolean,
+      })),
+    contributors: contributorsData
+      .slice(0, 10)
+      .map((contributor: Record<string, unknown>) => ({
+        login: contributor.login as string,
+        avatarUrl: contributor.avatar_url as string,
+        htmlUrl: contributor.html_url as string,
+        contributions: contributor.contributions as number,
+        type: contributor.type as string,
+      })),
   };
 }

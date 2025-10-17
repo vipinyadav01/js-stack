@@ -39,15 +39,15 @@ import { getTemplateDir } from "./utils/file-utils.js";
 
 // Enhanced color scheme with better accessibility
 const colors = {
-  primary: chalk.hex('#3B82F6').bold,        // Blue
-  secondary: chalk.hex('#6B7280'),           // Gray
-  success: chalk.hex('#10B981').bold,        // Green
-  warning: chalk.hex('#F59E0B').bold,        // Amber
-  error: chalk.hex('#EF4444').bold,          // Red
-  muted: chalk.hex('#9CA3AF'),               // Light gray
-  accent: chalk.hex('#06B6D4').bold,         // Cyan
-  info: chalk.hex('#8B5CF6').bold,           // Purple
-  highlight: chalk.hex('#EC4899').bold,      // Pink
+  primary: chalk.hex("#3B82F6").bold, // Blue
+  secondary: chalk.hex("#6B7280"), // Gray
+  success: chalk.hex("#10B981").bold, // Green
+  warning: chalk.hex("#F59E0B").bold, // Amber
+  error: chalk.hex("#EF4444").bold, // Red
+  muted: chalk.hex("#9CA3AF"), // Light gray
+  accent: chalk.hex("#06B6D4").bold, // Cyan
+  info: chalk.hex("#8B5CF6").bold, // Purple
+  highlight: chalk.hex("#EC4899").bold, // Pink
 };
 
 // Progress tracking
@@ -58,30 +58,46 @@ const totalSteps = 10;
 async function getTemplateAvailability() {
   const tm = new TemplateManager(getTemplateDir());
   const entries = {
-    frontend: Object.values(FRONTEND_OPTIONS).filter(v => v && v !== FRONTEND_OPTIONS.NONE),
-    backend: Object.values(BACKEND_OPTIONS).filter(v => v && v !== BACKEND_OPTIONS.NONE),
-    auth: Object.values(AUTH_OPTIONS).filter(v => v && v !== AUTH_OPTIONS.NONE),
+    frontend: Object.values(FRONTEND_OPTIONS).filter(
+      (v) => v && v !== FRONTEND_OPTIONS.NONE,
+    ),
+    backend: Object.values(BACKEND_OPTIONS).filter(
+      (v) => v && v !== BACKEND_OPTIONS.NONE,
+    ),
+    auth: Object.values(AUTH_OPTIONS).filter(
+      (v) => v && v !== AUTH_OPTIONS.NONE,
+    ),
   };
 
-  const available = { frontend: new Set(), backend: new Set(), auth: new Set() };
+  const available = {
+    frontend: new Set(),
+    backend: new Set(),
+    auth: new Set(),
+  };
 
   // Frontend
-  await Promise.all(entries.frontend.map(async (f) => {
-    const p = tm.resolveFrontend(f);
-    if (await tm.exists(p)) available.frontend.add(f);
-  }));
+  await Promise.all(
+    entries.frontend.map(async (f) => {
+      const p = tm.resolveFrontend(f);
+      if (await tm.exists(p)) available.frontend.add(f);
+    }),
+  );
 
   // Backend
-  await Promise.all(entries.backend.map(async (b) => {
-    const p = tm.resolveBackend(b);
-    if (await tm.exists(p)) available.backend.add(b);
-  }));
+  await Promise.all(
+    entries.backend.map(async (b) => {
+      const p = tm.resolveBackend(b);
+      if (await tm.exists(p)) available.backend.add(b);
+    }),
+  );
 
   // Auth
-  await Promise.all(entries.auth.map(async (a) => {
-    const p = tm.resolveAuth(a);
-    if (await tm.exists(p)) available.auth.add(a);
-  }));
+  await Promise.all(
+    entries.auth.map(async (a) => {
+      const p = tm.resolveAuth(a);
+      if (await tm.exists(p)) available.auth.add(a);
+    }),
+  );
 
   // Tooling/addons discovered via folder presence under 05-tooling
   const toolingRoot = path.join(tm.getBaseDir(), "05-tooling");
@@ -95,20 +111,32 @@ async function getTemplateAvailability() {
   // Databases: validate by mapped folders from integrations
   const dbRoot = path.join(tm.getBaseDir(), "03-integrations", "database");
   const dbHas = (sub) => fs.existsSync(path.join(dbRoot, sub));
-  available.database = new Set([
-    DATABASE_OPTIONS.POSTGRES && dbHas("prisma") ? DATABASE_OPTIONS.POSTGRES : null,
-    DATABASE_OPTIONS.MYSQL && dbHas("prisma") ? DATABASE_OPTIONS.MYSQL : null,
-    DATABASE_OPTIONS.SQLITE && dbHas("prisma") ? DATABASE_OPTIONS.SQLITE : null,
-    DATABASE_OPTIONS.MONGODB && dbHas("mongoose") ? DATABASE_OPTIONS.MONGODB : null,
-  ].filter(Boolean));
+  available.database = new Set(
+    [
+      DATABASE_OPTIONS.POSTGRES && dbHas("prisma")
+        ? DATABASE_OPTIONS.POSTGRES
+        : null,
+      DATABASE_OPTIONS.MYSQL && dbHas("prisma") ? DATABASE_OPTIONS.MYSQL : null,
+      DATABASE_OPTIONS.SQLITE && dbHas("prisma")
+        ? DATABASE_OPTIONS.SQLITE
+        : null,
+      DATABASE_OPTIONS.MONGODB && dbHas("mongoose")
+        ? DATABASE_OPTIONS.MONGODB
+        : null,
+    ].filter(Boolean),
+  );
 
   // ORMs from available folders
-  available.orm = new Set([
-    ORM_OPTIONS.PRISMA && dbHas("prisma") ? ORM_OPTIONS.PRISMA : null,
-    ORM_OPTIONS.MONGOOSE && dbHas("mongoose") ? ORM_OPTIONS.MONGOOSE : null,
-    ORM_OPTIONS.SEQUELIZE && dbHas("sequelize") ? ORM_OPTIONS.SEQUELIZE : null,
-    ORM_OPTIONS.TYPEORM && dbHas("typeorm") ? ORM_OPTIONS.TYPEORM : null,
-  ].filter(Boolean));
+  available.orm = new Set(
+    [
+      ORM_OPTIONS.PRISMA && dbHas("prisma") ? ORM_OPTIONS.PRISMA : null,
+      ORM_OPTIONS.MONGOOSE && dbHas("mongoose") ? ORM_OPTIONS.MONGOOSE : null,
+      ORM_OPTIONS.SEQUELIZE && dbHas("sequelize")
+        ? ORM_OPTIONS.SEQUELIZE
+        : null,
+      ORM_OPTIONS.TYPEORM && dbHas("typeorm") ? ORM_OPTIONS.TYPEORM : null,
+    ].filter(Boolean),
+  );
 
   return available;
 }
@@ -124,23 +152,35 @@ export async function collectProjectConfig(projectName, options = {}) {
       if (Array.isArray(val)) {
         // Split any comma-delimited entries and flatten
         return val
-          .flatMap(v => (typeof v === 'string' && v.includes(',') ? v.split(',') : [v]))
-          .map(s => (typeof s === 'string' ? s.trim() : s))
+          .flatMap((v) =>
+            typeof v === "string" && v.includes(",") ? v.split(",") : [v],
+          )
+          .map((s) => (typeof s === "string" ? s.trim() : s))
           .filter(Boolean);
       }
-      if (typeof val === 'string') return val.includes(',') ? val.split(',').map(s => s.trim()).filter(Boolean) : [val];
+      if (typeof val === "string")
+        return val.includes(",")
+          ? val
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [val];
       return [];
     };
 
     const cfg = {
-      projectName: projectName || options.projectName || 'my-app',
-      projectDir: `${process.cwd()}/${projectName || options.projectName || 'my-app'}`,
-      frontend: normalizeArray(options.frontend && options.frontend.length ? options.frontend : options.frontend || []),
-      backend: options.backend || 'none',
-      database: options.database || 'none',
-      orm: options.orm || (options.database === 'none' ? 'none' : undefined),
-      auth: options.auth || 'none',
-      packageManager: options.packageManager || options.pm || 'npm',
+      projectName: projectName || options.projectName || "my-app",
+      projectDir: `${process.cwd()}/${projectName || options.projectName || "my-app"}`,
+      frontend: normalizeArray(
+        options.frontend && options.frontend.length
+          ? options.frontend
+          : options.frontend || [],
+      ),
+      backend: options.backend || "none",
+      database: options.database || "none",
+      orm: options.orm || (options.database === "none" ? "none" : undefined),
+      auth: options.auth || "none",
+      packageManager: options.packageManager || options.pm || "npm",
       addons: normalizeArray(options.addons || []),
       git: options.git !== false,
       // Per requirement: even if --no-install is passed, install should proceed automatically
@@ -156,7 +196,7 @@ export async function collectProjectConfig(projectName, options = {}) {
   // Show banner and welcome (interactive)
   displayBanner();
   displayWelcome();
-  
+
   console.log(colors.info("🚀 Let's build something amazing together!\n"));
 
   // Check for preset configuration first
@@ -259,22 +299,28 @@ export async function collectProjectConfig(projectName, options = {}) {
  * Enhanced project name validation
  */
 async function promptProjectName() {
-  progressHeader(++currentStep, totalSteps, "Project Setup", "Let's start with your project name");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Project Setup",
+    "Let's start with your project name",
+  );
 
   const projectName = await text({
     message: colors.accent("What's your project name?"),
     placeholder: "my-awesome-app",
     validate: (value) => {
       if (!value) return "Project name is required";
-      
+
       const validation = validatePackageName(value);
       if (!validation.validForNewPackages) {
-        return `Invalid project name: ${validation.errors?.[0] || validation.warnings?.[0] || 'Unknown error'}`;
+        return `Invalid project name: ${validation.errors?.[0] || validation.warnings?.[0] || "Unknown error"}`;
       }
-      
+
       if (value.length < 2) return "Project name must be at least 2 characters";
-      if (value.length > 50) return "Project name must be less than 50 characters";
-      
+      if (value.length > 50)
+        return "Project name must be less than 50 characters";
+
       return undefined;
     },
   });
@@ -292,7 +338,12 @@ async function promptProjectName() {
  * Enhanced preset selection with better UX
  */
 async function promptPresetSelection() {
-  progressHeader(++currentStep, totalSteps, "Quick Setup", "Speed up with presets or customize everything");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Quick Setup",
+    "Speed up with presets or customize everything",
+  );
 
   const usePreset = await confirm({
     message: colors.accent("🎯 Would you like to use a preset configuration?"),
@@ -347,7 +398,12 @@ async function promptPresetChoice() {
  * Enhanced frontend prompt with better organization
  */
 async function promptFrontend() {
-  progressHeader(++currentStep, totalSteps, "Frontend Framework", "Choose your client-side technology");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Frontend Framework",
+    "Choose your client-side technology",
+  );
 
   const available = await getTemplateAvailability();
 
@@ -370,7 +426,7 @@ async function promptFrontend() {
         label: `${colors.accent("🎯")} Remix`,
         hint: "Web standards focused • Nested routing • Progressive enhancement",
       },
-      
+
       // Vue Ecosystem
       {
         value: FRONTEND_OPTIONS.VUE,
@@ -416,8 +472,10 @@ async function promptFrontend() {
         label: colors.muted("⏭️  Skip Frontend"),
         hint: "Backend-only or API project",
       },
-    ].filter(opt =>
-      opt.value === FRONTEND_OPTIONS.NONE || available.frontend.has(opt.value)
+    ].filter(
+      (opt) =>
+        opt.value === FRONTEND_OPTIONS.NONE ||
+        available.frontend.has(opt.value),
     ),
     required: false,
   });
@@ -428,8 +486,10 @@ async function promptFrontend() {
   }
 
   const selection = Array.isArray(frontend) ? frontend : [frontend];
-  console.log(colors.success(`✅ Frontend: ${selection.join(", ") || "None"}\n`));
-  
+  console.log(
+    colors.success(`✅ Frontend: ${selection.join(", ") || "None"}\n`),
+  );
+
   return selection;
 }
 
@@ -437,7 +497,12 @@ async function promptFrontend() {
  * Enhanced backend prompt with compatibility hints
  */
 async function promptBackend() {
-  progressHeader(++currentStep, totalSteps, "Backend Framework", "Choose your server-side technology");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Backend Framework",
+    "Choose your server-side technology",
+  );
 
   const available = await getTemplateAvailability();
 
@@ -474,8 +539,9 @@ async function promptBackend() {
         label: colors.muted("⏭️  Skip Backend"),
         hint: "Frontend-only, static site, or mobile app",
       },
-    ].filter(opt =>
-      opt.value === BACKEND_OPTIONS.NONE || available.backend.has(opt.value)
+    ].filter(
+      (opt) =>
+        opt.value === BACKEND_OPTIONS.NONE || available.backend.has(opt.value),
     ),
   });
 
@@ -492,7 +558,12 @@ async function promptBackend() {
  * Enhanced database prompt with detailed information
  */
 async function promptDatabase() {
-  progressHeader(++currentStep, totalSteps, "Database", "Choose your data storage solution");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Database",
+    "Choose your data storage solution",
+  );
 
   const available = await getTemplateAvailability();
 
@@ -524,8 +595,10 @@ async function promptDatabase() {
         label: colors.muted("⏭️  Skip Database"),
         hint: "Static site, external APIs, or serverless functions only",
       },
-    ].filter(opt =>
-      opt.value === DATABASE_OPTIONS.NONE || available.database.has(opt.value)
+    ].filter(
+      (opt) =>
+        opt.value === DATABASE_OPTIONS.NONE ||
+        available.database.has(opt.value),
     ),
   });
 
@@ -542,7 +615,12 @@ async function promptDatabase() {
  * Enhanced ORM prompt with compatibility filtering
  */
 async function promptORM(database) {
-  progressHeader(++currentStep, totalSteps, "ORM/ODM", "Choose your database abstraction layer");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "ORM/ODM",
+    "Choose your database abstraction layer",
+  );
 
   if (database === DATABASE_OPTIONS.NONE) {
     console.log(colors.muted("⏭️  Skipping ORM (no database selected)\n"));
@@ -550,10 +628,14 @@ async function promptORM(database) {
   }
 
   const available = await getTemplateAvailability();
-  const compatibleORMs = getCompatibleOptions("orm", null, { database }).filter(o => available.orm.has(o));
+  const compatibleORMs = getCompatibleOptions("orm", null, { database }).filter(
+    (o) => available.orm.has(o),
+  );
 
   if (compatibleORMs.length === 0) {
-    console.log(colors.warning(`⚠️  No compatible ORMs found for ${database}\n`));
+    console.log(
+      colors.warning(`⚠️  No compatible ORMs found for ${database}\n`),
+    );
     return ORM_OPTIONS.NONE;
   }
 
@@ -609,7 +691,12 @@ async function promptORM(database) {
  * Enhanced authentication prompt with context awareness
  */
 async function promptAuth(config) {
-  progressHeader(++currentStep, totalSteps, "Authentication", "Choose your authentication strategy");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Authentication",
+    "Choose your authentication strategy",
+  );
 
   // Show context-aware options based on selected stack
   const isNextJs = config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS);
@@ -630,11 +717,15 @@ async function promptAuth(config) {
         label: `${colors.success("🔑")} JWT Tokens`,
         hint: "Stateless • Scalable • Custom implementation • Full control",
       },
-      ...(isNextJs ? [{
-        value: AUTH_OPTIONS.NEXTAUTH,
-        label: `${colors.primary("🔐")} NextAuth.js`,
-        hint: "Next.js optimized • Multiple providers • Session management",
-      }] : []),
+      ...(isNextJs
+        ? [
+            {
+              value: AUTH_OPTIONS.NEXTAUTH,
+              label: `${colors.primary("🔐")} NextAuth.js`,
+              hint: "Next.js optimized • Multiple providers • Session management",
+            },
+          ]
+        : []),
       {
         value: AUTH_OPTIONS.SUPABASE,
         label: `${colors.accent("⚡")} Supabase Auth`,
@@ -650,18 +741,22 @@ async function promptAuth(config) {
         label: `${colors.info("✨")} Lucia`,
         hint: "Type-safe • Lightweight • Framework agnostic • Modern",
       },
-      ...(hasBackend ? [{
-        value: AUTH_OPTIONS.PASSPORT,
-        label: `${colors.primary("🛡️")} Passport.js`,
-        hint: "Flexible middleware • 500+ strategies • Node.js standard",
-      }] : []),
+      ...(hasBackend
+        ? [
+            {
+              value: AUTH_OPTIONS.PASSPORT,
+              label: `${colors.primary("🛡️")} Passport.js`,
+              hint: "Flexible middleware • 500+ strategies • Node.js standard",
+            },
+          ]
+        : []),
       {
         value: AUTH_OPTIONS.OAUTH,
         label: `${colors.highlight("🌐")} OAuth Providers`,
         hint: "Google, GitHub, Discord • Social authentication • Third-party",
       },
-    ].filter(opt =>
-      opt.value === AUTH_OPTIONS.NONE || available.auth.has(opt.value)
+    ].filter(
+      (opt) => opt.value === AUTH_OPTIONS.NONE || available.auth.has(opt.value),
     ),
   });
 
@@ -678,7 +773,12 @@ async function promptAuth(config) {
  * Enhanced package manager prompt
  */
 async function promptPackageManager() {
-  progressHeader(++currentStep, totalSteps, "Package Manager", "Choose your dependency manager");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Package Manager",
+    "Choose your dependency manager",
+  );
 
   const packageManager = await select({
     message: colors.accent("Select package manager"),
@@ -719,7 +819,12 @@ async function promptPackageManager() {
  * Enhanced addons prompt with smart recommendations
  */
 async function promptAddons(config) {
-  progressHeader(++currentStep, totalSteps, "Development Tools", "Enhance your development experience");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Development Tools",
+    "Enhance your development experience",
+  );
 
   // Smart recommendations based on stack
   const recommendations = getRecommendedAddons(config);
@@ -733,24 +838,24 @@ async function promptAddons(config) {
       {
         value: ADDON_OPTIONS.ESLINT,
         label: `${colors.success("🔍")} ESLint`,
-        hint: `Code linting • Error prevention • Style consistency${recommendations.includes(ADDON_OPTIONS.ESLINT) ? ' • Recommended' : ''}`,
+        hint: `Code linting • Error prevention • Style consistency${recommendations.includes(ADDON_OPTIONS.ESLINT) ? " • Recommended" : ""}`,
       },
       {
         value: ADDON_OPTIONS.PRETTIER,
         label: `${colors.accent("💅")} Prettier`,
-        hint: `Code formatting • Team consistency • Auto-fix${recommendations.includes(ADDON_OPTIONS.PRETTIER) ? ' • Recommended' : ''}`,
+        hint: `Code formatting • Team consistency • Auto-fix${recommendations.includes(ADDON_OPTIONS.PRETTIER) ? " • Recommended" : ""}`,
       },
 
       // Styling
       {
         value: ADDON_OPTIONS.TAILWIND,
         label: `${colors.primary("🎨")} Tailwind CSS`,
-        hint: `Utility-first CSS • Responsive design • Small bundle${recommendations.includes(ADDON_OPTIONS.TAILWIND) ? ' • Recommended' : ''}`,
+        hint: `Utility-first CSS • Responsive design • Small bundle${recommendations.includes(ADDON_OPTIONS.TAILWIND) ? " • Recommended" : ""}`,
       },
       {
         value: ADDON_OPTIONS.SHADCN,
         label: `${colors.info("🧩")} shadcn/ui`,
-        hint: `Beautiful React components • Accessible • Customizable${recommendations.includes(ADDON_OPTIONS.SHADCN) ? ' • Recommended' : ''}`,
+        hint: `Beautiful React components • Accessible • Customizable${recommendations.includes(ADDON_OPTIONS.SHADCN) ? " • Recommended" : ""}`,
       },
 
       // Development
@@ -762,7 +867,7 @@ async function promptAddons(config) {
       {
         value: ADDON_OPTIONS.TESTING,
         label: `${colors.success("🧪")} Testing Suite`,
-        hint: `Unit & integration tests • Coverage reports${recommendations.includes(ADDON_OPTIONS.TESTING) ? ' • Recommended' : ''}`,
+        hint: `Unit & integration tests • Coverage reports${recommendations.includes(ADDON_OPTIONS.TESTING) ? " • Recommended" : ""}`,
       },
 
       // Git & CI/CD
@@ -783,7 +888,7 @@ async function promptAddons(config) {
         label: `${colors.primary("🐳")} Docker`,
         hint: "Containerization • Production deployment • Environment consistency",
       },
-    ].filter(opt => {
+    ].filter((opt) => {
       // Always allow non-template addons (eslint, prettier, husky, github-actions)
       const nonTemplateAddons = new Set([
         ADDON_OPTIONS.ESLINT,
@@ -804,8 +909,10 @@ async function promptAddons(config) {
   }
 
   const selection = Array.isArray(addons) ? addons : [];
-  console.log(colors.success(`✅ Development Tools: ${selection.join(", ") || "None"}\n`));
-  
+  console.log(
+    colors.success(`✅ Development Tools: ${selection.join(", ") || "None"}\n`),
+  );
+
   return selection;
 }
 
@@ -816,8 +923,10 @@ function getRecommendedAddons(config) {
   const recommendations = [ADDON_OPTIONS.ESLINT, ADDON_OPTIONS.PRETTIER];
 
   // React projects benefit from shadcn/ui
-  if (config.frontend?.includes(FRONTEND_OPTIONS.REACT) || 
-      config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS)) {
+  if (
+    config.frontend?.includes(FRONTEND_OPTIONS.REACT) ||
+    config.frontend?.includes(FRONTEND_OPTIONS.NEXTJS)
+  ) {
     recommendations.push(ADDON_OPTIONS.SHADCN, ADDON_OPTIONS.TAILWIND);
   }
 
@@ -834,7 +943,12 @@ function getRecommendedAddons(config) {
  */
 async function finalizeConfiguration(config, options) {
   // Step 10: Git and installation options
-  progressHeader(++currentStep, totalSteps, "Final Setup", "Git initialization and dependency installation");
+  progressHeader(
+    ++currentStep,
+    totalSteps,
+    "Final Setup",
+    "Git initialization and dependency installation",
+  );
 
   if (options.ci || options.yes) {
     config.git = options.git !== false;
@@ -880,8 +994,10 @@ async function finalizeConfiguration(config, options) {
  */
 function progressHeader(step, total, title, description) {
   const percentage = Math.round((step / total) * 100);
-  const progressBar = "█".repeat(Math.floor(percentage / 5)) + "░".repeat(20 - Math.floor(percentage / 5));
-  
+  const progressBar =
+    "█".repeat(Math.floor(percentage / 5)) +
+    "░".repeat(20 - Math.floor(percentage / 5));
+
   console.log(colors.primary(`╭─ Step ${step}/${total} • ${title}`));
   console.log(colors.secondary(`│  ${description}`));
   console.log(colors.muted(`│  [${progressBar}] ${percentage}%`));
@@ -895,12 +1011,12 @@ function progressHeader(step, total, title, description) {
 function displayConfigurationProgress(config, section) {
   const sections = {
     frontend: "🎨 Frontend",
-    backend: "⚙️ Backend", 
+    backend: "⚙️ Backend",
     database: "💾 Database",
     orm: "🔗 ORM",
     auth: "🔐 Authentication",
     packageManager: "📦 Package Manager",
-    addons: "🛠️ Tools"
+    addons: "🛠️ Tools",
   };
 
   if (sections[section]) {
@@ -921,7 +1037,7 @@ async function validateConfiguration(config) {
   s.start("Validating configuration...");
 
   // Simulate validation time
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   const validation = validateCompatibility(config);
   s.stop();
@@ -974,70 +1090,106 @@ export function displayConfigSummary(config) {
 
   // Project Details
   console.log(colors.accent("🏗️  Project Details:"));
-  console.log(colors.secondary(`   Name: ${colors.primary(config.projectName)}`));
-  console.log(colors.secondary(`   Directory: ${colors.muted(config.projectDir)}`));
+  console.log(
+    colors.secondary(`   Name: ${colors.primary(config.projectName)}`),
+  );
+  console.log(
+    colors.secondary(`   Directory: ${colors.muted(config.projectDir)}`),
+  );
   console.log();
 
   // Technology Stack (in layered order: Base → Framework → Integration → Feature → Tooling → Deployment)
   console.log(colors.accent("🚀 Technology Stack:"));
-  
+
   // Layer 1: Base (always shown)
-  console.log(colors.secondary(`   📦 Base: ${colors.success("JavaScript" + (config.typescript ? " + TypeScript" : ""))}`));
-  
+  console.log(
+    colors.secondary(
+      `   📦 Base: ${colors.success("JavaScript" + (config.typescript ? " + TypeScript" : ""))}`,
+    ),
+  );
+
   // Layer 2: Frameworks
   const frameworks = [];
-  if (config.frontend && config.frontend.length > 0 && !config.frontend.includes('none')) {
+  if (
+    config.frontend &&
+    config.frontend.length > 0 &&
+    !config.frontend.includes("none")
+  ) {
     frameworks.push(`Frontend: ${config.frontend.join(", ")}`);
   }
-  if (config.backend && config.backend !== 'none') {
+  if (config.backend && config.backend !== "none") {
     frameworks.push(`Backend: ${config.backend}`);
   }
   if (frameworks.length > 0) {
-    console.log(colors.secondary(`   🏗️  Frameworks: ${colors.success(frameworks.join(" | "))}`));
+    console.log(
+      colors.secondary(
+        `   🏗️  Frameworks: ${colors.success(frameworks.join(" | "))}`,
+      ),
+    );
   }
-  
+
   // Layer 3: Integrations
   const integrations = [];
-  if (config.database && config.database !== 'none') {
+  if (config.database && config.database !== "none") {
     integrations.push(`Database: ${config.database}`);
   }
-  if (config.orm && config.orm !== 'none') {
+  if (config.orm && config.orm !== "none") {
     integrations.push(`ORM: ${config.orm}`);
   }
   if (integrations.length > 0) {
-    console.log(colors.secondary(`   🔗 Integrations: ${colors.success(integrations.join(" | "))}`));
+    console.log(
+      colors.secondary(
+        `   🔗 Integrations: ${colors.success(integrations.join(" | "))}`,
+      ),
+    );
   }
-  
+
   // Layer 4: Features
   const features = [];
-  if (config.auth && config.auth !== 'none') {
+  if (config.auth && config.auth !== "none") {
     features.push(`Auth: ${config.auth}`);
   }
   if (features.length > 0) {
-    console.log(colors.secondary(`   ⚡ Features: ${colors.success(features.join(" | "))}`));
+    console.log(
+      colors.secondary(
+        `   ⚡ Features: ${colors.success(features.join(" | "))}`,
+      ),
+    );
   }
-  
+
   // Layer 5: Tooling & Addons
   if (config.addons && config.addons.length > 0) {
-    console.log(colors.secondary(`   🛠️  Tooling: ${colors.success(config.addons.join(", "))}`));
+    console.log(
+      colors.secondary(
+        `   🛠️  Tooling: ${colors.success(config.addons.join(", "))}`,
+      ),
+    );
   }
-  
+
   // Layer 6: Deployment
-  if (config.deployment && config.deployment !== 'none') {
-    console.log(colors.secondary(`   🚀 Deployment: ${colors.success(config.deployment)}`));
+  if (config.deployment && config.deployment !== "none") {
+    console.log(
+      colors.secondary(
+        `   🚀 Deployment: ${colors.success(config.deployment)}`,
+      ),
+    );
   }
 
   console.log();
 
   // Package Management
   console.log(colors.accent("📦 Package Management:"));
-  console.log(colors.secondary(`   Package Manager: ${colors.success(config.packageManager)}`));
+  console.log(
+    colors.secondary(
+      `   Package Manager: ${colors.success(config.packageManager)}`,
+    ),
+  );
   console.log();
 
   // Development Tools
   if (config.addons && config.addons.length > 0) {
     console.log(colors.accent("🛠️  Development Tools:"));
-    config.addons.forEach(addon => {
+    config.addons.forEach((addon) => {
       console.log(colors.secondary(`   • ${colors.success(addon)}`));
     });
     console.log();
@@ -1045,8 +1197,16 @@ export function displayConfigSummary(config) {
 
   // Additional Options
   console.log(colors.accent("⚙️  Setup Options:"));
-  console.log(colors.secondary(`   Git Repository: ${config.git ? colors.success("Yes") : colors.muted("No")}`));
-  console.log(colors.secondary(`   Install Dependencies: ${config.install ? colors.success("Yes") : colors.muted("No")}`));
+  console.log(
+    colors.secondary(
+      `   Git Repository: ${config.git ? colors.success("Yes") : colors.muted("No")}`,
+    ),
+  );
+  console.log(
+    colors.secondary(
+      `   Install Dependencies: ${config.install ? colors.success("Yes") : colors.muted("No")}`,
+    ),
+  );
   console.log();
 
   // Estimated setup time
@@ -1067,22 +1227,22 @@ function calculateSetupTime(config) {
   }
 
   // Backend frameworks
-  if (config.backend && config.backend !== 'none') {
+  if (config.backend && config.backend !== "none") {
     timeMinutes += 2;
   }
 
   // Database setup
-  if (config.database && config.database !== 'none') {
+  if (config.database && config.database !== "none") {
     timeMinutes += 1.5;
   }
 
   // ORM setup
-  if (config.orm && config.orm !== 'none') {
+  if (config.orm && config.orm !== "none") {
     timeMinutes += 1;
   }
 
   // Authentication
-  if (config.auth && config.auth !== 'none') {
+  if (config.auth && config.auth !== "none") {
     timeMinutes += 2;
   }
 
@@ -1102,7 +1262,9 @@ function calculateSetupTime(config) {
   } else {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return remainingMinutes > 0 ? `~${hours}h ${remainingMinutes}m` : `~${hours}h`;
+    return remainingMinutes > 0
+      ? `~${hours}h ${remainingMinutes}m`
+      : `~${hours}h`;
   }
 }
 
@@ -1117,10 +1279,10 @@ export function displayProjectOverview(config) {
 
   // Architecture visualization
   displayArchitectureVisualization(config);
-  
+
   // Key features
   displayKeyFeatures(config);
-  
+
   // Next steps
   displayNextSteps(config);
 }
@@ -1132,9 +1294,12 @@ function displayArchitectureVisualization(config) {
   console.log(colors.accent("🏗️  Architecture Overview:"));
   console.log();
 
-  const hasfrontend = config.frontend && config.frontend.length > 0 && !config.frontend.includes('none');
-  const hasBackend = config.backend && config.backend !== 'none';
-  const hasDatabase = config.database && config.database !== 'none';
+  const hasfrontend =
+    config.frontend &&
+    config.frontend.length > 0 &&
+    !config.frontend.includes("none");
+  const hasBackend = config.backend && config.backend !== "none";
+  const hasDatabase = config.database && config.database !== "none";
 
   // Client Layer
   if (hasfrontend) {
@@ -1158,7 +1323,7 @@ function displayArchitectureVisualization(config) {
     console.log(colors.primary("   │          API LAYER          │"));
     console.log(colors.primary("   ├─────────────────────────────┤"));
     console.log(colors.success(`   │  ${config.backend.padEnd(27)} │`));
-    if (config.auth && config.auth !== 'none') {
+    if (config.auth && config.auth !== "none") {
       console.log(colors.info(`   │  ${config.auth.padEnd(27)} │`));
     }
     console.log(colors.primary("   └─────────────┬───────────────┘"));
@@ -1173,7 +1338,7 @@ function displayArchitectureVisualization(config) {
     console.log(colors.primary("   ┌─────────────────────────────┐"));
     console.log(colors.primary("   │         DATA LAYER          │"));
     console.log(colors.primary("   ├─────────────────────────────┤"));
-    if (config.orm && config.orm !== 'none') {
+    if (config.orm && config.orm !== "none") {
       console.log(colors.warning(`   │  ${config.orm.padEnd(27)} │`));
     }
     console.log(colors.success(`   │  ${config.database.padEnd(27)} │`));
@@ -1198,14 +1363,14 @@ function displayKeyFeatures(config) {
     features.push("🔸 Static site generation (SSG)");
     features.push("🔸 API routes");
   }
-  
+
   if (config.frontend?.includes(FRONTEND_OPTIONS.REACT)) {
     features.push("🔸 Component-based architecture");
     features.push("🔸 Virtual DOM");
   }
 
   // Backend features
-  if (config.backend && config.backend !== 'none') {
+  if (config.backend && config.backend !== "none") {
     features.push("🔸 RESTful API endpoints");
     if (config.backend === BACKEND_OPTIONS.FASTIFY) {
       features.push("🔸 High-performance HTTP server");
@@ -1217,7 +1382,7 @@ function displayKeyFeatures(config) {
   }
 
   // Database features
-  if (config.database && config.database !== 'none') {
+  if (config.database && config.database !== "none") {
     features.push("🔸 Data persistence");
     if (config.database === DATABASE_OPTIONS.POSTGRES) {
       features.push("🔸 ACID transactions");
@@ -1236,7 +1401,7 @@ function displayKeyFeatures(config) {
   }
 
   // Authentication features
-  if (config.auth && config.auth !== 'none') {
+  if (config.auth && config.auth !== "none") {
     features.push("🔸 User authentication");
     if (config.auth === AUTH_OPTIONS.JWT) {
       features.push("🔸 Stateless authentication");
@@ -1268,7 +1433,9 @@ function displayKeyFeatures(config) {
   for (let i = 0; i < Math.max(leftColumn.length, rightColumn.length); i++) {
     const left = leftColumn[i] || "";
     const right = rightColumn[i] || "";
-    console.log(`   ${colors.success(left.padEnd(35))} ${colors.success(right)}`);
+    console.log(
+      `   ${colors.success(left.padEnd(35))} ${colors.success(right)}`,
+    );
   }
   console.log();
 }
@@ -1285,19 +1452,26 @@ function displayNextSteps(config) {
     "2️⃣  Configure environment variables",
   ];
 
-  if (config.database && config.database !== 'none') {
-    if (config.database === DATABASE_OPTIONS.POSTGRES || config.database === DATABASE_OPTIONS.MYSQL) {
+  if (config.database && config.database !== "none") {
+    if (
+      config.database === DATABASE_OPTIONS.POSTGRES ||
+      config.database === DATABASE_OPTIONS.MYSQL
+    ) {
       steps.push("3️⃣  Set up your database server");
     }
-    if (config.orm && config.orm !== 'none') {
+    if (config.orm && config.orm !== "none") {
       steps.push("4️⃣  Run database migrations");
     }
   }
 
   if (config.install) {
-    steps.push(`${steps.length + 1}️⃣  Dependencies will be installed automatically`);
+    steps.push(
+      `${steps.length + 1}️⃣  Dependencies will be installed automatically`,
+    );
   } else {
-    steps.push(`${steps.length + 1}️⃣  Install dependencies with ${config.packageManager}`);
+    steps.push(
+      `${steps.length + 1}️⃣  Install dependencies with ${config.packageManager}`,
+    );
   }
 
   steps.push(`${steps.length + 1}️⃣  Start the development server`);
@@ -1312,7 +1486,7 @@ function displayNextSteps(config) {
 
   steps.push(`${steps.length + 1}️⃣  Start building your application!`);
 
-  steps.forEach(step => {
+  steps.forEach((step) => {
     console.log(`   ${colors.info(step)}`);
   });
   console.log();
@@ -1333,14 +1507,14 @@ export function displayHelpfulCommands(config) {
   commands.push({
     command: `${pm} run dev`,
     description: "Start development server",
-    icon: "🔥"
+    icon: "🔥",
   });
 
   // Build commands
   commands.push({
     command: `${pm} run build`,
     description: "Build for production",
-    icon: "📦"
+    icon: "📦",
   });
 
   // Database commands
@@ -1348,12 +1522,12 @@ export function displayHelpfulCommands(config) {
     commands.push({
       command: `${pm} run db:migrate`,
       description: "Run database migrations",
-      icon: "🗄️"
+      icon: "🗄️",
     });
     commands.push({
       command: `${pm} run db:studio`,
       description: "Open Prisma Studio",
-      icon: "👀"
+      icon: "👀",
     });
   }
 
@@ -1362,7 +1536,7 @@ export function displayHelpfulCommands(config) {
     commands.push({
       command: `${pm} test`,
       description: "Run test suite",
-      icon: "🧪"
+      icon: "🧪",
     });
   }
 
@@ -1371,7 +1545,7 @@ export function displayHelpfulCommands(config) {
     commands.push({
       command: `${pm} run lint`,
       description: "Lint code",
-      icon: "🔍"
+      icon: "🔍",
     });
   }
 
@@ -1380,7 +1554,7 @@ export function displayHelpfulCommands(config) {
     commands.push({
       command: `${pm} run storybook`,
       description: "Start Storybook",
-      icon: "📚"
+      icon: "📚",
     });
   }
 
@@ -1389,21 +1563,27 @@ export function displayHelpfulCommands(config) {
     commands.push({
       command: `${pm} run format`,
       description: "Format code",
-      icon: "💅"
+      icon: "💅",
     });
   }
 
   // Display commands in a nice format
-  const maxCommandLength = Math.max(...commands.map(c => c.command.length));
-  
+  const maxCommandLength = Math.max(...commands.map((c) => c.command.length));
+
   commands.forEach(({ command, description, icon }) => {
     const paddedCommand = command.padEnd(maxCommandLength + 2);
-    console.log(`   ${icon} ${colors.success(paddedCommand)} ${colors.muted(description)}`);
+    console.log(
+      `   ${icon} ${colors.success(paddedCommand)} ${colors.muted(description)}`,
+    );
   });
 
   console.log();
   console.log(colors.primary("─────────────────────────────────────"));
-  console.log(colors.muted("   Navigate to your project directory and run these commands"));
+  console.log(
+    colors.muted(
+      "   Navigate to your project directory and run these commands",
+    ),
+  );
   console.log();
 }
 
@@ -1414,8 +1594,12 @@ export function displaySuccessMessage(config) {
   console.log();
   console.log(colors.highlight("🎉 SUCCESS! Your project has been created!"));
   console.log();
-  console.log(colors.success(`   Project: ${colors.primary(config.projectName)}`));
-  console.log(colors.success(`   Location: ${colors.muted(config.projectDir)}`));
+  console.log(
+    colors.success(`   Project: ${colors.primary(config.projectName)}`),
+  );
+  console.log(
+    colors.success(`   Location: ${colors.muted(config.projectDir)}`),
+  );
   console.log();
   console.log(colors.accent("Happy coding! 🚀"));
   console.log();

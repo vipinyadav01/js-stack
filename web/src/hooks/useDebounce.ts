@@ -21,12 +21,15 @@ export function useThrottle<T>(value: T, limit: number): T {
   const [lastRan, setLastRan] = useState<number>(Date.now());
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      if (Date.now() - lastRan >= limit) {
-        setThrottledValue(value);
-        setLastRan(Date.now());
-      }
-    }, limit - (Date.now() - lastRan));
+    const handler = setTimeout(
+      () => {
+        if (Date.now() - lastRan >= limit) {
+          setThrottledValue(value);
+          setLastRan(Date.now());
+        }
+      },
+      limit - (Date.now() - lastRan),
+    );
 
     return () => {
       clearTimeout(handler);

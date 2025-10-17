@@ -1,10 +1,10 @@
-import React from 'react'
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function QuickStart() {
   return (
     <>
-          <section className="space-y-8">
+      <section className="space-y-8">
         <div className="text-center space-y-4">
           <h2 className="text-3xl font-bold">Essential Commands</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -57,5 +57,5 @@ export default function QuickStart() {
         </div>
       </section>
     </>
-  )
+  );
 }

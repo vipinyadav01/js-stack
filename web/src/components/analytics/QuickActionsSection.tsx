@@ -1,6 +1,14 @@
 "use client";
 
-import { Zap, Copy, ExternalLink, Code, Download, GitBranch, Users } from "lucide-react";
+import {
+  Zap,
+  Copy,
+  ExternalLink,
+  Code,
+  Download,
+  GitBranch,
+  Users,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 const containerVariants = {
@@ -18,34 +26,34 @@ const itemVariants = {
 
 export default function QuickActionsSection() {
   const actions = [
-    { 
-      icon: Code, 
-      label: "Create New Project", 
+    {
+      icon: Code,
+      label: "Create New Project",
       description: "Initialize a new project with create-js-stack",
       command: "npx create-js-stack init",
-      href: "/new"
+      href: "/new",
     },
-    { 
-      icon: Download, 
-      label: "Import Project", 
+    {
+      icon: Download,
+      label: "Import Project",
       description: "Clone and setup an existing repository",
       command: "git clone <repo>",
-      href: "#"
+      href: "#",
     },
-    { 
-      icon: GitBranch, 
-      label: "Fork Repository", 
+    {
+      icon: GitBranch,
+      label: "Fork Repository",
       description: "Create a fork of this repository",
       command: "gh repo fork",
-      href: "https://github.com/vipinyadav01/js-stack"
+      href: "https://github.com/vipinyadav01/js-stack",
     },
-    { 
-      icon: Users, 
-      label: "Join Community", 
+    {
+      icon: Users,
+      label: "Join Community",
       description: "Connect with other developers",
       command: "Join Discord",
-      href: "#"
-    }
+      href: "#",
+    },
   ];
 
   const copyToClipboard = (text: string) => {
@@ -57,17 +65,15 @@ export default function QuickActionsSection() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
         <div className="flex items-center gap-2">
           <Zap className="h-5 w-5 text-primary" />
-          <span className="font-bold text-lg sm:text-xl">
-            Quick Actions
-          </span>
+          <span className="font-bold text-lg sm:text-xl">Quick Actions</span>
         </div>
         <div className="hidden h-px flex-1 bg-border sm:block" />
         <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
           Developer commands
         </span>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         className="w-full min-w-0 overflow-hidden rounded border border-border"
         variants={itemVariants}
         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -75,9 +81,7 @@ export default function QuickActionsSection() {
         <div className="sticky top-0 z-10 border-border border-b px-3 py-2">
           <div className="flex items-center gap-2">
             <span className="text-primary text-xs">⚡</span>
-            <span className="font-semibold text-xs">
-              Developer Commands
-            </span>
+            <span className="font-semibold text-xs">Developer Commands</span>
           </div>
         </div>
         <div className="p-4">

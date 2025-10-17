@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 type SystemMetrics = {
   os: { name: string; share: number }[];
   versions: { os: string; version: string; share: number }[];
-  hardware: { cpuCoresP50: number; ramGBp50: number; storageUsedPctP50: number };
+  hardware: {
+    cpuCoresP50: number;
+    ramGBp50: number;
+    storageUsedPctP50: number;
+  };
 };
 
 export default function SystemMetrics() {
@@ -24,7 +28,12 @@ export default function SystemMetrics() {
   }, []);
 
   if (error) return <div className="text-sm text-red-600">{error}</div>;
-  if (!data) return <div className="text-sm text-muted-foreground">Loading system metrics…</div>;
+  if (!data)
+    return (
+      <div className="text-sm text-muted-foreground">
+        Loading system metrics…
+      </div>
+    );
 
   return (
     <div>
@@ -43,7 +52,10 @@ export default function SystemMetrics() {
                   <span className="text-muted-foreground">{o.share}%</span>
                 </div>
                 <div className="h-2 w-full rounded bg-muted">
-                  <div className="h-2 rounded bg-emerald-500" style={{ width: `${o.share}%` }} />
+                  <div
+                    className="h-2 rounded bg-emerald-500"
+                    style={{ width: `${o.share}%` }}
+                  />
                 </div>
               </div>
             ))}
@@ -55,15 +67,21 @@ export default function SystemMetrics() {
           <div className="text-sm grid grid-cols-3 gap-2">
             <div>
               <div className="text-xs text-muted-foreground">CPU Cores</div>
-              <div className="text-lg font-semibold">{data.hardware.cpuCoresP50}</div>
+              <div className="text-lg font-semibold">
+                {data.hardware.cpuCoresP50}
+              </div>
             </div>
             <div>
               <div className="text-xs text-muted-foreground">RAM (GB)</div>
-              <div className="text-lg font-semibold">{data.hardware.ramGBp50}</div>
+              <div className="text-lg font-semibold">
+                {data.hardware.ramGBp50}
+              </div>
             </div>
             <div>
               <div className="text-xs text-muted-foreground">Storage Used</div>
-              <div className="text-lg font-semibold">{data.hardware.storageUsedPctP50}%</div>
+              <div className="text-lg font-semibold">
+                {data.hardware.storageUsedPctP50}%
+              </div>
             </div>
           </div>
         </div>
@@ -71,5 +89,3 @@ export default function SystemMetrics() {
     </div>
   );
 }
-
-

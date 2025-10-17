@@ -30,16 +30,14 @@ export default function ReleasesSection({ releases }: ReleasesSectionProps) {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
             <Tag className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-sm">
-              Releases
-            </span>
+            <span className="font-semibold text-sm">Releases</span>
           </div>
           <div className="hidden h-px flex-1 bg-border sm:block" />
           <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
             No releases
           </span>
         </div>
-        
+
         <div className="w-full min-w-0 overflow-hidden rounded-lg border border-border bg-card/50 p-6">
           <div className="text-center text-muted-foreground">
             <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -55,17 +53,15 @@ export default function ReleasesSection({ releases }: ReleasesSectionProps) {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
         <div className="flex items-center gap-2">
           <Tag className="h-4 w-4 text-primary" />
-          <span className="font-semibold text-sm">
-            Releases
-          </span>
+          <span className="font-semibold text-sm">Releases</span>
         </div>
         <div className="hidden h-px flex-1 bg-border sm:block" />
         <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
           {releases.length} releases
         </span>
       </div>
-      
-      <motion.div 
+
+      <motion.div
         className="w-full min-w-0 overflow-hidden rounded-lg border border-border bg-card/50"
         variants={itemVariants}
         transition={{ duration: 0.4, ease: "easeOut" }}
@@ -73,9 +69,7 @@ export default function ReleasesSection({ releases }: ReleasesSectionProps) {
         <div className="border-border border-b px-3 py-2 bg-muted/30">
           <div className="flex items-center gap-2">
             <span className="text-primary text-xs">🚀</span>
-            <span className="font-semibold text-xs">
-              Recent Releases
-            </span>
+            <span className="font-semibold text-xs">Recent Releases</span>
           </div>
         </div>
         <div className="p-3">
@@ -101,15 +95,26 @@ export default function ReleasesSection({ releases }: ReleasesSectionProps) {
                     <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs text-muted-foreground mt-1">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        <span>{format(new Date(release.publishedAt), 'MMM dd, yyyy')}</span>
+                        <span>
+                          {format(
+                            new Date(release.publishedAt),
+                            "MMM dd, yyyy",
+                          )}
+                        </span>
                       </div>
                       {release.prerelease && (
-                        <Badge variant="outline" className="text-xs px-1.5 py-0.5 text-orange-600 border-orange-200">
+                        <Badge
+                          variant="outline"
+                          className="text-xs px-1.5 py-0.5 text-orange-600 border-orange-200"
+                        >
                           Prerelease
                         </Badge>
                       )}
                       {release.draft && (
-                        <Badge variant="outline" className="text-xs px-1.5 py-0.5 text-gray-600 border-gray-200">
+                        <Badge
+                          variant="outline"
+                          className="text-xs px-1.5 py-0.5 text-gray-600 border-gray-200"
+                        >
                           Draft
                         </Badge>
                       )}
@@ -124,7 +129,7 @@ export default function ReleasesSection({ releases }: ReleasesSectionProps) {
                 </div>
               </motion.a>
             ))}
-            
+
             {releases.length > 4 && (
               <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border">
                 +{releases.length - 4} more releases

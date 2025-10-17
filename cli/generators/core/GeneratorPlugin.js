@@ -105,21 +105,21 @@ export const HOOK_TYPES = {
   PRE_GENERATE: "preGenerate",
   PRE_TEMPLATE_PROCESS: "preTemplateProcess",
   PRE_DEPENDENCY_INSTALL: "preDependencyInstall",
-  
+
   // Generation hooks
   GENERATE_FILES: "generateFiles",
   PROCESS_TEMPLATES: "processTemplates",
   MERGE_PACKAGE_JSON: "mergePackageJson",
-  
+
   // Post-generation hooks
   POST_TEMPLATE_PROCESS: "postTemplateProcess",
   POST_DEPENDENCY_INSTALL: "postDependencyInstall",
   POST_GENERATE: "postGenerate",
-  
+
   // Validation hooks
   VALIDATE_CONFIG: "validateConfig",
   VALIDATE_OUTPUT: "validateOutput",
-  
+
   // Error handling hooks
   ON_ERROR: "onError",
   ON_WARNING: "onWarning",

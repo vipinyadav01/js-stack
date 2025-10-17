@@ -14,7 +14,9 @@ const containerVariants = {
   },
 };
 
-export default function StackTrendsLine({ range = "30d" as "7d" | "30d" | "90d" }) {
+export default function StackTrendsLine({
+  range = "30d" as "7d" | "30d" | "90d",
+}) {
   const [data, setData] = useState<Trend[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,12 +45,13 @@ export default function StackTrendsLine({ range = "30d" as "7d" | "30d" | "90d" 
 
   const rangeLabels = {
     "7d": "Last 7 days",
-    "30d": "Last 30 days", 
-    "90d": "Last 90 days"
+    "30d": "Last 30 days",
+    "90d": "Last 90 days",
   };
 
   if (error) return <div className="text-sm text-red-600">{error}</div>;
-  if (!data) return <div className="text-sm text-muted-foreground">Loading trends…</div>;
+  if (!data)
+    return <div className="text-sm text-muted-foreground">Loading trends…</div>;
 
   return (
     <motion.div variants={containerVariants}>
@@ -65,32 +68,40 @@ export default function StackTrendsLine({ range = "30d" as "7d" | "30d" | "90d" 
       <div className="relative">
         <div className="rounded-lg border border-border bg-card/50 p-4">
           <div className="mb-4 flex items-center justify-between">
-            <div className="text-sm font-medium text-foreground">Usage over time</div>
+            <div className="text-sm font-medium text-foreground">
+              Usage over time
+            </div>
             <div className="text-xs text-muted-foreground">
-              Peak: {Math.max(...data.map(p => p.value)).toLocaleString()}
+              Peak: {Math.max(...data.map((p) => p.value)).toLocaleString()}
             </div>
           </div>
           <div className="relative h-48 w-full">
             <svg viewBox="0 0 100 100" className="h-full w-full">
               <defs>
-                <linearGradient id="trendGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <linearGradient
+                  id="trendGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="0%"
+                  y2="100%"
+                >
                   <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3" />
                   <stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
                 </linearGradient>
               </defs>
-              <motion.polyline 
-                fill="url(#trendGradient)" 
-                stroke="#3B82F6" 
-                strokeWidth="2" 
+              <motion.polyline
+                fill="url(#trendGradient)"
+                stroke="#3B82F6"
+                strokeWidth="2"
                 points={points}
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
                 transition={{ duration: 1.5, ease: "easeInOut" }}
               />
-              <motion.polyline 
-                fill="none" 
-                stroke="#3B82F6" 
-                strokeWidth="2" 
+              <motion.polyline
+                fill="none"
+                stroke="#3B82F6"
+                strokeWidth="2"
                 points={points}
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: 1 }}
@@ -99,13 +110,11 @@ export default function StackTrendsLine({ range = "30d" as "7d" | "30d" | "90d" 
             </svg>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-            <span>{data[0]?.t || 'Start'}</span>
-            <span>{data[data.length - 1]?.t || 'End'}</span>
+            <span>{data[0]?.t || "Start"}</span>
+            <span>{data[data.length - 1]?.t || "End"}</span>
           </div>
         </div>
       </div>
     </motion.div>
   );
 }
-
-

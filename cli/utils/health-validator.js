@@ -105,11 +105,13 @@ export class ProjectHealthValidator {
     // Generate summary
     const totalChecks = results.passed + results.failed + results.warnings;
     const totalPassedOrFailed = results.passed + results.failed;
-    
+
     results.summary = {
       total: totalChecks,
       successRate:
-        totalPassedOrFailed > 0 ? (results.passed / totalPassedOrFailed) * 100 : 100,
+        totalPassedOrFailed > 0
+          ? (results.passed / totalPassedOrFailed) * 100
+          : 100,
       hasCriticalFailures: results.checks.some(
         (check) => check.status === "failed" && check.critical,
       ),
@@ -551,13 +553,13 @@ export const healthChecks = {
       if (!mainFileExists) {
         const commonMainFiles = [
           "index.js",
-          "index.ts", 
+          "index.ts",
           "server.js",
           "server.ts",
           "app.js",
           "app.ts",
           "main.js",
-          "main.ts"
+          "main.ts",
         ];
 
         for (const file of commonMainFiles) {
@@ -593,7 +595,15 @@ export const healthChecks = {
       }
 
       // Check for common directories
-      const commonDirs = ["src", "lib", "app", "public", "assets", "backend", "frontend"];
+      const commonDirs = [
+        "src",
+        "lib",
+        "app",
+        "public",
+        "assets",
+        "backend",
+        "frontend",
+      ];
       const existingDirs = [];
 
       for (const dir of commonDirs) {

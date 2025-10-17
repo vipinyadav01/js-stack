@@ -20,17 +20,17 @@ export class MonorepoGenerator {
     const structure = {
       apps: [],
       packages: [],
-      configs: []
+      configs: [],
     };
 
     // Create apps directory
-    this.safeCreateDir(join(this.projectDir, 'apps'));
+    this.safeCreateDir(join(this.projectDir, "apps"));
 
     // Create packages directory
-    this.safeCreateDir(join(this.projectDir, 'packages'));
+    this.safeCreateDir(join(this.projectDir, "packages"));
 
     // Create configs directory
-    this.safeCreateDir(join(this.projectDir, 'configs'));
+    this.safeCreateDir(join(this.projectDir, "configs"));
 
     // Generate frontend app
     if (this.config.frontend && this.config.frontend.length > 0) {
@@ -39,7 +39,7 @@ export class MonorepoGenerator {
     }
 
     // Generate backend app
-    if (this.config.backend && this.config.backend !== 'none') {
+    if (this.config.backend && this.config.backend !== "none") {
       const serverApp = this.generateServerApp();
       structure.apps.push(serverApp);
     }
@@ -56,7 +56,7 @@ export class MonorepoGenerator {
     this.generateRootPackageJson();
 
     // Generate Turborepo config
-    if (this.config.addons.includes('turborepo')) {
+    if (this.config.addons.includes("turborepo")) {
       this.generateTurborepoConfig();
     }
 
@@ -68,7 +68,7 @@ export class MonorepoGenerator {
    * @returns {Object} - Web app info
    */
   generateWebApp() {
-    const webDir = join(this.projectDir, 'apps', 'web');
+    const webDir = join(this.projectDir, "apps", "web");
     this.safeCreateDir(webDir);
 
     // Create package.json for web app
@@ -82,29 +82,29 @@ export class MonorepoGenerator {
         build: "vite build",
         preview: "vite preview",
         lint: "eslint . --ext js,jsx,ts,tsx",
-        format: "prettier --write ."
+        format: "prettier --write .",
       },
       dependencies: {
-        "react": "^18.2.0",
+        react: "^18.2.0",
         "react-dom": "^18.2.0",
-        "@repo/ui": "workspace:*"
+        "@repo/ui": "workspace:*",
       },
       devDependencies: {
         "@vitejs/plugin-react": "^4.2.0",
-        "vite": "^5.0.0"
-      }
+        vite: "^5.0.0",
+      },
     };
 
     this.safeWriteFile(
-      join(webDir, 'package.json'),
-      JSON.stringify(webPackageJson, null, 2)
+      join(webDir, "package.json"),
+      JSON.stringify(webPackageJson, null, 2),
     );
 
     return {
-      name: 'web',
-      path: 'apps/web',
-      type: 'frontend',
-      framework: this.config.frontend[0]
+      name: "web",
+      path: "apps/web",
+      type: "frontend",
+      framework: this.config.frontend[0],
     };
   }
 
@@ -113,7 +113,7 @@ export class MonorepoGenerator {
    * @returns {Object} - Server app info
    */
   generateServerApp() {
-    const serverDir = join(this.projectDir, 'apps', 'server');
+    const serverDir = join(this.projectDir, "apps", "server");
     this.safeCreateDir(serverDir);
 
     // Create package.json for server app
@@ -127,30 +127,30 @@ export class MonorepoGenerator {
         build: "tsc",
         start: "node dist/index.js",
         lint: "eslint . --ext js,ts",
-        format: "prettier --write ."
+        format: "prettier --write .",
       },
       dependencies: {
-        "express": "^4.18.0",
+        express: "^4.18.0",
         "@repo/database": "workspace:*",
-        "@repo/shared": "workspace:*"
+        "@repo/shared": "workspace:*",
       },
       devDependencies: {
         "@types/express": "^4.17.0",
-        "tsx": "^4.0.0",
-        "typescript": "^5.0.0"
-      }
+        tsx: "^4.0.0",
+        typescript: "^5.0.0",
+      },
     };
 
     this.safeWriteFile(
-      join(serverDir, 'package.json'),
-      JSON.stringify(serverPackageJson, null, 2)
+      join(serverDir, "package.json"),
+      JSON.stringify(serverPackageJson, null, 2),
     );
 
     return {
-      name: 'server',
-      path: 'apps/server',
-      type: 'backend',
-      framework: this.config.backend
+      name: "server",
+      path: "apps/server",
+      type: "backend",
+      framework: this.config.backend,
     };
   }
 
@@ -166,7 +166,7 @@ export class MonorepoGenerator {
     packages.push(uiPackage);
 
     // Database package
-    if (this.config.database !== 'none') {
+    if (this.config.database !== "none") {
       const dbPackage = this.generateDatabasePackage();
       packages.push(dbPackage);
     }
@@ -183,7 +183,7 @@ export class MonorepoGenerator {
    * @returns {Object} - UI package info
    */
   generateUIPackage() {
-    const uiDir = join(this.projectDir, 'packages', 'ui');
+    const uiDir = join(this.projectDir, "packages", "ui");
     this.safeCreateDir(uiDir);
 
     const uiPackageJson = {
@@ -196,29 +196,29 @@ export class MonorepoGenerator {
         build: "tsc",
         dev: "tsc --watch",
         lint: "eslint . --ext js,ts,tsx",
-        format: "prettier --write ."
+        format: "prettier --write .",
       },
       dependencies: {
-        "react": "^18.2.0"
+        react: "^18.2.0",
       },
       devDependencies: {
         "@types/react": "^18.2.0",
-        "typescript": "^5.0.0"
+        typescript: "^5.0.0",
       },
       peerDependencies: {
-        "react": "^18.2.0"
-      }
+        react: "^18.2.0",
+      },
     };
 
     this.safeWriteFile(
-      join(uiDir, 'package.json'),
-      JSON.stringify(uiPackageJson, null, 2)
+      join(uiDir, "package.json"),
+      JSON.stringify(uiPackageJson, null, 2),
     );
 
     return {
-      name: 'ui',
-      path: 'packages/ui',
-      type: 'shared-ui'
+      name: "ui",
+      path: "packages/ui",
+      type: "shared-ui",
     };
   }
 
@@ -227,7 +227,7 @@ export class MonorepoGenerator {
    * @returns {Object} - Database package info
    */
   generateDatabasePackage() {
-    const dbDir = join(this.projectDir, 'packages', 'database');
+    const dbDir = join(this.projectDir, "packages", "database");
     this.safeCreateDir(dbDir);
 
     const dbPackageJson = {
@@ -240,21 +240,21 @@ export class MonorepoGenerator {
         build: "tsc",
         dev: "tsc --watch",
         lint: "eslint . --ext js,ts",
-        format: "prettier --write ."
+        format: "prettier --write .",
       },
       dependencies: this.getDatabaseDependencies(),
-      devDependencies: this.getDatabaseDevDependencies()
+      devDependencies: this.getDatabaseDevDependencies(),
     };
 
     this.safeWriteFile(
-      join(dbDir, 'package.json'),
-      JSON.stringify(dbPackageJson, null, 2)
+      join(dbDir, "package.json"),
+      JSON.stringify(dbPackageJson, null, 2),
     );
 
     return {
-      name: 'database',
-      path: 'packages/database',
-      type: 'shared-database'
+      name: "database",
+      path: "packages/database",
+      type: "shared-database",
     };
   }
 
@@ -263,7 +263,7 @@ export class MonorepoGenerator {
    * @returns {Object} - Shared package info
    */
   generateSharedPackage() {
-    const sharedDir = join(this.projectDir, 'packages', 'shared');
+    const sharedDir = join(this.projectDir, "packages", "shared");
     this.safeCreateDir(sharedDir);
 
     const sharedPackageJson = {
@@ -276,23 +276,23 @@ export class MonorepoGenerator {
         build: "tsc",
         dev: "tsc --watch",
         lint: "eslint . --ext js,ts",
-        format: "prettier --write ."
+        format: "prettier --write .",
       },
       dependencies: {},
       devDependencies: {
-        "typescript": "^5.0.0"
-      }
+        typescript: "^5.0.0",
+      },
     };
 
     this.safeWriteFile(
-      join(sharedDir, 'package.json'),
-      JSON.stringify(sharedPackageJson, null, 2)
+      join(sharedDir, "package.json"),
+      JSON.stringify(sharedPackageJson, null, 2),
     );
 
     return {
-      name: 'shared',
-      path: 'packages/shared',
-      type: 'shared-utils'
+      name: "shared",
+      path: "packages/shared",
+      type: "shared-utils",
     };
   }
 
@@ -304,7 +304,7 @@ export class MonorepoGenerator {
     const configs = [];
 
     // ESLint config
-    if (this.config.addons.includes('eslint')) {
+    if (this.config.addons.includes("eslint")) {
       const eslintConfig = this.generateESLintConfig();
       configs.push(eslintConfig);
     }
@@ -316,7 +316,7 @@ export class MonorepoGenerator {
     }
 
     // Prettier config
-    if (this.config.addons.includes('prettier')) {
+    if (this.config.addons.includes("prettier")) {
       const prettierConfig = this.generatePrettierConfig();
       configs.push(prettierConfig);
     }
@@ -329,7 +329,7 @@ export class MonorepoGenerator {
    * @returns {Object} - ESLint config info
    */
   generateESLintConfig() {
-    const eslintDir = join(this.projectDir, 'configs', 'eslint');
+    const eslintDir = join(this.projectDir, "configs", "eslint");
     this.safeCreateDir(eslintDir);
 
     const eslintPackageJson = {
@@ -338,20 +338,20 @@ export class MonorepoGenerator {
       main: "index.js",
       author: "Vipin Yadav",
       dependencies: {
-        "eslint": "^8.0.0",
-        "@eslint/js": "^8.0.0"
-      }
+        eslint: "^8.0.0",
+        "@eslint/js": "^8.0.0",
+      },
     };
 
     this.safeWriteFile(
-      join(eslintDir, 'package.json'),
-      JSON.stringify(eslintPackageJson, null, 2)
+      join(eslintDir, "package.json"),
+      JSON.stringify(eslintPackageJson, null, 2),
     );
 
     return {
-      name: 'eslint-config',
-      path: 'configs/eslint',
-      type: 'eslint'
+      name: "eslint-config",
+      path: "configs/eslint",
+      type: "eslint",
     };
   }
 
@@ -360,7 +360,7 @@ export class MonorepoGenerator {
    * @returns {Object} - TypeScript config info
    */
   generateTypeScriptConfig() {
-    const tsDir = join(this.projectDir, 'configs', 'typescript');
+    const tsDir = join(this.projectDir, "configs", "typescript");
     this.safeCreateDir(tsDir);
 
     const tsPackageJson = {
@@ -369,19 +369,19 @@ export class MonorepoGenerator {
       main: "base.json",
       author: "Vipin Yadav",
       dependencies: {
-        "typescript": "^5.0.0"
-      }
+        typescript: "^5.0.0",
+      },
     };
 
     this.safeWriteFile(
-      join(tsDir, 'package.json'),
-      JSON.stringify(tsPackageJson, null, 2)
+      join(tsDir, "package.json"),
+      JSON.stringify(tsPackageJson, null, 2),
     );
 
     return {
-      name: 'typescript-config',
-      path: 'configs/typescript',
-      type: 'typescript'
+      name: "typescript-config",
+      path: "configs/typescript",
+      type: "typescript",
     };
   }
 
@@ -390,7 +390,7 @@ export class MonorepoGenerator {
    * @returns {Object} - Prettier config info
    */
   generatePrettierConfig() {
-    const prettierDir = join(this.projectDir, 'configs', 'prettier');
+    const prettierDir = join(this.projectDir, "configs", "prettier");
     this.safeCreateDir(prettierDir);
 
     const prettierPackageJson = {
@@ -399,19 +399,19 @@ export class MonorepoGenerator {
       main: "index.js",
       author: "Vipin Yadav",
       dependencies: {
-        "prettier": "^3.0.0"
-      }
+        prettier: "^3.0.0",
+      },
     };
 
     this.safeWriteFile(
-      join(prettierDir, 'package.json'),
-      JSON.stringify(prettierPackageJson, null, 2)
+      join(prettierDir, "package.json"),
+      JSON.stringify(prettierPackageJson, null, 2),
     );
 
     return {
-      name: 'prettier-config',
-      path: 'configs/prettier',
-      type: 'prettier'
+      name: "prettier-config",
+      path: "configs/prettier",
+      type: "prettier",
     };
   }
 
@@ -424,28 +424,24 @@ export class MonorepoGenerator {
       version: "1.0.0",
       private: true,
       author: "Vipin Yadav",
-      workspaces: [
-        "apps/*",
-        "packages/*",
-        "configs/*"
-      ],
+      workspaces: ["apps/*", "packages/*", "configs/*"],
       scripts: {
-        "build": "turbo run build",
-        "dev": "turbo run dev",
-        "lint": "turbo run lint",
-        "format": "turbo run format",
-        "test": "turbo run test",
-        "clean": "turbo run clean"
+        build: "turbo run build",
+        dev: "turbo run dev",
+        lint: "turbo run lint",
+        format: "turbo run format",
+        test: "turbo run test",
+        clean: "turbo run clean",
       },
       devDependencies: {
-        "turbo": "^1.11.0"
+        turbo: "^1.11.0",
       },
-      packageManager: `${this.config.packageManager}@latest`
+      packageManager: `${this.config.packageManager}@latest`,
     };
 
     this.safeWriteFile(
-      join(this.projectDir, 'package.json'),
-      JSON.stringify(rootPackageJson, null, 2)
+      join(this.projectDir, "package.json"),
+      JSON.stringify(rootPackageJson, null, 2),
     );
   }
 
@@ -454,36 +450,36 @@ export class MonorepoGenerator {
    */
   generateTurborepoConfig() {
     const turboConfig = {
-      "$schema": "https://turbo.build/schema.json",
-      "globalDependencies": ["**/.env.*local"],
-      "pipeline": {
-        "build": {
-          "dependsOn": ["^build"],
-          "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      $schema: "https://turbo.build/schema.json",
+      globalDependencies: ["**/.env.*local"],
+      pipeline: {
+        build: {
+          dependsOn: ["^build"],
+          outputs: ["dist/**", ".next/**", "!.next/cache/**"],
         },
-        "dev": {
-          "cache": false,
-          "persistent": true
+        dev: {
+          cache: false,
+          persistent: true,
         },
-        "lint": {
-          "dependsOn": ["^lint"]
+        lint: {
+          dependsOn: ["^lint"],
         },
-        "format": {
-          "dependsOn": ["^format"]
+        format: {
+          dependsOn: ["^format"],
         },
-        "test": {
-          "dependsOn": ["^build"],
-          "outputs": ["coverage/**"]
+        test: {
+          dependsOn: ["^build"],
+          outputs: ["coverage/**"],
         },
-        "clean": {
-          "cache": false
-        }
-      }
+        clean: {
+          cache: false,
+        },
+      },
     };
 
     this.safeWriteFile(
-      join(this.projectDir, 'turbo.json'),
-      JSON.stringify(turboConfig, null, 2)
+      join(this.projectDir, "turbo.json"),
+      JSON.stringify(turboConfig, null, 2),
     );
   }
 
@@ -493,7 +489,7 @@ export class MonorepoGenerator {
    */
   getDatabaseDependencies() {
     const deps = {};
-    
+
     if (this.config.orm === TECHNOLOGY_OPTIONS.ORM.PRISMA) {
       deps["@prisma/client"] = "^5.0.0";
     } else if (this.config.orm === TECHNOLOGY_OPTIONS.ORM.MONGOOSE) {
@@ -505,7 +501,7 @@ export class MonorepoGenerator {
     } else if (this.config.orm === TECHNOLOGY_OPTIONS.ORM.DRIZZLE) {
       deps["drizzle-orm"] = "^0.29.0";
     }
-    
+
     return deps;
   }
 
@@ -515,13 +511,13 @@ export class MonorepoGenerator {
    */
   getDatabaseDevDependencies() {
     const deps = {
-      "typescript": "^5.0.0"
+      typescript: "^5.0.0",
     };
-    
+
     if (this.config.orm === TECHNOLOGY_OPTIONS.ORM.PRISMA) {
       deps["prisma"] = "^5.0.0";
     }
-    
+
     return deps;
   }
 
@@ -535,7 +531,10 @@ export class MonorepoGenerator {
         mkdirSync(dirPath, { recursive: true });
       }
     } catch (error) {
-      console.error(chalk.red(`Failed to create directory ${dirPath}:`), error.message);
+      console.error(
+        chalk.red(`Failed to create directory ${dirPath}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -549,7 +548,10 @@ export class MonorepoGenerator {
     try {
       writeFileSync(filePath, content);
     } catch (error) {
-      console.error(chalk.red(`Failed to write file ${filePath}:`), error.message);
+      console.error(
+        chalk.red(`Failed to write file ${filePath}:`),
+        error.message,
+      );
       throw error;
     }
   }
@@ -559,21 +561,23 @@ export class MonorepoGenerator {
    * @param {Object} structure - Generated structure
    */
   displayStructure(structure) {
-    console.log(chalk.blue.bold('\n📁 Monorepo Structure Generated:'));
-    console.log(chalk.gray('─'.repeat(50)));
+    console.log(chalk.blue.bold("\n📁 Monorepo Structure Generated:"));
+    console.log(chalk.gray("─".repeat(50)));
 
-    console.log(chalk.cyan.bold('\n📱 Apps:'));
-    structure.apps.forEach(app => {
-      console.log(chalk.gray(`  • ${app.name} (${app.type}) - ${app.framework}`));
+    console.log(chalk.cyan.bold("\n📱 Apps:"));
+    structure.apps.forEach((app) => {
+      console.log(
+        chalk.gray(`  • ${app.name} (${app.type}) - ${app.framework}`),
+      );
     });
 
-    console.log(chalk.cyan.bold('\n📦 Packages:'));
-    structure.packages.forEach(pkg => {
+    console.log(chalk.cyan.bold("\n📦 Packages:"));
+    structure.packages.forEach((pkg) => {
       console.log(chalk.gray(`  • ${pkg.name} (${pkg.type})`));
     });
 
-    console.log(chalk.cyan.bold('\n⚙️  Configs:'));
-    structure.configs.forEach(config => {
+    console.log(chalk.cyan.bold("\n⚙️  Configs:"));
+    structure.configs.forEach((config) => {
       console.log(chalk.gray(`  • ${config.name} (${config.type})`));
     });
 

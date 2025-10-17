@@ -21,7 +21,9 @@ export class AnalyticsPlugin extends GeneratorPlugin {
     this.registerHook(HOOK_TYPES.ON_ERROR, this.onError);
   }
 
-  canHandle() { return true; }
+  canHandle() {
+    return true;
+  }
 
   async preGenerate(context) {
     this.metrics.startTime = Date.now();

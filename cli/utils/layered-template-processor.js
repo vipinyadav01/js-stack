@@ -10,29 +10,7 @@ import Handlebars from "handlebars";
 import chalk from "chalk";
 import { ConflictResolver } from "./conflict-resolver.js";
 import { getTemplateDir } from "./file-utils.js";
-
-// Register Handlebars helpers
-Handlebars.registerHelper("eq", function (a, b) {
-  return a === b;
-});
-
-Handlebars.registerHelper("includes", function (array, item) {
-  return Array.isArray(array) && array.includes(item);
-});
-
-Handlebars.registerHelper("ne", function (a, b) {
-  return a !== b;
-});
-
-Handlebars.registerHelper("or", function () {
-  const args = Array.prototype.slice.call(arguments, 0, -1);
-  return args.some(Boolean);
-});
-
-Handlebars.registerHelper("and", function () {
-  const args = Array.prototype.slice.call(arguments, 0, -1);
-  return args.every(Boolean);
-});
+import "./handlebars-helpers.js";
 
 /**
  * Layered template processor for the new template structure
@@ -181,7 +159,11 @@ export class LayeredTemplateProcessor {
   async processIntegrationLayer(layerPath) {
     // Process database integration
     if (this.config.database && this.config.database !== "none") {
-      const dbPath = join(layerPath, "database", this.config.orm);
+      const dbPath = join(
+        layerPath,
+        "database",
+        this.config.orm || this.config.database,
+      );
       if (existsSync(dbPath)) {
         const targetPath = this.config.addons.includes("turborepo")
           ? join(this.projectDir, "packages", "database")
@@ -417,6 +399,21 @@ export class LayeredTemplateProcessor {
       packageManager: this.config.packageManager || "npm",
       typescript: this.config.typescript || addons.includes("typescript"),
       useTypeScript: this.config.typescript || addons.includes("typescript"),
+      // Additional context variables for templates
+      backendPort: this.config.backendPort || 3001,
+      frontendPort: this.config.frontendPort || 3000,
+      useJWT: this.config.auth === "jwt",
+      usePrisma: this.config.orm === "prisma",
+      useMongoose: this.config.orm === "mongoose",
+      useRedis: addons.includes("redis"),
+      useTailwind: addons.includes("tailwind"),
+      useDocker: addons.includes("docker"),
+      useTesting:
+        addons.includes("testing") ||
+        addons.includes("jest") ||
+        addons.includes("vitest"),
+      useBiome: addons.includes("biome"),
+      useTurborepo: addons.includes("turborepo"),
     };
   }
 

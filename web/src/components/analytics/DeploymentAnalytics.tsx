@@ -25,7 +25,10 @@ export default function DeploymentAnalytics() {
   }, []);
 
   if (error) return <div className="text-sm text-red-600">{error}</div>;
-  if (!data) return <div className="text-sm text-muted-foreground">Loading deployments…</div>;
+  if (!data)
+    return (
+      <div className="text-sm text-muted-foreground">Loading deployments…</div>
+    );
 
   return (
     <div>
@@ -50,5 +53,3 @@ export default function DeploymentAnalytics() {
     </div>
   );
 }
-
-

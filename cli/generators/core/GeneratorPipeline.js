@@ -46,7 +46,7 @@ export class GeneratorPipeline {
    * @param {string} name - Stage name to remove
    */
   removeStage(name) {
-    this.stages = this.stages.filter(stage => stage.name !== name);
+    this.stages = this.stages.filter((stage) => stage.name !== name);
   }
 
   /**
@@ -55,7 +55,7 @@ export class GeneratorPipeline {
    * @returns {Object|null} - Stage object or null
    */
   getStage(name) {
-    return this.stages.find(stage => stage.name === name) || null;
+    return this.stages.find((stage) => stage.name === name) || null;
   }
 
   /**
@@ -80,8 +80,10 @@ export class GeneratorPipeline {
    * @returns {Promise<Object>} - Pipeline execution results
    */
   async execute(config) {
-    console.log(`🚀 Starting pipeline execution with ${this.stages.length} stages`);
-    
+    console.log(
+      `🚀 Starting pipeline execution with ${this.stages.length} stages`,
+    );
+
     this.results = {
       stages: [],
       overall: {
@@ -94,13 +96,15 @@ export class GeneratorPipeline {
     for (let i = 0; i < this.stages.length; i++) {
       const stage = this.stages[i];
       const stageResult = await this.executeStage(stage, config, i + 1);
-      
+
       this.results.stages.push(stageResult);
 
       // If stage failed and is required, stop pipeline
       if (!stageResult.success && stage.options.required) {
         this.results.overall.success = false;
-        this.results.overall.errors.push(`Stage '${stage.name}' failed: ${stageResult.error}`);
+        this.results.overall.errors.push(
+          `Stage '${stage.name}' failed: ${stageResult.error}`,
+        );
         break;
       }
 
@@ -110,7 +114,9 @@ export class GeneratorPipeline {
       }
     }
 
-    console.log(`✅ Pipeline execution completed. Success: ${this.results.overall.success}`);
+    console.log(
+      `✅ Pipeline execution completed. Success: ${this.results.overall.success}`,
+    );
     return this.results;
   }
 
@@ -123,18 +129,20 @@ export class GeneratorPipeline {
    */
   async executeStage(stage, config, stageNumber) {
     const startTime = Date.now();
-    
-    console.log(`[${stageNumber}/${this.stages.length}] 🔧 Executing stage: ${stage.name}`);
+
+    console.log(
+      `[${stageNumber}/${this.stages.length}] 🔧 Executing stage: ${stage.name}`,
+    );
 
     try {
       // Execute stage with timeout
       const result = await this.executeWithTimeout(
         stage.function(config, this.context),
-        stage.options.timeout
+        stage.options.timeout,
       );
 
       const duration = Date.now() - startTime;
-      
+
       console.log(`✅ Stage '${stage.name}' completed in ${duration}ms`);
 
       return {
@@ -146,8 +154,11 @@ export class GeneratorPipeline {
       };
     } catch (error) {
       const duration = Date.now() - startTime;
-      
-      console.error(`❌ Stage '${stage.name}' failed after ${duration}ms:`, error.message);
+
+      console.error(
+        `❌ Stage '${stage.name}' failed after ${duration}ms:`,
+        error.message,
+      );
 
       return {
         name: stage.name,
@@ -181,9 +192,16 @@ export class GeneratorPipeline {
    * @returns {Object} - Pipeline statistics
    */
   getStats() {
-    const totalDuration = this.results.stages.reduce((sum, stage) => sum + stage.duration, 0);
-    const successfulStages = this.results.stages.filter(stage => stage.success).length;
-    const failedStages = this.results.stages.filter(stage => !stage.success).length;
+    const totalDuration = this.results.stages.reduce(
+      (sum, stage) => sum + stage.duration,
+      0,
+    );
+    const successfulStages = this.results.stages.filter(
+      (stage) => stage.success,
+    ).length;
+    const failedStages = this.results.stages.filter(
+      (stage) => !stage.success,
+    ).length;
 
     return {
       totalStages: this.stages.length,
@@ -191,8 +209,14 @@ export class GeneratorPipeline {
       successfulStages,
       failedStages,
       totalDuration,
-      averageStageDuration: this.results.stages.length > 0 ? totalDuration / this.results.stages.length : 0,
-      successRate: this.results.stages.length > 0 ? (successfulStages / this.results.stages.length) * 100 : 0,
+      averageStageDuration:
+        this.results.stages.length > 0
+          ? totalDuration / this.results.stages.length
+          : 0,
+      successRate:
+        this.results.stages.length > 0
+          ? (successfulStages / this.results.stages.length) * 100
+          : 0,
     };
   }
 
@@ -264,7 +288,7 @@ export function createStandardPipeline() {
       // Configuration validation logic
       return { validated: true };
     },
-    { required: true, timeout: 5000 }
+    { required: true, timeout: 5000 },
   );
 
   // Stage 2: Create project structure
@@ -274,7 +298,7 @@ export function createStandardPipeline() {
       // Project structure creation logic
       return { structureCreated: true };
     },
-    { required: true, timeout: 10000 }
+    { required: true, timeout: 10000 },
   );
 
   // Stage 3: Process templates
@@ -284,7 +308,7 @@ export function createStandardPipeline() {
       // Template processing logic
       return { templatesProcessed: true };
     },
-    { required: true, timeout: 15000 }
+    { required: true, timeout: 15000 },
   );
 
   // Stage 4: Merge package.json files
@@ -294,7 +318,7 @@ export function createStandardPipeline() {
       // Package.json merging logic
       return { packagesMerged: true };
     },
-    { required: true, timeout: 5000 }
+    { required: true, timeout: 5000 },
   );
 
   // Stage 5: Install dependencies (optional)
@@ -307,7 +331,7 @@ export function createStandardPipeline() {
       }
       return { skipped: true };
     },
-    { required: false, timeout: 60000 }
+    { required: false, timeout: 60000 },
   );
 
   // Stage 6: Run health checks
@@ -317,7 +341,7 @@ export function createStandardPipeline() {
       // Health check logic
       return { healthChecksPassed: true };
     },
-    { required: false, timeout: 10000 }
+    { required: false, timeout: 10000 },
   );
 
   // Stage 7: Finalize
@@ -327,7 +351,7 @@ export function createStandardPipeline() {
       // Finalization logic
       return { finalized: true };
     },
-    { required: true, timeout: 5000 }
+    { required: true, timeout: 5000 },
   );
 
   return pipeline;

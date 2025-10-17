@@ -1,6 +1,14 @@
-import React from 'react'
-import { Badge } from './ui/badge'
-import { CheckCircle, Zap, Settings, Plus, Terminal, FileText, Code } from 'lucide-react'
+import React from "react";
+import { Badge } from "./ui/badge";
+import {
+  CheckCircle,
+  Zap,
+  Settings,
+  Plus,
+  Terminal,
+  FileText,
+  Code,
+} from "lucide-react";
 
 export default function ProjectInt() {
   return (
@@ -47,7 +55,7 @@ export default function ProjectInt() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="rounded border border-border p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-mono text-sm">
@@ -78,10 +86,18 @@ export default function ProjectInt() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <Badge variant="outline" className="text-xs">React + Express</Badge>
-              <Badge variant="outline" className="text-xs">TypeScript</Badge>
-              <Badge variant="outline" className="text-xs">Database</Badge>
-              <Badge variant="outline" className="text-xs">Auth</Badge>
+              <Badge variant="outline" className="text-xs">
+                React + Express
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                TypeScript
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                Database
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                Auth
+              </Badge>
             </div>
           </div>
 
@@ -110,7 +126,7 @@ export default function ProjectInt() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="rounded border border-border p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 font-mono text-sm">
@@ -141,10 +157,18 @@ export default function ProjectInt() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <Badge variant="outline" className="text-xs">JWT Auth</Badge>
-              <Badge variant="outline" className="text-xs">Prisma</Badge>
-              <Badge variant="outline" className="text-xs">Jest</Badge>
-              <Badge variant="outline" className="text-xs">Docker</Badge>
+              <Badge variant="outline" className="text-xs">
+                JWT Auth
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                Prisma
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                Jest
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                Docker
+              </Badge>
             </div>
           </div>
         </div>
@@ -276,7 +300,9 @@ export default function ProjectInt() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm">
                     <CheckCircle className="h-4 w-4 text-primary" />
-                    <span className="text-foreground">Try interactive mode</span>
+                    <span className="text-foreground">
+                      Try interactive mode
+                    </span>
                   </div>
                   <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                     LAUNCH
@@ -300,7 +326,9 @@ export default function ProjectInt() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm">
                     <Settings className="h-4 w-4 text-primary" />
-                    <span className="text-foreground">View all available options</span>
+                    <span className="text-foreground">
+                      View all available options
+                    </span>
                   </div>
                   <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
                     BROWSE
@@ -312,5 +340,5 @@ export default function ProjectInt() {
         </div>
       </section>
     </>
-  )
+  );
 }

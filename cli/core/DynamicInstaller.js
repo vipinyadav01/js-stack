@@ -3,7 +3,10 @@ import ora from "ora";
 import { execa } from "execa";
 import { UI } from "./CLICore.js";
 import { PACKAGE_MANAGER_OPTIONS } from "../types.js";
-import { DEPENDENCY_VERSIONS, resolveDependencies } from "../utils/validation.js";
+import {
+  DEPENDENCY_VERSIONS,
+  resolveDependencies,
+} from "../utils/validation.js";
 
 function getAddCommand(packageManager, packages, isDev = false) {
   const list = Array.isArray(packages) ? packages : Object.keys(packages || {});
@@ -33,8 +36,12 @@ export class DynamicInstaller {
     try {
       const { dependencies, devDependencies } = resolveDependencies(config);
 
-      const depList = Object.entries(dependencies).map(([name, version]) => `${name}@${version}`);
-      const devDepList = Object.entries(devDependencies).map(([name, version]) => `${name}@${version}`);
+      const depList = Object.entries(dependencies).map(
+        ([name, version]) => `${name}@${version}`,
+      );
+      const devDepList = Object.entries(devDependencies).map(
+        ([name, version]) => `${name}@${version}`,
+      );
 
       spinner.succeed("Resolved base dependencies");
 
@@ -61,7 +68,9 @@ export class DynamicInstaller {
     try {
       const [bin, ...args] = cmd.split(" ");
       await execa(bin, args, { cwd: this.projectDir, stdio: "ignore" });
-      spinner.succeed(`Installed ${packages.length} ${isDev ? "dev " : ""}packages`);
+      spinner.succeed(
+        `Installed ${packages.length} ${isDev ? "dev " : ""}packages`,
+      );
       return true;
     } catch (error) {
       spinner.fail("Package installation failed");

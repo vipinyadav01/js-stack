@@ -9,7 +9,9 @@ export class EntryPointPlugin extends GeneratorPlugin {
     this.registerHook(HOOK_TYPES.POST_GENERATE, this.postGenerate);
   }
 
-  canHandle() { return true; }
+  canHandle() {
+    return true;
+  }
 
   async execute() {
     return { success: true };
@@ -21,7 +23,9 @@ export class EntryPointPlugin extends GeneratorPlugin {
 
     const exists = await fs.pathExists(indexPath);
     if (!exists) {
-      const content = this.generateIndexContent(context.config || context.context?.config);
+      const content = this.generateIndexContent(
+        context.config || context.context?.config,
+      );
       await fs.writeFile(indexPath, content);
     }
 

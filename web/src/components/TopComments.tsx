@@ -6,11 +6,14 @@ import Image from "next/image";
 import { fetchTwitterMentions, type TwitterTweet } from "@/lib/sponsors-api";
 
 interface TopCommentsProps {
-  repository?: string; 
+  repository?: string;
   limit?: number;
 }
 
-export default function TopComments({ repository = "js-stack", limit = 10 }: TopCommentsProps) {
+export default function TopComments({
+  repository = "js-stack",
+  limit = 10,
+}: TopCommentsProps) {
   const [tweets, setTweets] = useState<TwitterTweet[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,11 +23,16 @@ export default function TopComments({ repository = "js-stack", limit = 10 }: Top
         const { tweets } = await fetchTwitterMentions(repository, limit);
         // Get top tweets by engagement (likes + retweets)
         const topTweets = tweets
-          .sort((a, b) => (b.engagement.likes + b.engagement.retweets) - (a.engagement.likes + a.engagement.retweets))
+          .sort(
+            (a, b) =>
+              b.engagement.likes +
+              b.engagement.retweets -
+              (a.engagement.likes + a.engagement.retweets),
+          )
           .slice(0, limit);
         setTweets(topTweets);
       } catch (error) {
-        console.error('Error loading tweets:', error);
+        console.error("Error loading tweets:", error);
         // Set empty array when there's an error
         setTweets([]);
       } finally {
@@ -48,7 +56,9 @@ export default function TopComments({ repository = "js-stack", limit = 10 }: Top
           </div>
         </div>
         <div className="flex items-center justify-center py-8">
-          <div className="text-muted-foreground text-sm">Loading comments...</div>
+          <div className="text-muted-foreground text-sm">
+            Loading comments...
+          </div>
         </div>
       </div>
     );
@@ -71,9 +81,12 @@ export default function TopComments({ repository = "js-stack", limit = 10 }: Top
           <div className="mb-4 flex items-center justify-center">
             <MessageCircle className="h-8 w-8 text-muted-foreground/50" />
           </div>
-          <div className="text-muted-foreground text-sm mb-2">No mentions found</div>
+          <div className="text-muted-foreground text-sm mb-2">
+            No mentions found
+          </div>
           <div className="text-xs text-muted-foreground mb-4">
-            No recent mentions found for <span className="font-mono text-primary">{repository}</span>
+            No recent mentions found for{" "}
+            <span className="font-mono text-primary">{repository}</span>
           </div>
           <div className="text-xs text-muted-foreground">
             Be the first to share your experience on Twitter!

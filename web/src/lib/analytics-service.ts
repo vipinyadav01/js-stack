@@ -28,7 +28,11 @@ export type PackageManagerStat = {
 export type SystemMetrics = {
   os: { name: string; share: number }[];
   versions: { os: string; version: string; share: number }[];
-  hardware: { cpuCoresP50: number; ramGBp50: number; storageUsedPctP50: number };
+  hardware: {
+    cpuCoresP50: number;
+    ramGBp50: number;
+    storageUsedPctP50: number;
+  };
 };
 
 export type DeploymentAnalytics = {
@@ -53,14 +57,21 @@ const days = (n: number) => {
   for (let i = n - 1; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(now.getDate() - i);
-    out.push({ t: d.toISOString().slice(0, 10), value: Math.round(50 + Math.random() * 50) });
+    out.push({
+      t: d.toISOString().slice(0, 10),
+      value: Math.round(50 + Math.random() * 50),
+    });
   }
   return out;
 };
 
 export async function getKPIs(): Promise<KPI[]> {
   return [
-    { label: "Stack adoption", value: "67%", help: "Share of users with preferred stacks" },
+    {
+      label: "Stack adoption",
+      value: "67%",
+      help: "Share of users with preferred stacks",
+    },
     { label: "Avg users/stack", value: 124 },
     { label: "System compatibility", value: "95%" },
     { label: "PM efficiency", value: "A-" },
@@ -81,7 +92,9 @@ export async function getStackUsage(): Promise<StackUsageItem[]> {
   ];
 }
 
-export async function getStackTrends(range: "7d" | "30d" | "90d" = "30d"): Promise<{ range: string; points: TrendPoint[] }> {
+export async function getStackTrends(
+  range: "7d" | "30d" | "90d" = "30d",
+): Promise<{ range: string; points: TrendPoint[] }> {
   const n = range === "7d" ? 7 : range === "90d" ? 90 : 30;
   return { range, points: days(n) };
 }
@@ -111,10 +124,36 @@ export async function getSystemMetrics(): Promise<SystemMetrics> {
 
 export async function getPackageManagerStats(): Promise<PackageManagerStat[]> {
   return [
-    { name: "npm", share: 48, versions: [{ version: "10", share: 60 }, { version: "9", share: 35 }], perf: { installMsP50: 8200, resolveMsP50: 1200 } },
-    { name: "pnpm", share: 32, versions: [{ version: "9", share: 70 }, { version: "8", share: 25 }], perf: { installMsP50: 5400, resolveMsP50: 900 } },
-    { name: "yarn", share: 18, versions: [{ version: "1", share: 85 }], perf: { installMsP50: 7400, resolveMsP50: 1100 } },
-    { name: "bun", share: 2, versions: [{ version: "1", share: 100 }], perf: { installMsP50: 3100, resolveMsP50: 700 } },
+    {
+      name: "npm",
+      share: 48,
+      versions: [
+        { version: "10", share: 60 },
+        { version: "9", share: 35 },
+      ],
+      perf: { installMsP50: 8200, resolveMsP50: 1200 },
+    },
+    {
+      name: "pnpm",
+      share: 32,
+      versions: [
+        { version: "9", share: 70 },
+        { version: "8", share: 25 },
+      ],
+      perf: { installMsP50: 5400, resolveMsP50: 900 },
+    },
+    {
+      name: "yarn",
+      share: 18,
+      versions: [{ version: "1", share: 85 }],
+      perf: { installMsP50: 7400, resolveMsP50: 1100 },
+    },
+    {
+      name: "bun",
+      share: 2,
+      versions: [{ version: "1", share: 100 }],
+      perf: { installMsP50: 3100, resolveMsP50: 700 },
+    },
   ];
 }
 
@@ -143,7 +182,9 @@ export async function getPerformanceMetrics(): Promise<PerformanceMetrics> {
   };
 }
 
-export async function getGeoMetrics(): Promise<{ region: string; value: number }[]> {
+export async function getGeoMetrics(): Promise<
+  { region: string; value: number }[]
+> {
   return [
     { region: "US", value: 320 },
     { region: "DE", value: 140 },
@@ -152,5 +193,3 @@ export async function getGeoMetrics(): Promise<{ region: string; value: number }
     { region: "JP", value: 90 },
   ];
 }
-
-

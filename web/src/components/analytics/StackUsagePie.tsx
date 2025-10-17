@@ -45,25 +45,41 @@ export default function StackUsagePie() {
     });
   }, [items]);
 
-  const colors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4", "#EC4899", "#22D3EE"];
+  const colors = [
+    "#3B82F6",
+    "#10B981",
+    "#F59E0B",
+    "#EF4444",
+    "#8B5CF6",
+    "#06B6D4",
+    "#EC4899",
+    "#22D3EE",
+  ];
   const gradient = segments
     .map((s, i) => `${colors[i % colors.length]} ${s.from}% ${s.to}%`)
     .join(", ");
 
   if (error) return <div className="text-sm text-red-600">{error}</div>;
-  if (!items) return <div className="text-sm text-muted-foreground">Loading stack usage…</div>;
+  if (!items)
+    return (
+      <div className="text-sm text-muted-foreground">Loading stack usage…</div>
+    );
 
   return (
     <motion.div variants={containerVariants}>
       <div className="mb-4 flex items-center justify-between border-b pb-3">
         <div className="flex items-center gap-2">
           <PieChart className="h-4 w-4 text-primary" />
-          <span className="font-semibold text-sm">Stack Usage Distribution</span>
+          <span className="font-semibold text-sm">
+            Stack Usage Distribution
+          </span>
         </div>
-        <span className="text-xs text-muted-foreground">Technology breakdown</span>
+        <span className="text-xs text-muted-foreground">
+          Technology breakdown
+        </span>
       </div>
       <div className="flex items-center gap-6">
-        <motion.div 
+        <motion.div
           className="relative h-48 w-48 rounded-full border-4 border-border shadow-lg"
           style={{ background: `conic-gradient(${gradient})` }}
           initial={{ scale: 0.8, opacity: 0 }}
@@ -73,30 +89,34 @@ export default function StackUsagePie() {
           <div className="absolute inset-4 flex items-center justify-center rounded-full bg-background">
             <div className="text-center">
               <Circle className="h-6 w-6 text-primary mx-auto mb-1" />
-              <div className="text-xs font-semibold text-muted-foreground">Total</div>
+              <div className="text-xs font-semibold text-muted-foreground">
+                Total
+              </div>
             </div>
           </div>
         </motion.div>
         <div className="flex-1 space-y-3">
           {items.slice(0, 8).map((it, i) => (
-            <motion.div 
-              key={it.stack} 
+            <motion.div
+              key={it.stack}
               className="group flex items-center justify-between rounded-lg border border-border bg-card/50 p-3 transition-all duration-300 hover:border-primary/20 hover:shadow-md"
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-center gap-3">
-                <div 
-                  className="h-3 w-3 rounded-full shadow-sm" 
-                  style={{ backgroundColor: colors[i % colors.length] }} 
+                <div
+                  className="h-3 w-3 rounded-full shadow-sm"
+                  style={{ backgroundColor: colors[i % colors.length] }}
                 />
                 <span className="font-medium text-sm">{it.stack}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-primary">{it.percentage}%</span>
+                <span className="text-sm font-semibold text-primary">
+                  {it.percentage}%
+                </span>
                 <div className="h-2 w-16 rounded-full bg-muted overflow-hidden">
-                  <motion.div 
+                  <motion.div
                     className="h-full rounded-full"
                     style={{ backgroundColor: colors[i % colors.length] }}
                     initial={{ width: 0 }}
@@ -112,5 +132,3 @@ export default function StackUsagePie() {
     </motion.div>
   );
 }
-
-

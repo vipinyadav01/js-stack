@@ -101,7 +101,10 @@ export class BaseGenerator {
       await this.executePreGenerationHooks(config);
 
       // Execute plugins
-      const pluginResults = await this.pluginManager.executePlugins(config, this.context);
+      const pluginResults = await this.pluginManager.executePlugins(
+        config,
+        this.context,
+      );
 
       // Execute post-generation hooks
       await this.executePostGenerationHooks(config, pluginResults);
@@ -162,7 +165,10 @@ export class BaseGenerator {
       successCount: this.results.success.length,
       failureCount: this.results.failed.length,
       warningCount: this.results.warnings.length,
-      successRate: this.results.success.length / (this.results.success.length + this.results.failed.length) * 100,
+      successRate:
+        (this.results.success.length /
+          (this.results.success.length + this.results.failed.length)) *
+        100,
       pluginStats: this.pluginManager.getStats(),
     };
   }

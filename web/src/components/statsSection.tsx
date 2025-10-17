@@ -1,18 +1,24 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { 
-  Activity, 
-  Download, 
-  GitBranch, 
-  TrendingUp, 
+import React, { useState, useEffect } from "react";
+import {
+  Activity,
+  Download,
+  GitBranch,
+  TrendingUp,
   Code2,
   Users2,
   AlertCircle,
-  RefreshCw
-} from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+  RefreshCw,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface PackageStats {
   downloads: {
@@ -48,21 +54,21 @@ interface StatCardProps {
   loading?: boolean;
 }
 
-const StatCard = ({ 
-  icon: Icon, 
-  title, 
-  value, 
-  subtitle, 
-  trend, 
-  href, 
-  loading = false 
+const StatCard = ({
+  icon: Icon,
+  title,
+  value,
+  subtitle,
+  trend,
+  href,
+  loading = false,
 }: StatCardProps) => {
   const CardWrapper = ({ children }: { children: React.ReactNode }) => {
     if (href) {
       return (
-        <a 
-          href={href} 
-          target="_blank" 
+        <a
+          href={href}
+          target="_blank"
           rel="noopener noreferrer"
           className="block group transition-all duration-200 hover:scale-[1.02]"
         >
@@ -91,8 +97,10 @@ const StatCard = ({
             <div className="text-2xl font-bold text-foreground">
               {loading ? (
                 <div className="w-16 h-7 bg-muted rounded animate-pulse" />
+              ) : typeof value === "number" ? (
+                value.toLocaleString()
               ) : (
-                typeof value === 'number' ? value.toLocaleString() : value
+                value
               )}
             </div>
             {trend && !loading && (
@@ -103,9 +111,7 @@ const StatCard = ({
             )}
           </div>
           {subtitle && (
-            <p className="text-xs text-muted-foreground">
-              {subtitle}
-            </p>
+            <p className="text-xs text-muted-foreground">{subtitle}</p>
           )}
         </CardContent>
       </Card>
@@ -115,7 +121,7 @@ const StatCard = ({
 
 const useRealPackageStats = (packageName: string, githubRepo: string) => {
   // Helper to sanitize githubRepo input (removes accidental encoding)
-  const getGithubRepoPath = (repo: string) => repo.replace(/%2F/g, '/');
+  const getGithubRepoPath = (repo: string) => repo.replace(/%2F/g, "/");
 
   // Example: If you fetch releases or contributors, always use sanitized path
   // Usage:
@@ -126,77 +132,82 @@ const useRealPackageStats = (packageName: string, githubRepo: string) => {
   const [stats, setStats] = useState<PackageStats>({
     downloads: { total: 0, weekly: 0, monthly: 0, daily: 0 },
     github: { stars: 0, forks: 0, issues: 0, watchers: 0 },
-    package: { 
-      version: '', 
-      license: '', 
-      dependencies: 0, 
-      size: '', 
-      lastUpdate: '' 
+    package: {
+      version: "",
+      license: "",
+      dependencies: 0,
+      size: "",
+      lastUpdate: "",
     },
     loading: true,
-    error: null
+    error: null,
   });
 
   useEffect(() => {
     const fetchStats = async () => {
-      setStats(prev => ({ ...prev, loading: true, error: null }));
-      
+      setStats((prev) => ({ ...prev, loading: true, error: null }));
+
       try {
         // Fetch NPM download statistics
         const downloadsResponse = await fetch(
-          `https://api.npmjs.org/downloads/range/last-year/${packageName}`
+          `https://api.npmjs.org/downloads/range/last-year/${packageName}`,
         );
-        
+
         let downloadData = { total: 0, weekly: 0, monthly: 0, daily: 0 };
         if (downloadsResponse.ok) {
           const downloadsJson = await downloadsResponse.json();
           if (downloadsJson.downloads) {
             const totalDownloads = downloadsJson.downloads.reduce(
-              (sum: number, day: DownloadDay) => sum + day.downloads, 0
+              (sum: number, day: DownloadDay) => sum + day.downloads,
+              0,
             );
             const last7Days = downloadsJson.downloads.slice(-7);
             const last30Days = downloadsJson.downloads.slice(-30);
             const weeklyDownloads = last7Days.reduce(
-              (sum: number, day: DownloadDay) => sum + day.downloads, 0
+              (sum: number, day: DownloadDay) => sum + day.downloads,
+              0,
             );
             const monthlyDownloads = last30Days.reduce(
-              (sum: number, day: DownloadDay) => sum + day.downloads, 0
+              (sum: number, day: DownloadDay) => sum + day.downloads,
+              0,
             );
             const dailyAverage = Math.round(weeklyDownloads / 7);
-            
+
             downloadData = {
               total: totalDownloads,
               weekly: weeklyDownloads,
               monthly: monthlyDownloads,
-              daily: dailyAverage
+              daily: dailyAverage,
             };
           }
         }
 
         // Fetch package information
-        const packageResponse = await fetch(`https://registry.npmjs.org/${packageName}`);
+        const packageResponse = await fetch(
+          `https://registry.npmjs.org/${packageName}`,
+        );
         let packageData = {
-          version: 'N/A',
-          license: 'N/A',
+          version: "N/A",
+          license: "N/A",
           dependencies: 0,
-          size: 'N/A',
-          lastUpdate: 'N/A'
+          size: "N/A",
+          lastUpdate: "N/A",
         };
-        
+
         if (packageResponse.ok) {
           const packageJson = await packageResponse.json();
-          const latestVersion = packageJson['dist-tags']?.latest;
+          const latestVersion = packageJson["dist-tags"]?.latest;
           const versionInfo = packageJson.versions?.[latestVersion];
-          
+
           if (versionInfo) {
             packageData = {
-              version: latestVersion || 'N/A',
-              license: versionInfo.license || 'N/A',
+              version: latestVersion || "N/A",
+              license: versionInfo.license || "N/A",
               dependencies: Object.keys(versionInfo.dependencies || {}).length,
-              size: 'N/A', // Would need bundlephobia API for accurate size
-              lastUpdate: packageJson.time?.[latestVersion] 
+              size: "N/A", // Would need bundlephobia API for accurate size
+              lastUpdate: packageJson.time?.[latestVersion]
                 ? new Date(packageJson.time[latestVersion]).toLocaleDateString()
-                : 'N/A'
+                : "N/A",
             };
           }
         }
@@ -205,26 +216,31 @@ const useRealPackageStats = (packageName: string, githubRepo: string) => {
         let githubData = { stars: 0, forks: 0, issues: 0, watchers: 0 };
         try {
           const repoPath = getGithubRepoPath(githubRepo);
-          const githubResponse = await fetch(`https://api.github.com/repos/${repoPath}`);
+          const githubResponse = await fetch(
+            `https://api.github.com/repos/${repoPath}`,
+          );
           // If you need releases or contributors, always use repoPath:
           // const releasesResponse = await fetch(`https://api.github.com/repos/${repoPath}/releases?per_page=5`);
           // const contributorsResponse = await fetch(`https://api.github.com/repos/${repoPath}/contributors?per_page=10`);
           if (!githubResponse.ok) {
-            throw new Error(`GitHub API error: ${githubResponse.status} ${githubResponse.statusText}`);
+            throw new Error(
+              `GitHub API error: ${githubResponse.status} ${githubResponse.statusText}`,
+            );
           }
           const githubJson = await githubResponse.json();
           githubData = {
             stars: githubJson.stargazers_count || 0,
             forks: githubJson.forks_count || 0,
             issues: githubJson.open_issues_count || 0,
-            watchers: githubJson.watchers_count || 0
+            watchers: githubJson.watchers_count || 0,
           };
         } catch (err) {
-          console.error('Error fetching GitHub data:', err);
-          setStats(prev => ({
+          console.error("Error fetching GitHub data:", err);
+          setStats((prev) => ({
             ...prev,
             loading: false,
-            error: 'Failed to fetch GitHub statistics. This may be due to rate limits, CORS, or network issues.'
+            error:
+              "Failed to fetch GitHub statistics. This may be due to rate limits, CORS, or network issues.",
           }));
         }
 
@@ -233,14 +249,14 @@ const useRealPackageStats = (packageName: string, githubRepo: string) => {
           github: githubData,
           package: packageData,
           loading: false,
-          error: null
+          error: null,
         });
       } catch (error) {
-        console.error('Error fetching stats:', error);
-        setStats(prev => ({
+        console.error("Error fetching stats:", error);
+        setStats((prev) => ({
           ...prev,
           loading: false,
-          error: 'Failed to fetch package statistics'
+          error: "Failed to fetch package statistics",
         }));
       }
     };
@@ -250,13 +266,16 @@ const useRealPackageStats = (packageName: string, githubRepo: string) => {
     }
   }, [packageName, githubRepo]);
 
-  return { stats, refetch: () => setStats(prev => ({ ...prev, loading: true })) };
+  return {
+    stats,
+    refetch: () => setStats((prev) => ({ ...prev, loading: true })),
+  };
 };
 
-const StatsSection = ({ 
+const StatsSection = ({
   packageName = "create-js-stack",
   githubRepo = "vipinyadav01/js-stack",
-  npmUrl = "https://www.npmjs.com/package/create-js-stack"
+  npmUrl = "https://www.npmjs.com/package/create-js-stack",
 }) => {
   const { stats, refetch } = useRealPackageStats(packageName, githubRepo);
 
@@ -268,16 +287,19 @@ const StatsSection = ({
           Package Statistics
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-          Real-time metrics and insights for <span className="font-semibold text-foreground">{packageName}</span>
+          Real-time metrics and insights for{" "}
+          <span className="font-semibold text-foreground">{packageName}</span>
         </p>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           onClick={refetch}
           disabled={stats.loading}
           className="gap-2"
         >
-          <RefreshCw className={`w-4 h-4 ${stats.loading ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`w-4 h-4 ${stats.loading ? "animate-spin" : ""}`}
+          />
           Refresh Data
         </Button>
       </div>
@@ -304,7 +326,7 @@ const StatsSection = ({
           href={npmUrl}
           loading={stats.loading}
         />
-        
+
         <StatCard
           icon={GitBranch}
           title="GitHub Stars"
@@ -313,7 +335,7 @@ const StatsSection = ({
           href={`https://github.com/${githubRepo}`}
           loading={stats.loading}
         />
-        
+
         <StatCard
           icon={Users2}
           title="GitHub Forks"
@@ -322,7 +344,7 @@ const StatsSection = ({
           href={`https://github.com/${githubRepo}/network/members`}
           loading={stats.loading}
         />
-        
+
         <StatCard
           icon={Activity}
           title="Open Issues"
@@ -347,27 +369,35 @@ const StatsSection = ({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b">
-              <span className="text-sm text-muted-foreground">Daily Average</span>
+              <span className="text-sm text-muted-foreground">
+                Daily Average
+              </span>
               <Badge variant="outline" className="font-mono">
-                {stats.loading ? '—' : stats.downloads.daily.toLocaleString()}
+                {stats.loading ? "—" : stats.downloads.daily.toLocaleString()}
               </Badge>
             </div>
             <div className="flex justify-between items-center py-2 border-b">
-              <span className="text-sm text-muted-foreground">Weekly Total</span>
+              <span className="text-sm text-muted-foreground">
+                Weekly Total
+              </span>
               <Badge variant="outline" className="font-mono">
-                {stats.loading ? '—' : stats.downloads.weekly.toLocaleString()}
+                {stats.loading ? "—" : stats.downloads.weekly.toLocaleString()}
               </Badge>
             </div>
             <div className="flex justify-between items-center py-2 border-b">
-              <span className="text-sm text-muted-foreground">Monthly Total</span>
+              <span className="text-sm text-muted-foreground">
+                Monthly Total
+              </span>
               <Badge variant="outline" className="font-mono">
-                {stats.loading ? '—' : stats.downloads.monthly.toLocaleString()}
+                {stats.loading ? "—" : stats.downloads.monthly.toLocaleString()}
               </Badge>
             </div>
             <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground">Yearly Total</span>
+              <span className="text-sm text-muted-foreground">
+                Yearly Total
+              </span>
               <Badge variant="secondary" className="font-mono">
-                {stats.loading ? '—' : stats.downloads.total.toLocaleString()}
+                {stats.loading ? "—" : stats.downloads.total.toLocaleString()}
               </Badge>
             </div>
           </CardContent>
@@ -385,27 +415,33 @@ const StatsSection = ({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b">
-              <span className="text-sm text-muted-foreground">Current Version</span>
+              <span className="text-sm text-muted-foreground">
+                Current Version
+              </span>
               <Badge variant="outline" className="font-mono">
-                {stats.loading ? '—' : stats.package.version}
+                {stats.loading ? "—" : stats.package.version}
               </Badge>
             </div>
             <div className="flex justify-between items-center py-2 border-b">
-              <span className="text-sm text-muted-foreground">Dependencies</span>
+              <span className="text-sm text-muted-foreground">
+                Dependencies
+              </span>
               <Badge variant="outline" className="font-mono">
-                {stats.loading ? '—' : stats.package.dependencies}
+                {stats.loading ? "—" : stats.package.dependencies}
               </Badge>
             </div>
             <div className="flex justify-between items-center py-2 border-b">
               <span className="text-sm text-muted-foreground">License</span>
               <Badge variant="secondary">
-                {stats.loading ? '—' : stats.package.license}
+                {stats.loading ? "—" : stats.package.license}
               </Badge>
             </div>
             <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-muted-foreground">Last Updated</span>
+              <span className="text-sm text-muted-foreground">
+                Last Updated
+              </span>
               <Badge variant="outline" className="font-mono text-xs">
-                {stats.loading ? '—' : stats.package.lastUpdate}
+                {stats.loading ? "—" : stats.package.lastUpdate}
               </Badge>
             </div>
           </CardContent>
@@ -430,13 +466,21 @@ const StatsSection = ({
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>
-                <a href={`https://github.com/${githubRepo}`} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={`https://github.com/${githubRepo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <GitBranch className="w-4 h-4 mr-2" />
                   View Repository
                 </a>
               </Button>
               <Button variant="outline" size="sm" asChild>
-                <a href={`https://github.com/${githubRepo}/issues`} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={`https://github.com/${githubRepo}/issues`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Activity className="w-4 h-4 mr-2" />
                   Report Issue
                 </a>

@@ -13,7 +13,7 @@ export class PackageJsonPlugin extends GeneratorPlugin {
     super("PackageJsonPlugin", "1.0.0");
     this.priority = 10; // High priority - runs early
     this.dependencies = [];
-    
+
     this.registerHook(HOOK_TYPES.PRE_GENERATE, this.preGenerate);
     this.registerHook(HOOK_TYPES.MERGE_PACKAGE_JSON, this.mergePackageJson);
     this.registerHook(HOOK_TYPES.POST_GENERATE, this.postGenerate);
@@ -35,7 +35,7 @@ export class PackageJsonPlugin extends GeneratorPlugin {
    */
   async preGenerate(context) {
     console.log("📦 PackageJsonPlugin: Preparing package.json generation");
-    
+
     // Initialize package.json structure
     context.packageJson = {
       name: context.config.projectName,
@@ -69,10 +69,16 @@ export class PackageJsonPlugin extends GeneratorPlugin {
       const packageJson = await this.createBasePackageJson(config);
 
       // Add technology-specific dependencies
-      const enhancedPackageJson = await this.addTechnologyDependencies(packageJson, config);
+      const enhancedPackageJson = await this.addTechnologyDependencies(
+        packageJson,
+        config,
+      );
 
       // Add scripts
-      const finalPackageJson = await this.addScripts(enhancedPackageJson, config);
+      const finalPackageJson = await this.addScripts(
+        enhancedPackageJson,
+        config,
+      );
 
       // Write package.json
       await this.writePackageJson(finalPackageJson, context.projectDir);
@@ -128,43 +134,83 @@ export class PackageJsonPlugin extends GeneratorPlugin {
     // Add backend dependencies
     if (config.backend !== TECHNOLOGY_OPTIONS.BACKEND.NONE) {
       const backendDeps = this.getBackendDependencies(config);
-      enhanced.dependencies = { ...enhanced.dependencies, ...backendDeps.dependencies };
-      enhanced.devDependencies = { ...enhanced.devDependencies, ...backendDeps.devDependencies };
+      enhanced.dependencies = {
+        ...enhanced.dependencies,
+        ...backendDeps.dependencies,
+      };
+      enhanced.devDependencies = {
+        ...enhanced.devDependencies,
+        ...backendDeps.devDependencies,
+      };
     }
 
     // Add database dependencies
     if (config.database !== TECHNOLOGY_OPTIONS.DATABASE.NONE) {
       const dbDeps = this.getDatabaseDependencies(config);
-      enhanced.dependencies = { ...enhanced.dependencies, ...dbDeps.dependencies };
-      enhanced.devDependencies = { ...enhanced.devDependencies, ...dbDeps.devDependencies };
+      enhanced.dependencies = {
+        ...enhanced.dependencies,
+        ...dbDeps.dependencies,
+      };
+      enhanced.devDependencies = {
+        ...enhanced.devDependencies,
+        ...dbDeps.devDependencies,
+      };
     }
 
     // Add ORM dependencies
     if (config.orm !== TECHNOLOGY_OPTIONS.ORM.NONE) {
       const ormDeps = this.getORMDependencies(config);
-      enhanced.dependencies = { ...enhanced.dependencies, ...ormDeps.dependencies };
-      enhanced.devDependencies = { ...enhanced.devDependencies, ...ormDeps.devDependencies };
+      enhanced.dependencies = {
+        ...enhanced.dependencies,
+        ...ormDeps.dependencies,
+      };
+      enhanced.devDependencies = {
+        ...enhanced.devDependencies,
+        ...ormDeps.devDependencies,
+      };
     }
 
     // Add frontend dependencies
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)) {
+    if (
+      config.frontend &&
+      config.frontend.length > 0 &&
+      !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)
+    ) {
       const frontendDeps = this.getFrontendDependencies(config);
-      enhanced.dependencies = { ...enhanced.dependencies, ...frontendDeps.dependencies };
-      enhanced.devDependencies = { ...enhanced.devDependencies, ...frontendDeps.devDependencies };
+      enhanced.dependencies = {
+        ...enhanced.dependencies,
+        ...frontendDeps.dependencies,
+      };
+      enhanced.devDependencies = {
+        ...enhanced.devDependencies,
+        ...frontendDeps.devDependencies,
+      };
     }
 
     // Add auth dependencies
     if (config.auth !== TECHNOLOGY_OPTIONS.AUTH.NONE) {
       const authDeps = this.getAuthDependencies(config);
-      enhanced.dependencies = { ...enhanced.dependencies, ...authDeps.dependencies };
-      enhanced.devDependencies = { ...enhanced.devDependencies, ...authDeps.devDependencies };
+      enhanced.dependencies = {
+        ...enhanced.dependencies,
+        ...authDeps.dependencies,
+      };
+      enhanced.devDependencies = {
+        ...enhanced.devDependencies,
+        ...authDeps.devDependencies,
+      };
     }
 
     // Add addon dependencies
     if (config.addons && config.addons.length > 0) {
       const addonDeps = this.getAddonDependencies(config);
-      enhanced.dependencies = { ...enhanced.dependencies, ...addonDeps.dependencies };
-      enhanced.devDependencies = { ...enhanced.devDependencies, ...addonDeps.devDependencies };
+      enhanced.dependencies = {
+        ...enhanced.dependencies,
+        ...addonDeps.dependencies,
+      };
+      enhanced.devDependencies = {
+        ...enhanced.devDependencies,
+        ...addonDeps.devDependencies,
+      };
     }
 
     return enhanced;
@@ -178,7 +224,7 @@ export class PackageJsonPlugin extends GeneratorPlugin {
    */
   async addScripts(packageJson, config) {
     const enhanced = { ...packageJson };
-    
+
     // Base scripts
     enhanced.scripts = {
       ...enhanced.scripts,
@@ -197,7 +243,11 @@ export class PackageJsonPlugin extends GeneratorPlugin {
     }
 
     // Frontend-specific scripts
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)) {
+    if (
+      config.frontend &&
+      config.frontend.length > 0 &&
+      !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)
+    ) {
       enhanced.scripts = {
         ...enhanced.scripts,
         ...this.getFrontendScripts(config),
@@ -459,15 +509,19 @@ export class PackageJsonPlugin extends GeneratorPlugin {
    */
   generateDescription(config) {
     const parts = [];
-    
+
     if (config.backend !== TECHNOLOGY_OPTIONS.BACKEND.NONE) {
       parts.push(config.backend);
     }
-    
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)) {
+
+    if (
+      config.frontend &&
+      config.frontend.length > 0 &&
+      !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)
+    ) {
       parts.push(config.frontend.join(", "));
     }
-    
+
     return `A ${parts.join(" + ")} application`;
   }
 
@@ -478,23 +532,27 @@ export class PackageJsonPlugin extends GeneratorPlugin {
    */
   generateKeywords(config) {
     const keywords = ["javascript", "nodejs"];
-    
+
     if (config.backend !== TECHNOLOGY_OPTIONS.BACKEND.NONE) {
       keywords.push(config.backend);
     }
-    
-    if (config.frontend && config.frontend.length > 0 && !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)) {
+
+    if (
+      config.frontend &&
+      config.frontend.length > 0 &&
+      !config.frontend.includes(TECHNOLOGY_OPTIONS.FRONTEND.NONE)
+    ) {
       keywords.push(...config.frontend);
     }
-    
+
     if (config.database !== TECHNOLOGY_OPTIONS.DATABASE.NONE) {
       keywords.push(config.database);
     }
-    
+
     if (config.typescript) {
       keywords.push("typescript");
     }
-    
+
     return keywords;
   }
 

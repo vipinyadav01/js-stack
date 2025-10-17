@@ -10,7 +10,10 @@ interface TopSponsorsProps {
   limit?: number; // Number of top sponsors to show
 }
 
-export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }: TopSponsorsProps) {
+export default function TopSponsors({
+  repository = "vipinyadav01",
+  limit = 10,
+}: TopSponsorsProps) {
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,9 +21,11 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
     const loadSponsors = async () => {
       try {
         // Fetch sponsors from the specified repository
-        const response = await fetch(`/api/sponsors?username=${repository}&analytics=false`);
+        const response = await fetch(
+          `/api/sponsors?username=${repository}&analytics=false`,
+        );
         const data = await response.json();
-        
+
         if (response.ok && data.sponsors) {
           // Get top sponsors by amount from the specified repository
           const topSponsors = data.sponsors
@@ -29,17 +34,18 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
             .slice(0, limit);
           setSponsors(topSponsors);
         } else {
-          throw new Error('Failed to fetch sponsors');
+          throw new Error("Failed to fetch sponsors");
         }
       } catch (error) {
-        console.error('Error loading sponsors:', error);
+        console.error("Error loading sponsors:", error);
         // For testing: Add mock data when GitHub Sponsors is not set up
         if (repository === "vipinyadav01") {
           const mockSponsors: Sponsor[] = [
             {
               id: "mock-1",
               name: "Community Supporter",
-              avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=supporter1",
+              avatar:
+                "https://api.dicebear.com/7.x/avataaars/svg?seed=supporter1",
               amount: 25,
               tier: "Bronze",
               duration: "1 month",
@@ -47,8 +53,8 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
               startDate: "2025-01-01",
               website: "https://example.com",
               github: "https://github.com/supporter1",
-              isActive: true
-            }
+              isActive: true,
+            },
           ];
           setSponsors(mockSponsors);
         } else {
@@ -64,14 +70,14 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
 
   const getTierColor = (tier: string) => {
     switch (tier.toLowerCase()) {
-      case 'gold':
-        return 'bg-yellow-500/20 text-yellow-600 border-yellow-500/30';
-      case 'silver':
-        return 'bg-gray-500/20 text-gray-600 border-gray-500/30';
-      case 'bronze':
-        return 'bg-orange-500/20 text-orange-600 border-orange-500/30';
+      case "gold":
+        return "bg-yellow-500/20 text-yellow-600 border-yellow-500/30";
+      case "silver":
+        return "bg-gray-500/20 text-gray-600 border-gray-500/30";
+      case "bronze":
+        return "bg-orange-500/20 text-orange-600 border-orange-500/30";
       default:
-        return 'bg-blue-500/20 text-blue-600 border-blue-500/30';
+        return "bg-blue-500/20 text-blue-600 border-blue-500/30";
     }
   };
 
@@ -88,7 +94,9 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
           </div>
         </div>
         <div className="flex items-center justify-center py-8">
-          <div className="text-muted-foreground text-sm">Loading sponsors...</div>
+          <div className="text-muted-foreground text-sm">
+            Loading sponsors...
+          </div>
         </div>
       </div>
     );
@@ -111,9 +119,12 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
           <div className="mb-4 flex items-center justify-center">
             <Heart className="h-8 w-8 text-muted-foreground/50" />
           </div>
-          <div className="text-muted-foreground text-sm mb-2">No sponsors found</div>
+          <div className="text-muted-foreground text-sm mb-2">
+            No sponsors found
+          </div>
           <div className="text-xs text-muted-foreground mb-4">
-            No active sponsors found for <span className="font-mono text-primary">{repository}</span>
+            No active sponsors found for{" "}
+            <span className="font-mono text-primary">{repository}</span>
           </div>
           <div className="text-xs text-muted-foreground">
             Be the first to support this project!
@@ -139,12 +150,12 @@ export default function TopSponsors({ repository = "vipinyadav01", limit = 10 }:
                     <h3 className="font-semibold text-sm text-foreground truncate">
                       {sponsor.name}
                     </h3>
-                    {index < 3 && (
-                      <Star className="h-3 w-3 text-yellow-500" />
-                    )}
+                    {index < 3 && <Star className="h-3 w-3 text-yellow-500" />}
                   </div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`px-2 py-1 text-xs rounded border ${getTierColor(sponsor.tier)}`}>
+                    <span
+                      className={`px-2 py-1 text-xs rounded border ${getTierColor(sponsor.tier)}`}
+                    >
                       {sponsor.tier}
                     </span>
                     <span className="text-primary text-xs font-mono">

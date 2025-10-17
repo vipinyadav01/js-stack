@@ -11,9 +11,15 @@ export class DependencyPlugin extends GeneratorPlugin {
     super("DependencyPlugin", "1.0.0");
     this.priority = 50; // Lower priority - runs after file operations
     this.dependencies = ["PackageJsonPlugin"];
-    
-    this.registerHook(HOOK_TYPES.PRE_DEPENDENCY_INSTALL, this.preDependencyInstall);
-    this.registerHook(HOOK_TYPES.POST_DEPENDENCY_INSTALL, this.postDependencyInstall);
+
+    this.registerHook(
+      HOOK_TYPES.PRE_DEPENDENCY_INSTALL,
+      this.preDependencyInstall,
+    );
+    this.registerHook(
+      HOOK_TYPES.POST_DEPENDENCY_INSTALL,
+      this.postDependencyInstall,
+    );
   }
 
   /**
@@ -50,7 +56,9 @@ export class DependencyPlugin extends GeneratorPlugin {
         success: installResult.success,
         installed: installResult.installed,
         errors: installResult.errors,
-        message: installResult.success ? "Dependencies installed successfully" : "Dependency installation failed",
+        message: installResult.success
+          ? "Dependencies installed successfully"
+          : "Dependency installation failed",
       };
     } catch (error) {
       return {
@@ -72,7 +80,8 @@ export class DependencyPlugin extends GeneratorPlugin {
     const path = await import("path");
 
     const projectDir = context.projectDir;
-    const packageManager = config.packageManager || TECHNOLOGY_OPTIONS.PACKAGE_MANAGER.NPM;
+    const packageManager =
+      config.packageManager || TECHNOLOGY_OPTIONS.PACKAGE_MANAGER.NPM;
 
     return new Promise((resolve) => {
       const installCommand = this.getInstallCommand(packageManager);

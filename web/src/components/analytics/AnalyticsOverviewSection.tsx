@@ -1,6 +1,13 @@
 "use client";
 
-import { TrendingUp, TrendingDown, Download, Star, Users, GitBranch } from "lucide-react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Download,
+  Star,
+  Users,
+  GitBranch,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { NpmPackageData, GitHubRepoData } from "@/lib/api";
 
@@ -9,7 +16,7 @@ interface AnalyticsOverviewSectionProps {
   githubData: GitHubRepoData | null;
   trendData: {
     trend: number;
-    direction: 'up' | 'down';
+    direction: "up" | "down";
     recentAvg: number;
     previousAvg: number;
   } | null;
@@ -31,39 +38,37 @@ const containerVariants = {
 
 const cardVariants = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    scale: 1
+  visible: {
+    opacity: 1,
+    scale: 1,
   },
-  hover: { 
-    scale: 1.02
-  }
+  hover: {
+    scale: 1.02,
+  },
 };
 
-export default function AnalyticsOverviewSection({ 
-  npmData, 
-  githubData, 
-  trendData, 
-  formatNumber 
+export default function AnalyticsOverviewSection({
+  npmData,
+  githubData,
+  trendData,
+  formatNumber,
 }: AnalyticsOverviewSectionProps) {
   return (
     <motion.div className="mb-8" variants={containerVariants}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
         <div className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" />
-          <span className="font-bold text-lg sm:text-xl">
-            Key Metrics
-          </span>
+          <span className="font-bold text-lg sm:text-xl">Key Metrics</span>
         </div>
         <div className="hidden h-px flex-1 bg-border sm:block" />
         <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
           Real-time analytics
         </span>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Downloads */}
-        <motion.div 
+        <motion.div
           className="group relative overflow-hidden rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-lg"
           variants={cardVariants}
           whileHover="hover"
@@ -83,19 +88,23 @@ export default function AnalyticsOverviewSection({
             </div>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-foreground">
-                {npmData ? formatNumber(npmData.totalLast7Days) : 'N/A'}
+                {npmData ? formatNumber(npmData.totalLast7Days) : "N/A"}
               </div>
-              <div className="text-sm text-muted-foreground">
-                Last 7 days
-              </div>
+              <div className="text-sm text-muted-foreground">Last 7 days</div>
               {trendData && (
                 <div className="flex items-center space-x-2 text-sm">
-                  {trendData.direction === 'up' ? (
+                  {trendData.direction === "up" ? (
                     <TrendingUp className="h-4 w-4 text-green-500" />
                   ) : (
                     <TrendingDown className="h-4 w-4 text-red-500" />
                   )}
-                  <span className={trendData.direction === 'up' ? 'text-green-500 font-medium' : 'text-red-500 font-medium'}>
+                  <span
+                    className={
+                      trendData.direction === "up"
+                        ? "text-green-500 font-medium"
+                        : "text-red-500 font-medium"
+                    }
+                  >
                     {Math.abs(trendData.trend).toFixed(1)}%
                   </span>
                   <span className="text-muted-foreground">vs last week</span>
@@ -106,7 +115,7 @@ export default function AnalyticsOverviewSection({
         </motion.div>
 
         {/* GitHub Stars */}
-        <motion.div 
+        <motion.div
           className="group relative overflow-hidden rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-lg"
           variants={cardVariants}
           whileHover="hover"
@@ -126,7 +135,9 @@ export default function AnalyticsOverviewSection({
             </div>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-foreground">
-                {githubData ? formatNumber(githubData.info.stargazersCount) : 'N/A'}
+                {githubData
+                  ? formatNumber(githubData.info.stargazersCount)
+                  : "N/A"}
               </div>
               <div className="text-sm text-muted-foreground">
                 Repository popularity
@@ -136,7 +147,7 @@ export default function AnalyticsOverviewSection({
         </motion.div>
 
         {/* Contributors */}
-        <motion.div 
+        <motion.div
           className="group relative overflow-hidden rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-lg"
           variants={cardVariants}
           whileHover="hover"
@@ -156,7 +167,7 @@ export default function AnalyticsOverviewSection({
             </div>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-foreground">
-                {githubData ? githubData.contributors.length : 'N/A'}
+                {githubData ? githubData.contributors.length : "N/A"}
               </div>
               <div className="text-sm text-muted-foreground">
                 Active contributors
@@ -166,7 +177,7 @@ export default function AnalyticsOverviewSection({
         </motion.div>
 
         {/* Releases */}
-        <motion.div 
+        <motion.div
           className="group relative overflow-hidden rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-lg"
           variants={cardVariants}
           whileHover="hover"
@@ -186,7 +197,7 @@ export default function AnalyticsOverviewSection({
             </div>
             <div className="space-y-2">
               <div className="text-3xl font-bold text-foreground">
-                {githubData ? githubData.releases.length : 'N/A'}
+                {githubData ? githubData.releases.length : "N/A"}
               </div>
               <div className="text-sm text-muted-foreground">
                 Total releases

@@ -52,18 +52,20 @@ This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.
 ### Local Development
 
 1. **Create a development branch**:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 2. **Make your changes** and test locally:
+
    ```bash
    # Test the CLI locally
    node dist/cli.js init test-project --help
-   
+
    # Run linting
    npm run lint
-   
+
    # Run tests
    npm run test
    ```
@@ -155,25 +157,15 @@ We welcome several types of contributions:
 Templates use [Handlebars](https://handlebarsjs.com/) for dynamic content:
 
 ```handlebars
-// Example: templates/frontend/react/package.json.hbs
-{
-  "name": "{{projectName}}",
-  "version": "1.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build"
-  },
-  "dependencies": {
-    {{#if typescript}}
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "@types/react": "^18.0.0"
-    {{else}}
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-    {{/if}}
-  }
-}
+// Example: templates/frontend/react/package.json.hbs { "name": "{{projectName}}",
+"version": "1.0.0", "scripts": { "dev": "vite", "build": "vite build" },
+"dependencies": {
+{{#if typescript}}
+  "react": "^18.0.0", "react-dom": "^18.0.0", "@types/react": "^18.0.0"
+{{else}}
+  "react": "^18.0.0", "react-dom": "^18.0.0"
+{{/if}}
+} }
 ```
 
 ### Template Context Variables
@@ -200,6 +192,7 @@ Available variables in templates:
 ### Adding a New Framework Template
 
 1. **Create template directory**:
+
    ```bash
    mkdir -p templates/frontend/your-framework
    ```
@@ -212,6 +205,7 @@ Available variables in templates:
    - Any other framework-specific files
 
 3. **Update template resolver** in `src/utils/template-resolver.js`:
+
    ```javascript
    [FRONTEND_OPTIONS.YOUR_FRAMEWORK]: {
      base: "your-framework",
@@ -221,10 +215,11 @@ Available variables in templates:
    ```
 
 4. **Add framework option** in `src/types.js`:
+
    ```javascript
    export const FRONTEND_OPTIONS = {
      // ... existing options
-     YOUR_FRAMEWORK: "your-framework"
+     YOUR_FRAMEWORK: "your-framework",
    };
    ```
 
@@ -256,6 +251,7 @@ npm run test:coverage
 ### Testing Templates
 
 1. **Generate a test project**:
+
    ```bash
    node dist/cli.js init test-project --frontend your-framework --yes
    ```
@@ -293,20 +289,24 @@ We aim for good test coverage. When adding new features:
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Tests pass locally
 - [ ] New tests added for new functionality
 - [ ] Manual testing completed
 
 ## Checklist
+
 - [ ] Code follows project style guidelines
 - [ ] Self-review completed
 - [ ] Documentation updated
@@ -365,6 +365,7 @@ type(scope): description
 ```
 
 Examples:
+
 ```
 feat(templates): add Vue 3 template support
 fix(cli): resolve template path resolution issue

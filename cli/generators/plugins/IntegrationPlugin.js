@@ -65,7 +65,8 @@ export class IntegrationPlugin extends GeneratorPlugin {
   }
 
   composeExpressServer(config) {
-    const wantMongo = config.database === "mongodb" || config.orm === "mongoose";
+    const wantMongo =
+      config.database === "mongodb" || config.orm === "mongoose";
     const wantJwt = config.auth === "jwt";
 
     return `// Auto-generated minimal Express server with basic integrations
@@ -82,7 +83,9 @@ app.use(morgan('dev'));
 
 const PORT = process.env.PORT || 3001;
 
-${wantMongo ? `// Database connection (MongoDB via Mongoose)
+${
+  wantMongo
+    ? `// Database connection (MongoDB via Mongoose)
 const mongoose = require('mongoose');
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/myapp';
 mongoose.connect(mongoUri).then(() => {
@@ -94,9 +97,13 @@ mongoose.connect(mongoUri).then(() => {
 // Example model
 const ItemSchema = new mongoose.Schema({ name: String }, { timestamps: true });
 const Item = mongoose.model('Item', ItemSchema);
-` : ''}
+`
+    : ""
+}
 
-${wantJwt ? `// JWT middleware (minimal)
+${
+  wantJwt
+    ? `// JWT middleware (minimal)
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
 
@@ -118,27 +125,37 @@ app.post('/auth/login', (req, res) => {
   const token = jwt.sign(user, JWT_SECRET, { expiresIn: '1h' });
   res.json({ token, user });
 });
-` : ''}
+`
+    : ""
+}
 
 // Health endpoint
 app.get('/health', async (req, res) => {
   const status = { ok: true };
-  ${wantMongo ? `try {
+  ${
+    wantMongo
+      ? `try {
     await mongoose.connection.db.admin().ping();
     status.mongo = 'up';
   } catch {
     status.mongo = 'down';
-  }` : ''}
+  }`
+      : ""
+  }
   res.json(status);
 });
 
-${wantMongo ? `// Example CRUD route${wantJwt ? ' (protected)' : ''}
-${wantJwt ? 'app.use(authenticate);' : ''}
+${
+  wantMongo
+    ? `// Example CRUD route${wantJwt ? " (protected)" : ""}
+${wantJwt ? "app.use(authenticate);" : ""}
 app.get('/items', async (req, res) => {
   const items = await Item.find().lean();
   res.json(items);
 });
-` : ''}
+`
+    : ""
+}
 
 app.listen(PORT, () => {
   console.log('🚀 Server listening on http://localhost:' + PORT);
@@ -147,7 +164,12 @@ app.listen(PORT, () => {
   }
 
   async exists(filePath) {
-    try { const s = await fs.stat(filePath); return s.isFile(); } catch { return false; }
+    try {
+      const s = await fs.stat(filePath);
+      return s.isFile();
+    } catch {
+      return false;
+    }
   }
 
   // Standard execute entry point for plugin manager
@@ -162,5 +184,3 @@ app.listen(PORT, () => {
 }
 
 export default IntegrationPlugin;
-
-

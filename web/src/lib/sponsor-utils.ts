@@ -19,8 +19,12 @@ export interface SponsorsData {
 }
 
 // Filter visible sponsors (non-past sponsors)
-export function filterVisibleSponsors(sponsors: SponsorEntry[]): SponsorEntry[] {
-  return sponsors.filter(sponsor => !sponsor.sinceWhen.toLowerCase().includes('past'));
+export function filterVisibleSponsors(
+  sponsors: SponsorEntry[],
+): SponsorEntry[] {
+  return sponsors.filter(
+    (sponsor) => !sponsor.sinceWhen.toLowerCase().includes("past"),
+  );
 }
 
 // Check if sponsor is special
@@ -32,8 +36,8 @@ export function isSpecialSponsor(sponsor: SponsorEntry): boolean {
 export function sortSpecialSponsors(sponsors: SponsorEntry[]): SponsorEntry[] {
   return sponsors.sort((a, b) => {
     // Sort by amount (assuming higher amounts are more special)
-    const amountA = parseFloat(a.formattedAmount.replace(/[$,]/g, '')) || 0;
-    const amountB = parseFloat(b.formattedAmount.replace(/[$,]/g, '')) || 0;
+    const amountA = parseFloat(a.formattedAmount.replace(/[$,]/g, "")) || 0;
+    const amountB = parseFloat(b.formattedAmount.replace(/[$,]/g, "")) || 0;
     return amountB - amountA;
   });
 }
@@ -47,7 +51,7 @@ export function getSponsorUrl(sponsor: SponsorEntry): string {
 export function formatSponsorUrl(url: string): string {
   try {
     const urlObj = new URL(url);
-    return urlObj.hostname.replace('www.', '');
+    return urlObj.hostname.replace("www.", "");
   } catch {
     return url;
   }
@@ -56,5 +60,9 @@ export function formatSponsorUrl(url: string): string {
 // Check if should show lifetime total
 export function shouldShowLifetimeTotal(sponsor: SponsorEntry): boolean {
   // Show lifetime total for special sponsors or high-tier sponsors
-  return sponsor.isSpecial || sponsor.tierName?.toLowerCase().includes('lifetime') || false;
+  return (
+    sponsor.isSpecial ||
+    sponsor.tierName?.toLowerCase().includes("lifetime") ||
+    false
+  );
 }

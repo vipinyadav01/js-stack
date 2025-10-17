@@ -515,15 +515,27 @@ export async function collectProjectConfig(projectName, options = {}) {
     projectName: projectName || (await promptProjectName()),
     database: options.database || (await promptDatabase()),
     backend: options.backend || (await promptBackend()),
-    frontend: options.frontend ? (Array.isArray(options.frontend) ? options.frontend : [options.frontend]) : (await promptFrontend()),
+    frontend: options.frontend
+      ? Array.isArray(options.frontend)
+        ? options.frontend
+        : [options.frontend]
+      : await promptFrontend(),
     auth: options.auth || (await promptAuth()),
-    addons: options.addons ? (Array.isArray(options.addons) ? options.addons : options.addons.split(',').map(s => s.trim())) : (await promptAddons()),
+    addons: options.addons
+      ? Array.isArray(options.addons)
+        ? options.addons
+        : options.addons.split(",").map((s) => s.trim())
+      : await promptAddons(),
     packageManager: options.pm || (await promptPackageManager()),
     git: options.git !== false ? options.git || (await promptGit()) : false,
     install:
       options.install !== false
-        ? options.install !== undefined ? options.install : (options.ci ? true : await promptInstall())
-        : true, 
+        ? options.install !== undefined
+          ? options.install
+          : options.ci
+            ? true
+            : await promptInstall()
+        : true,
   };
 
   // Get ORM based on database selection

@@ -35,7 +35,10 @@ export default function TopStacksBar() {
   }, []);
 
   if (error) return <div className="text-sm text-red-600">{error}</div>;
-  if (!items) return <div className="text-sm text-muted-foreground">Loading top stacks…</div>;
+  if (!items)
+    return (
+      <div className="text-sm text-muted-foreground">Loading top stacks…</div>
+    );
 
   return (
     <motion.div variants={containerVariants}>
@@ -48,8 +51,8 @@ export default function TopStacksBar() {
       </div>
       <div className="space-y-4">
         {items.map((it, index) => (
-          <motion.div 
-            key={it.stack} 
+          <motion.div
+            key={it.stack}
             className="group relative overflow-hidden rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-lg"
             variants={itemVariants}
             whileHover={{ scale: 1.02 }}
@@ -60,7 +63,9 @@ export default function TopStacksBar() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                    <span className="text-sm font-bold text-primary">#{index + 1}</span>
+                    <span className="text-sm font-bold text-primary">
+                      #{index + 1}
+                    </span>
                   </div>
                   <span className="font-semibold text-sm">{it.stack}</span>
                 </div>
@@ -72,10 +77,12 @@ export default function TopStacksBar() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Usage</span>
-                  <span className="font-semibold text-primary">{it.percentage}%</span>
+                  <span className="font-semibold text-primary">
+                    {it.percentage}%
+                  </span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
-                  <motion.div 
+                  <motion.div
                     className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80"
                     initial={{ width: 0 }}
                     animate={{ width: `${it.percentage}%` }}
@@ -90,5 +97,3 @@ export default function TopStacksBar() {
     </motion.div>
   );
 }
-
-

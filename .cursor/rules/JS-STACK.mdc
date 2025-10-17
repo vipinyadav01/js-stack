@@ -18,13 +18,46 @@ alwaysApply: true
 - Use Framer Motion for animations
 - Follow Next.js App Router patterns
 
-### CLI Tool
-- Use Commander.js for command parsing
-- Use @clack/prompts for interactive prompts
-- Use Yup schemas for validation
-- Use chalk for terminal styling
-- Classes are acceptable for complex generators (ModularGenerator, etc.)
-- Use function declarations for utility functions
+### CLI Tool (`cli/`)
+```
+cli/
+├── commands/          # CLI command handlers (enhanced-init.js, add.js, list.js)
+├── generators/        # Project generation logic (project-generator.js, ModularGenerator.js)
+├── templates/         # Handlebars templates with layered structure
+├── utils/             # Utility functions (validation, file operations, etc.)
+├── core/              # Core functionality (CLICore.js, CompatibilityEngine.js)
+├── config/            # Validation schemas and configuration
+└── cli.js            # Main CLI entry point with Commander.js
+```
+
+### CLI Stack
+- **Commander.js**: CLI command parsing and option handling
+- **@clack/prompts**: Interactive prompts and user input
+- **Handlebars**: Template engine for project generation
+- **Yup**: Schema validation for configuration
+- **Chalk**: Terminal styling and colors
+- **gradient-string**: Animated gradients and banners
+- **figlet**: ASCII art titles
+- **boxen**: Bordered boxes and UI elements
+- **chalk-animation**: Animated text effects
+- **ora**: Loading spinners
+- **inquirer**: Additional interactive prompts
+- **cli-progress**: Progress bars
+- **fs-extra**: Enhanced file operations
+- **ESBuild**: Fast bundling for CLI distribution
+
+### CLI Code Patterns & Conventions
+- **Mixed Architecture**: Classes for complex generators, functions for utilities
+- **ES Modules**: `import/export` syntax throughout
+- **Async/Await**: Consistent async patterns
+- **Layered Templates**: Base → Framework → Integration → Feature → Tooling → Deployment
+- **Plugin System**: Modular generator with plugin architecture
+- **Smart Compatibility**: Advanced technology compatibility checking
+- **Transaction System**: Rollback capabilities for failed operations
+- **Validation**: Comprehensive Yup schemas for all inputs
+- **Error Handling**: Graceful error handling with helpful messages
+- **Performance Monitoring**: Built-in performance tracking
+- **Health Validation**: Post-generation validation checks
 
 ### TypeScript Conventions
 - Use interfaces for object types and component props
@@ -136,25 +169,27 @@ cli/templates/templates/
 
 ### Generated Project Structure
 
-#### Full-Stack App (Next.js + Express + MongoDB)
+#### Full-Stack App (React.js + Express + MongoDB)
 ```
 my-app/
-├── frontend/              # Next.js app
+├── frontend/              # React app
 │   ├── src/
-│   │   ├── app/
 │   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
 │   │   ├── lib/
-│   │   └── hooks/
+│   │   └── services/
 │   ├── public/
 │   ├── package.json
-│   └── next.config.js
+│   └── vite.config.js
 ├── backend/               # Express API
 │   ├── src/
 │   │   ├── routes/
 │   │   ├── controllers/
 │   │   ├── models/
 │   │   ├── middleware/
-│   │   └── utils/
+│   │   ├── services/
+│   │   └── config/
 │   ├── package.json
 │   └── server.js
 ├── shared/                # Shared types/utilities
