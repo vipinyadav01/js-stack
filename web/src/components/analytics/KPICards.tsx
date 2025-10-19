@@ -1,110 +1,127 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Activity, TrendingUp } from "lucide-react";
-import { mockAnalyticsData } from "@/lib/mock-data";
+import {
+  TrendingUp,
+  Star,
+  GitFork,
+  Download,
+  Users,
+  Code2,
+} from "lucide-react";
+import { NpmPackageData, GitHubRepoData } from "@/lib/api";
 
-type KPI = { label: string; value: string | number; help?: string };
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
-  },
+type KPI = {
+  label: string;
+  value: string | number;
+  help?: string;
+  icon?: React.ComponentType<{ className?: string }>;
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+interface KPICardsProps {
+  npmData?: NpmPackageData | null;
+  githubData?: GitHubRepoData | null;
+  formatNumber?: (num: number) => string;
+}
 
-export default function KPICards() {
-  const [kpis, setKpis] = useState<KPI[] | null>(null);
+export default function KPICards({
+  npmData,
+  githubData,
+  formatNumber = (num) => num.toString(),
+}: KPICardsProps) {
+  const getKPIs = (): KPI[] => {
+    const kpis: KPI[] = [];
 
-  useEffect(() => {
-    let mounted = true;
-    fetch("/api/analytics/kpis")
-      .then((r) => r.json())
-      .then((d) => mounted && setKpis(d))
-      .catch(() => {
-        // Fallback to mock data when API is not available
-        if (mounted) {
-          setKpis([
-            {
-              label: "Total Downloads",
-              value: mockAnalyticsData.kpis.totalDownloads.toLocaleString(),
-            },
-            {
-              label: "Weekly Growth",
-              value: `+${mockAnalyticsData.kpis.weeklyGrowth}%`,
-            },
-            {
-              label: "Active Users",
-              value: mockAnalyticsData.kpis.activeUsers.toLocaleString(),
-            },
-            {
-              label: "Repositories",
-              value: mockAnalyticsData.kpis.repositories,
-            },
-            {
-              label: "Success Rate",
-              value: `${mockAnalyticsData.kpis.successRate}%`,
-            },
-            {
-              label: "Avg Build Time",
-              value: `${mockAnalyticsData.kpis.averageBuildTime}s`,
-            },
-          ]);
-        }
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    // GitHub stats
+    if (githubData?.info) {
+      kpis.push(
+        {
+          label: "GitHub Stars",
+          value: formatNumber(githubData.info.stargazersCount || 0),
+          help: "Total repository stars",
+          icon: Star,
+        },
+        {
+          label: "Forks",
+          value: formatNumber(githubData.info.forksCount || 0),
+          help: "Repository forks",
+          icon: GitFork,
+        },
+        {
+          label: "Watchers",
+          value: formatNumber(githubData.info.watchersCount || 0),
+          help: "Active watchers",
+          icon: Users,
+        },
+        {
+          label: "Open Issues",
+          value: formatNumber(githubData.info.openIssuesCount || 0),
+          help: "Current open issues",
+          icon: Code2,
+        },
+      );
+    }
 
-  if (!kpis)
-    return <div className="text-sm text-muted-foreground">Loading KPIs…</div>;
+    // NPM stats
+    if (npmData) {
+      kpis.push(
+        {
+          label: "Weekly Downloads",
+          value: formatNumber(npmData.totalLast7Days || 0),
+          help: "Downloads in last 7 days",
+          icon: Download,
+        },
+        {
+          label: "Package Versions",
+          value: npmData.info.versionsCount || 0,
+          help: "Total published versions",
+          icon: TrendingUp,
+        },
+      );
+    }
+
+    return kpis;
+  };
+
+  const kpis = getKPIs();
+
+  if (kpis.length === 0) {
+    return (
+      <div className="text-sm text-muted-foreground">No data available</div>
+    );
+  }
 
   return (
-    <motion.div variants={containerVariants}>
-      <div className="mb-4 flex items-center justify-between border-b pb-3">
-        <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-primary" />
-          <span className="font-semibold text-sm">
-            Key Performance Indicators
-          </span>
-        </div>
-        <span className="text-xs text-muted-foreground">Real-time metrics</span>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {kpis.map((k) => (
-          <motion.div
-            key={k.label}
-            className="group relative overflow-hidden rounded-lg border border-border bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-lg"
-            variants={itemVariants}
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <div className="relative p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                <span className="text-xs font-medium text-muted-foreground">
-                  {k.label}
-                </span>
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {kpis.map((kpi) => {
+          const IconComponent = kpi.icon || TrendingUp;
+          return (
+            <div
+              key={kpi.label}
+              className="group relative overflow-hidden rounded-lg border border-border bg-card/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300"
+            >
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-1.5 rounded-md bg-primary/10">
+                    <IconComponent className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {kpi.label}
+                  </span>
+                </div>
+                <div className="text-2xl font-bold text-foreground mb-1">
+                  {kpi.value}
+                </div>
+                {kpi.help && (
+                  <div className="text-xs text-muted-foreground">
+                    {kpi.help}
+                  </div>
+                )}
               </div>
-              <div className="text-2xl font-bold text-foreground mb-1">
-                {k.value}
-              </div>
-              {k.help ? (
-                <div className="text-xs text-muted-foreground">{k.help}</div>
-              ) : null}
             </div>
-          </motion.div>
-        ))}
+          );
+        })}
       </div>
-    </motion.div>
+    </div>
   );
 }
