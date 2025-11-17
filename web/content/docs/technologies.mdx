@@ -1,0 +1,187 @@
+---
+title: Supported Technologies
+description: All technologies supported by JS-Stack CLI
+---
+
+# Supported Technologies
+
+JS-Stack CLI supports a wide range of modern JavaScript technologies.
+
+## Frontend Frameworks
+
+### React
+- **Package**: `react`
+- **Build Tool**: Vite
+- **Features**: Hot reload, fast builds, modern tooling
+
+### Next.js
+- **Package**: `next`
+- **Features**: SSR, SSG, API routes, file-based routing
+- **Note**: Full-stack framework (no separate backend needed)
+
+### Vue.js
+- **Package**: `vue`
+- **Build Tool**: Vite
+- **Features**: Progressive framework, component-based
+
+### Angular
+- **Package**: `@angular/core`
+- **Features**: Enterprise-ready, TypeScript-first
+
+### Svelte
+- **Package**: `svelte`
+- **Build Tool**: Vite
+- **Features**: Compile-time optimization
+
+### SvelteKit
+- **Package**: `@sveltejs/kit`
+- **Features**: Full-stack framework with SSR
+
+### Nuxt
+- **Package**: `nuxt`
+- **Features**: Vue-based full-stack framework
+
+### Remix
+- **Package**: `@remix-run/react`
+- **Features**: Web standards-based framework
+
+### Astro
+- **Package**: `astro`
+- **Features**: Content-focused, island architecture
+
+### React Native
+- **Package**: `react-native`
+- **Features**: Mobile app development
+
+## Backend Frameworks
+
+### Express
+- **Package**: `express`
+- **Features**: Minimal, flexible, widely used
+
+### Fastify
+- **Package**: `fastify`
+- **Features**: High performance, low overhead
+
+### Koa
+- **Package**: `koa`
+- **Features**: Modern, lightweight, async/await
+
+### Hapi
+- **Package**: `@hapi/hapi`
+- **Features**: Rich plugin ecosystem
+
+### NestJS
+- **Package**: `@nestjs/core`
+- **Features**: Enterprise-ready, TypeScript-first, decorators
+
+## Databases
+
+### PostgreSQL
+- **Type**: Relational (SQL)
+- **ORMs**: Prisma, Sequelize, TypeORM
+
+### MySQL
+- **Type**: Relational (SQL)
+- **ORMs**: Prisma, Sequelize, TypeORM
+
+### SQLite
+- **Type**: Relational (SQL)
+- **ORMs**: Prisma, Sequelize, TypeORM
+- **Note**: File-based, great for development
+
+### MongoDB
+- **Type**: Document (NoSQL)
+- **ODM**: Mongoose
+- **Note**: Only Mongoose works with MongoDB
+
+## ORMs & ODMs
+
+### Prisma
+- **Supports**: PostgreSQL, MySQL, SQLite, MongoDB
+- **Features**: Type-safe, migrations, great DX
+
+### Sequelize
+- **Supports**: PostgreSQL, MySQL, SQLite
+- **Features**: Mature, feature-rich
+
+### TypeORM
+- **Supports**: PostgreSQL, MySQL, SQLite
+- **Features**: Decorators, TypeScript-first
+
+### Mongoose
+- **Supports**: MongoDB only
+- **Features**: Schema validation, middleware
+
+## Authentication
+
+### JWT
+- **Type**: Token-based
+- **Features**: Stateless, scalable
+
+### Passport
+- **Type**: Strategy-based
+- **Features**: Multiple strategies (local, OAuth, etc.)
+
+### Auth0
+- **Type**: Third-party service
+- **Features**: Enterprise-ready, social login
+
+### OAuth
+- **Type**: Standard protocol
+- **Features**: Social login support
+
+### Better Auth
+- **Type**: Modern auth library
+- **Features**: Type-safe, Next.js optimized
+
+## Addons
+
+### Docker
+- **Includes**: Dockerfile, docker-compose.yml
+- **Features**: Containerization, easy deployment
+
+### Testing
+- **Frameworks**: Jest, Vitest
+- **Features**: Unit tests, integration tests
+
+### Biome
+- **Type**: Linter & Formatter
+- **Features**: Fast, all-in-one tooling
+
+### Turborepo
+- **Type**: Monorepo tool
+- **Features**: Fast builds, caching
+
+## Package Managers
+
+- **npm** (default)
+- **yarn**
+- **pnpm**
+- **bun**
+
+## Compatibility Matrix
+
+### MongoDB
+- ✅ Mongoose only
+- ❌ No other ORMs work with MongoDB
+
+### PostgreSQL/MySQL/SQLite
+- ✅ Prisma
+- ✅ Sequelize
+- ✅ TypeORM
+- ❌ Mongoose (MongoDB only)
+
+### Next.js
+- ✅ Better Auth
+- ✅ Auth0
+- ✅ JWT
+- ✅ OAuth
+
+### React/Vue
+- ✅ Auth0
+- ✅ Better Auth
+- ✅ JWT
+- ✅ OAuth
+- ✅ Passport
+

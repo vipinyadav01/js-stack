@@ -67,6 +67,9 @@ export function SidebarContent({
         <label className="flex flex-col">
           <span className="mb-1 text-muted-foreground text-xs">
             Project Name:
+            <span className="ml-1 text-muted-foreground/70">
+              (customizable even with --yes)
+            </span>
           </span>
           <input
             type="text"
@@ -80,17 +83,22 @@ export function SidebarContent({
                 ? "border-destructive bg-destructive/10 text-destructive-foreground"
                 : "border-border focus:border-primary",
             )}
-            placeholder="Js-Stack"
+            placeholder="my-app"
           />
           {projectNameError && (
             <p className="mt-1 text-destructive text-xs">{projectNameError}</p>
           )}
-          {(stack.projectName || "Js-Stack").includes(" ") && (
+          {(stack.projectName || "my-app").includes(" ") && (
             <p className="mt-1 text-muted-foreground text-xs">
               Will be saved as:{" "}
               <code className="rounded bg-muted px-1 py-0.5 text-xs">
-                {(stack.projectName || "Js-Stack").replace(/\s+/g, "-")}
+                {(stack.projectName || "my-app").replace(/\s+/g, "-")}
               </code>
+            </p>
+          )}
+          {!stack.projectName && (
+            <p className="mt-1 text-muted-foreground text-xs">
+              💡 You can change this name anytime, even when using --yes flag
             </p>
           )}
         </label>

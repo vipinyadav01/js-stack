@@ -1,0 +1,71 @@
+---
+title: Getting Started
+description: Learn how to get started with JS-Stack CLI
+---
+
+# Getting Started
+
+JS-Stack CLI is a powerful tool for scaffolding production-ready JavaScript full-stack applications. Get started in minutes, not hours.
+
+## Installation
+
+Install JS-Stack CLI using npm:
+
+```bash
+npx create-js-stack@latest my-app
+```
+
+No global installation required! The CLI runs directly via `npx`.
+
+## Quick Start
+
+### Interactive Mode
+
+The easiest way to get started is using the interactive mode:
+
+```bash
+npx create-js-stack@latest my-app
+```
+
+This will guide you through:
+- Frontend framework selection
+- Backend framework selection
+- Database and ORM setup
+- Authentication configuration
+- Additional addons
+
+### Non-Interactive Mode
+
+For CI/CD or automated setups, use flags:
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend react \
+  --backend express \
+  --database postgresql \
+  --orm prisma \
+  --auth jwt \
+  --package-manager npm \
+  --git \
+  --install
+```
+
+## What Gets Generated
+
+JS-Stack CLI generates a complete project structure with:
+
+- ✅ Production-ready configuration
+- ✅ Best practices built-in
+- ✅ TypeScript support (optional)
+- ✅ Testing setup
+- ✅ Docker configuration (optional)
+- ✅ CI/CD templates (optional)
+- ✅ Documentation
+
+## Next Steps
+
+- [Learn about available technologies](/docs/technologies)
+- [Explore command options](/docs/commands)
+- [See examples](/docs/examples)
+- [Try the interactive builder](/new)
+

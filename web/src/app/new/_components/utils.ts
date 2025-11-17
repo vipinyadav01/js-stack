@@ -24,15 +24,21 @@ export function analyzeStackCompatibility(
   }
 
   // Convert StackState to BuilderState format
+  // Handle multiple frontends - use first one for compatibility checks
   const builderState: BuilderState = {
-    projectName: stack.projectName,
-    frontend: (stack.frontend[0] || "none") as BuilderState["frontend"],
-    backend: stack.backend as BuilderState["backend"],
-    database: stack.database as BuilderState["database"],
-    orm: stack.orm as BuilderState["orm"],
-    auth: stack.auth as BuilderState["auth"],
-    addons: stack.addons as BuilderState["addons"],
-    packageManager: stack.packageManager as BuilderState["packageManager"],
+    projectName: stack.projectName || "my-app",
+    frontend: (stack.frontend.length > 0
+      ? stack.frontend[0]
+      : "none") as BuilderState["frontend"],
+    backend: (stack.backend || "none") as BuilderState["backend"],
+    database: (stack.database || "none") as BuilderState["database"],
+    orm: (stack.orm || "none") as BuilderState["orm"],
+    auth: (stack.auth || "none") as BuilderState["auth"],
+    addons: (Array.isArray(stack.addons)
+      ? stack.addons
+      : []) as BuilderState["addons"],
+    packageManager: (stack.packageManager ||
+      "npm") as BuilderState["packageManager"],
     installDependencies: stack.install === "true",
     initializeGit: stack.git === "true",
   };

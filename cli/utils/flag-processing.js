@@ -140,6 +140,8 @@ export const processAndValidateFlags = async (
     options.orm ? options.orm.toLowerCase() : undefined,
   );
 
+  // Project name is always customizable, even with --yes flag
+  // Priority: CLI argument > options.projectName > default
   const projectName =
     cliProjectName || options.projectName || DEFAULT_STACK.projectName;
 

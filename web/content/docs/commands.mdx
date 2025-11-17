@@ -1,0 +1,266 @@
+---
+title: CLI Commands
+description: Complete reference for JS-Stack CLI commands
+---
+
+# CLI Commands
+
+Complete reference for all JS-Stack CLI commands and options.
+
+## Init Command
+
+Create a new project:
+
+```bash
+npx create-js-stack@latest <project-name> [options]
+```
+
+### Options
+
+#### Frontend
+
+```bash
+--frontend <framework>
+```
+
+**Available options:**
+- `react` - React with Vite
+- `nextjs` - Next.js (full-stack)
+- `vue` - Vue.js with Vite
+- `angular` - Angular
+- `svelte` - Svelte
+- `sveltekit` - SvelteKit
+- `nuxt` - Nuxt.js
+- `remix` - Remix
+- `astro` - Astro
+- `react-native` - React Native
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --frontend react
+```
+
+#### Backend
+
+```bash
+--backend <framework>
+```
+
+**Available options:**
+- `express` - Express.js
+- `fastify` - Fastify
+- `koa` - Koa.js
+- `hapi` - Hapi.js
+- `nestjs` - NestJS
+- `none` - No backend (frontend only)
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --backend express
+```
+
+#### Database
+
+```bash
+--database <database>
+```
+
+**Available options:**
+- `postgresql` - PostgreSQL
+- `mysql` - MySQL
+- `sqlite` - SQLite
+- `mongodb` - MongoDB
+- `none` - No database
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --database postgresql
+```
+
+#### ORM
+
+```bash
+--orm <orm>
+```
+
+**Available options:**
+- `prisma` - Prisma
+- `sequelize` - Sequelize
+- `typeorm` - TypeORM
+- `mongoose` - Mongoose (MongoDB only)
+- `none` - No ORM
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --orm prisma
+```
+
+#### Authentication
+
+```bash
+--auth <method>
+```
+
+**Available options:**
+- `jwt` - JSON Web Tokens
+- `passport` - Passport.js
+- `auth0` - Auth0
+- `oauth` - OAuth 2.0
+- `better-auth` - Better Auth
+- `none` - No authentication
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --auth jwt
+```
+
+#### Package Manager
+
+```bash
+--package-manager <manager>
+```
+
+**Available options:**
+- `npm` (default)
+- `yarn`
+- `pnpm`
+- `bun`
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --package-manager pnpm
+```
+
+#### Addons
+
+```bash
+--addons <addon1,addon2,...>
+```
+
+**Available options:**
+- `docker` - Docker configuration
+- `testing` - Testing setup (Jest/Vitest)
+- `biome` - Biome linter/formatter
+- `turborepo` - Turborepo monorepo setup
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --addons docker,testing
+```
+
+#### Git
+
+```bash
+--git
+```
+
+Initialize a git repository in the project.
+
+```bash
+--no-git
+```
+
+Skip git initialization.
+
+#### Install Dependencies
+
+```bash
+--install
+```
+
+Automatically install dependencies after project creation.
+
+```bash
+--no-install
+```
+
+Skip dependency installation.
+
+#### Other Options
+
+```bash
+--yes
+```
+
+Skip all prompts and use defaults or provided flags.
+
+```bash
+--dry-run
+```
+
+Preview what would be generated without creating files.
+
+```bash
+--verbose
+```
+
+Show detailed output during generation.
+
+## Examples
+
+### Full-Stack React App
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend react \
+  --backend express \
+  --database postgresql \
+  --orm prisma \
+  --auth jwt \
+  --addons docker,testing \
+  --git \
+  --install
+```
+
+### Next.js Full-Stack
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend nextjs \
+  --database postgresql \
+  --orm prisma \
+  --auth better-auth \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+### Vue.js Frontend Only
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend vue \
+  --package-manager yarn \
+  --git
+```
+
+### MongoDB with Mongoose
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend react \
+  --backend express \
+  --database mongodb \
+  --orm mongoose \
+  --auth jwt
+```
+
+## Interactive Mode
+
+If you don't provide flags, the CLI will prompt you interactively:
+
+```bash
+npx create-js-stack@latest my-app
+```
+
+You'll be asked to select:
+- Frontend framework
+- Backend framework
+- Database
+- ORM
+- Authentication
+- Package manager
+- Addons
+- Git initialization
+- Dependency installation
+

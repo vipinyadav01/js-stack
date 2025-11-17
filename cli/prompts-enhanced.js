@@ -168,9 +168,12 @@ export async function collectProjectConfig(projectName, options = {}) {
       return [];
     };
 
+    // Project name is always customizable, even with --yes flag
+    // Priority: function argument > options.projectName > default
+    const finalProjectName = projectName || options.projectName || "my-app";
     const cfg = {
-      projectName: projectName || options.projectName || "my-app",
-      projectDir: `${process.cwd()}/${projectName || options.projectName || "my-app"}`,
+      projectName: finalProjectName,
+      projectDir: `${process.cwd()}/${finalProjectName}`,
       frontend: normalizeArray(
         options.frontend && options.frontend.length
           ? options.frontend

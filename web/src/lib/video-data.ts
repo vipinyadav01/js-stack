@@ -1,4 +1,8 @@
-import { extractYouTubeVideoId, getVideoEmbedUrl } from "./youtube-api";
+import {
+  extractYouTubeVideoId,
+  getVideoEmbedUrl,
+  fetchYouTubeVideoData,
+} from "./youtube-api";
 
 export interface VideoTutorial {
   id: string;
@@ -14,34 +18,91 @@ export interface VideoTutorial {
   likeCount?: string;
   tags?: string[];
 }
+
 export const videoTutorials: VideoTutorial[] = [
-  {
-    id: "1",
-    url: "https://youtu.be/Ihf16CL0z7I?si=_j15kWtI3JFvz-A8",
-    category: "tutorial",
-  },
-  {
-    id: "2",
-    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    category: "demo",
-  },
-  {
-    id: "3",
-    url: "https://www.youtube.com/watch?v=abc123def456",
-    category: "advanced",
-  },
-  {
-    id: "4",
-    url: "https://youtu.be/Ihf16CL0z7I?si=_j15kWtI3JFvz-A8",
-    category: "setup",
-  },
+  // Example (add demo videos as needed)
+  // {
+  //   id: "yt-1",
+  //   url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  //   category: "demo",
+  //   title: "JS-Stack Full Walkthrough",
+  //   description: "Learn how to scaffold a full-stack JS project using JS-Stack CLI.",
+  //   thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+  //   duration: "12:34",
+  //   publishedAt: "2024-03-01",
+  //   channel: "JS-Stack",
+  //   viewCount: "12,345",
+  //   likeCount: "987",
+  //   tags: ["js-stack", "tutorial", "fullstack"],
+  // }
 ];
 
-export const getVideoEmbedUrlFromUrl = (url: string) => {
+export const getVideoEmbedUrlFromUrl = (url: string): string => {
   const videoId = extractYouTubeVideoId(url);
   return videoId ? getVideoEmbedUrl(videoId) : "";
 };
 
-export const getVideoWatchUrlFromUrl = (url: string) => {
+export const getVideoWatchUrlFromUrl = (url: string): string => {
   return url;
 };
+
+/**
+ * Automatically fetch all video data from a YouTube URL
+ * This function extracts the video ID and fetches complete metadata
+ * including title, description, thumbnail, duration, views, likes, etc.
+ */
+export async function getVideoDataFromUrl(
+  url: string,
+  category: VideoTutorial["category"] = "tutorial",
+): Promise<VideoTutorial | null> {
+  try {
+    const videoId = extractYouTubeVideoId(url);
+    if (!videoId) {
+      throw new Error("Invalid YouTube URL");
+    }
+
+    // Fetch all video data from YouTube
+    const videoData = await fetchYouTubeVideoData(url);
+
+    if (!videoData) {
+      return null;
+    }
+
+    // Map YouTube data to VideoTutorial format
+    const videoTutorial: VideoTutorial = {
+      id: videoId,
+      url: url,
+      category: category,
+      title: videoData.title,
+      description: videoData.description,
+      thumbnail: videoData.thumbnail,
+      duration: videoData.duration,
+      publishedAt: videoData.publishedAt,
+      channel: videoData.channelTitle,
+      viewCount: videoData.viewCount,
+      likeCount: videoData.likeCount,
+      tags: videoData.tags,
+    };
+
+    return videoTutorial;
+  } catch (error) {
+    console.error("Error fetching video data from URL:", error);
+    return null;
+  }
+}
+
+/**
+ * Batch fetch video data from multiple URLs
+ * Useful for populating multiple videos at once
+ */
+export async function getVideoDataFromUrls(
+  urls: string[],
+  category: VideoTutorial["category"] = "tutorial",
+): Promise<VideoTutorial[]> {
+  const results = await Promise.all(
+    urls.map((url) => getVideoDataFromUrl(url, category)),
+  );
+
+  // Filter out null results
+  return results.filter((video): video is VideoTutorial => video !== null);
+}

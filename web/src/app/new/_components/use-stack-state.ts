@@ -18,7 +18,7 @@ export interface StackState {
 }
 
 const DEFAULT_STACK: StackState = {
-  projectName: "Js-Stack",
+  projectName: "my-app", // Default project name - always customizable
   frontend: [],
   backend: "none",
   database: "none",
@@ -64,12 +64,15 @@ export function useStackState() {
       // Add all non-default values to URL
       Object.entries(newStack).forEach(([key, value]) => {
         const defaultValue = DEFAULT_STACK[key as keyof StackState];
-        if (JSON.stringify(value) !== JSON.stringify(defaultValue)) {
+        const isDefault =
+          JSON.stringify(value) === JSON.stringify(defaultValue);
+
+        if (!isDefault) {
           if (Array.isArray(value)) {
             if (value.length > 0) {
               params.set(key, value.join(","));
             }
-          } else {
+          } else if (value !== undefined && value !== null) {
             params.set(key, value.toString());
           }
         }

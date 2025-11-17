@@ -466,9 +466,29 @@ export function findBestTestedCombination(state: BuilderState): {
 
 // Apply compatibility rules and fix conflicts with intelligent suggestions
 export function applyCompatibility(state: BuilderState): BuilderState {
-  // Return state as-is without automatic adjustments
-  // Let the user make their own choices
-  return { ...state };
+  const adjusted = { ...state };
+
+  // Database-ORM compatibility enforcement
+  if (state.database === "mongodb") {
+    // MongoDB only works with Mongoose
+    if (state.orm !== "mongoose" && state.orm !== "none") {
+      // Auto-adjust to mongoose if incompatible ORM selected
+      adjusted.orm = "mongoose";
+    }
+  } else if (state.database !== "none") {
+    // SQL databases don't work with Mongoose
+    if (state.orm === "mongoose") {
+      // Auto-adjust to prisma as default for SQL
+      adjusted.orm = "prisma";
+    }
+  }
+
+  // Frontend-Auth compatibility (suggestions only, don't force)
+  // We'll show warnings but allow user choice
+
+  // Backend-Database compatibility (all combinations work, no adjustments needed)
+
+  return adjusted;
 }
 
 // Validate entire configuration with detailed feedback
@@ -539,43 +559,50 @@ export function buildCliCommand(state: BuilderState): string {
     }
   };
 
+  const projectName = state.projectName || "my-app";
   const parts = [
-    `${getCommandPrefix(state.packageManager)} create-js-stack@latest ${state.projectName}`,
+    `${getCommandPrefix(state.packageManager)} create-js-stack@latest ${projectName}`,
   ];
 
+  // Frontend - CLI supports multiple frontends
   if (state.frontend !== "none") {
     parts.push(`--frontend ${state.frontend}`);
   }
 
+  // Backend
   if (state.backend !== "none") {
     parts.push(`--backend ${state.backend}`);
   }
 
+  // Database
   if (state.database !== "none") {
     parts.push(`--database ${state.database}`);
   }
 
+  // ORM
   if (state.orm !== "none") {
     parts.push(`--orm ${state.orm}`);
   }
 
+  // Auth
   if (state.auth !== "none") {
     parts.push(`--auth ${state.auth}`);
   }
 
+  // Addons - only include if there are addons
   if (state.addons.length > 0) {
     parts.push(`--addons ${state.addons.join(",")}`);
   }
 
-  // Add package manager
+  // Package manager - always include
   parts.push(`--package-manager ${state.packageManager}`);
 
-  // Add git flag
+  // Git flag
   if (state.initializeGit) {
     parts.push("--git");
   }
 
-  // Add install flag
+  // Install flag
   if (state.installDependencies) {
     parts.push("--install");
   }
@@ -648,8 +675,11 @@ export function generateReproducibleCommand(config: BuilderState): string {
 }
 
 // Generate quick start command with --yes flag
+// Note: Project name is always customizable, even with --yes
 export function generateQuickStartCommand(config: BuilderState): string {
-  const projectPathArg = config.projectName ? ` ${config.projectName}` : "";
+  // Project name is always the first argument and is customizable
+  const projectName = config.projectName || "my-app";
+  const projectPathArg = ` ${projectName}`;
 
   // Build base command based on package manager
   let baseCommand = "npx create-js-stack@latest";
@@ -672,6 +702,7 @@ export function generateQuickStartCommand(config: BuilderState): string {
   }
 
   // --yes automatically includes --git and --install
+  // Project name is always customizable as the first argument
   return `${baseCommand}${projectPathArg} --yes`;
 }
 

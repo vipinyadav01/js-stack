@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { StructuredData } from "@/components/structured-data";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
+import { RootProvider } from "fumadocs-ui/provider";
 
 const jetbrainsMono = localFont({
   src: [
@@ -343,18 +344,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         suppressHydrationWarning
       >
         <GoogleTagManager />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="relative flex min-h-screen flex-col">
-            <Navigation />
-            <main className="flex-1">{children}</main>
-            <ConditionalFooter />
-          </div>
-        </ThemeProvider>
+        <RootProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="relative flex min-h-screen flex-col">
+              <Navigation />
+              <main className="flex-1">{children}</main>
+              <ConditionalFooter />
+            </div>
+          </ThemeProvider>
+        </RootProvider>
       </body>
     </html>
   );

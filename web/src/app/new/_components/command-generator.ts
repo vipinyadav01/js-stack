@@ -1,12 +1,12 @@
 import { StackState } from "./use-stack-state";
 import {
-  generateReproducibleCommand,
+  buildCliCommand,
   BuilderState,
 } from "../../../components/builder/config";
 
 export function generateStackCommand(stack: StackState): string {
   const builderState: BuilderState = {
-    projectName: stack.projectName,
+    projectName: stack.projectName || "my-app",
     frontend: (stack.frontend[0] || "none") as BuilderState["frontend"],
     backend: stack.backend as BuilderState["backend"],
     database: stack.database as BuilderState["database"],
@@ -18,7 +18,17 @@ export function generateStackCommand(stack: StackState): string {
     initializeGit: stack.git === "true",
   };
 
-  const command = generateReproducibleCommand(builderState);
+  // Use buildCliCommand which generates proper command format
+  let command = buildCliCommand(builderState);
 
-  return `${command} --yes`;
+  // If multiple frontends selected, update the frontend flag
+  if (stack.frontend.length > 1) {
+    // Replace single frontend with multiple frontends
+    command = command.replace(
+      /--frontend \w+/,
+      `--frontend ${stack.frontend.join(" ")}`,
+    );
+  }
+
+  return command;
 }

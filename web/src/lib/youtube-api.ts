@@ -292,7 +292,11 @@ export async function fetchYouTubeVideoData(
 
     // Production: Try YouTube Data API first, then fall back to oEmbed
     console.log("🌐 Production environment - fetching YouTube data");
-    const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
+    // Access environment variable safely for static export compatibility
+    const apiKey =
+      typeof process !== "undefined" && process.env
+        ? process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
+        : undefined;
 
     if (apiKey) {
       try {

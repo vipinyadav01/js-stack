@@ -21,7 +21,8 @@ Actual tool: Users install via npm and run commands
 
 TECH STACK
 CLI: Commander.js, @clack/prompts, Handlebars, Yup, Chalk, ESBuild
-Web: Next.js 15, React 19, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
+Web: Next.js 15, React 19, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Fumadocs
+DEPLOYMENT: Cloudflare Pages (static export)
 
 SUPPORTED TECHNOLOGIES
 Frontend: React, Vue, Angular, Svelte, Next.js, Nuxt, React Native
@@ -50,11 +51,14 @@ TEMPLATE LAYERS (CLI generates in this order)
 
 WEB ARCHITECTURE
 src/app/ - Next.js App Router pages (homepage, docs, builder, examples)
+src/app/docs/[[...slug]]/ - Fumadocs documentation pages (dynamic routing)
+content/docs/ - MDX documentation files (Fumadocs content)
 src/components/builder/ - Interactive stack builder interface
 src/components/builder/config.ts - Stack options configuration (MUST match CLI)
 src/components/ui/ - shadcn/ui components
 src/lib/ - Utilities, helpers
 src/hooks/ - Custom React hooks
+src/.source.ts - Fumadocs source loader configuration
 
 WEB USER FLOW
 1. User visits website and learns about CLI features
@@ -69,9 +73,19 @@ DEVELOPMENT COMMANDS
 npm run dev - Run both CLI and web concurrently
 npm run dev:cli - CLI development only
 npm run dev:web - Web development only (localhost:3000)
-npm run build - Build everything
+npm run build - Build everything (web + CLI)
 npm run build:cli - Build CLI for distribution
+npm run build:web - Build web for Cloudflare Pages (static export)
 npm run clean - Clear build artifacts
+
+CLOUDFLARE PAGES DEPLOYMENT
+- Uses static export (output: "export" in next.config.ts)
+- Build output: web/out/ directory
+- Build command: npm run build (in web/ directory)
+- Node version: 18+ (set in Cloudflare Pages settings)
+- Environment variables: Set NEXT_PUBLIC_* vars in Cloudflare Pages dashboard
+- No server-side features: All pages must be static (no API routes that need server)
+- Images: Must use unoptimized: true for static export
 
 CLI TESTING
 node cli/cli.js init my-app --dry-run --verbose - Test CLI without creating files
@@ -109,16 +123,21 @@ DO: Use functional components with arrow functions
 DO: Use React hooks (useState, useEffect, useCallback, useMemo)
 DO: Use Tailwind CSS utilities exclusively
 DO: Use shadcn/ui components for UI
+DO: Use Fumadocs for documentation (MDX files in content/docs/)
 DO: Keep config.ts synchronized with CLI ValidationSchemas.js
 DO: Generate exact CLI commands that match actual CLI options
 DO: Use Next.js App Router patterns (app/ directory)
 DO: Make the builder interactive and user-friendly
 DO: Show examples and documentation clearly
+DO: Ensure all pages are statically exportable (Cloudflare Pages requirement)
+DO: Use unoptimized images for static export compatibility
 DON'T: Use Next.js Pages Router
 DON'T: Use TypeScript any type
 DON'T: Create custom CSS files
 DON'T: Generate commands that don't match CLI
 DON'T: Try to generate projects in the browser (that's CLI's job)
+DON'T: Use server-side features that require Node.js runtime (Cloudflare Pages is static)
+DON'T: Use Next.js Image optimization (use unoptimized: true for static export)
 
 WEB BUILDER FLOW
 User selects frontend -> Update available backend options -> User selects backend -> Show compatible databases -> User selects database -> Show compatible ORMs -> User selects ORM -> Show compatible auth options -> User selects auth -> Show additional addons -> User configures options -> Validate entire selection -> Generate CLI command -> Display command with copy button -> Show installation instructions
@@ -218,10 +237,25 @@ ADDING NEW TECHNOLOGY
 
 WEB PAGES STRUCTURE
 / - Homepage (hero, features, benefits, CTA to builder)
-/builder - Interactive stack builder (main feature)
-/docs - CLI documentation and usage guides
-/examples - Example projects and use cases
-/about - About the project and team
+/new - Interactive stack builder (main feature)
+/docs - Fumadocs documentation (MDX files from content/docs/)
+/docs/getting-started - Getting started guide
+/docs/technologies - Supported technologies
+/docs/commands - CLI commands reference
+/docs/examples - Example projects
+/analytics - Usage analytics dashboard
+/features - Features showcase
+/sponsors - Sponsors page
+
+FUMADOCS DOCUMENTATION
+- Documentation files: web/content/docs/*.mdx
+- Source loader: web/src/.source.ts
+- Docs pages: web/src/app/docs/[[...slug]]/
+- Config: web/fumadocs.config.ts
+- Uses MDX for rich content (React components in markdown)
+- Auto-generates table of contents
+- Supports code highlighting
+- Static generation compatible with Cloudflare Pages
 
 WEB COMPONENT PATTERN
 'use client';

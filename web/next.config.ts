@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { createMDX } from "fumadocs-mdx/next";
+
+const withMDX = createMDX();
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
@@ -7,6 +10,8 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     formats: ["image/webp", "image/avif"],
   },
+  // Fumadocs MDX configuration
+  pageExtensions: ["ts", "tsx", "mdx"],
   eslint: {
     ignoreDuringBuilds: false,
   },
@@ -107,8 +112,16 @@ const nextConfig: NextConfig = {
       };
     }
 
+    // Allow fs module in server-side code
+    if (isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+
     return config;
   },
 };
 
-export default nextConfig;
+export default withMDX(nextConfig);

@@ -1,0 +1,118 @@
+---
+title: Examples
+description: Real-world examples and use cases
+---
+
+# Examples
+
+Real-world examples of projects you can create with JS-Stack CLI.
+
+## SaaS Application
+
+A complete SaaS application with authentication and database:
+
+```bash
+npx create-js-stack@latest my-saas \
+  --frontend nextjs \
+  --database postgresql \
+  --orm prisma \
+  --auth better-auth \
+  --addons docker,testing \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+**What you get:**
+- Next.js full-stack application
+- PostgreSQL database with Prisma
+- Better Auth for authentication
+- Docker configuration
+- Testing setup
+- Git initialized
+
+## E-Commerce Platform
+
+```bash
+npx create-js-stack@latest my-store \
+  --frontend react \
+  --backend express \
+  --database postgresql \
+  --orm prisma \
+  --auth jwt \
+  --addons docker,testing,biome \
+  --package-manager npm \
+  --git \
+  --install
+```
+
+## Blog Platform
+
+```bash
+npx create-js-stack@latest my-blog \
+  --frontend nextjs \
+  --database sqlite \
+  --orm prisma \
+  --auth none \
+  --package-manager pnpm \
+  --git
+```
+
+## API Backend
+
+```bash
+npx create-js-stack@latest my-api \
+  --frontend none \
+  --backend nestjs \
+  --database postgresql \
+  --orm typeorm \
+  --auth jwt \
+  --addons docker,testing \
+  --package-manager npm \
+  --git \
+  --install
+```
+
+## Mobile App
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend react-native \
+  --backend express \
+  --database mongodb \
+  --orm mongoose \
+  --auth jwt \
+  --package-manager yarn \
+  --git
+```
+
+## Monorepo Setup
+
+```bash
+npx create-js-stack@latest my-monorepo \
+  --frontend react \
+  --backend express \
+  --database postgresql \
+  --orm prisma \
+  --addons turborepo,testing \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+## Quick Prototype
+
+For rapid prototyping:
+
+```bash
+npx create-js-stack@latest my-prototype \
+  --frontend react \
+  --backend express \
+  --database sqlite \
+  --orm prisma \
+  --package-manager npm \
+  --yes
+```
+
+The `--yes` flag skips all prompts and uses sensible defaults.
+

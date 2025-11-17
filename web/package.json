@@ -47,8 +47,10 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@fumadocs/mdx-remote": "^1.4.3",
     "@next/eslint-plugin-next": "^15.5.3",
     "@tailwindcss/postcss": "^4",
+    "@types/mdx": "^2.0.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

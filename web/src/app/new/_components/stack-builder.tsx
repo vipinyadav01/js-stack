@@ -100,7 +100,7 @@ export function StackBuilder() {
   const handleReset = () => {
     startTransition(() => {
       setStack({
-        projectName: "Js-Stack",
+        projectName: "my-app", // Reset to default, but user can always change it
         frontend: [],
         backend: "none",
         database: "none",
@@ -119,7 +119,7 @@ export function StackBuilder() {
   const handleRandom = () => {
     startTransition(() => {
       const randomStack: Partial<StackState> = {
-        projectName: "Js-Stack",
+        projectName: "my-app", // Default name, user can change it
       };
 
       for (const category of CATEGORY_ORDER) {
