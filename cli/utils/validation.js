@@ -7,18 +7,18 @@ import {
   AUTH_OPTIONS,
   ADDON_OPTIONS,
 } from "../types.js";
-import SmartCompatibility, {
-  getStackRecommendations,
-  calculateStackScore,
-} from "./smart-compatibility.js";
+import SmartCompatibility from "./smart-compatibility.js";
+
+// ============================================================================
+// COMPATIBILITY MATRICES
+// ============================================================================
 
 /**
- * Technology compatibility matrix
- * Defines which technologies work well together
+ * Core compatibility relationships between technologies
+ * Organized by category for better maintainability
  */
-export const COMPATIBILITY_MATRIX = {
-  // Database-ORM compatibility
-  database_orm: {
+const COMPATIBILITY_RULES = {
+  databaseOrm: {
     [DATABASE_OPTIONS.SQLITE]: [
       ORM_OPTIONS.PRISMA,
       ORM_OPTIONS.SEQUELIZE,
@@ -41,45 +41,7 @@ export const COMPATIBILITY_MATRIX = {
     [DATABASE_OPTIONS.NONE]: [ORM_OPTIONS.NONE],
   },
 
-  // Backend-Database compatibility
-  backend_database: {
-    [BACKEND_OPTIONS.EXPRESS]: Object.values(DATABASE_OPTIONS),
-    [BACKEND_OPTIONS.FASTIFY]: Object.values(DATABASE_OPTIONS),
-    [BACKEND_OPTIONS.KOA]: Object.values(DATABASE_OPTIONS),
-    [BACKEND_OPTIONS.HAPI]: Object.values(DATABASE_OPTIONS),
-    [BACKEND_OPTIONS.NESTJS]: Object.values(DATABASE_OPTIONS),
-    [BACKEND_OPTIONS.NONE]: [DATABASE_OPTIONS.NONE],
-  },
-
-  // Frontend-Backend compatibility
-  frontend_backend: {
-    [FRONTEND_OPTIONS.REACT]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.VUE]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.ANGULAR]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.SVELTE]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.NEXTJS]: [BACKEND_OPTIONS.NONE], // Next.js is full-stack
-    [FRONTEND_OPTIONS.NUXT]: [BACKEND_OPTIONS.NONE], // Nuxt is full-stack
-    [FRONTEND_OPTIONS.REACT_NATIVE]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.REMIX]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.ASTRO]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.SVELTEKIT]: Object.values(BACKEND_OPTIONS),
-    [FRONTEND_OPTIONS.NONE]: Object.values(BACKEND_OPTIONS),
-  },
-
-  // Auth-Backend compatibility
-  auth_backend: {
-    [AUTH_OPTIONS.JWT]: Object.values(BACKEND_OPTIONS),
-    [AUTH_OPTIONS.PASSPORT]: Object.values(BACKEND_OPTIONS),
-    [AUTH_OPTIONS.AUTH0]: Object.values(BACKEND_OPTIONS),
-    [AUTH_OPTIONS.OAUTH]: Object.values(BACKEND_OPTIONS),
-    [AUTH_OPTIONS.NEXTAUTH]: [BACKEND_OPTIONS.NONE, BACKEND_OPTIONS.EXPRESS],
-    [AUTH_OPTIONS.SUPABASE]: Object.values(BACKEND_OPTIONS),
-    [AUTH_OPTIONS.LUCIA]: Object.values(BACKEND_OPTIONS),
-    [AUTH_OPTIONS.NONE]: Object.values(BACKEND_OPTIONS),
-  },
-
-  // Auth-Frontend compatibility
-  auth_frontend: {
+  authFrontend: {
     [AUTH_OPTIONS.NEXTAUTH]: [FRONTEND_OPTIONS.NEXTJS, FRONTEND_OPTIONS.REACT],
     [AUTH_OPTIONS.AUTH0]: [
       FRONTEND_OPTIONS.REACT,
@@ -88,8 +50,6 @@ export const COMPATIBILITY_MATRIX = {
       FRONTEND_OPTIONS.NUXT,
       FRONTEND_OPTIONS.ANGULAR,
     ],
-    [AUTH_OPTIONS.OAUTH]: Object.values(FRONTEND_OPTIONS),
-    [AUTH_OPTIONS.JWT]: Object.values(FRONTEND_OPTIONS),
     [AUTH_OPTIONS.SUPABASE]: [
       FRONTEND_OPTIONS.REACT,
       FRONTEND_OPTIONS.NEXTJS,
@@ -99,12 +59,9 @@ export const COMPATIBILITY_MATRIX = {
       FRONTEND_OPTIONS.SVELTEKIT,
     ],
     [AUTH_OPTIONS.LUCIA]: [FRONTEND_OPTIONS.NEXTJS, FRONTEND_OPTIONS.SVELTEKIT],
-    [AUTH_OPTIONS.PASSPORT]: Object.values(FRONTEND_OPTIONS),
-    [AUTH_OPTIONS.NONE]: Object.values(FRONTEND_OPTIONS),
   },
 
-  // Addon-Frontend compatibility
-  addon_frontend: {
+  addonFrontend: {
     [ADDON_OPTIONS.TAILWIND]: [
       FRONTEND_OPTIONS.REACT,
       FRONTEND_OPTIONS.NEXTJS,
@@ -126,11 +83,34 @@ export const COMPATIBILITY_MATRIX = {
 };
 
 /**
- * Dependency version compatibility matrix
- * Ensures compatible package versions across the stack
+ * Meta-frameworks that cannot coexist
  */
-export const DEPENDENCY_VERSIONS = {
-  // React ecosystem
+const META_FRAMEWORKS = new Set([
+  FRONTEND_OPTIONS.NEXTJS,
+  FRONTEND_OPTIONS.NUXT,
+  FRONTEND_OPTIONS.SVELTEKIT,
+  FRONTEND_OPTIONS.REMIX,
+  FRONTEND_OPTIONS.ASTRO,
+]);
+
+/**
+ * Full-stack frameworks that don't need separate backends
+ */
+const FULLSTACK_FRAMEWORKS = new Set([
+  FRONTEND_OPTIONS.NEXTJS,
+  FRONTEND_OPTIONS.NUXT,
+  FRONTEND_OPTIONS.SVELTEKIT,
+]);
+
+// ============================================================================
+// DEPENDENCY VERSIONS
+// ============================================================================
+
+/**
+ * Centralized dependency version management
+ * Organized by ecosystem for easier updates
+ */
+const DEPENDENCY_CATALOG = {
   react: {
     react: "^18.2.0",
     "react-dom": "^18.2.0",
@@ -138,7 +118,6 @@ export const DEPENDENCY_VERSIONS = {
     "@types/react-dom": "^18.2.0",
   },
 
-  // Remix
   remix: {
     "@remix-run/node": "^2.9.0",
     "@remix-run/react": "^2.9.0",
@@ -146,24 +125,20 @@ export const DEPENDENCY_VERSIONS = {
     "react-dom": "^18.2.0",
   },
 
-  // Astro
   astro: {
     astro: "^4.0.0",
   },
 
-  // SvelteKit
   sveltekit: {
     "@sveltejs/kit": "^2.0.0",
     svelte: "^4.0.0",
   },
 
-  // Vue ecosystem
   vue: {
     vue: "^3.3.0",
     "@vitejs/plugin-vue": "^4.4.0",
   },
 
-  // Express ecosystem
   express: {
     express: "^4.18.0",
     "@types/express": "^4.17.0",
@@ -171,8 +146,7 @@ export const DEPENDENCY_VERSIONS = {
     helmet: "^7.0.0",
   },
 
-  // Database drivers
-  database: {
+  databases: {
     [DATABASE_OPTIONS.POSTGRES]: {
       pg: "^8.11.0",
       "@types/pg": "^8.10.0",
@@ -189,8 +163,7 @@ export const DEPENDENCY_VERSIONS = {
     },
   },
 
-  // ORM packages
-  orm: {
+  orms: {
     [ORM_OPTIONS.PRISMA]: {
       prisma: "^5.0.0",
       "@prisma/client": "^5.0.0",
@@ -213,7 +186,6 @@ export const DEPENDENCY_VERSIONS = {
     },
   },
 
-  // Authentication packages
   auth: {
     [AUTH_OPTIONS.JWT]: {
       jsonwebtoken: "^9.0.0",
@@ -236,351 +208,392 @@ export const DEPENDENCY_VERSIONS = {
   },
 };
 
+// ============================================================================
+// VALIDATION LOGIC
+// ============================================================================
+
 /**
- * Enhanced technology compatibility validation using Smart Compatibility system
+ * Validates configuration and returns detailed results
  * @param {Object} config - Project configuration
- * @returns {Object} - Enhanced validation result with scores and recommendations
+ * @returns {Object} Validation results with errors, warnings, and recommendations
  */
 export function validateCompatibility(config) {
-  // Use the enhanced smart compatibility system
   const smartCompatibility = new SmartCompatibility();
   const result = smartCompatibility.checkAndAdjust(config);
 
-  // Convert smart compatibility results to legacy format for backward compatibility
-  const errors = result.adjustments
-    .filter((adj) => adj.score < 6)
-    .map((adj) => ({
-      type: "incompatible",
-      message: `${adj.type}: ${adj.from} → ${adj.to}`,
-      suggestion: adj.reason,
-      score: adj.score,
-    }));
+  const errors = [];
+  const warnings = [];
 
-  const warnings = [
-    ...result.warnings.map((warn) => ({
+  // Check critical incompatibilities
+  const criticalErrors = validateCriticalRules(config);
+  errors.push(...criticalErrors);
+
+  // Convert smart compatibility adjustments to errors/warnings
+  result.adjustments.forEach((adj) => {
+    if (adj.score < 6) {
+      errors.push({
+        type: "incompatible",
+        message: `${adj.type}: ${adj.from} → ${adj.to}`,
+        suggestion: adj.reason,
+        score: adj.score,
+      });
+    }
+  });
+
+  // Convert smart warnings
+  result.warnings.forEach((warn) => {
+    warnings.push({
       type: warn.type || "suboptimal",
       message: warn.message,
       suggestion: warn.suggestion,
-    })),
-    ...result.recommendations
-      .filter((rec) => rec.priority === "high")
-      .map((rec) => ({
+    });
+  });
+
+  // Add high-priority recommendations as warnings
+  result.recommendations
+    .filter((rec) => rec.priority === "high")
+    .forEach((rec) => {
+      warnings.push({
         type: rec.type || "recommendation",
         message: `Consider ${rec.recommended}: ${rec.reason}`,
         suggestion: rec.current ? `Current: ${rec.current}` : undefined,
         score: rec.recommendedScore,
-      })),
-  ];
-
-  // Add legacy compatibility checks for critical issues
-  const legacyErrors = performLegacyValidation(config);
-  errors.push(...legacyErrors);
+      });
+    });
 
   return {
     isValid: errors.length === 0,
     errors,
     warnings,
-    // Enhanced information
     stackScore: result.stackScore,
     stackRating: result.stackRating,
     recommendations: result.recommendations,
     adjustments: result.adjustments,
     complexity: smartCompatibility.calculateProjectComplexity(config),
     modernityScore: smartCompatibility.calculateModernityScore(config),
+    config: result.config,
   };
 }
 
 /**
- * Perform legacy validation for critical compatibility issues
+ * Validates critical configuration rules that prevent project from working
  * @param {Object} config - Project configuration
- * @returns {Array} - Array of critical errors
+ * @returns {Array} Critical errors
  */
-function performLegacyValidation(config) {
+function validateCriticalRules(config) {
   const errors = [];
 
-  // Prevent conflicting meta-frameworks
-  const metaFrameworks = [
-    FRONTEND_OPTIONS.NEXTJS,
-    FRONTEND_OPTIONS.NUXT,
-    FRONTEND_OPTIONS.SVELTEKIT,
-    FRONTEND_OPTIONS.REMIX,
-    FRONTEND_OPTIONS.ASTRO,
-  ];
-
-  if (config.frontend && config.frontend.length > 1) {
-    const chosenMeta = config.frontend.filter((f) =>
-      metaFrameworks.includes(f),
-    );
-    if (chosenMeta.length > 1) {
+  // Rule 1: Only one meta-framework allowed
+  if (config.frontend && Array.isArray(config.frontend)) {
+    const metaCount = config.frontend.filter((f) =>
+      META_FRAMEWORKS.has(f),
+    ).length;
+    if (metaCount > 1) {
+      const metas = config.frontend.filter((f) => META_FRAMEWORKS.has(f));
       errors.push({
         type: "incompatible",
-        message: `Conflicting meta-frameworks selected: ${chosenMeta.join(", ")}`,
+        message: `Multiple meta-frameworks detected: ${metas.join(", ")}`,
         suggestion: "Choose only one meta-framework",
         critical: true,
       });
     }
   }
 
-  // Check for completely incompatible combinations
-  if (
-    config.database === DATABASE_OPTIONS.MONGODB &&
-    config.orm !== ORM_OPTIONS.MONGOOSE &&
-    config.orm !== ORM_OPTIONS.PRISMA &&
-    config.orm !== ORM_OPTIONS.NONE
-  ) {
-    errors.push({
-      type: "incompatible",
-      message: `MongoDB requires Mongoose or Prisma ORM, not ${config.orm}`,
-      suggestion: "Use Mongoose for MongoDB or switch to a SQL database",
-      critical: true,
-    });
+  // Rule 2: MongoDB requires specific ORMs
+  if (config.database === DATABASE_OPTIONS.MONGODB) {
+    const validORMs = [
+      ORM_OPTIONS.MONGOOSE,
+      ORM_OPTIONS.PRISMA,
+      ORM_OPTIONS.NONE,
+    ];
+    if (config.orm && !validORMs.includes(config.orm)) {
+      errors.push({
+        type: "incompatible",
+        message: `MongoDB is incompatible with ${config.orm}`,
+        suggestion: "Use Mongoose or Prisma for MongoDB",
+        critical: true,
+      });
+    }
+  }
+
+  // Rule 3: Full-stack frameworks shouldn't have separate backends
+  if (config.frontend && Array.isArray(config.frontend)) {
+    const hasFullstack = config.frontend.some((f) =>
+      FULLSTACK_FRAMEWORKS.has(f),
+    );
+    if (
+      hasFullstack &&
+      config.backend &&
+      config.backend !== BACKEND_OPTIONS.NONE
+    ) {
+      errors.push({
+        type: "incompatible",
+        message: `Full-stack framework ${config.frontend.find((f) => FULLSTACK_FRAMEWORKS.has(f))} doesn't need a separate backend`,
+        suggestion: "Set backend to 'none' or remove the full-stack framework",
+        critical: true,
+      });
+    }
+  }
+
+  // Rule 4: Auth-frontend compatibility
+  if (config.auth && config.auth !== AUTH_OPTIONS.NONE && config.frontend) {
+    const authRules = COMPATIBILITY_RULES.authFrontend[config.auth];
+    if (authRules) {
+      const hasCompatibleFrontend = config.frontend.some((f) =>
+        authRules.includes(f),
+      );
+      if (!hasCompatibleFrontend) {
+        errors.push({
+          type: "incompatible",
+          message: `${config.auth} is not compatible with selected frontend(s)`,
+          suggestion: `Use one of: ${authRules.join(", ")}`,
+          critical: true,
+        });
+      }
+    }
   }
 
   return errors;
 }
 
+// ============================================================================
+// COMPATIBILITY UTILITIES
+// ============================================================================
+
 /**
- * Get compatible options for a given technology
- * @param {string} type - Technology type (database, orm, backend, frontend)
+ * Check if ORM is compatible with database
+ * @param {string} database - Database option
+ * @param {string} orm - ORM option
+ * @returns {boolean}
+ */
+export function isORMCompatible(database, orm) {
+  if (!database || !orm) return true;
+  const compatibleORMs = COMPATIBILITY_RULES.databaseOrm[database] || [];
+  return compatibleORMs.includes(orm);
+}
+
+/**
+ * Check if frontend frameworks are compatible with each other
+ * @param {Array<string>} frontends - Array of frontend options
+ * @returns {boolean}
+ */
+export function areFrontendFrameworksCompatible(frontends) {
+  if (!Array.isArray(frontends)) return true;
+  const metaCount = frontends.filter((f) => META_FRAMEWORKS.has(f)).length;
+  return metaCount <= 1;
+}
+
+/**
+ * Get suggested ORMs for a database
+ * @param {string} database - Database option
+ * @returns {Array<string>}
+ */
+export function getSuggestedORMs(database) {
+  return COMPATIBILITY_RULES.databaseOrm[database] || [];
+}
+
+/**
+ * Get compatible options for a technology choice
+ * @param {string} type - Technology type (orm, database, backend, auth)
  * @param {string} currentValue - Current selected value
  * @param {Object} config - Current configuration
- * @returns {Array} - Compatible options
+ * @returns {Array<string>}
  */
 export function getCompatibleOptions(type, currentValue, config) {
   switch (type) {
     case "orm":
-      if (config.database && config.database !== DATABASE_OPTIONS.NONE) {
-        return COMPATIBILITY_MATRIX.database_orm[config.database] || [];
-      }
-      return Object.values(ORM_OPTIONS);
-
-    case "database":
-      if (config.backend && config.backend !== BACKEND_OPTIONS.NONE) {
-        return COMPATIBILITY_MATRIX.backend_database[config.backend] || [];
-      }
-      return Object.values(DATABASE_OPTIONS);
-
-    case "backend":
-      if (config.frontend && config.frontend.length > 0) {
-        const compatibleBackends = new Set();
-        config.frontend.forEach((frontend) => {
-          COMPATIBILITY_MATRIX.frontend_backend[frontend]?.forEach(
-            (backend) => {
-              compatibleBackends.add(backend);
-            },
-          );
-        });
-        return Array.from(compatibleBackends);
-      }
-      return Object.values(BACKEND_OPTIONS);
+      return config.database && config.database !== DATABASE_OPTIONS.NONE
+        ? COMPATIBILITY_RULES.databaseOrm[config.database] ||
+            Object.values(ORM_OPTIONS)
+        : Object.values(ORM_OPTIONS);
 
     case "auth":
-      if (config.frontend && config.frontend.length > 0) {
-        const allowed = new Set();
-        Object.entries(COMPATIBILITY_MATRIX.auth_frontend).forEach(
-          ([auth, fronts]) => {
-            const isAllowed = config.frontend.every(
-              (f) => f === FRONTEND_OPTIONS.NONE || fronts.includes(f),
-            );
-            if (isAllowed) allowed.add(auth);
-          },
-        );
-        return Array.from(allowed);
+      if (!config.frontend || config.frontend.length === 0) {
+        return Object.values(AUTH_OPTIONS);
       }
-      return Object.values(AUTH_OPTIONS);
 
-    default:
-      return [];
-  }
-}
+      const compatibleAuth = new Set();
+      Object.entries(COMPATIBILITY_RULES.authFrontend).forEach(
+        ([auth, fronts]) => {
+          const isCompatible = config.frontend.every(
+            (f) => f === FRONTEND_OPTIONS.NONE || fronts.includes(f),
+          );
+          if (isCompatible) compatibleAuth.add(auth);
+        },
+      );
 
-// Utility: Validate ORM-Database pair
-export function isORMCompatible(database, orm) {
-  const list = COMPATIBILITY_MATRIX.database_orm[database] || [];
-  return list.includes(orm);
-}
+      // Add generic auth options
+      [
+        AUTH_OPTIONS.JWT,
+        AUTH_OPTIONS.PASSPORT,
+        AUTH_OPTIONS.OAUTH,
+        AUTH_OPTIONS.NONE,
+      ].forEach((auth) => compatibleAuth.add(auth));
 
-// Utility: Prevent conflicting frontend frameworks
-export function areFrontendFrameworksCompatible(frontends) {
-  const meta = new Set([
-    FRONTEND_OPTIONS.NEXTJS,
-    FRONTEND_OPTIONS.NUXT,
-    FRONTEND_OPTIONS.SVELTEKIT,
-    FRONTEND_OPTIONS.REMIX,
-    FRONTEND_OPTIONS.ASTRO,
-  ]);
-  const chosen = (frontends || []).filter((f) => meta.has(f));
-  return chosen.length <= 1;
-}
+      return Array.from(compatibleAuth);
 
-// Utility: Suggest ORMs by database
-export function getSuggestedORMs(database) {
-  return COMPATIBILITY_MATRIX.database_orm[database] || [];
-}
-
-// Utility: Required base frameworks for meta-frameworks
-export function getRequiredBaseFrameworks(frontend) {
-  switch (frontend) {
-    case FRONTEND_OPTIONS.NEXTJS:
-    case FRONTEND_OPTIONS.REMIX:
-      return [FRONTEND_OPTIONS.REACT];
-    case FRONTEND_OPTIONS.NUXT:
-      return [FRONTEND_OPTIONS.VUE];
-    case FRONTEND_OPTIONS.SVELTEKIT:
-      return [FRONTEND_OPTIONS.SVELTE];
     default:
       return [];
   }
 }
 
 /**
- * Resolve dependency versions for a given configuration
+ * Get required base frameworks for meta-frameworks
+ * @param {string} frontend - Frontend framework
+ * @returns {Array<string>}
+ */
+export function getRequiredBaseFrameworks(frontend) {
+  const requirements = {
+    [FRONTEND_OPTIONS.NEXTJS]: [FRONTEND_OPTIONS.REACT],
+    [FRONTEND_OPTIONS.REMIX]: [FRONTEND_OPTIONS.REACT],
+    [FRONTEND_OPTIONS.NUXT]: [FRONTEND_OPTIONS.VUE],
+    [FRONTEND_OPTIONS.SVELTEKIT]: [FRONTEND_OPTIONS.SVELTE],
+  };
+
+  return requirements[frontend] || [];
+}
+
+// ============================================================================
+// DEPENDENCY RESOLUTION
+// ============================================================================
+
+/**
+ * Resolve all dependencies for a configuration
  * @param {Object} config - Project configuration
- * @returns {Object} - Resolved dependencies
+ * @returns {Object} Dependencies and devDependencies
  */
 export function resolveDependencies(config) {
   const dependencies = {};
   const devDependencies = {};
 
-  // Add frontend dependencies
-  if (config.frontend && config.frontend.length > 0) {
+  // Frontend dependencies
+  if (config.frontend && Array.isArray(config.frontend)) {
     config.frontend.forEach((frontend) => {
       if (frontend !== FRONTEND_OPTIONS.NONE) {
-        const frontendDeps = DEPENDENCY_VERSIONS[frontend];
-        if (frontendDeps) {
-          Object.assign(dependencies, frontendDeps);
-        }
+        const deps = DEPENDENCY_CATALOG[frontend];
+        if (deps) Object.assign(dependencies, deps);
       }
     });
   }
 
-  // Add backend dependencies
+  // Backend dependencies
   if (config.backend && config.backend !== BACKEND_OPTIONS.NONE) {
-    const backendDeps = DEPENDENCY_VERSIONS[config.backend];
-    if (backendDeps) {
-      Object.assign(dependencies, backendDeps);
-    }
+    const deps = DEPENDENCY_CATALOG[config.backend];
+    if (deps) Object.assign(dependencies, deps);
   }
 
-  // Add database dependencies
+  // Database dependencies
   if (config.database && config.database !== DATABASE_OPTIONS.NONE) {
-    const dbDeps = DEPENDENCY_VERSIONS.database[config.database];
-    if (dbDeps) {
-      Object.assign(dependencies, dbDeps);
-    }
+    const deps = DEPENDENCY_CATALOG.databases[config.database];
+    if (deps) Object.assign(dependencies, deps);
   }
 
-  // Add ORM dependencies
+  // ORM dependencies
   if (config.orm && config.orm !== ORM_OPTIONS.NONE) {
-    const ormDeps = DEPENDENCY_VERSIONS.orm[config.orm];
-    if (ormDeps) {
-      Object.assign(dependencies, ormDeps);
-    }
+    const deps = DEPENDENCY_CATALOG.orms[config.orm];
+    if (deps) Object.assign(dependencies, deps);
   }
 
-  // Add auth dependencies
+  // Auth dependencies
   if (config.auth && config.auth !== AUTH_OPTIONS.NONE) {
-    const authDeps = DEPENDENCY_VERSIONS.auth[config.auth];
-    if (authDeps) {
-      Object.assign(dependencies, authDeps);
-    }
+    const deps = DEPENDENCY_CATALOG.auth[config.auth];
+    if (deps) Object.assign(dependencies, deps);
   }
 
   return { dependencies, devDependencies };
 }
 
+// ============================================================================
+// DISPLAY UTILITIES
+// ============================================================================
+
 /**
- * Enhanced display of validation results with smart compatibility insights
- * @param {Object} validation - Enhanced validation result
+ * Display validation results with enhanced formatting
+ * @param {Object} validation - Validation result
  */
 export function displayValidationResults(validation) {
-  // Show stack score if available
+  // Stack score and rating
   if (validation.stackScore && validation.stackRating) {
-    const rating = validation.stackRating;
+    const { emoji, color, rating } = validation.stackRating;
     console.log(
-      chalk[rating.color].bold(
-        `\n${rating.emoji} Stack Compatibility: ${validation.stackScore}/10 (${rating.rating})`,
+      chalk[color].bold(
+        `\n${emoji} Stack Compatibility: ${validation.stackScore}/10 (${rating})`,
       ),
     );
-
-    if (validation.modernityScore) {
-      const modernityRating =
-        validation.modernityScore >= 8
-          ? "Modern"
-          : validation.modernityScore >= 6
-            ? "Current"
-            : "Outdated";
-      const modernityColor =
-        validation.modernityScore >= 8
-          ? "green"
-          : validation.modernityScore >= 6
-            ? "yellow"
-            : "red";
-      console.log(
-        chalk[modernityColor](
-          `📅 Stack Modernity: ${validation.modernityScore}/10 (${modernityRating})`,
-        ),
-      );
-    }
   }
 
-  // Show critical errors first
+  // Modernity score
+  if (validation.modernityScore !== undefined) {
+    const modernityLabel =
+      validation.modernityScore >= 8
+        ? "Modern"
+        : validation.modernityScore >= 6
+          ? "Current"
+          : "Outdated";
+
+    const modernityColor =
+      validation.modernityScore >= 8
+        ? "green"
+        : validation.modernityScore >= 6
+          ? "yellow"
+          : "red";
+
+    console.log(
+      chalk[modernityColor](
+        `📅 Stack Modernity: ${validation.modernityScore}/10 (${modernityLabel})`,
+      ),
+    );
+  }
+
+  // Critical errors
   const criticalErrors = validation.errors.filter((e) => e.critical);
-  const regularErrors = validation.errors.filter((e) => !e.critical);
-
   if (criticalErrors.length > 0) {
-    console.log(chalk.red.bold("\n🚨 Critical Configuration Issues:"));
-    criticalErrors.forEach((error, index) => {
-      console.log(chalk.red(`  ${index + 1}. ${error.message}`));
+    console.log(chalk.red.bold("\n🚨 Critical Issues:"));
+    criticalErrors.forEach((error, i) => {
+      console.log(chalk.red(`  ${i + 1}. ${error.message}`));
       if (error.suggestion) {
         console.log(chalk.gray(`     💡 ${error.suggestion}`));
       }
     });
   }
 
+  // Regular errors
+  const regularErrors = validation.errors.filter((e) => !e.critical);
   if (regularErrors.length > 0) {
-    console.log(chalk.red.bold("\n❌ Configuration Errors:"));
-    regularErrors.forEach((error, index) => {
-      console.log(chalk.red(`  ${index + 1}. ${error.message}`));
+    console.log(chalk.red.bold("\n❌ Errors:"));
+    regularErrors.forEach((error, i) => {
+      console.log(chalk.red(`  ${i + 1}. ${error.message}`));
       if (error.suggestion) {
         console.log(chalk.gray(`     💡 ${error.suggestion}`));
       }
-      if (error.score) {
-        console.log(
-          chalk.gray(`     📊 Compatibility Score: ${error.score}/10`),
-        );
+      if (error.score !== undefined) {
+        console.log(chalk.gray(`     📊 Score: ${error.score}/10`));
       }
     });
   }
 
+  // Warnings
   if (validation.warnings.length > 0) {
-    console.log(chalk.yellow.bold("\n⚠️  Configuration Warnings:"));
-    validation.warnings.forEach((warning, index) => {
-      console.log(chalk.yellow(`  ${index + 1}. ${warning.message}`));
+    console.log(chalk.yellow.bold("\n⚠️  Warnings:"));
+    validation.warnings.forEach((warning, i) => {
+      console.log(chalk.yellow(`  ${i + 1}. ${warning.message}`));
       if (warning.suggestion) {
         console.log(chalk.gray(`     💡 ${warning.suggestion}`));
       }
-      if (warning.score) {
-        console.log(
-          chalk.gray(`     📊 Recommended Score: ${warning.score}/10`),
-        );
-      }
     });
   }
 
-  // Show top recommendations
+  // Top recommendations
   if (validation.recommendations && validation.recommendations.length > 0) {
-    const topRecommendations = validation.recommendations
+    const topRecs = validation.recommendations
       .filter((r) => r.priority !== "low")
       .slice(0, 3);
 
-    if (topRecommendations.length > 0) {
-      console.log(chalk.blue.bold("\n💡 Top Recommendations:"));
-      topRecommendations.forEach((rec, index) => {
-        const priorityIcon = rec.priority === "high" ? "🔥" : "📈";
-        console.log(
-          chalk.blue(`  ${index + 1}. ${priorityIcon} ${rec.reason}`),
-        );
+    if (topRecs.length > 0) {
+      console.log(chalk.blue.bold("\n💡 Recommendations:"));
+      topRecs.forEach((rec, i) => {
+        const icon = rec.priority === "high" ? "🔥" : "📈";
+        console.log(chalk.blue(`  ${i + 1}. ${icon} ${rec.reason}`));
         if (rec.current && rec.recommended) {
           console.log(chalk.gray(`     ${rec.current} → ${rec.recommended}`));
         }
@@ -588,202 +601,172 @@ export function displayValidationResults(validation) {
     }
   }
 
+  // Success message
   if (validation.isValid && validation.warnings.length === 0) {
     console.log(chalk.green.bold("\n✅ Configuration is valid and optimized!"));
   } else if (validation.isValid) {
     console.log(chalk.green.bold("\n✅ Configuration is valid!"));
   }
 
-  // Show complexity info
+  // Complexity
   if (validation.complexity !== undefined) {
-    const complexityLevel =
+    const complexityLabel =
       validation.complexity <= 3
         ? "Simple"
         : validation.complexity <= 7
           ? "Moderate"
           : "Complex";
+
     const complexityColor =
       validation.complexity <= 3
         ? "green"
         : validation.complexity <= 7
           ? "yellow"
           : "red";
+
     console.log(
       chalk[complexityColor](
-        `\n🎯 Project Complexity: ${complexityLevel} (${validation.complexity}/10)`,
+        `\n🎯 Complexity: ${complexityLabel} (${validation.complexity}/10)`,
       ),
     );
   }
 }
 
+// ============================================================================
+// PRESET CONFIGURATIONS
+// ============================================================================
+
 /**
- * Preset configurations for common use cases
+ * Pre-configured project templates
  */
 export const PRESET_CONFIGS = {
-  "saas-app": {
-    name: "SaaS Application",
-    description: "Full-stack SaaS application with authentication",
-    config: {
-      backend: BACKEND_OPTIONS.EXPRESS,
-      frontend: [FRONTEND_OPTIONS.REACT],
-      database: DATABASE_OPTIONS.POSTGRES,
-      orm: ORM_OPTIONS.PRISMA,
-      auth: AUTH_OPTIONS.JWT,
-      packageManager: "npm",
-      addons: [
-        "typescript",
-        "eslint",
-        "prettier",
-        "docker",
-        "testing",
-        "tailwind",
-      ],
-    },
-  },
-  "api-service": {
-    name: "API Service",
-    description: "RESTful API service with database",
-    config: {
-      backend: BACKEND_OPTIONS.EXPRESS,
-      frontend: [FRONTEND_OPTIONS.NONE],
-      database: DATABASE_OPTIONS.POSTGRES,
-      orm: ORM_OPTIONS.PRISMA,
-      auth: AUTH_OPTIONS.JWT,
-      packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "docker", "testing"],
-    },
-  },
-  "mobile-app": {
-    name: "Mobile Application",
-    description: "React Native mobile app with backend",
-    config: {
-      backend: BACKEND_OPTIONS.EXPRESS,
-      frontend: [FRONTEND_OPTIONS.REACT_NATIVE],
-      database: DATABASE_OPTIONS.MONGODB,
-      orm: ORM_OPTIONS.MONGOOSE,
-      auth: AUTH_OPTIONS.OAUTH,
-      packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier"],
-    },
-  },
-  "fullstack-nextjs": {
-    name: "Next.js Full-Stack",
-    description: "Next.js application with API routes",
+  "nextjs-app": {
+    name: "Next.js Application",
+    description: "Full-stack Next.js 15 with App Router, PostgreSQL, and auth",
     config: {
       backend: BACKEND_OPTIONS.NONE,
       frontend: [FRONTEND_OPTIONS.NEXTJS],
       database: DATABASE_OPTIONS.POSTGRES,
       orm: ORM_OPTIONS.PRISMA,
-      auth: AUTH_OPTIONS.NEXTAUTH,
-      packageManager: "npm",
-      addons: [
-        "typescript",
-        "eslint",
-        "prettier",
-        "tailwind",
-        "shadcn",
-        "testing",
-      ],
+      auth: AUTH_OPTIONS.BETTER_AUTH,
+      packageManager: "bun",
+      addons: ["typescript", "testing", "biome", "docker"],
     },
   },
-  "remix-app": {
-    name: "Remix Application",
-    description: "Full-stack Remix application with modern tooling",
+
+  "express-api": {
+    name: "Express API",
+    description: "Lightweight Express REST API with PostgreSQL and JWT",
     config: {
-      backend: BACKEND_OPTIONS.NONE,
-      frontend: [FRONTEND_OPTIONS.REMIX],
+      backend: BACKEND_OPTIONS.EXPRESS,
+      frontend: [FRONTEND_OPTIONS.NONE],
       database: DATABASE_OPTIONS.POSTGRES,
-      orm: ORM_OPTIONS.DRIZZLE,
-      auth: AUTH_OPTIONS.LUCIA,
+      orm: ORM_OPTIONS.PRISMA,
+      auth: AUTH_OPTIONS.JWT,
       packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "tailwind", "testing"],
+      addons: ["typescript", "testing", "docker", "biome"],
     },
   },
-  "astro-site": {
-    name: "Astro Website",
-    description: "Static site with Astro and modern tooling",
+
+  "mern-stack": {
+    name: "MERN Stack",
+    description: "MongoDB + Express + React + Node.js full-stack",
     config: {
-      backend: BACKEND_OPTIONS.NONE,
-      frontend: [FRONTEND_OPTIONS.ASTRO],
-      database: DATABASE_OPTIONS.NONE,
-      orm: ORM_OPTIONS.NONE,
-      auth: AUTH_OPTIONS.NONE,
-      packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "tailwind"],
-    },
-  },
-  "sveltekit-app": {
-    name: "SvelteKit Application",
-    description: "Full-stack SvelteKit application",
-    config: {
-      backend: BACKEND_OPTIONS.NONE,
-      frontend: [FRONTEND_OPTIONS.SVELTEKIT],
-      database: DATABASE_OPTIONS.POSTGRES,
-      orm: ORM_OPTIONS.DRIZZLE,
-      auth: AUTH_OPTIONS.LUCIA,
-      packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "tailwind", "testing"],
-    },
-  },
-  "supabase-app": {
-    name: "Supabase Application",
-    description: "Full-stack app with Supabase backend",
-    config: {
-      backend: BACKEND_OPTIONS.NONE,
+      backend: BACKEND_OPTIONS.EXPRESS,
       frontend: [FRONTEND_OPTIONS.REACT],
-      database: DATABASE_OPTIONS.POSTGRES,
-      orm: ORM_OPTIONS.NONE,
-      auth: AUTH_OPTIONS.SUPABASE,
+      database: DATABASE_OPTIONS.MONGODB,
+      orm: ORM_OPTIONS.MONGOOSE,
+      auth: AUTH_OPTIONS.JWT,
       packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "tailwind", "testing"],
+      addons: ["typescript", "testing", "docker", "biome"],
     },
   },
-  microservice: {
-    name: "Microservice",
-    description: "Lightweight microservice",
+
+  "nestjs-api": {
+    name: "NestJS API",
+    description: "Enterprise NestJS API with Prisma and comprehensive testing",
+    config: {
+      backend: BACKEND_OPTIONS.NESTJS,
+      frontend: [FRONTEND_OPTIONS.NONE],
+      database: DATABASE_OPTIONS.POSTGRES,
+      orm: ORM_OPTIONS.PRISMA,
+      auth: AUTH_OPTIONS.PASSPORT,
+      packageManager: "pnpm",
+      addons: ["typescript", "testing", "docker", "biome"],
+    },
+  },
+
+  "optimal-fullstack": {
+    name: "Optimal Full-Stack",
+    description: "Next.js 15 + PostgreSQL + Prisma + Better Auth - Maximum DX",
+    config: {
+      backend: BACKEND_OPTIONS.NONE,
+      frontend: [FRONTEND_OPTIONS.NEXTJS],
+      database: DATABASE_OPTIONS.POSTGRES,
+      orm: ORM_OPTIONS.PRISMA,
+      auth: AUTH_OPTIONS.BETTER_AUTH,
+      packageManager: "pnpm",
+      addons: ["typescript", "testing", "biome", "docker"],
+    },
+  },
+
+  "fastify-api": {
+    name: "Fastify API",
+    description: "High-performance Fastify REST API with PostgreSQL",
+    config: {
+      backend: BACKEND_OPTIONS.FASTIFY,
+      frontend: [FRONTEND_OPTIONS.NONE],
+      database: DATABASE_OPTIONS.POSTGRES,
+      orm: ORM_OPTIONS.PRISMA,
+      auth: AUTH_OPTIONS.JWT,
+      packageManager: "pnpm",
+      addons: ["typescript", "testing", "docker", "biome"],
+    },
+  },
+
+  "minimal-api": {
+    name: "Minimal API",
+    description: "Lightweight Fastify API with SQLite - Perfect for prototypes",
     config: {
       backend: BACKEND_OPTIONS.FASTIFY,
       frontend: [FRONTEND_OPTIONS.NONE],
       database: DATABASE_OPTIONS.SQLITE,
-      orm: ORM_OPTIONS.NONE,
+      orm: ORM_OPTIONS.PRISMA,
       auth: AUTH_OPTIONS.JWT,
-      packageManager: "npm",
-      addons: ["typescript", "eslint", "prettier", "docker"],
+      packageManager: "bun",
+      addons: ["typescript", "testing", "biome"],
     },
   },
 };
 
 /**
- * Enhanced preset configuration with smart compatibility validation
- * @param {string} presetName - Name of the preset
- * @returns {Object|null} - Enhanced preset configuration or null if not found
+ * Get and validate a preset configuration
+ * @param {string} presetName - Preset identifier
+ * @returns {Object|null} Enhanced preset with validation results
  */
 export function getPresetConfig(presetName) {
   const preset = PRESET_CONFIGS[presetName];
   if (!preset) return null;
 
-  // Validate and enhance preset with smart compatibility
-  const smartCompatibility = new SmartCompatibility();
-  const validationResult = smartCompatibility.checkAndAdjust({
-    ...preset.config,
-  });
+  const validation = validateCompatibility(preset.config);
 
   return {
     ...preset,
-    config: validationResult.config,
-    score: validationResult.stackScore,
-    rating: validationResult.stackRating,
+    config: validation.config,
+    score: validation.stackScore,
+    rating: validation.stackRating,
     validated: true,
-    adjustments: validationResult.adjustments,
-    recommendations: validationResult.recommendations.filter(
+    adjustments: validation.adjustments,
+    recommendations: validation.recommendations.filter(
       (r) => r.priority !== "low",
     ),
+    isValid: validation.isValid,
   };
 }
 
 /**
  * List all available presets
- * @returns {Array} - Array of preset information
+ * @returns {Array} Preset information
  */
 export function listPresets() {
   return Object.entries(PRESET_CONFIGS).map(([key, preset]) => ({
@@ -792,3 +775,12 @@ export function listPresets() {
     description: preset.description,
   }));
 }
+
+// Legacy export for backward compatibility
+export const COMPATIBILITY_MATRIX = {
+  database_orm: COMPATIBILITY_RULES.databaseOrm,
+  auth_frontend: COMPATIBILITY_RULES.authFrontend,
+  addon_frontend: COMPATIBILITY_RULES.addonFrontend,
+};
+
+export const DEPENDENCY_VERSIONS = DEPENDENCY_CATALOG;

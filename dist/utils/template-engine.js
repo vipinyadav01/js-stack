@@ -2,63 +2,76 @@ import fs from "fs-extra";
 import path from "path";
 import Handlebars from "handlebars";
 import { glob } from "glob";
+import { execSync } from "child_process";
 import "./handlebars-helpers.js";
 
-/**
- * Advanced Template Engine for JS Stack CLI
- * Handles variable substitution, conditional rendering, and proper directory structure generation
- */
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const DEFAULT_OPTIONS = {
+  templateExtensions: [".hbs", ".handlebars"],
+  ignoredFiles: [".DS_Store", "Thumbs.db", ".gitkeep"],
+  preservePermissions: true,
+  createParentDirs: true,
+  overwriteExisting: false,
+  dryRun: false,
+  verbose: false,
+};
+
+const TEMPLATE_PATTERNS = {
+  typescript: /\.(ts|tsx)\.(hbs|handlebars)$/,
+  javascript: /\.(js|jsx)\.(hbs|handlebars)$/,
+};
+
+// ============================================================================
+// TEMPLATE ENGINE
+// ============================================================================
 
 /**
- * Template Engine Configuration
+ * Advanced template engine for processing Handlebars templates
+ * Handles variable substitution, conditional rendering, and directory structure generation
  */
 export class TemplateEngine {
   constructor(options = {}) {
-    this.options = {
-      templateExtensions: [".hbs", ".handlebars"],
-      ignoredFiles: [".DS_Store", "Thumbs.db", ".gitkeep"],
-      preservePermissions: true,
-      createParentDirs: true,
-      overwriteExisting: false,
-      dryRun: false,
-      verbose: false,
-      ...options,
-    };
+    this.options = { ...DEFAULT_OPTIONS, ...options };
+    this.reset();
+  }
 
+  /**
+   * Reset engine state
+   */
+  reset() {
     this.generatedFiles = [];
     this.skippedFiles = [];
     this.errors = [];
   }
 
   /**
-   * Process templates from source directory to destination
+   * Process templates from source to destination
    * @param {string} templateDir - Source template directory
    * @param {string} outputDir - Destination directory
-   * @param {object} context - Template context variables
-   * @param {object} options - Processing options
+   * @param {Object} context - Template context variables
+   * @param {Object} options - Processing options
+   * @returns {Object} Processing report
    */
   async processTemplates(templateDir, outputDir, context = {}, options = {}) {
     const config = { ...this.options, ...options };
 
     try {
-      // Validate inputs
-      await this._validateInputs(templateDir, outputDir, context);
+      this.validateInputs(templateDir, outputDir, context);
 
-      // Ensure output directory exists
       if (!config.dryRun) {
         await fs.ensureDir(outputDir);
       }
 
-      // Get all files recursively
-      const files = await this._getAllFiles(templateDir);
+      const files = await this.getAllFiles(templateDir);
 
-      // Process each file
       for (const file of files) {
-        await this._processFile(file, templateDir, outputDir, context, config);
+        await this.processFile(file, templateDir, outputDir, context, config);
       }
 
-      // Generate summary report
-      return this._generateReport();
+      return this.generateReport();
     } catch (error) {
       this.errors.push({
         type: "PROCESS_ERROR",
@@ -70,33 +83,20 @@ export class TemplateEngine {
   }
 
   /**
-   * Process a single template file
-   * @param {string} sourceFile - Source file path
-   * @param {string} templateDir - Template directory root
-   * @param {string} outputDir - Output directory root
-   * @param {object} context - Template context
-   * @param {object} config - Configuration options
+   * Process a single file
    */
-  async _processFile(sourceFile, templateDir, outputDir, context, config) {
+  async processFile(sourceFile, templateDir, outputDir, context, config) {
     try {
-      // Get relative path from template directory
       const relativePath = path.relative(templateDir, sourceFile);
 
       // Skip ignored files
-      if (this._shouldIgnoreFile(relativePath, config)) {
-        this.skippedFiles.push({
-          path: relativePath,
-          reason: "ignored",
-        });
+      if (this.shouldIgnoreFile(relativePath, config)) {
+        this.skippedFiles.push({ path: relativePath, reason: "ignored" });
         return;
       }
 
-      // Process file path template (directory names and filename)
-      const processedPath = await this._processPath(relativePath, context);
-      const outputPath = path.join(outputDir, processedPath);
-
       // Skip language-specific alternates
-      if (this._shouldSkipLanguageAlternate(relativePath, context)) {
+      if (this.shouldSkipLanguageAlternate(relativePath, context)) {
         this.skippedFiles.push({
           path: relativePath,
           reason: "language-alternate",
@@ -104,7 +104,11 @@ export class TemplateEngine {
         return;
       }
 
-      // Check if target exists and handle overwrite
+      // Process path template
+      const processedPath = this.processPath(relativePath, context);
+      const outputPath = path.join(outputDir, processedPath);
+
+      // Check if file exists
       if (!config.overwriteExisting && (await fs.pathExists(outputPath))) {
         this.skippedFiles.push({
           path: processedPath,
@@ -119,15 +123,15 @@ export class TemplateEngine {
       }
 
       // Process file based on type
-      if (this._isTemplateFile(sourceFile, config.templateExtensions)) {
-        await this._processTemplateFile(
-          sourceFile,
-          outputPath,
-          context,
-          config,
-        );
+      const isTemplate = this.isTemplateFile(
+        sourceFile,
+        config.templateExtensions,
+      );
+
+      if (isTemplate) {
+        await this.processTemplateFile(sourceFile, outputPath, context, config);
       } else {
-        await this._copyStaticFile(sourceFile, outputPath, config);
+        await this.copyStaticFile(sourceFile, outputPath, config);
       }
 
       if (config.verbose) {
@@ -139,6 +143,7 @@ export class TemplateEngine {
         file: sourceFile,
         message: error.message,
       });
+
       if (config.verbose) {
         console.error(`✗ Error processing: ${sourceFile} - ${error.message}`);
       }
@@ -148,29 +153,23 @@ export class TemplateEngine {
   /**
    * Process template file with Handlebars
    */
-  async _processTemplateFile(sourceFile, outputPath, context, config) {
-    // Read template content
+  async processTemplateFile(sourceFile, outputPath, context, config) {
     const templateContent = await fs.readFile(sourceFile, "utf8");
 
-    // Compile and execute template
     const template = Handlebars.compile(templateContent, {
       strict: false,
       noEscape: false,
     });
 
     const processedContent = template(context);
-
-    // Remove template extension from output path
-    const finalOutputPath = this._removeTemplateExtensions(
+    const finalOutputPath = this.removeTemplateExtensions(
       outputPath,
       config.templateExtensions,
     );
 
-    // Write processed content
     if (!config.dryRun) {
       await fs.writeFile(finalOutputPath, processedContent, "utf8");
 
-      // Preserve file permissions if needed
       if (config.preservePermissions) {
         const stats = await fs.stat(sourceFile);
         await fs.chmod(finalOutputPath, stats.mode);
@@ -187,11 +186,9 @@ export class TemplateEngine {
   /**
    * Copy static file without processing
    */
-  async _copyStaticFile(sourceFile, outputPath, config) {
+  async copyStaticFile(sourceFile, outputPath, config) {
     if (!config.dryRun) {
-      await fs.copy(sourceFile, outputPath, {
-        preserveTimestamps: true,
-      });
+      await fs.copy(sourceFile, outputPath, { preserveTimestamps: true });
     }
 
     this.generatedFiles.push({
@@ -204,46 +201,36 @@ export class TemplateEngine {
   /**
    * Process path template (handles dynamic directory and file names)
    */
-  async _processPath(relativePath, context) {
+  processPath(relativePath, context) {
     const pathParts = relativePath.split(path.sep);
-    const processedParts = [];
 
-    for (const part of pathParts) {
-      if (part.includes("{{")) {
-        // Process template in path part
+    return pathParts
+      .map((part) => {
+        if (!part.includes("{{")) return part;
+
         try {
           const template = Handlebars.compile(part);
-          const processedPart = template(context);
-          processedParts.push(processedPart);
-        } catch (error) {
-          // If template processing fails, use original part
-          processedParts.push(part);
+          return template(context);
+        } catch {
+          return part;
         }
-      } else {
-        processedParts.push(part);
-      }
-    }
-
-    return processedParts.join(path.sep);
+      })
+      .join(path.sep);
   }
 
   /**
    * Get all files recursively from directory
    */
-  async _getAllFiles(dir) {
+  async getAllFiles(dir) {
     const pattern = path.join(dir, "**", "*").replace(/\\/g, "/");
-    const files = await glob(pattern, {
-      nodir: true,
-      dot: true,
-    });
-
+    const files = await glob(pattern, { nodir: true, dot: true });
     return files.map((f) => path.resolve(f));
   }
 
   /**
    * Check if file should be ignored
    */
-  _shouldIgnoreFile(relativePath, config) {
+  shouldIgnoreFile(relativePath, config) {
     const filename = path.basename(relativePath);
     return config.ignoredFiles.includes(filename);
   }
@@ -251,63 +238,54 @@ export class TemplateEngine {
   /**
    * Check if file should be skipped based on language preferences
    */
-  _shouldSkipLanguageAlternate(relativePath, context) {
-    const isTsTemplate =
-      /\.ts\.(hbs|handlebars)$/.test(relativePath) ||
-      /\.tsx\.(hbs|handlebars)$/.test(relativePath);
-    const isJsTemplate =
-      /\.js\.(hbs|handlebars)$/.test(relativePath) ||
-      /\.jsx\.(hbs|handlebars)$/.test(relativePath);
+  shouldSkipLanguageAlternate(relativePath, context) {
+    const isTypeScript = TEMPLATE_PATTERNS.typescript.test(relativePath);
+    const isJavaScript = TEMPLATE_PATTERNS.javascript.test(relativePath);
+    const wantsTypeScript = Boolean(
+      context.typescript || context.useTypeScript,
+    );
 
-    const wantsTs = Boolean(context.typescript || context.useTypeScript);
-
-    return (isTsTemplate && !wantsTs) || (isJsTemplate && wantsTs);
+    return (
+      (isTypeScript && !wantsTypeScript) || (isJavaScript && wantsTypeScript)
+    );
   }
 
   /**
    * Check if file is a template file
    */
-  _isTemplateFile(filePath, templateExtensions) {
+  isTemplateFile(filePath, templateExtensions) {
     return templateExtensions.some((ext) => filePath.endsWith(ext));
   }
 
   /**
    * Remove template extensions from output path
    */
-  _removeTemplateExtensions(outputPath, templateExtensions) {
-    let processedPath = outputPath;
-
+  removeTemplateExtensions(outputPath, templateExtensions) {
     for (const ext of templateExtensions) {
-      if (processedPath.endsWith(ext)) {
-        processedPath = processedPath.slice(0, -ext.length);
-        break;
+      if (outputPath.endsWith(ext)) {
+        return outputPath.slice(0, -ext.length);
       }
     }
-
-    return processedPath;
+    return outputPath;
   }
 
   /**
    * Validate inputs
    */
-  async _validateInputs(templateDir, outputDir, context) {
-    // Check if template directory exists
+  async validateInputs(templateDir, outputDir, context) {
     if (!(await fs.pathExists(templateDir))) {
       throw new Error(`Template directory does not exist: ${templateDir}`);
     }
 
-    // Check if template directory is actually a directory
     const stat = await fs.stat(templateDir);
     if (!stat.isDirectory()) {
       throw new Error(`Template path is not a directory: ${templateDir}`);
     }
 
-    // Validate context is an object
     if (typeof context !== "object" || context === null) {
       throw new Error("Context must be a valid object");
     }
 
-    // Validate output directory path
     if (!outputDir || typeof outputDir !== "string") {
       throw new Error("Output directory must be a valid string path");
     }
@@ -316,7 +294,7 @@ export class TemplateEngine {
   /**
    * Generate processing report
    */
-  _generateReport() {
+  generateReport() {
     return {
       summary: {
         totalFiles: this.generatedFiles.length,
@@ -334,19 +312,14 @@ export class TemplateEngine {
       errors: this.errors,
     };
   }
-
-  /**
-   * Reset engine state
-   */
-  reset() {
-    this.generatedFiles = [];
-    this.skippedFiles = [];
-    this.errors = [];
-  }
 }
 
+// ============================================================================
+// VARIABLE SUBSTITUTION
+// ============================================================================
+
 /**
- * Enhanced Variable Substitution Engine
+ * Enhanced variable substitution engine with resolvers and transformers
  */
 export class VariableSubstitution {
   constructor() {
@@ -354,15 +327,17 @@ export class VariableSubstitution {
     this.resolvers = new Map();
     this.transformers = new Map();
 
-    // Register default resolvers
-    this._registerDefaultResolvers();
-    this._registerDefaultTransformers();
+    this.registerDefaultResolvers();
+    this.registerDefaultTransformers();
   }
 
   /**
    * Add variable resolver
    */
   addResolver(name, resolverFunction) {
+    if (typeof resolverFunction !== "function") {
+      throw new Error(`Resolver must be a function: ${name}`);
+    }
     this.resolvers.set(name, resolverFunction);
   }
 
@@ -370,6 +345,9 @@ export class VariableSubstitution {
    * Add variable transformer
    */
   addTransformer(name, transformerFunction) {
+    if (typeof transformerFunction !== "function") {
+      throw new Error(`Transformer must be a function: ${name}`);
+    }
     this.transformers.set(name, transformerFunction);
   }
 
@@ -388,13 +366,11 @@ export class VariableSubstitution {
   async getResolvedContext() {
     const context = {};
 
-    // Process all variables
     for (const [key, value] of this.variables.entries()) {
-      context[key] = await this._resolveValue(key, value);
+      context[key] = await this.resolveValue(key, value);
     }
 
-    // Add computed values
-    context._computed = await this._getComputedValues(context);
+    context._computed = this.getComputedValues(context);
 
     return context;
   }
@@ -402,24 +378,26 @@ export class VariableSubstitution {
   /**
    * Resolve a single value
    */
-  async _resolveValue(key, value) {
-    // If value has a resolver, use it
-    if (typeof value === "object" && value !== null && value._resolver) {
+  async resolveValue(key, value) {
+    // Handle resolver
+    if (this.isResolverValue(value)) {
       const resolver = this.resolvers.get(value._resolver);
       if (resolver) {
         return await resolver(value._params || {});
       }
     }
 
-    // If value has transformers, apply them
-    if (typeof value === "object" && value !== null && value._transformers) {
+    // Handle transformers
+    if (this.isTransformerValue(value)) {
       let result = value._value || value;
+
       for (const transformerName of value._transformers) {
         const transformer = this.transformers.get(transformerName);
         if (transformer) {
           result = await transformer(result);
         }
       }
+
       return result;
     }
 
@@ -427,22 +405,48 @@ export class VariableSubstitution {
   }
 
   /**
+   * Check if value has resolver
+   */
+  isResolverValue(value) {
+    return typeof value === "object" && value !== null && value._resolver;
+  }
+
+  /**
+   * Check if value has transformers
+   */
+  isTransformerValue(value) {
+    return typeof value === "object" && value !== null && value._transformers;
+  }
+
+  /**
    * Get computed values
    */
-  async _getComputedValues(context) {
+  getComputedValues(context) {
+    const now = new Date();
+
     return {
-      timestamp: new Date().toISOString(),
-      year: new Date().getFullYear(),
+      timestamp: now.toISOString(),
+      year: now.getFullYear(),
       packageName: context.projectName
-        ? context.projectName.toLowerCase().replace(/\s+/g, "-")
+        ? this.toKebabCase(context.projectName)
         : "my-project",
     };
   }
 
   /**
+   * Convert string to kebab-case
+   */
+  toKebabCase(str) {
+    return String(str)
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+  }
+
+  /**
    * Register default resolvers
    */
-  _registerDefaultResolvers() {
+  registerDefaultResolvers() {
     // Environment variable resolver
     this.addResolver("env", ({ variable, defaultValue }) => {
       return process.env[variable] || defaultValue;
@@ -464,7 +468,6 @@ export class VariableSubstitution {
     // Git resolver
     this.addResolver("git", ({ command }) => {
       try {
-        const { execSync } = require("child_process");
         return execSync(command, { encoding: "utf8" }).trim();
       } catch {
         return "";
@@ -475,88 +478,149 @@ export class VariableSubstitution {
   /**
    * Register default transformers
    */
-  _registerDefaultTransformers() {
+  registerDefaultTransformers() {
     this.addTransformer("uppercase", (value) => String(value).toUpperCase());
+
     this.addTransformer("lowercase", (value) => String(value).toLowerCase());
+
     this.addTransformer("camelCase", (value) => {
       return String(value)
         .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""))
         .replace(/^[A-Z]/, (c) => c.toLowerCase());
     });
+
+    this.addTransformer("pascalCase", (value) => {
+      return String(value)
+        .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""))
+        .replace(/^[a-z]/, (c) => c.toUpperCase());
+    });
+
     this.addTransformer("kebabCase", (value) => {
       return String(value)
         .replace(/([a-z])([A-Z])/g, "$1-$2")
         .replace(/[\s_]+/g, "-")
         .toLowerCase();
     });
+
+    this.addTransformer("snakeCase", (value) => {
+      return String(value)
+        .replace(/([a-z])([A-Z])/g, "$1_$2")
+        .replace(/[\s-]+/g, "_")
+        .toLowerCase();
+    });
   }
 }
 
+// ============================================================================
+// DIRECTORY STRUCTURE GENERATOR
+// ============================================================================
+
 /**
- * Directory Structure Generator
+ * Generate directory structures from templates
  */
 export class DirectoryStructureGenerator {
   constructor() {
-    this.structure = new Map();
+    this.structures = new Map();
   }
 
   /**
    * Define directory structure from template
    */
   defineStructure(name, structure) {
-    this.structure.set(name, structure);
+    if (!name || typeof name !== "string") {
+      throw new Error("Structure name must be a valid string");
+    }
+    this.structures.set(name, structure);
   }
 
   /**
    * Generate directory structure
    */
   async generateStructure(structureName, basePath, context = {}) {
-    const structure = this.structure.get(structureName);
+    const structure = this.structures.get(structureName);
+
     if (!structure) {
       throw new Error(`Structure '${structureName}' not found`);
     }
 
-    await this._createStructure(structure, basePath, context);
+    await this.createStructure(structure, basePath, context);
   }
 
   /**
    * Create structure recursively
    */
-  async _createStructure(structure, currentPath, context) {
+  async createStructure(structure, currentPath, context) {
     if (Array.isArray(structure)) {
-      // Array of items
       for (const item of structure) {
-        await this._createStructure(item, currentPath, context);
+        await this.createStructure(item, currentPath, context);
       }
-    } else if (typeof structure === "object" && structure !== null) {
-      if (structure.type === "directory") {
-        const dirPath = path.join(currentPath, structure.name);
-        await fs.ensureDir(dirPath);
-
-        if (structure.children) {
-          await this._createStructure(structure.children, dirPath, context);
-        }
-      } else if (structure.type === "file") {
-        const filePath = path.join(currentPath, structure.name);
-        const content = structure.content || "";
-
-        // Process content as template if needed
-        if (structure.template && content.includes("{{")) {
-          const template = Handlebars.compile(content);
-          const processedContent = template(context);
-          await fs.writeFile(filePath, processedContent, "utf8");
-        } else {
-          await fs.writeFile(filePath, content, "utf8");
-        }
-      }
-    } else if (typeof structure === "string") {
-      // Simple directory name
-      await fs.ensureDir(path.join(currentPath, structure));
+      return;
     }
+
+    if (typeof structure === "string") {
+      await fs.ensureDir(path.join(currentPath, structure));
+      return;
+    }
+
+    if (typeof structure === "object" && structure !== null) {
+      if (structure.type === "directory") {
+        await this.createDirectory(structure, currentPath, context);
+      } else if (structure.type === "file") {
+        await this.createFile(structure, currentPath, context);
+      }
+    }
+  }
+
+  /**
+   * Create directory
+   */
+  async createDirectory(structure, currentPath, context) {
+    const dirPath = path.join(currentPath, structure.name);
+    await fs.ensureDir(dirPath);
+
+    if (structure.children) {
+      await this.createStructure(structure.children, dirPath, context);
+    }
+  }
+
+  /**
+   * Create file
+   */
+  async createFile(structure, currentPath, context) {
+    const filePath = path.join(currentPath, structure.name);
+    const content = structure.content || "";
+
+    if (structure.template && content.includes("{{")) {
+      const template = Handlebars.compile(content);
+      const processedContent = template(context);
+      await fs.writeFile(filePath, processedContent, "utf8");
+    } else {
+      await fs.writeFile(filePath, content, "utf8");
+    }
+  }
+
+  /**
+   * Get all defined structures
+   */
+  getStructures() {
+    return Array.from(this.structures.keys());
+  }
+
+  /**
+   * Check if structure exists
+   */
+  hasStructure(name) {
+    return this.structures.has(name);
   }
 }
 
-// Export convenience functions
+// ============================================================================
+// CONVENIENCE FUNCTIONS
+// ============================================================================
+
+/**
+ * Process templates (convenience function)
+ */
 export async function processTemplates(
   templateDir,
   outputDir,
@@ -572,6 +636,9 @@ export async function processTemplates(
   );
 }
 
+/**
+ * Generate project from template (convenience function)
+ */
 export async function generateProject(
   templateName,
   projectPath,

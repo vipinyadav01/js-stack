@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import type React from "react";
 import { InfoIcon, Terminal } from "lucide-react";
 import {

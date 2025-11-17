@@ -58,7 +58,10 @@ export const defaultConfig: BuilderState = {
   initializeGit: true,
 };
 
-// Comprehensive compatibility matrix based on real-world tested combinations
+/**
+ * Comprehensive compatibility matrix based on real-world tested combinations.
+ * All rules are bidirectional where applicable.
+ */
 export const compatibilityRules = {
   // Database-ORM compatibility (strictly enforced)
   databaseOrm: {
@@ -67,6 +70,15 @@ export const compatibilityRules = {
     mysql: ["prisma", "sequelize", "typeorm", "none"],
     sqlite: ["prisma", "sequelize", "typeorm", "none"],
     none: ["none"],
+  },
+
+  // ORM-Database compatibility (reverse lookup)
+  ormDatabase: {
+    prisma: ["postgres", "mysql", "sqlite"],
+    mongoose: ["mongodb"],
+    sequelize: ["postgres", "mysql", "sqlite"],
+    typeorm: ["postgres", "mysql", "sqlite"],
+    none: ["none", "postgres", "mysql", "sqlite", "mongodb"],
   },
 
   // Frontend-Auth compatibility (optimal pairings)
@@ -79,6 +91,38 @@ export const compatibilityRules = {
     svelte: ["auth0", "better-auth", "jwt", "oauth", "none"],
     "react-native": ["auth0", "better-auth", "jwt", "oauth", "none"],
     none: ["none"],
+  },
+
+  // Backend-Auth compatibility (backend-specific auth support)
+  backendAuth: {
+    express: ["jwt", "passport", "auth0", "oauth", "better-auth", "none"],
+    fastify: ["jwt", "auth0", "oauth", "better-auth", "none"], // No Passport support
+    koa: ["jwt", "passport", "auth0", "oauth", "better-auth", "none"],
+    hapi: ["jwt", "auth0", "oauth", "none"], // Limited auth support
+    nestjs: ["jwt", "passport", "auth0", "oauth", "better-auth", "none"],
+    none: ["better-auth", "auth0", "jwt", "oauth", "none"], // Frontend-only auth
+  },
+
+  // Frontend-Backend compatibility (which backends work with which frontends)
+  frontendBackend: {
+    nextjs: ["none"], // Built-in API routes
+    nuxt: ["none"], // Built-in server routes
+    react: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
+    vue: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
+    angular: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
+    svelte: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
+    "react-native": ["express", "fastify", "koa", "hapi", "nestjs"], // Requires backend
+    none: ["express", "fastify", "koa", "hapi", "nestjs"], // API-only
+  },
+
+  // Backend-Frontend compatibility (reverse lookup)
+  backendFrontend: {
+    express: ["react", "vue", "angular", "svelte", "react-native", "none"],
+    fastify: ["react", "vue", "angular", "svelte", "react-native", "none"],
+    koa: ["react", "vue", "angular", "svelte", "react-native", "none"],
+    hapi: ["react", "vue", "angular", "svelte", "react-native", "none"],
+    nestjs: ["react", "vue", "angular", "svelte", "react-native", "none"],
+    none: ["nextjs", "nuxt", "react", "vue", "angular", "svelte"], // No React Native
   },
 
   // Backend-Database compatibility (tested combinations)
@@ -103,6 +147,19 @@ export const compatibilityRules = {
     none: ["docker", "testing", "biome", "turborepo"], // Backend-only supports all
   },
 } as const;
+
+/**
+ * Type for all compatibility rule types
+ */
+export type CompatibilityType =
+  | "databaseOrm"
+  | "ormDatabase"
+  | "frontendAuth"
+  | "backendAuth"
+  | "backendDatabase"
+  | "frontendBackend"
+  | "backendFrontend"
+  | "frontendAddons";
 
 // Well-tested, production-ready stack combinations
 export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
@@ -396,9 +453,17 @@ export function normalizeState(input: Partial<BuilderState>): BuilderState {
   };
 }
 
-// Check if two technologies are compatible
+/**
+ * Check if two technologies are compatible based on the specified compatibility type.
+ * Supports bidirectional checks for all compatibility rule types.
+ *
+ * @param type - The type of compatibility check to perform
+ * @param primary - The primary technology (e.g., database, frontend, backend)
+ * @param secondary - The secondary technology to check against (can be array for multiple checks)
+ * @returns true if compatible, false otherwise
+ */
 export function isCompatible(
-  type: "databaseOrm" | "frontendAuth" | "backendDatabase" | "frontendAddons",
+  type: CompatibilityType,
   primary: string,
   secondary: string | string[],
 ): boolean {
@@ -413,9 +478,16 @@ export function isCompatible(
   return compatibleOptions.includes(secondary);
 }
 
-// Get compatible options for a given selection
+/**
+ * Get all compatible options for a given primary technology selection.
+ * Supports all compatibility rule types including bidirectional lookups.
+ *
+ * @param type - The type of compatibility check to perform
+ * @param primary - The primary technology to get compatible options for
+ * @returns Array of compatible technology options
+ */
 export function getCompatibleOptions<T extends string>(
-  type: "databaseOrm" | "frontendAuth" | "backendDatabase" | "frontendAddons",
+  type: CompatibilityType,
   primary: string,
 ): T[] {
   const rules = compatibilityRules[type];
@@ -464,34 +536,164 @@ export function findBestTestedCombination(state: BuilderState): {
   };
 }
 
-// Apply compatibility rules and fix conflicts with intelligent suggestions
+/**
+ * Apply compatibility rules and automatically fix conflicts with intelligent suggestions.
+ * This function enforces strict compatibility rules and auto-corrects incompatible combinations.
+ *
+ * @param state - The current builder state
+ * @returns Adjusted state with compatibility fixes applied
+ */
 export function applyCompatibility(state: BuilderState): BuilderState {
   const adjusted = { ...state };
 
-  // Database-ORM compatibility enforcement
-  if (state.database === "mongodb") {
-    // MongoDB only works with Mongoose
-    if (state.orm !== "mongoose" && state.orm !== "none") {
-      // Auto-adjust to mongoose if incompatible ORM selected
-      adjusted.orm = "mongoose";
-    }
-  } else if (state.database !== "none") {
-    // SQL databases don't work with Mongoose
-    if (state.orm === "mongoose") {
-      // Auto-adjust to prisma as default for SQL
-      adjusted.orm = "prisma";
+  // ============================================
+  // Frontend-Backend Compatibility Rules
+  // ============================================
+
+  // Rule 1: Next.js/Nuxt must use backend: "none" (they have built-in API routes)
+  if (state.frontend === "nextjs" || state.frontend === "nuxt") {
+    if (state.backend !== "none") {
+      adjusted.backend = "none";
     }
   }
 
-  // Frontend-Auth compatibility (suggestions only, don't force)
-  // We'll show warnings but allow user choice
+  // Rule 2: If backend is selected with Next.js/Nuxt, switch frontend to React
+  if (
+    state.backend !== "none" &&
+    (state.frontend === "nextjs" || state.frontend === "nuxt")
+  ) {
+    adjusted.frontend = "react";
+  }
 
-  // Backend-Database compatibility (all combinations work, no adjustments needed)
+  // Rule 3: React Native must have a backend (cannot be "none")
+  if (state.frontend === "react-native" && state.backend === "none") {
+    adjusted.backend = "express"; // Default to Express for React Native
+  }
+
+  // Rule 4: If frontend is "none", must have a backend (API-only mode)
+  if (state.frontend === "none" && state.backend === "none") {
+    adjusted.backend = "express"; // Default to Express for API-only
+  }
+
+  // Rule 5: Check frontend-backend compatibility
+  if (!isCompatible("frontendBackend", state.frontend, state.backend)) {
+    // Find a compatible backend for the selected frontend
+    const compatibleBackends = getCompatibleOptions<Backend>(
+      "frontendBackend",
+      state.frontend,
+    );
+    if (compatibleBackends.length > 0 && compatibleBackends[0] !== "none") {
+      adjusted.backend = compatibleBackends[0] as Backend;
+    } else if (state.frontend !== "nextjs" && state.frontend !== "nuxt") {
+      adjusted.backend = "express"; // Default fallback
+    }
+  }
+
+  // Rule 6: Check backend-frontend compatibility (reverse check)
+  if (!isCompatible("backendFrontend", state.backend, state.frontend)) {
+    // Find a compatible frontend for the selected backend
+    const compatibleFrontends = getCompatibleOptions<Frontend>(
+      "backendFrontend",
+      state.backend,
+    );
+    if (compatibleFrontends.length > 0) {
+      adjusted.frontend = compatibleFrontends[0] as Frontend;
+    }
+  }
+
+  // ============================================
+  // Database-ORM Compatibility Rules
+  // ============================================
+
+  // Rule 7: MongoDB only works with Mongoose
+  if (state.database === "mongodb") {
+    if (state.orm !== "mongoose" && state.orm !== "none") {
+      adjusted.orm = "mongoose";
+    }
+  }
+
+  // Rule 8: SQL databases don't work with Mongoose
+  if (state.database !== "none" && state.database !== "mongodb") {
+    if (state.orm === "mongoose") {
+      adjusted.orm = "prisma"; // Default to Prisma for SQL
+    }
+  }
+
+  // Rule 9: If database is "none", ORM must be "none"
+  if (state.database === "none" && state.orm !== "none") {
+    adjusted.orm = "none";
+  }
+
+  // Rule 10: Check database-ORM compatibility
+  if (!isCompatible("databaseOrm", state.database, state.orm)) {
+    const compatibleORMs = getCompatibleOptions<ORM>(
+      "databaseOrm",
+      state.database,
+    );
+    if (compatibleORMs.length > 0 && compatibleORMs[0] !== "none") {
+      adjusted.orm = compatibleORMs[0] as ORM;
+    } else {
+      adjusted.orm = "none";
+    }
+  }
+
+  // Rule 11: Check ORM-database compatibility (reverse check)
+  if (!isCompatible("ormDatabase", state.orm, state.database)) {
+    const compatibleDatabases = getCompatibleOptions<Database>(
+      "ormDatabase",
+      state.orm,
+    );
+    if (compatibleDatabases.length > 0 && compatibleDatabases[0] !== "none") {
+      adjusted.database = compatibleDatabases[0] as Database;
+    } else {
+      adjusted.database = "none";
+    }
+  }
+
+  // ============================================
+  // Backend-Auth Compatibility Rules
+  // ============================================
+
+  // Rule 12: Passport doesn't work with Fastify
+  if (state.backend === "fastify" && state.auth === "passport") {
+    adjusted.auth = "jwt"; // Switch to JWT for Fastify
+  }
+
+  // Rule 13: Passport requires a proper backend (not "none")
+  if (state.backend === "none" && state.auth === "passport") {
+    adjusted.auth = "jwt"; // Switch to JWT for frontend-only
+  }
+
+  // Rule 14: Check backend-auth compatibility
+  if (!isCompatible("backendAuth", state.backend, state.auth)) {
+    const compatibleAuths = getCompatibleOptions<Auth>(
+      "backendAuth",
+      state.backend,
+    );
+    if (compatibleAuths.length > 0 && compatibleAuths[0] !== "none") {
+      adjusted.auth = compatibleAuths[0] as Auth;
+    } else {
+      adjusted.auth = "none";
+    }
+  }
+
+  // ============================================
+  // Frontend-Auth Compatibility (Warnings only)
+  // ============================================
+
+  // Frontend-Auth compatibility is checked in validation but not auto-corrected
+  // to allow maximum flexibility
 
   return adjusted;
 }
 
-// Validate entire configuration with detailed feedback
+/**
+ * Validate entire configuration with comprehensive compatibility checks.
+ * Returns detailed feedback including errors, warnings, and tested combination info.
+ *
+ * @param state - The builder state to validate
+ * @returns Validation result with errors, warnings, and tested combination info
+ */
 export function validateConfiguration(state: BuilderState): {
   isValid: boolean;
   errors: string[];
@@ -505,32 +707,141 @@ export function validateConfiguration(state: BuilderState): {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // No strict errors - let users make their own choices
-  // Only provide informational warnings
+  // ============================================
+  // Critical Errors (Blocking)
+  // ============================================
 
-  // Check for tested combinations
+  // Error 1: Both frontend AND backend cannot be "none"
+  if (state.frontend === "none" && state.backend === "none") {
+    errors.push(
+      "Cannot have both frontend and backend as 'none'. Please select either a frontend framework or a backend framework (or both).",
+    );
+  }
+
+  // Error 2: Next.js/Nuxt cannot have a separate backend
+  if (
+    (state.frontend === "nextjs" || state.frontend === "nuxt") &&
+    state.backend !== "none"
+  ) {
+    errors.push(
+      `${state.frontend === "nextjs" ? "Next.js" : "Nuxt"} has built-in API routes and cannot use a separate backend. Please set backend to "none" or switch to a different frontend framework.`,
+    );
+  }
+
+  // Error 3: React Native must have a backend
+  if (state.frontend === "react-native" && state.backend === "none") {
+    errors.push(
+      "React Native requires a backend framework. Please select a backend (e.g., Express, Fastify, NestJS).",
+    );
+  }
+
+  // Error 4: Frontend-Backend compatibility check
+  if (!isCompatible("frontendBackend", state.frontend, state.backend)) {
+    const compatibleBackends = getCompatibleOptions<Backend>(
+      "frontendBackend",
+      state.frontend,
+    );
+    errors.push(
+      `${state.frontend} is not compatible with ${state.backend}. Compatible backends: ${compatibleBackends.join(", ")}.`,
+    );
+  }
+
+  // Error 5: Backend-Frontend compatibility check (reverse)
+  if (!isCompatible("backendFrontend", state.backend, state.frontend)) {
+    const compatibleFrontends = getCompatibleOptions<Frontend>(
+      "backendFrontend",
+      state.backend,
+    );
+    errors.push(
+      `${state.backend} is not compatible with ${state.frontend}. Compatible frontends: ${compatibleFrontends.join(", ")}.`,
+    );
+  }
+
+  // Error 6: Database-ORM compatibility check
+  if (!isCompatible("databaseOrm", state.database, state.orm)) {
+    const compatibleORMs = getCompatibleOptions<ORM>(
+      "databaseOrm",
+      state.database,
+    );
+    errors.push(
+      `${state.orm} is not compatible with ${state.database}. Compatible ORMs: ${compatibleORMs.join(", ")}.`,
+    );
+  }
+
+  // Error 7: ORM-Database compatibility check (reverse)
+  if (!isCompatible("ormDatabase", state.orm, state.database)) {
+    const compatibleDatabases = getCompatibleOptions<Database>(
+      "ormDatabase",
+      state.orm,
+    );
+    errors.push(
+      `${state.orm} is not compatible with ${state.database}. Compatible databases: ${compatibleDatabases.join(", ")}.`,
+    );
+  }
+
+  // Error 8: Backend-Auth compatibility check
+  if (!isCompatible("backendAuth", state.backend, state.auth)) {
+    const compatibleAuths = getCompatibleOptions<Auth>(
+      "backendAuth",
+      state.backend,
+    );
+    errors.push(
+      `${state.auth} is not compatible with ${state.backend}. Compatible auth methods: ${compatibleAuths.join(", ")}.`,
+    );
+  }
+
+  // ============================================
+  // Warnings (Non-blocking)
+  // ============================================
+
+  // Warning 1: Frontend-Auth compatibility (suggestion only)
+  if (!isCompatible("frontendAuth", state.frontend, state.auth)) {
+    const compatibleAuths = getCompatibleOptions<Auth>(
+      "frontendAuth",
+      state.frontend,
+    );
+    warnings.push(
+      `${state.auth} may not be optimal for ${state.frontend}. Consider: ${compatibleAuths.filter((a) => a !== "none").join(", ")}.`,
+    );
+  }
+
+  // Warning 2: Database "none" with ORM selected
+  if (state.database === "none" && state.orm !== "none") {
+    warnings.push(
+      "ORM is selected but no database is chosen. Consider selecting a database or setting ORM to 'none'.",
+    );
+  }
+
+  // Warning 3: Check for tested combinations
   const testedCombo = findBestTestedCombination(state);
   const isWellTested = testedCombo.confidence >= 0.7;
 
   if (!isWellTested && testedCombo.confidence > 0.3) {
     warnings.push(
-      `This combination is experimental. Consider using a tested stack for production`,
+      "This combination is experimental. Consider using a tested stack for production.",
     );
   }
 
-  // Setup warnings
+  // Warning 4: Setup warnings
   if (!state.installDependencies) {
     warnings.push(
-      "Manual dependency installation required after project creation",
+      "Manual dependency installation required after project creation.",
     );
   }
 
   if (!state.initializeGit) {
-    warnings.push("Manual git repository initialization required");
+    warnings.push("Manual git repository initialization required.");
+  }
+
+  // Warning 5: Passport with Fastify (should be caught by auto-correction, but warn if not)
+  if (state.backend === "fastify" && state.auth === "passport") {
+    warnings.push(
+      "Passport.js has limited support with Fastify. Consider using JWT or another auth method.",
+    );
   }
 
   return {
-    isValid: true, // Always valid - no blocking errors
+    isValid: errors.length === 0,
     errors,
     warnings,
     testedCombination: {

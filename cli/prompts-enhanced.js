@@ -13,6 +13,8 @@ import {
 } from "@clack/prompts";
 import chalk from "chalk";
 import validatePackageName from "validate-npm-package-name";
+import path from "path";
+import fs from "fs";
 import {
   DATABASE_OPTIONS,
   ORM_OPTIONS,

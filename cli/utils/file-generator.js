@@ -7,21 +7,73 @@ import {
 } from "./template-engine.js";
 import { getTemplateDir } from "./file-utils.js";
 
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const DEFAULT_OPTIONS = {
+  templatesRoot: getTemplateDir(),
+  outputRoot: process.cwd(),
+  createBackups: false,
+  validateStructure: true,
+  hookSystem: true,
+};
+
+const BASE_STRUCTURE = ["src", "public", "tests", "docs"];
+
+const FRAMEWORK_STRUCTURES = {
+  react: [
+    "src/components",
+    "src/hooks",
+    "src/utils",
+    "src/styles",
+    "public",
+    "tests",
+  ],
+  vue: [
+    "src/components",
+    "src/composables",
+    "src/stores",
+    "src/styles",
+    "public",
+    "tests",
+  ],
+  angular: [
+    "src/app/components",
+    "src/app/services",
+    "src/app/models",
+    "src/assets",
+    "src/environments",
+  ],
+  express: [
+    "src/routes",
+    "src/middleware",
+    "src/controllers",
+    "src/models",
+    "src/utils",
+    "tests",
+  ],
+  nestjs: [
+    "src/modules",
+    "src/controllers",
+    "src/services",
+    "src/entities",
+    "src/dto",
+    "test",
+  ],
+};
+
+// ============================================================================
+// FILE GENERATOR CLASS
+// ============================================================================
+
 /**
- * Advanced File Generation System for JS Stack CLI
+ * Advanced file generation system for JS Stack CLI
  * Handles complex project scaffolding with proper directory structures
  */
-
 export class FileGenerator {
   constructor(options = {}) {
-    this.options = {
-      templatesRoot: getTemplateDir(),
-      outputRoot: process.cwd(),
-      createBackups: false,
-      validateStructure: true,
-      hookSystem: true,
-      ...options,
-    };
+    this.options = { ...DEFAULT_OPTIONS, ...options };
 
     this.templateEngine = new TemplateEngine();
     this.variableSubstitution = new VariableSubstitution();
@@ -32,39 +84,35 @@ export class FileGenerator {
     this.executionLog = [];
   }
 
+  // ==========================================================================
+  // PUBLIC API
+  // ==========================================================================
+
   /**
-   * Generate a complete project from configuration
+   * Generate complete project from configuration
    */
   async generateProject(config) {
     try {
-      // Validate configuration
-      this._validateConfig(config);
+      this.validateConfig(config);
 
-      // Run pre-generation hooks
-      await this._runHooks("pre-generation", config);
+      await this.runHooks("pre-generation", config);
 
-      // Prepare variables and context
-      const context = await this._prepareContext(config);
+      const context = await this.prepareContext(config);
+      this.generationPlan = this.createGenerationPlan(config, context);
 
-      // Create generation plan
-      this.generationPlan = await this._createGenerationPlan(config, context);
+      const results = await this.executeGenerationPlan(context);
 
-      // Execute generation plan
-      const results = await this._executeGenerationPlan(context);
+      await this.runHooks("post-generation", { config, results, context });
 
-      // Run post-generation hooks
-      await this._runHooks("post-generation", { config, results, context });
-
-      // Generate final report
-      return this._generateFinalReport(results);
+      return this.generateFinalReport(results);
     } catch (error) {
-      await this._handleGenerationError(error, config);
+      await this.handleGenerationError(error, config);
       throw error;
     }
   }
 
   /**
-   * Generate specific components/features
+   * Generate specific feature
    */
   async generateFeature(featureType, featureConfig, projectContext) {
     const featureTemplatesDir = path.join(
@@ -88,10 +136,10 @@ export class FileGenerator {
   }
 
   /**
-   * Generate project structure based on framework selection
+   * Generate project structure based on framework
    */
   async generateProjectStructure(framework, projectPath, options = {}) {
-    const structureConfig = this._getFrameworkStructure(framework);
+    const structureConfig = this.getFrameworkStructure(framework);
 
     await this.directoryGenerator.defineStructure(framework, structureConfig);
     await this.directoryGenerator.generateStructure(
@@ -102,7 +150,7 @@ export class FileGenerator {
   }
 
   /**
-   * Add generation hook
+   * Register generation hook
    */
   addHook(event, callback) {
     if (!this.hooks.has(event)) {
@@ -125,10 +173,14 @@ export class FileGenerator {
     this.variableSubstitution.addTransformer(name, transformer);
   }
 
+  // ==========================================================================
+  // VALIDATION
+  // ==========================================================================
+
   /**
    * Validate generation configuration
    */
-  _validateConfig(config) {
+  validateConfig(config) {
     const required = ["projectName", "projectPath"];
 
     for (const field of required) {
@@ -137,18 +189,15 @@ export class FileGenerator {
       }
     }
 
-    // Validate project path
-    if (path.isAbsolute(config.projectPath)) {
-      // Absolute path is ok
-    } else {
-      // Make relative to output root
+    // Normalize project path
+    if (!path.isAbsolute(config.projectPath)) {
       config.projectPath = path.join(
         this.options.outputRoot,
         config.projectPath,
       );
     }
 
-    // Validate template selections
+    // Validate templates
     if (config.templates) {
       for (const template of config.templates) {
         const templatePath = path.join(this.options.templatesRoot, template);
@@ -159,10 +208,14 @@ export class FileGenerator {
     }
   }
 
+  // ==========================================================================
+  // CONTEXT PREPARATION
+  // ==========================================================================
+
   /**
    * Prepare context for template processing
    */
-  async _prepareContext(config) {
+  async prepareContext(config) {
     // Set base variables
     this.variableSubstitution.setVariables({
       ...config,
@@ -170,20 +223,25 @@ export class FileGenerator {
       _year: new Date().getFullYear(),
     });
 
-    // Get resolved context
     const context = await this.variableSubstitution.getResolvedContext();
 
-    // Add computed values based on selections
+    // Add feature helpers
     context.features = config.features || [];
     context.hasFeature = (featureName) =>
       context.features.includes(featureName);
 
-    // Framework-specific context
-    const frontendList = Array.isArray(config.frontend)
-      ? config.frontend
-      : config.frontend
-        ? [config.frontend]
-        : [];
+    // Add framework flags
+    this.addFrontendFlags(context, config);
+    this.addBackendFlags(context, config);
+
+    return context;
+  }
+
+  /**
+   * Add frontend framework flags to context
+   */
+  addFrontendFlags(context, config) {
+    const frontendList = this.normalizeFrontendList(config.frontend);
 
     if (frontendList.length > 0) {
       context.frontend = frontendList;
@@ -191,180 +249,146 @@ export class FileGenerator {
       context.isVue = frontendList.includes("vue");
       context.isAngular = frontendList.includes("angular");
       context.isNextjs = frontendList.includes("nextjs");
+      context.isSvelte = frontendList.includes("svelte");
+      context.isSvelteKit = frontendList.includes("sveltekit");
     }
+  }
 
+  /**
+   * Add backend framework flags to context
+   */
+  addBackendFlags(context, config) {
     if (config.backend) {
       context.isExpress = config.backend === "express";
       context.isFastify = config.backend === "fastify";
       context.isNestjs = config.backend === "nestjs";
+      context.isHono = config.backend === "hono";
     }
-
-    return context;
   }
+
+  /**
+   * Normalize frontend list
+   */
+  normalizeFrontendList(frontend) {
+    if (!frontend) return [];
+    return Array.isArray(frontend) ? frontend.filter(Boolean) : [frontend];
+  }
+
+  // ==========================================================================
+  // GENERATION PLAN
+  // ==========================================================================
 
   /**
    * Create generation plan
    */
-  async _createGenerationPlan(config, context) {
+  createGenerationPlan(config, context) {
     const plan = [];
-    const frontendList = Array.isArray(config.frontend)
-      ? config.frontend.filter(Boolean)
-      : config.frontend
-        ? [config.frontend]
-        : [];
 
-    // 1. Base project structure
-    plan.push({
-      type: "structure",
-      name: "base-structure",
-      priority: 1,
-      action: async () => {
-        await this._generateBaseStructure(config, context);
-      },
-    });
+    // 1. Base structure
+    plan.push(
+      this.createPlanStep("structure", "base-structure", 1, () =>
+        this.generateBaseStructure(config),
+      ),
+    );
 
-    // 2. Main templates
+    // 2. Templates
     if (config.templates) {
-      for (const template of config.templates) {
-        plan.push({
-          type: "template",
-          name: template,
-          priority: 2,
-          action: async () => {
-            const templatePath = path.join(
-              this.options.templatesRoot,
-              template,
-            );
-            return await this.templateEngine.processTemplates(
-              templatePath,
-              config.projectPath,
-              context,
-            );
-          },
-        });
-      }
+      config.templates.forEach((template) => {
+        plan.push(
+          this.createPlanStep("template", template, 2, () =>
+            this.processTemplate(template, config, context),
+          ),
+        );
+      });
     }
 
-    // 3. Frontend framework
-    if (frontendList.length > 0) {
-      for (const frontend of frontendList) {
-        plan.push({
-          type: "framework",
-          name: `frontend-${frontend}`,
-          priority: 3,
-          action: async () => {
-            return await this._generateFramework(
-              "frontend",
-              frontend,
-              config,
-              context,
-            );
-          },
-        });
-      }
-    }
+    // 3. Frontend frameworks
+    const frontendList = this.normalizeFrontendList(config.frontend);
+    frontendList.forEach((frontend) => {
+      plan.push(
+        this.createPlanStep("framework", `frontend-${frontend}`, 3, () =>
+          this.generateFramework("frontend", frontend, config, context),
+        ),
+      );
+    });
 
     // 4. Backend framework
     if (config.backend) {
-      plan.push({
-        type: "framework",
-        name: `backend-${config.backend}`,
-        priority: 3,
-        action: async () => {
-          return await this._generateFramework(
-            "backend",
-            config.backend,
-            config,
-            context,
-          );
-        },
-      });
+      plan.push(
+        this.createPlanStep("framework", `backend-${config.backend}`, 3, () =>
+          this.generateFramework("backend", config.backend, config, context),
+        ),
+      );
     }
 
     // 5. Database integration
     if (config.database) {
-      plan.push({
-        type: "database",
-        name: `database-${config.database}`,
-        priority: 4,
-        action: async () => {
-          return await this._generateDatabase(config.database, config, context);
-        },
-      });
+      plan.push(
+        this.createPlanStep("database", `database-${config.database}`, 4, () =>
+          this.generateDatabase(config.database, config, context),
+        ),
+      );
     }
 
-    // 6. Authentication system
-    if (config.features && config.features.includes("auth")) {
-      plan.push({
-        type: "feature",
-        name: "authentication",
-        priority: 5,
-        action: async () => {
-          return await this.generateFeature("auth", config.auth || {}, context);
-        },
-      });
-    }
+    // 6. Features
+    this.addFeaturesToPlan(plan, config, context);
 
-    // 7. Testing setup
-    if (config.features && config.features.includes("testing")) {
-      plan.push({
-        type: "feature",
-        name: "testing",
-        priority: 6,
-        action: async () => {
-          return await this.generateFeature(
-            "testing",
-            config.testing || {},
-            context,
-          );
-        },
-      });
-    }
+    // 7. Configuration files
+    plan.push(
+      this.createPlanStep("config", "project-config", 8, () =>
+        this.generateProjectConfig(config, context),
+      ),
+    );
 
-    // 8. Docker configuration
-    if (config.features && config.features.includes("docker")) {
-      plan.push({
-        type: "feature",
-        name: "docker",
-        priority: 7,
-        action: async () => {
-          return await this.generateFeature(
-            "docker",
-            config.docker || {},
-            context,
-          );
-        },
-      });
-    }
+    // 8. Documentation
+    plan.push(
+      this.createPlanStep("docs", "documentation", 9, () =>
+        this.generateDocumentation(config, context),
+      ),
+    );
 
-    // 9. Configuration files
-    plan.push({
-      type: "config",
-      name: "project-config",
-      priority: 8,
-      action: async () => {
-        return await this._generateProjectConfig(config, context);
-      },
-    });
-
-    // 10. Documentation
-    plan.push({
-      type: "docs",
-      name: "documentation",
-      priority: 9,
-      action: async () => {
-        return await this._generateDocumentation(config, context);
-      },
-    });
-
-    // Sort by priority
     return plan.sort((a, b) => a.priority - b.priority);
   }
 
   /**
+   * Create plan step object
+   */
+  createPlanStep(type, name, priority, action, critical = false) {
+    return { type, name, priority, action, critical };
+  }
+
+  /**
+   * Add features to generation plan
+   */
+  addFeaturesToPlan(plan, config, context) {
+    if (!config.features) return;
+
+    const featureMap = {
+      auth: { priority: 5, data: config.auth || {} },
+      testing: { priority: 6, data: config.testing || {} },
+      docker: { priority: 7, data: config.docker || {} },
+    };
+
+    config.features.forEach((feature) => {
+      const featureConfig = featureMap[feature];
+      if (featureConfig) {
+        plan.push(
+          this.createPlanStep("feature", feature, featureConfig.priority, () =>
+            this.generateFeature(feature, featureConfig.data, context),
+          ),
+        );
+      }
+    });
+  }
+
+  // ==========================================================================
+  // PLAN EXECUTION
+  // ==========================================================================
+
+  /**
    * Execute generation plan
    */
-  async _executeGenerationPlan(context) {
+  async executeGenerationPlan(context) {
     const results = {
       successful: [],
       failed: [],
@@ -372,57 +396,66 @@ export class FileGenerator {
     };
 
     for (const step of this.generationPlan) {
-      try {
-        console.log(`🔧 Executing: ${step.name}`);
-
-        const stepResult = await step.action();
-
-        results.successful.push({
-          name: step.name,
-          type: step.type,
-          result: stepResult,
-        });
-
-        this.executionLog.push({
-          step: step.name,
-          status: "success",
-          timestamp: new Date().toISOString(),
-        });
-
-        console.log(`✅ Completed: ${step.name}`);
-      } catch (error) {
-        results.failed.push({
-          name: step.name,
-          type: step.type,
-          error: error.message,
-        });
-
-        this.executionLog.push({
-          step: step.name,
-          status: "failed",
-          error: error.message,
-          timestamp: new Date().toISOString(),
-        });
-
-        console.error(`❌ Failed: ${step.name} - ${error.message}`);
-
-        // Continue with other steps unless it's critical
-        if (step.critical) {
-          throw error;
-        }
-      }
+      await this.executeStep(step, results);
     }
 
     return results;
   }
 
   /**
+   * Execute single generation step
+   */
+  async executeStep(step, results) {
+    try {
+      console.log(`🔧 Executing: ${step.name}`);
+
+      const stepResult = await step.action();
+
+      results.successful.push({
+        name: step.name,
+        type: step.type,
+        result: stepResult,
+      });
+
+      this.logExecution(step.name, "success");
+      console.log(`✅ Completed: ${step.name}`);
+    } catch (error) {
+      results.failed.push({
+        name: step.name,
+        type: step.type,
+        error: error.message,
+      });
+
+      this.logExecution(step.name, "failed", error.message);
+      console.error(`❌ Failed: ${step.name} - ${error.message}`);
+
+      if (step.critical) {
+        throw error;
+      }
+    }
+  }
+
+  /**
+   * Log execution step
+   */
+  logExecution(step, status, error = null) {
+    this.executionLog.push({
+      step,
+      status,
+      error,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // ==========================================================================
+  // GENERATION METHODS
+  // ==========================================================================
+
+  /**
    * Generate base project structure
    */
-  async _generateBaseStructure(config, context) {
-    const structure = ["src", "public", "tests", "docs"];
-
-    for (const dir of structure) {
+  async generateBaseStructure(config) {
+    for (const dir of BASE_STRUCTURE) {
       const dirPath = path.join(config.projectPath, dir);
       await fs.ensureDir(dirPath);
 
@@ -433,9 +466,22 @@ export class FileGenerator {
   }
 
   /**
+   * Process template
+   */
+  async processTemplate(template, config, context) {
+    const templatePath = path.join(this.options.templatesRoot, template);
+
+    return await this.templateEngine.processTemplates(
+      templatePath,
+      config.projectPath,
+      context,
+    );
+  }
+
+  /**
    * Generate framework-specific code
    */
-  async _generateFramework(type, framework, config, context) {
+  async generateFramework(type, framework, config, context) {
     const frameworkTemplatePath = path.join(
       this.options.templatesRoot,
       type,
@@ -456,7 +502,7 @@ export class FileGenerator {
   /**
    * Generate database integration
    */
-  async _generateDatabase(database, config, context) {
+  async generateDatabase(database, config, context) {
     const databaseTemplatePath = path.join(
       this.options.templatesRoot,
       "database",
@@ -473,7 +519,7 @@ export class FileGenerator {
   /**
    * Generate project configuration files
    */
-  async _generateProjectConfig(config, context) {
+  async generateProjectConfig(config, context) {
     const configTemplatePath = path.join(this.options.templatesRoot, "config");
 
     return await this.templateEngine.processTemplates(
@@ -486,7 +532,7 @@ export class FileGenerator {
   /**
    * Generate documentation
    */
-  async _generateDocumentation(config, context) {
+  async generateDocumentation(config, context) {
     const docsTemplatePath = path.join(this.options.templatesRoot, "docs");
 
     if (await fs.pathExists(docsTemplatePath)) {
@@ -498,59 +544,21 @@ export class FileGenerator {
     }
   }
 
+  // ==========================================================================
+  // UTILITIES
+  // ==========================================================================
+
   /**
    * Get framework-specific directory structure
    */
-  _getFrameworkStructure(framework) {
-    const structures = {
-      react: [
-        "src/components",
-        "src/hooks",
-        "src/utils",
-        "src/styles",
-        "public",
-        "tests",
-      ],
-      vue: [
-        "src/components",
-        "src/composables",
-        "src/stores",
-        "src/styles",
-        "public",
-        "tests",
-      ],
-      angular: [
-        "src/app/components",
-        "src/app/services",
-        "src/app/models",
-        "src/assets",
-        "src/environments",
-      ],
-      express: [
-        "src/routes",
-        "src/middleware",
-        "src/controllers",
-        "src/models",
-        "src/utils",
-        "tests",
-      ],
-      nestjs: [
-        "src/modules",
-        "src/controllers",
-        "src/services",
-        "src/entities",
-        "src/dto",
-        "test",
-      ],
-    };
-
-    return structures[framework] || ["src", "tests"];
+  getFrameworkStructure(framework) {
+    return FRAMEWORK_STRUCTURES[framework] || ["src", "tests"];
   }
 
   /**
    * Run hooks for specific events
    */
-  async _runHooks(event, data) {
+  async runHooks(event, data) {
     const hooks = this.hooks.get(event) || [];
 
     for (const hook of hooks) {
@@ -565,7 +573,7 @@ export class FileGenerator {
   /**
    * Generate final report
    */
-  _generateFinalReport(results) {
+  generateFinalReport(results) {
     return {
       summary: {
         totalSteps: this.generationPlan.length,
@@ -582,14 +590,14 @@ export class FileGenerator {
   /**
    * Handle generation errors
    */
-  async _handleGenerationError(error, config) {
+  async handleGenerationError(error, config) {
     console.error("❌ Project generation failed:", error.message);
 
-    // Create error log
     const errorLogPath = path.join(
       config.projectPath || ".",
       "generation-error.log",
     );
+
     const errorLog = {
       error: error.message,
       stack: error.stack,
@@ -603,12 +611,21 @@ export class FileGenerator {
   }
 }
 
-// Convenience functions
+// ============================================================================
+// CONVENIENCE FUNCTIONS
+// ============================================================================
+
+/**
+ * Generate project (convenience function)
+ */
 export async function generateProject(config, options = {}) {
   const generator = new FileGenerator(options);
   return await generator.generateProject(config);
 }
 
+/**
+ * Generate feature (convenience function)
+ */
 export async function generateFeature(
   featureType,
   config,
