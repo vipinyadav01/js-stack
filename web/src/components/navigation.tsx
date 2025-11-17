@@ -119,13 +119,27 @@ export function Navigation() {
           ? "bg-background/95 backdrop-blur-lg shadow-sm"
           : "bg-background/80 backdrop-blur",
       )}
+      role="banner"
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-          <Image src={logo} alt="JS Stack Logo" width={24} height={24} />
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-bold text-lg"
+          aria-label="JS Stack - Home"
+        >
+          <Image
+            src={logo}
+            alt="JS Stack Logo"
+            width={24}
+            height={24}
+            priority
+          />
           <span className="hidden sm:inline">JS Stack</span>
         </Link>
-        <nav className="hidden md:flex items-center  ">
+        <nav
+          className="hidden md:flex items-center"
+          aria-label="Main navigation"
+        >
           {NAV_LINKS.map((link) => (
             <NavLink key={link.url} link={link} />
           ))}
@@ -142,6 +156,7 @@ export function Navigation() {
             size="icon"
             className="md:hidden h-9 w-9"
             onClick={() => setSearchOpen(true)}
+            aria-label="Open search"
           >
             <Search className="h-4 w-4" />
           </Button>
@@ -165,13 +180,21 @@ export function Navigation() {
           <ThemeToggle />
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="icon" className="h-9 w-9">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                aria-label="Open mobile menu"
+              >
                 <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
             <SheetContent className="w-72">
               <div className="flex flex-col gap-4 mt-8">
-                <nav className="flex flex-col gap-1">
+                <nav
+                  className="flex flex-col gap-1"
+                  aria-label="Mobile navigation"
+                >
                   {NAV_LINKS.map((link) => (
                     <NavLink key={link.url} link={link} mobile />
                   ))}

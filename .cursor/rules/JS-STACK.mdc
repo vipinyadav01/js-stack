@@ -2,253 +2,310 @@
 alwaysApply: true
 ---
 
-## JS-Stack Project Coding Standards
+JS-Stack: Full-stack JavaScript scaffolding CLI tool with marketing website and interactive builder
 
-### General Principles
-- Follow the existing code style and patterns in each file
-- Use TypeScript for web interface, JavaScript for CLI
-- Prioritize readability and maintainability
+PROJECT STRUCTURE
+cli/ - The actual CLI tool that generates projects (Commander.js + Handlebars templates)
+web/ - Marketing website + interactive builder that shows CLI capabilities and generates commands
 
-### Web Interface (Next.js/React)
-- Use functional components with arrow functions
-- Use TypeScript interfaces for component props and types
-- Use React hooks for state management (useState, useEffect, useCallback, etc.)
-- Use Tailwind CSS for styling
-- Use shadcn/ui components for UI elements
-- Use Framer Motion for animations
-- Follow Next.js App Router patterns
+WEB PURPOSE
+Marketing site: Showcase CLI features, documentation, examples, use cases
+Interactive builder: Let users select their stack visually
+Command generator: Output the exact CLI command users need to run
+NOT a code generator: Web doesn't generate projects, it shows how to use the CLI
 
-### CLI Tool (`cli/`)
-```
-cli/
-├── commands/          # CLI command handlers (enhanced-init.js, add.js, list.js)
-├── generators/        # Project generation logic (project-generator.js, ModularGenerator.js)
-├── templates/         # Handlebars templates with layered structure
-├── utils/             # Utility functions (validation, file operations, etc.)
-├── core/              # Core functionality (CLICore.js, CompatibilityEngine.js)
-├── config/            # Validation schemas and configuration
-└── cli.js            # Main CLI entry point with Commander.js
-```
+CLI PURPOSE
+Project generator: Creates full-stack projects based on user selections
+Template engine: Uses Handlebars templates in layers
+Actual tool: Users install via npm and run commands
 
-### CLI Stack
-- **Commander.js**: CLI command parsing and option handling
-- **@clack/prompts**: Interactive prompts and user input
-- **Handlebars**: Template engine for project generation
-- **Yup**: Schema validation for configuration
-- **Chalk**: Terminal styling and colors
-- **gradient-string**: Animated gradients and banners
-- **figlet**: ASCII art titles
-- **boxen**: Bordered boxes and UI elements
-- **chalk-animation**: Animated text effects
-- **ora**: Loading spinners
-- **inquirer**: Additional interactive prompts
-- **cli-progress**: Progress bars
-- **fs-extra**: Enhanced file operations
-- **ESBuild**: Fast bundling for CLI distribution
+TECH STACK
+CLI: Commander.js, @clack/prompts, Handlebars, Yup, Chalk, ESBuild
+Web: Next.js 15, React 19, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
 
-### CLI Code Patterns & Conventions
-- **Mixed Architecture**: Classes for complex generators, functions for utilities
-- **ES Modules**: `import/export` syntax throughout
-- **Async/Await**: Consistent async patterns
-- **Layered Templates**: Base → Framework → Integration → Feature → Tooling → Deployment
-- **Plugin System**: Modular generator with plugin architecture
-- **Smart Compatibility**: Advanced technology compatibility checking
-- **Transaction System**: Rollback capabilities for failed operations
-- **Validation**: Comprehensive Yup schemas for all inputs
-- **Error Handling**: Graceful error handling with helpful messages
-- **Performance Monitoring**: Built-in performance tracking
-- **Health Validation**: Post-generation validation checks
+SUPPORTED TECHNOLOGIES
+Frontend: React, Vue, Angular, Svelte, Next.js, Nuxt, React Native
+Backend: Express, Fastify, Koa, Hapi, NestJS
+Databases: PostgreSQL, MySQL, SQLite, MongoDB
+ORMs: Prisma, Sequelize, TypeORM, Mongoose
+Auth: JWT, Passport, Auth0, OAuth, Better Auth
+Addons: Docker, Testing, Biome, Turborepo
 
-### TypeScript Conventions
-- Use interfaces for object types and component props
-- Avoid explicit return types unless necessary for clarity
-- Use type aliases for complex union/intersection types
+CLI ARCHITECTURE
+cli/commands/ - Command handlers (init, add, list)
+cli/generators/ - Project generation logic
+cli/templates/templates/ - Layered Handlebars templates (01-base -> 06-deployment)
+cli/utils/ - File operations, validation helpers
+cli/core/ - CLICore, CompatibilityEngine
+cli/config/ - ValidationSchemas.js (Yup validation rules)
+cli/cli.js - Commander.js entry point
 
-### Handlebars Templates
-- Use explicit conditions: `{{#if (eq orm "prisma")}}` instead of generic if/else
-- Use proper Handlebars syntax: `{{variable}}`, `{{#each items}}...{{/each}}`
-- Follow layered template structure: Base → Framework → Integration → Feature → Tooling
+TEMPLATE LAYERS (CLI generates in this order)
+1. Base - package.json, .gitignore, README
+2. Frameworks - Frontend/backend setup files
+3. Integrations - Database, auth configurations
+4. Features - Business logic, API routes
+5. Tooling - Docker, testing configs
+6. Deployment - CI/CD, deployment configs
 
-### Code Style
-- Use Prettier for formatting
-- Use ESLint for linting
-- Keep functions focused and single-purpose
-- Use descriptive variable and function names
-- Add comments for complex logic
+WEB ARCHITECTURE
+src/app/ - Next.js App Router pages (homepage, docs, builder, examples)
+src/components/builder/ - Interactive stack builder interface
+src/components/builder/config.ts - Stack options configuration (MUST match CLI)
+src/components/ui/ - shadcn/ui components
+src/lib/ - Utilities, helpers
+src/hooks/ - Custom React hooks
 
-### Testing
-- Always test CLI commands with `--dry-run` first
-- Test web interface responsiveness
-- Validate all user inputs
+WEB USER FLOW
+1. User visits website and learns about CLI features
+2. User goes to interactive builder page
+3. User selects stack options (frontend, backend, database, etc)
+4. Web validates selections and checks compatibility
+5. Web generates and displays CLI command to run
+6. User copies command and runs it in their terminal
+7. CLI tool generates the actual project
 
-## Template System & Project Structure
+DEVELOPMENT COMMANDS
+npm run dev - Run both CLI and web concurrently
+npm run dev:cli - CLI development only
+npm run dev:web - Web development only (localhost:3000)
+npm run build - Build everything
+npm run build:cli - Build CLI for distribution
+npm run clean - Clear build artifacts
 
-### Layered Template Architecture
-Templates follow a hierarchical structure for modular project generation:
+CLI TESTING
+node cli/cli.js init my-app --dry-run --verbose - Test CLI without creating files
+npx create-js-stack@latest my-app --frontend react --backend express - Real usage
 
-```
-cli/templates/templates/
-├── 01-base/              # Core project structure
-│   ├── package.json.hbs
-│   ├── .gitignore.hbs
-│   └── README.md.hbs
-├── 02-frameworks/        # Framework-specific files
-│   ├── frontend/
-│   │   ├── react/
-│   │   ├── nextjs/
-│   │   ├── vue/
-│   │   └── angular/
-│   └── backend/
-│       ├── express/
-│       ├── nestjs/
-│       └── fastify/
-├── 03-integrations/      # Database, auth, etc.
-│   ├── database/
-│   │   ├── mongodb/
-│   │   ├── postgresql/
-│   │   └── mysql/
-│   └── auth/
-│       ├── jwt/
-│       ├── passport/
-│       └── auth0/
-├── 04-features/          # Feature-specific code
-│   ├── api-routes/
-│   ├── middleware/
-│   └── utils/
-├── 05-tooling/          # Dev tools & configs
-│   ├── docker/
-│   ├── testing/
-│   └── biome/
-└── 06-deployment/       # Deployment configs
-    ├── vercel/
-    ├── docker/
-    └── github-actions/
-```
+CLI OPTIONS
+--frontend <type> - Frontend framework
+--backend <type> - Backend framework
+--database <type> - Database system
+--orm <type> - ORM/ODM choice
+--auth <type> - Authentication method
+--package-manager <mgr> - npm, yarn, pnpm, or bun
+--addons <list> - Comma-separated addons (docker,testing,biome)
+--git - Initialize git repository
+--install - Install dependencies automatically
+--dry-run - Preview without creating files
+--verbose - Show detailed output
 
-### Template Processing Order
-1. **Base Layer**: Project foundation (package.json, .gitignore, README)
-2. **Framework Layer**: Frontend/backend framework setup
-3. **Integration Layer**: Database, authentication, third-party services
-4. **Feature Layer**: Business logic and application features
-5. **Tooling Layer**: Development tools and configurations
-6. **Deployment Layer**: CI/CD and deployment configurations
+CLI DEVELOPMENT RULES
+DO: Use Commander.js .option() with short and long forms
+DO: Use @clack/prompts for interactive questions
+DO: Validate all inputs with Yup schemas from ValidationSchemas.js
+DO: Follow template layer order strictly (base -> framework -> integration -> feature -> tooling -> deployment)
+DO: Test with --dry-run --verbose before making real changes
+DO: Use chalk for colored terminal output
+DO: Check compatibility rules before generation
+DON'T: Create duplicate CLI options (all in cli/cli.js)
+DON'T: Skip validation of user inputs
+DON'T: Mix template logic between layers
+DON'T: Hard-code file paths
 
-### Handlebars Template Syntax
+WEB DEVELOPMENT RULES
+DO: Use TypeScript strict mode for all files
+DO: Use functional components with arrow functions
+DO: Use React hooks (useState, useEffect, useCallback, useMemo)
+DO: Use Tailwind CSS utilities exclusively
+DO: Use shadcn/ui components for UI
+DO: Keep config.ts synchronized with CLI ValidationSchemas.js
+DO: Generate exact CLI commands that match actual CLI options
+DO: Use Next.js App Router patterns (app/ directory)
+DO: Make the builder interactive and user-friendly
+DO: Show examples and documentation clearly
+DON'T: Use Next.js Pages Router
+DON'T: Use TypeScript any type
+DON'T: Create custom CSS files
+DON'T: Generate commands that don't match CLI
+DON'T: Try to generate projects in the browser (that's CLI's job)
 
-#### Variables
-```handlebars
-{{projectName}}
-{{packageManager}}
-{{database}}
-{{orm}}
-```
+WEB BUILDER FLOW
+User selects frontend -> Update available backend options -> User selects backend -> Show compatible databases -> User selects database -> Show compatible ORMs -> User selects ORM -> Show compatible auth options -> User selects auth -> Show additional addons -> User configures options -> Validate entire selection -> Generate CLI command -> Display command with copy button -> Show installation instructions
 
-#### Conditionals
-```handlebars
-{{#if (eq orm "prisma")}}
-  // Prisma-specific code
-{{else if (eq orm "mongoose")}}
-  // Mongoose-specific code
+COMMAND GENERATION EXAMPLE
+User selections:
+- Frontend: React
+- Backend: Express
+- Database: MongoDB
+- ORM: Mongoose
+- Auth: JWT
+- Package Manager: npm
+- Addons: Docker, Testing
+
+Generated command:
+npx create-js-stack@latest my-app --frontend react --backend express --database mongodb --orm mongoose --auth jwt --package-manager npm --addons docker,testing --git --install
+
+HANDLEBARS SYNTAX (CLI templates)
+Variables: {{projectName}} {{packageManager}} {{database}}
+Conditionals: {{#if (eq orm "prisma")}}...{{else if (eq orm "mongoose")}}...{{/if}}
+Iteration: {{#each items}}{{this}}{{/each}}
+Helpers: eq (equal), ne (not equal), and, or, not, contains
+
+TEMPLATE VARIABLES
+projectName - Project name
+packageManager - npm, yarn, pnpm, bun
+description - Project description
+frontend - Frontend framework choice
+backend - Backend framework choice
+database - Database system
+orm - ORM/ODM choice
+auth - Authentication method
+git - Boolean for git init
+install - Boolean for auto-install
+docker - Boolean for Docker config
+testing - Boolean for testing setup
+
+COMPATIBILITY MATRIX (enforced by both CLI and web)
+MongoDB -> Mongoose ONLY (no other ORMs work with MongoDB)
+PostgreSQL/MySQL/SQLite -> Prisma, Sequelize, TypeORM
+Next.js -> Better Auth, Auth0, JWT, OAuth
+React/Vue -> Auth0, Better Auth, JWT, OAuth, Passport
+Angular -> Auth0, JWT, OAuth, Passport
+
+COMPATIBILITY ENFORCEMENT
+CLI: cli/config/ValidationSchemas.js (Yup validation)
+CLI: cli/core/CompatibilityEngine.js (runtime checks)
+Web: web/src/components/builder/config.ts (builder validation)
+Web builder must disable incompatible options in real-time
+
+FILE CONVENTIONS
+CLI code: .js files (ES modules with import/export)
+Web code: .tsx for components, .ts for utilities
+Templates: .hbs (Handlebars templates)
+Config: .json, .js
+Styling: Tailwind utilities only (no custom CSS)
+
+CRITICAL CONFIG SYNC
+web/src/components/builder/config.ts MUST have same options as cli/config/ValidationSchemas.js
+Web must validate combinations the same way CLI does
+Web must generate commands that CLI can actually parse
+Test web-generated commands by running them with --dry-run
+
+DEBUGGING WEB ISSUES
+1. Check Next.js dev console for build errors
+2. Open browser DevTools (Console and Network tabs)
+3. Verify config.ts matches CLI ValidationSchemas.js
+4. Test generated command manually in terminal with --dry-run
+5. Check TypeScript errors in IDE
+6. Verify compatibility logic matches CLI
+
+DEBUGGING CLI ISSUES
+1. Run with --verbose --dry-run flags
+2. Check option parsing in cli/cli.js
+3. Verify schema validation in ValidationSchemas.js
+4. Check template exists: cli/templates/templates/{layer}/{tech}/
+5. Test compatibility rules in CompatibilityEngine
+6. Check Handlebars syntax in templates
+
+COMMON ISSUES
+Wrong flag: Use --package-manager (not --pm)
+Build errors: Run npm run clean && npm install
+Template not found: Check layer directory structure
+Compatibility error: Verify rules in ValidationSchemas.js
+Command doesn't work: Test with --dry-run --verbose
+Web/CLI mismatch: Sync config.ts with ValidationSchemas.js
+
+ADDING NEW TECHNOLOGY
+1. Add to cli/config/ValidationSchemas.js (validation rules)
+2. Add to web/src/components/builder/config.ts (web options)
+3. Add to cli/cli.js (Commander options)
+4. Create templates in cli/templates/templates/{layer}/{tech}/
+5. Update CompatibilityEngine.js if tech has compatibility rules
+6. Test CLI with --dry-run
+7. Test web builder generates correct command
+8. Verify compatibility checks work
+
+WEB PAGES STRUCTURE
+/ - Homepage (hero, features, benefits, CTA to builder)
+/builder - Interactive stack builder (main feature)
+/docs - CLI documentation and usage guides
+/examples - Example projects and use cases
+/about - About the project and team
+
+WEB COMPONENT PATTERN
+'use client';
+import { useState } from 'react';
+interface Props { title: string; }
+const Component = ({ title }: Props) => {
+  const [value, setValue] = useState<string>('');
+  return <div className="p-4 space-y-2">{title}</div>;
+};
+export default Component;
+
+CLI COMMAND PATTERN
+import { confirm } from '@clack/prompts';
+import chalk from 'chalk';
+export async function command(options) {
+  try {
+    const validated = await validateInput(options);
+    const answer = await confirm({ message: 'Continue?' });
+    console.log(chalk.green('✓ Success'));
+  } catch (error) {
+    console.error(chalk.red('✗ Error:'), error.message);
+    process.exit(1);
+  }
+}
+
+TEMPLATE PATTERN
+{{#if (eq database "mongodb")}}
+import mongoose from 'mongoose';
+{{else if (eq database "postgresql")}}
+import { Pool } from 'pg';
 {{/if}}
-```
 
-#### Iteration
-```handlebars
-{{#each frontend}}
-  {{this}}
-{{/each}}
-```
+BUILDER STATE MANAGEMENT
+Store selections in React state
+Validate on each selection change
+Update available options based on compatibility
+Generate command in real-time
+Show/hide incompatible options
+Display helpful error messages
+Provide reset button
 
-#### Helpers
-- `eq`: Equality check
-- `ne`: Not equal
-- `and`: Logical AND
-- `or`: Logical OR
-- `not`: Logical NOT
-- `contains`: Check if array contains value
+COMMAND DISPLAY
+Show command in copyable code block
+Provide copy button with feedback
+Show alternative commands (different package managers)
+Display step-by-step installation instructions
+Link to relevant documentation
+Show expected project structure
 
-### Generated Project Structure
+QUALITY STANDARDS
+TypeScript strict mode (web)
+ESLint + Prettier formatting
+Node.js 18+ compatibility
+ES modules (import/export)
+WCAG AA accessibility compliance
+Semantic versioning
+Responsive design (mobile, tablet, desktop)
 
-#### Full-Stack App (React.js + Express + MongoDB)
-```
-my-app/
-├── frontend/              # React app
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── hooks/
-│   │   ├── lib/
-│   │   └── services/
-│   ├── public/
-│   ├── package.json
-│   └── vite.config.js
-├── backend/               # Express API
-│   ├── src/
-│   │   ├── routes/
-│   │   ├── controllers/
-│   │   ├── models/
-│   │   ├── middleware/
-│   │   ├── services/
-│   │   └── config/
-│   ├── package.json
-│   └── server.js
-├── shared/                # Shared types/utilities
-│   └── types/
-├── .dockerignore
-├── docker-compose.yml
-├── Dockerfile
-├── .gitignore
-└── README.md
-```
+TESTING CHECKLIST
+CLI: Test all flag combinations with --dry-run
+CLI: Verify all templates generate correctly
+CLI: Test compatibility rules enforce properly
+Web: Test builder with all tech combinations
+Web: Verify generated commands work in terminal
+Web: Test responsive design on all screen sizes
+Web: Test accessibility with keyboard navigation
+Web: Verify config.ts matches ValidationSchemas.js
 
-#### Monorepo Structure (Turborepo)
-```
-my-app/
-├── apps/
-│   ├── web/              # Next.js frontend
-│   └── api/              # Express backend
-├── packages/
-│   ├── ui/               # Shared UI components
-│   ├── config/           # Shared configs
-│   └── types/            # Shared TypeScript types
-├── turbo.json
-├── package.json
-└── pnpm-workspace.yaml
-```
+USER EXPERIENCE PRIORITIES
+Make builder intuitive and fast
+Show clear compatibility hints
+Provide helpful error messages
+Display beautiful project examples
+Make documentation searchable
+Show realistic use cases
+Provide quick start guide
+Include video demos or GIFs
 
-### Template Variables Reference
-
-#### Core Variables
-- `projectName`: Project name (e.g., "my-app")
-- `packageManager`: npm, yarn, pnpm, or bun
-- `description`: Project description
-
-#### Frontend Variables
-- `frontend`: Array of frontend frameworks
-- `uiLibrary`: UI library choice (if applicable)
-
-#### Backend Variables
-- `backend`: Backend framework
-- `port`: Server port number
-
-#### Database Variables
-- `database`: Database type (mongodb, postgresql, mysql, sqlite)
-- `orm`: ORM/ODM choice (prisma, mongoose, sequelize, typeorm)
-
-#### Authentication Variables
-- `auth`: Authentication method (jwt, passport, auth0, oauth)
-
-#### Feature Flags
-- `git`: Initialize git repository (true/false)
-- `install`: Install dependencies (true/false)
-- `docker`: Include Docker configs (true/false)
-- `testing`: Include testing setup (true/false)
-
-### Best Practices for Templates
-
-1. **Modularity**: Keep templates focused and single-purpose
-2. **Reusability**: Use shared templates for common patterns
-3. **Conditional Logic**: Use explicit Handlebars helpers
-4. **Documentation**: Add comments in templates for clarity
-5. **Testing**: Test template generation with various combinations
-6. **Validation**: Ensure generated code follows project standards
+ALWAYS REMEMBER
+Web shows capabilities, CLI does the work
+Web generates commands, CLI generates projects
+Keep config synchronized between web and CLI
+Test generated commands with --dry-run
+Web is marketing + builder, not a code generator
+Builder must match CLI's actual capabilities
+Validate compatibility in real-time on web
+Every web-generated command must work in CLI

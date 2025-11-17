@@ -120,10 +120,11 @@ export default function GitHubSponsorsSection({
                           <div className="flex-shrink-0">
                             <Image
                               src={entry.avatarUrl}
-                              alt={entry.name}
+                              alt={`${entry.name} - Sponsor avatar`}
                               width={80}
                               height={80}
                               className="rounded-lg border-2 border-border transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-md"
+                              loading="lazy"
                               unoptimized
                             />
                           </div>
@@ -211,10 +212,11 @@ export default function GitHubSponsorsSection({
                           <div className="flex-shrink-0">
                             <Image
                               src={entry.avatarUrl}
-                              alt={entry.name}
+                              alt={`${entry.name} - Sponsor avatar`}
                               width={80}
                               height={80}
                               className="rounded-lg border-2 border-border transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-md"
+                              loading="lazy"
                               unoptimized
                             />
                           </div>

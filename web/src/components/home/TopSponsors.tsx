@@ -192,10 +192,11 @@ export default function TopSponsors({
                         <div className="flex-shrink-0">
                           <Image
                             src={sponsor.avatar}
-                            alt={sponsor.name}
+                            alt={`${sponsor.name} - Sponsor avatar`}
                             width={100}
                             height={100}
                             className="rounded border border-border transition-colors duration-300"
+                            loading="lazy"
                             unoptimized
                           />
                         </div>

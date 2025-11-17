@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{projectName}} • Frontend Starter</title>
+    <style>
+      :root { color-scheme: light dark; }
+      :root {
+        --bg: #0b0b0c;
+        --fg: #e5e7eb;
+        --muted: #9ca3af;
+        --card: #111214;
+        --border: #2a2c31;
+        --primary: #3b82f6;
+        --ring: #93c5fd33;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #fafafa;
+          --fg: #0b0b0c;
+          --muted: #4b5563;
+          --card: #ffffff;
+          --border: #e5e7eb;
+          --primary: #2563eb;
+          --ring: #3b82f622;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: radial-gradient(1200px 800px at 10% -10%, #3b82f50a, transparent 40%),
+                    radial-gradient(1000px 600px at 120% 10%, #22d3ee0a, transparent 40%),
+                    var(--bg);
+        color: var(--fg);
+      }
+      .container { max-width: 1000px; margin: 0 auto; padding: 32px 20px; }
+      .header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+      .title { font-size: 20px; font-weight: 700; }
+      .badge { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); background: color-mix(in oklab, var(--card), transparent 30%); }
+      .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+      .card { grid-column: span 12; background: color-mix(in oklab, var(--card), transparent 0%); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+      .card h2 { margin: 0 0 8px; font-size: 16px; }
+      .muted { color: var(--muted); font-size: 14px; }
+      .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: color-mix(in oklab, var(--card), transparent 20%); }
+      .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .cta { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); color: var(--primary); text-decoration: none; background: color-mix(in oklab, var(--primary), transparent 92%); outline: 0; box-shadow: 0 0 0 0 var(--ring); transition: box-shadow .2s ease, background .2s ease; }
+      .cta:hover { background: color-mix(in oklab, var(--primary), transparent 88%); }
+      .cta:focus-visible { box-shadow: 0 0 0 6px var(--ring); }
+      @media (min-width: 640px) {
+        .card.span-6 { grid-column: span 6; }
+        .card.span-4 { grid-column: span 4; }
+        .card.span-8 { grid-column: span 8; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="title">FRONTEND_STARTER.LOG</div>
+        <div class="badge">[READY]</div>
+      </div>
+
+      <div class="grid">
+        <div class="card span-8">
+          <h2>Starter Ready</h2>
+          <p class="muted">This minimal starter is included when a framework template is unavailable. Replace it with your chosen framework or keep it as a landing page.</p>
+          <div style="height: 12px"></div>
+          <div class="row">
+            <div class="pill">Project: <strong>{{projectName}}</strong></div>
+            <div class="pill">Generated: <code>{{timestamp}}</code></div>
+          </div>
+          <div style="height: 16px"></div>
+          <a class="cta" href="./">
+            <span>Open App</span>
+          </a>
+        </div>
+
+        <div class="card span-4">
+          <h2>Framework Selection</h2>
+          <p class="muted">Selected frontends: {{#if hasFrontend}}Yes{{else}}No{{/if}}</p>
+          <div style="height: 8px"></div>
+          <div class="row">
+            <div class="pill">React: {{#if isReact}}Yes{{else}}No{{/if}}</div>
+            <div class="pill">Vue: {{#if isVue}}Yes{{else}}No{{/if}}</div>
+          </div>
+          <div style="height: 8px"></div>
+          <div class="row">
+            <div class="pill">Next.js: {{#if isNextJS}}Yes{{else}}No{{/if}}</div>
+            <div class="pill">TypeScript: No</div>
+          </div>
+        </div>
+
+        <div class="card span-6">
+          <h2>Next steps</h2>
+          <ul class="muted">
+            <li>Create your frontend in <code>apps/web</code> or <code>web/</code></li>
+            <li>Remove or replace this <code>index.html</code> when ready</li>
+            <li>Run your dev server and iterate</li>
+          </ul>
+        </div>
+
+        <div class="card span-6">
+          <h2>Tips</h2>
+          <ul class="muted">
+            <li>Use a bundler or framework for production apps</li>
+            <li>Keep this page as a placeholder while scaffolding</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

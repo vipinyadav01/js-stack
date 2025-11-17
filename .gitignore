@@ -29,13 +29,15 @@ out/
 .sst/
 .build/
 
-# Environment files
+# Environment files (keep .env.example for reference)
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 .env*.local
+!.env.example
+!.env.local.example
 
 # Debug logs
 npm-debug.log*
@@ -52,13 +54,12 @@ desktop.ini
 *.swo
 *~
 
-# IDE
+# IDE (keep essential configs for contributors)
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
 .idea/
 *.iml
 *.ipr
@@ -70,6 +71,7 @@ desktop.ini
 .settings/
 *.sublime-workspace
 *.sublime-project
+*.code-workspace
 
 # TypeScript
 *.tsbuildinfo
@@ -112,9 +114,6 @@ pids/
 lib-cov/
 *.info
 
-# Diagnostic reports
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
 # Optional npm cache directory
 .npm/
 
@@ -136,18 +135,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Output of 'npm pack'
 *.tgz
 
-# Gatsby files
-.cache/
-public/
-
-# Next.js
-.next/
-out/
-
-# Nuxt.js
-.nuxt/
-dist/
-
 # Storybook
 storybook-static/
 
@@ -157,26 +144,12 @@ storybook-static/
 # Docusaurus
 .docusaurus/
 
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions
-.vscode-test/
-
 # Husky
 .husky/_
 
-# Changeset
+# Changeset (keep config, ignore generated files)
 .changeset/*.md
+!.changeset/config.json
 
 # Playwright
 /test-results/
@@ -184,7 +157,7 @@ storybook-static/
 /blob-report/
 /playwright/.cache/
 
-# Monorepo (keep dist/ for CLI package)
+# Monorepo build artifacts
 **/build/
 **/out/
 **/.next/
@@ -196,6 +169,17 @@ web/.next/
 web/out/
 web/.vercel/
 
-# Local development
+# Local development and testing
 test-filename.js
 test-fs-dir/
+*.test.js
+*.spec.js
+
+# Generated project directories (for testing)
+demo-*/
+test-*/
+my-app/
+my-awesome-app/
+
+# Keep dist/ for CLI package distribution
+!dist/

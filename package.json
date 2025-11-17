@@ -14,7 +14,10 @@
   "files": [
     "dist",
     "cli/templates",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md"
   ],
   "scripts": {
     "build": "turbo run build",

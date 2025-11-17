@@ -1,8 +1,8 @@
-# Source files (only include compiled)
-src/**/*.test.js
-src/**/*.spec.js
-src/**/*.test.ts
-src/**/*.spec.ts
+# Source files (only include compiled dist/)
+cli/**/*.js
+!cli/templates/**
+!cli/templates/**/*
+src/
 __tests__/
 test/
 tests/
@@ -16,9 +16,10 @@ tests/
 .idea/
 scripts/
 web/
-MONOREPO_STRUCTURE.md
+.cursor/
+.cursorrules
 
-# Config files
+# Config files (development only)
 .eslintrc*
 .prettierrc*
 jest.config.*
@@ -32,8 +33,9 @@ vitest.config*
 playwright.config*
 .editorconfig
 .gitattributes
+turbo.json
 
-# Build files
+# Build files and logs
 *.log
 *.pid
 *.seed
@@ -52,18 +54,7 @@ coverage/
 .changeset/
 !.changeset/config.json
 
-# Documentation (keep essential ones)
-CONTRIBUTING.md
-CHANGELOG.md
-CODE_OF_CONDUCT.md
-SECURITY.md
-TEMPLATE-CONFIG.md
-USAGE-GUIDE.md
-DIFFERENTIATORS.md
-PUBLISHING-DEPLOYMENT-GUIDE.md
-SCRIPTS.md
-
-# CI/CD
+# CI/CD (keep GitHub Actions for reference)
 .gitlab-ci.yml
 .travis.yml
 .circleci/
@@ -106,13 +97,12 @@ temp/
 *.orig
 *.rej
 
-# Monorepo specific
+# Monorepo specific (exclude web workspace)
 lerna.json
 nx.json
 rush.json
 pnpm-workspace.yaml
 turbo.json
-.turbo/
 web/
 
 # Build artifacts that shouldn't be published
@@ -120,17 +110,19 @@ web/
 dist/**/*.map
 dist/**/*.d.ts.map
 
-# Keep only essential files for npm package
-# The CLI package should include:
-# - dist/ (compiled code)
-# - templates/ (template files) 
-# - README.md
-# - LICENSE
-# - package.json
-
-# Exclude web app entirely from CLI package
-web/
-
-# Exclude monorepo files
+# Test files
 test-filename.js
 test-fs-dir/
+
+# IMPORTANT: Keep these files for open source (they are included by default)
+# README.md - Included in package.json "files"
+# LICENSE - Should be included (add if missing)
+# CONTRIBUTING.md - Important for open source
+# CODE_OF_CONDUCT.md - Important for open source
+# CHANGELOG.md - Important for version tracking
+# SECURITY.md - Important for security reporting
+
+# The npm package includes (via package.json "files" field):
+# - dist/ (compiled CLI code)
+# - cli/templates/ (template files for project generation)
+# - README.md (documentation)

@@ -5,6 +5,7 @@ import { Navigation } from "@/components/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { StructuredData } from "@/components/structured-data";
+import { GoogleTagManager } from "@/components/GoogleTagManager";
 
 const jetbrainsMono = localFont({
   src: [
@@ -83,25 +84,28 @@ const metadataBase = resolveMetadataBase();
 
 export const metadata: Metadata = {
   title: {
-    default:
-      "JS-Stack CLI - Modern Full-Stack JavaScript & TypeScript Development Tool",
+    default: "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool",
     template: "%s | JS-Stack CLI",
   },
   description:
-    "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in. Features React, Next.js, Node.js, Express, databases, authentication, testing, and deployment configurations. Save hours of setup time with our comprehensive CLI tool.",
+    "JS-Stack CLI (create-js-stack) - A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects. Create JS projects instantly with React, Next.js, Node.js, Express, databases, authentication, and more. Save hours of setup time with our comprehensive JavaScript project generator.",
   keywords: [
+    "js",
+    "jsstack",
+    "js-stack",
+    "createjs",
+    "create jsstack",
+    "create-js-stack",
     "javascript cli",
-    "typescript cli",
+    "javascript project generator",
     "react boilerplate",
     "nextjs starter",
     "nodejs scaffolding",
     "full-stack cli",
     "project generator",
     "development tool",
-    "create-js-stack",
     "web development cli",
     "javascript framework",
-    "typescript boilerplate",
     "react template",
     "express generator",
     "full-stack development",
@@ -110,6 +114,8 @@ export const metadata: Metadata = {
     "development productivity",
     "code scaffolding",
     "project initialization",
+    "typescript cli",
+    "typescript boilerplate",
   ],
   authors: [{ name: "Vipin Yadav", url: "https://github.com/vipinyadav01" }],
   creator: "Vipin Yadav",
@@ -180,9 +186,9 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   openGraph: {
     title:
-      "JS-Stack CLI - Create Modern Full-Stack JavaScript Applications Instantly",
+      "JS-Stack CLI (create-js-stack) - Create Modern Full-Stack JavaScript Applications Instantly",
     description:
-      "The ultimate CLI tool for scaffolding production-ready JavaScript & TypeScript applications. Features React, Next.js, Node.js, databases, authentication, and more. Start building in seconds, not hours.",
+      "JS-Stack CLI - The ultimate tool for creating JavaScript projects. Scaffold production-ready JS applications with React, Next.js, Node.js, databases, authentication, and more. Start building in seconds, not hours.",
     url: siteUrl,
     siteName: "JS-Stack CLI",
     type: "website",
@@ -208,9 +214,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@jsstack_cli",
     creator: "@vipinyadav",
-    title: "JS-Stack CLI - Create Modern Full-Stack Apps Instantly",
+    title:
+      "JS-Stack CLI (create-js-stack) - Create Modern Full-Stack Apps Instantly",
     description:
-      "The ultimate CLI for JavaScript & TypeScript full-stack development. React, Next.js, Node.js, databases & more. Production-ready in seconds.",
+      "JS-Stack CLI - Create JavaScript projects instantly. The ultimate CLI for JS full-stack development. React, Next.js, Node.js, databases & more. Production-ready in seconds.",
     images: {
       url: "/og-image.png",
       alt: "JS-Stack CLI - Modern Full-Stack Development Tool",
@@ -223,9 +230,9 @@ export const metadata: Metadata = {
   },
   verification: {
     // Add your verification tokens here when available
-    // google: "your-google-verification-code",
-    // yandex: "your-yandex-verification-code",
-    // bing: "your-bing-verification-code",
+    // google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+    // yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
+    // bing: process.env.NEXT_PUBLIC_BING_VERIFICATION || "",
   },
   category: "technology",
   classification: "Developer Tools",
@@ -249,6 +256,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google Tag Manager - Placed as high as possible in <head> */}
+        {process.env.NEXT_PUBLIC_GTM_ID && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
+          `,
+            }}
+          />
+        )}
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -272,6 +294,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//github.com" />
         <link rel="dns-prefetch" href="//npmjs.com" />
         <link rel="dns-prefetch" href="//unpkg.com" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
 
         {/* Preload Critical Resources */}
         <link
@@ -312,11 +336,13 @@ export default function RootLayout({
         <StructuredData type="website" />
         <StructuredData type="software" />
         <StructuredData type="organization" />
+        <link rel="alternate" type="application/ld+json" href="/schema.json" />
       </head>
       <body
         className={`${jetbrainsMono.variable} font-mono antialiased bg-background text-foreground`}
         suppressHydrationWarning
       >
+        <GoogleTagManager />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

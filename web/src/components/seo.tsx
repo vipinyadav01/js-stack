@@ -31,20 +31,25 @@ export function generateSEOMetadata({
   const fullUrl = url ? `${baseUrl}${url}` : baseUrl;
   const fullTitle = title
     ? `${title} | JS-Stack CLI`
-    : "JS-Stack CLI - Modern Full-Stack JavaScript & TypeScript Development Tool";
+    : "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool";
   const fullDescription =
     description ||
     "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in. Features React, Next.js, Node.js, Express, databases, authentication, testing, and deployment configurations.";
 
   const allKeywords = [
     ...keywords,
+    "js",
+    "jsstack",
+    "js-stack",
+    "createjs",
+    "create jsstack",
+    "create-js-stack",
     "javascript cli",
     "typescript cli",
     "react boilerplate",
     "nextjs starter",
     "nodejs scaffolding",
     "full-stack development",
-    "create-js-stack",
   ];
 
   return {

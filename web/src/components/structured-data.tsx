@@ -25,7 +25,7 @@ export function StructuredData({
       name: "JS-Stack CLI",
       url: baseUrl,
       description:
-        "A comprehensive CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications with React, Next.js, Node.js, and modern development best practices.",
+        "A comprehensive CLI tool for scaffolding production-ready JavaScript full-stack applications with React, Next.js, Node.js, and modern development best practices.",
       author: {
         "@type": "Person",
         name: "Vipin Yadav",
@@ -122,6 +122,7 @@ export function StructuredData({
         mainEntity: {
           "@type": "SoftwareApplication",
           name: "create-js-stack",
+          alternateName: ["js-stack", "jsstack", "createjs", "create jsstack"],
           applicationCategory: "DeveloperApplication",
           operatingSystem: ["Windows", "macOS", "Linux"],
           downloadUrl: "https://www.npmjs.com/package/create-js-stack",

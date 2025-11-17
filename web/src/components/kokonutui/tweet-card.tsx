@@ -80,10 +80,11 @@ export default function TweetCard({
               <div className="h-10 w-10 rounded-full overflow-hidden">
                 <Image
                   src={authorImage}
-                  alt={authorName}
+                  alt={`${authorName} profile picture`}
                   width={40}
                   height={40}
                   className="h-full w-full object-cover"
+                  loading="lazy"
                 />
               </div>
             </div>

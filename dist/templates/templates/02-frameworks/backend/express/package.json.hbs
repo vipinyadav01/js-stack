@@ -1,0 +1,48 @@
+{
+  "name": "{{projectName}}-backend",
+  "version": "1.0.0",
+  "description": "Backend API for {{projectName}}",
+  "main": "src/server.js",
+  "type": "{{#if useESModules}}module{{else}}commonjs{{/if}}",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "build": "echo 'No build step required'",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint . --ext js",
+    "format": "prettier --write \"src/**/*.js\"",
+    {{#if usePrisma}}
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "node prisma/seed.js",
+    "db:studio": "prisma studio",
+    {{/if}}
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.4.0",
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.4",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "jest": "^29.7.0",
+    {{#if useTypeScript}}
+    "@types/jest": "^29.5.12",
+    "ts-jest": "^29.2.5",
+    {{/if}}
+    "supertest": "^7.0.0",
+    "@types/supertest": "^6.0.2",
+    "rimraf": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

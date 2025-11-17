@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  {{#if usePostgres}}
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  {{else if useMySQL}}
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  {{else if useMongoDB}}
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+  {{else if useSQLite}}
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+  {{else}}
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  {{/if}}
+}
+
+// User model
+model User {
+  {{#if useMongoDB}}
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  {{else}}
+  id        String   @id @default(cuid())
+  {{/if}}
+  email     String   @unique
+  password  String
+  name      String?
+  avatar    String?
+  role      Role     @default(USER)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  posts     Post[]
+  comments  Comment[]
+  profile   Profile?
+  sessions  Session[]
+  
+  @@index([email])
+  @@map("users")
+}
+
+// Profile model
+model Profile {
+  {{#if useMongoDB}}
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  {{else}}
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  {{/if}}
+  bio       String?
+  website   String?
+  location  String?
+  birthday  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("profiles")
+}
+
+// Post model
+model Post {
+  {{#if useMongoDB}}
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  authorId  String   @db.ObjectId
+  {{else}}
+  id        String   @id @default(cuid())
+  authorId  String
+  {{/if}}
+  title     String
+  slug      String   @unique
+  content   String   {{#if usePostgres}}@db.Text{{/if}}
+  excerpt   String?
+  published Boolean  @default(false)
+  views     Int      @default(0)
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  tags      Tag[]
+  
+  @@index([slug])
+  @@index([authorId])
+  @@map("posts")
+}
+
+// Comment model
+model Comment {
+  {{#if useMongoDB}}
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  authorId  String   @db.ObjectId
+  parentId  String?  @db.ObjectId
+  {{else}}
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  parentId  String?
+  {{/if}}
+  content   String   {{#if usePostgres}}@db.Text{{/if}}
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+// Tag model
+model Tag {
+  {{#if useMongoDB}}
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  {{else}}
+  id        String   @id @default(cuid())
+  {{/if}}
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  
+  // Relations
+  posts     Post[]
+  
+  @@index([slug])
+  @@map("tags")
+}
+
+// Session model (for authentication)
+model Session {
+  {{#if useMongoDB}}
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  {{else}}
+  id        String   @id @default(cuid())
+  userId    String
+  {{/if}}
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+// Enums
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}

@@ -1,0 +1,286 @@
+# {{projectName}}
+
+{{description}}
+
+## 🚀 Tech Stack
+
+{{#if backend}}
+**Backend:**
+- {{backend}} - Web framework
+{{#if database}}
+- {{database}} - Database
+{{/if}}
+{{#if orm}}
+- {{orm}} - ORM/ODM
+{{/if}}
+{{#if useJWT}}
+- JWT - Authentication
+{{/if}}
+{{#if useRedis}}
+- Redis - Caching
+{{/if}}
+{{/if}}
+
+{{#if frontend}}
+**Frontend:**
+{{#each frontend}}
+- {{this}} - Frontend framework
+{{/each}}
+{{#if useTailwind}}
+- Tailwind CSS - Styling
+{{/if}}
+{{/if}}
+
+**Tools & DevOps:**
+- Docker - Containerization
+- {{packageManager}} - Package manager
+{{#if useTypeScript}}
+- TypeScript - Type safety
+{{/if}}
+- ESLint - Code linting
+- Prettier - Code formatting
+
+## 📋 Prerequisites
+
+- Node.js 18+ 
+- {{packageManager}}
+{{#if database.postgres}}
+- PostgreSQL
+{{/if}}
+{{#if database.mysql}}
+- MySQL
+{{/if}}
+{{#if database.mongodb}}
+- MongoDB
+{{/if}}
+{{#if useRedis}}
+- Redis
+{{/if}}
+- Docker & Docker Compose (optional)
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd {{projectName}}
+   ```
+
+2. **Install dependencies**
+   ```bash
+   {{packageManager}} install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` with your configuration values.
+
+{{#if database}}
+4. **Set up the database**
+   {{#if usePrisma}}
+   ```bash
+   {{packageManager}} run db:generate
+   {{packageManager}} run db:migrate
+   ```
+   {{/if}}
+   {{#if useSequelize}}
+   ```bash
+   {{packageManager}} run db:migrate
+   ```
+   {{/if}}
+{{/if}}
+
+## 🚀 Running the Application
+
+### Development Mode
+
+{{#if backend}}
+**Start the backend:**
+```bash
+{{packageManager}} run dev:backend
+```
+The backend will be available at `http://localhost:{{backendPort}}`
+{{/if}}
+
+{{#if frontend}}
+**Start the frontend:**
+```bash
+{{packageManager}} run dev:frontend
+```
+The frontend will be available at `http://localhost:{{frontendPort}}`
+{{/if}}
+
+**Start both (if available):**
+```bash
+{{packageManager}} run dev
+```
+
+### Production Mode
+
+```bash
+{{packageManager}} run build
+{{packageManager}} run start
+```
+
+### Using Docker
+
+**Development:**
+```bash
+docker-compose up
+```
+
+**Production:**
+```bash
+docker-compose -f docker-compose.prod.yml up
+```
+
+## 📁 Project Structure
+
+```
+{{projectName}}/
+├── {{#if backend}}backend/                 # Backend application{{/if}}
+{{#if backend}}│   ├── src/                 # Source code
+│   ├── Dockerfile           # Docker configuration
+│   └── package.json         # Backend dependencies{{/if}}
+├── {{#if frontend}}frontend/               # Frontend application{{/if}}
+{{#if frontend}}│   ├── src/                # Source code
+│   ├── public/              # Static assets
+│   ├── Dockerfile           # Docker configuration
+│   └── package.json         # Frontend dependencies{{/if}}
+{{#if database}}├── database/               # Database related files
+│   {{#if usePrisma}}├── prisma/             # Prisma schema and migrations{{/if}}
+│   {{#if useSequelize}}├── migrations/          # Database migrations{{/if}}
+│   └── seeds/               # Database seeds{{/if}}
+├── docker-compose.yml       # Docker Compose configuration
+├── .env.example             # Environment variables template
+├── .gitignore               # Git ignore rules
+└── README.md                # Project documentation
+```
+
+## 🔧 Available Scripts
+
+{{#if backend}}
+### Backend Scripts
+- `{{packageManager}} run dev:backend` - Start backend in development mode
+- `{{packageManager}} run build:backend` - Build backend for production
+- `{{packageManager}} run start:backend` - Start backend in production mode
+- `{{packageManager}} run test:backend` - Run backend tests
+{{/if}}
+
+{{#if frontend}}
+### Frontend Scripts
+- `{{packageManager}} run dev:frontend` - Start frontend in development mode
+- `{{packageManager}} run build:frontend` - Build frontend for production
+- `{{packageManager}} run preview:frontend` - Preview frontend build
+- `{{packageManager}} run test:frontend` - Run frontend tests
+{{/if}}
+
+{{#if database}}
+### Database Scripts
+{{#if usePrisma}}
+- `{{packageManager}} run db:generate` - Generate Prisma client
+- `{{packageManager}} run db:migrate` - Run database migrations
+- `{{packageManager}} run db:push` - Push schema to database
+- `{{packageManager}} run db:seed` - Seed database with initial data
+{{/if}}
+{{#if useSequelize}}
+- `{{packageManager}} run db:migrate` - Run database migrations
+- `{{packageManager}} run db:seed` - Seed database with initial data
+{{/if}}
+{{/if}}
+
+### General Scripts
+- `{{packageManager}} run lint` - Run ESLint
+- `{{packageManager}} run format` - Format code with Prettier
+- `{{packageManager}} run test` - Run all tests
+- `{{packageManager}} run clean` - Clean build artifacts
+
+## 🔒 Environment Variables
+
+See `.env.example` for all available environment variables.
+
+Key variables:
+{{#if database}}
+- `DATABASE_URL` - Database connection string
+{{/if}}
+{{#if useJWT}}
+- `JWT_SECRET` - Secret for JWT token signing
+{{/if}}
+- `NODE_ENV` - Environment (development/production)
+- `PORT` - Server port
+
+{{#if useAuth}}
+## 🔐 Authentication
+
+This project includes JWT-based authentication with the following endpoints:
+
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/me` - Get current user
+{{/if}}
+
+## 📚 API Documentation
+
+{{#if backend}}
+The API documentation is available at:
+- Development: `http://localhost:{{backendPort}}/api/docs`
+- Swagger/OpenAPI documentation is auto-generated
+{{/if}}
+
+## 🧪 Testing
+
+Run tests with:
+```bash
+{{packageManager}} run test
+```
+
+Run tests with coverage:
+```bash
+{{packageManager}} run test:coverage
+```
+
+## 🚀 Deployment
+
+### Using Docker
+
+1. Build and push your images to a container registry
+2. Update your production environment variables
+3. Deploy using your preferred container orchestration platform
+
+### Traditional Deployment
+
+1. Build the application:
+   ```bash
+   {{packageManager}} run build
+   ```
+
+2. Set up your production environment variables
+
+3. Start the application:
+   ```bash
+   {{packageManager}} run start
+   ```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Authors
+
+- **Vipin Yadav** - Initial work
+
+## 🙏 Acknowledgments
+
+- Built with [create-js-stack](https://github.com/create-js-stack/create-js-stack)
+- Thanks to all the open source libraries and tools used in this project

@@ -1,0 +1,295 @@
+const Hapi = require('@hapi/hapi');
+const Boom = require('@hapi/boom');
+const Joi = require('@hapi/joi');
+require('dotenv').config();
+{{#if useJWT}}const HapiAuthJWT2 = require('hapi-auth-jwt2');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+{{#if usePrisma}}const { PrismaClient } = require('@prisma/client');{{/if}}
+{{#if useMongoose}}const mongoose = require('mongoose');{{/if}}
+{{#if useRedis}}const { createClient } = require('redis');{{/if}}
+
+const PORT = parseInt(process.env.PORT || '{{backendPort}}', 10);
+const HOST = process.env.HOST || 'localhost';
+{{/if}}
+
+{{#if usePrisma}}
+const prisma = new PrismaClient();
+{{/if}}
+
+{{#if useRedis}}
+const redisClient = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379'
+});
+{{/if}}
+
+// Database connections
+async function connectDatabases() {
+  {{#if useMongoose}}
+  try {
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/{{projectName}}');
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
+  }
+  {{/if}}
+
+  {{#if useRedis}}
+  try {
+    await redisClient.connect();
+    console.log('Connected to Redis');
+  } catch (error) {
+    console.error('Redis connection error:', error);
+  }
+  {{/if}}
+
+  {{#if usePrisma}}
+  try {
+    await prisma.$connect();
+    console.log('Connected to database via Prisma');
+  } catch (error) {
+    console.error('Database connection error:', error);
+    process.exit(1);
+  }
+  {{/if}}
+}
+
+{{#if useJWT}}
+// JWT validation function
+const validate = async function (decoded, request, h) {
+  // TODO: Implement user validation logic
+  // This should validate the user from database
+  const user = { id: decoded.userId, email: decoded.email };
+  
+  if (!user) {
+    return { isValid: false };
+  }
+  
+  return { isValid: true, credentials: user };
+};
+{{/if}}
+
+// Create server
+const init = async () => {
+  const server = Hapi.server({
+    port: PORT,
+    host: HOST,
+    routes: {
+      cors: {
+        origin: process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : ['*'],
+        credentials: true
+      },
+      validate: {
+        failAction: async (request, h, err) => {
+          if (process.env.NODE_ENV === 'production') {
+            console.error('ValidationError:', err.message);
+            throw Boom.badRequest('Invalid request payload input');
+          } else {
+            console.error(err);
+            throw err;
+          }
+        }
+      }
+    }
+  });
+
+  // Connect to databases
+  await connectDatabases();
+
+  {{#if useJWT}}
+  // Register JWT authentication
+  await server.register(HapiAuthJWT2);
+  
+  server.auth.strategy('jwt', 'hapi-auth-jwt2', {
+    key: process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
+    validate: validate,
+    verifyOptions: { algorithms: ['HS256'] }
+  });
+  
+  server.auth.default('jwt');
+  {{/if}}
+
+  // Health check route
+  server.route({
+    method: 'GET',
+    path: '/api/health',
+    {{#if useJWT}}
+    options: {
+      auth: false
+    },
+    {{/if}}
+    handler: (request, h) => {
+      return {
+        status: 'OK',
+        message: 'Server is running',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+      };
+    }
+  });
+
+  {{#if useJWT}}
+  // Login route
+  server.route({
+    method: 'POST',
+    path: '/api/login',
+    options: {
+      auth: false,
+      validate: {
+        payload: Joi.object({
+          email: Joi.string().email().required(),
+          password: Joi.string().min(6).required()
+        })
+      }
+    },
+    handler: async (request, h) => {
+      const { email, password } = request.payload;
+      
+      // TODO: Implement actual user authentication
+      // This is a placeholder implementation
+      if (email === 'test@example.com' && password === 'password') {
+        const token = jwt.sign(
+          { userId: 1, email },
+          process.env.JWT_SECRET || 'your-secret-key-change-this-in-production',
+          { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+        );
+        
+        return { token, user: { id: 1, email } };
+      }
+      
+      throw Boom.unauthorized('Invalid credentials');
+    }
+  });
+
+  // Protected route example
+  server.route({
+    method: 'GET',
+    path: '/api/protected',
+    handler: (request, h) => {
+      return {
+        message: 'This is a protected route',
+        user: request.auth.credentials
+      };
+    }
+  });
+  {{/if}}
+
+  // Example API routes
+  server.route({
+    method: 'GET',
+    path: '/api/users',
+    {{#if useJWT}}
+    options: {
+      validate: {
+        query: Joi.object({
+          page: Joi.number().integer().min(1).default(1),
+          limit: Joi.number().integer().min(1).max(100).default(10)
+        })
+      }
+    },
+    {{/if}}
+    handler: async (request, h) => {
+      // TODO: Implement user listing logic
+      return {
+        users: [],
+        pagination: {
+          page: request.query.page || 1,
+          limit: request.query.limit || 10,
+          total: 0
+        }
+      };
+    }
+  });
+
+  server.route({
+    method: 'POST',
+    path: '/api/users',
+    options: {
+      {{#if useJWT}}
+      auth: false, // Allow user registration without auth
+      {{/if}}
+      validate: {
+        payload: Joi.object({
+          name: Joi.string().min(2).max(50).required(),
+          email: Joi.string().email().required(),
+          password: Joi.string().min(6).required()
+        })
+      }
+    },
+    handler: async (request, h) => {
+      // TODO: Implement user creation logic
+      const { name, email, password } = request.payload;
+      
+      return h.response({
+        message: 'User created successfully',
+        user: { name, email }
+      }).code(201);
+    }
+  });
+
+  // Error handling
+  server.ext('onPreResponse', (request, h) => {
+    const response = request.response;
+    
+    if (response.isBoom) {
+      const error = response;
+      const statusCode = error.output.statusCode;
+      
+      console.error(`Error ${statusCode}:`, error.message);
+      
+      if (statusCode === 500) {
+        return h.response({
+          error: 'Internal Server Error',
+          message: process.env.NODE_ENV === 'production' 
+            ? 'Something went wrong' 
+            : error.message
+        }).code(500);
+      }
+      
+      return h.response({
+        error: error.output.payload.error,
+        message: error.message,
+        statusCode
+      }).code(statusCode);
+    }
+    
+    return h.continue;
+  });
+
+  // Graceful shutdown
+  const gracefulShutdown = async (signal) => {
+    console.log(`Received ${signal}, shutting down gracefully`);
+    
+    {{#if useRedis}}
+    await redisClient.quit();
+    {{/if}}
+    
+    {{#if usePrisma}}
+    await prisma.$disconnect();
+    {{/if}}
+    
+    {{#if useMongoose}}
+    await mongoose.connection.close();
+    {{/if}}
+    
+    await server.stop({ timeout: 10000 });
+    process.exit(0);
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  // Start server
+  await server.start();
+  console.log(`Server running on ${server.info.uri}`);
+  
+  return server;
+};
+
+process.on('unhandledRejection', (err) => {
+  console.log(err);
+  process.exit(1);
+});
+
+init();

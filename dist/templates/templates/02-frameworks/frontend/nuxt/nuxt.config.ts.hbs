@@ -1,0 +1,77 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+  
+  modules: [{{#if usePinia}}
+    '@pinia/nuxt'{{#if useAuth}},
+    '@sidebase/nuxt-auth'{{/if}}
+  ],
+  {{/if}}
+  
+  {{#if useAuth}}
+  auth: {
+    baseURL: process.env.AUTH_ORIGIN,
+    provider: {
+      type: '{{auth}}'
+    }
+  },
+  {{/if}}
+  
+  css: [{{#if useTailwind}}
+    '~/assets/css/main.css'{{/if}}
+  ],
+  
+  runtimeConfig: {
+    // Private keys (only available on server-side)
+    {{#if useAuth}}
+    authSecret: process.env.NUXT_AUTH_SECRET,
+    {{/if}}
+    {{#if backend}}
+    apiSecret: process.env.NUXT_API_SECRET,
+    {{/if}}
+    
+    // Public keys (exposed to client-side)
+    public: {
+      {{#if backend}}
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:{{backendPort}}/api',
+      {{/if}}
+      {{#if useAuth}}
+      authUrl: process.env.NUXT_PUBLIC_AUTH_URL,
+      {{/if}}
+      appName: '{{projectName}}'
+    }
+  },
+  
+  {{#if backend}}
+  nitro: {
+    devProxy: {
+      '/api': {
+        target: 'http://localhost:{{backendPort}}/api',
+        changeOrigin: true
+      }
+    }
+  },
+  {{/if}}
+  
+  app: {
+    head: {
+      title: '{{projectName}}',
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { hid: 'description', name: 'description', content: '{{description}}' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ]
+    }
+  },
+  
+  devServer: {
+    port: {{frontendPort}}
+  },
+  
+  build: {
+    transpile: [{{#if useAuth}}'@sidebase/nuxt-auth'{{/if}}]
+  }
+})

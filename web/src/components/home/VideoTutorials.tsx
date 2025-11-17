@@ -192,6 +192,7 @@ export default function VideoTutorials({ limit = 4 }: VideoTutorialsProps) {
                         }
                         alt={video.youtubeData?.title || "Video thumbnail"}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover/video:scale-105"
+                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/video:opacity-100 transition-opacity duration-300">
                         <div className="rounded-full bg-red-600 p-3 shadow-lg">

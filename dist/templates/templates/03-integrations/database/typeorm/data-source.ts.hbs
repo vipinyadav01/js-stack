@@ -1,0 +1,39 @@
+import { DataSource } from 'typeorm';
+import { User } from './entities/User';
+import { Post } from './entities/Post';
+
+export const AppDataSource = new DataSource({
+  type: '{{database}}',
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '{{#if database.postgres}}5432{{else}}{{#if database.mysql}}3306{{else}}3306{{/if}}{{/if}}'),
+  username: process.env.DB_USER || '{{#if database.postgres}}postgres{{else}}root{{/if}}',
+  password: process.env.DB_PASSWORD || 'password',
+  database: process.env.DB_NAME || '{{projectName}}',
+  synchronize: process.env.NODE_ENV !== 'production',
+  logging: process.env.NODE_ENV === 'development',
+  entities: [User, Post],
+  migrations: ['src/migrations/**/*.ts'],
+  subscribers: ['src/subscribers/**/*.ts'],
+  {{#if database.postgres}}
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  {{/if}}
+});
+
+export const initializeDatabase = async () => {
+  try {
+    await AppDataSource.initialize();
+    console.log('Database connection initialized successfully');
+  } catch (error) {
+    console.error('Error during database initialization:', error);
+    process.exit(1);
+  }
+};
+
+export const closeDatabase = async () => {
+  try {
+    await AppDataSource.destroy();
+    console.log('Database connection closed');
+  } catch (error) {
+    console.error('Error closing database connection:', error);
+  }
+};

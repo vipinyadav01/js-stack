@@ -113,7 +113,7 @@ npx create-js-stack init my-app \
   --orm prisma \
   --auth jwt \
   --addons docker eslint prettier testing \
-  --pm pnpm
+  --package-manager pnpm
 
 # Use defaults for rapid prototyping
 npx create-js-stack init my-app --yes
@@ -248,7 +248,7 @@ Create a new full-stack project with all configurations.
   - `socketio` - Socket.IO real-time ✅
   - `cypress` - E2E testing 🚧 (Coming Soon)
   - `swagger` - API documentation 🚧 (Coming Soon)
-- `--pm <manager>` - Package manager
+- `--package-manager <manager>` - Package manager
   - `npm` - npm (default)
   - `yarn` - Yarn
   - `pnpm` - pnpm

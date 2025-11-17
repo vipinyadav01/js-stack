@@ -62,6 +62,9 @@ export default function Hero() {
               <div className="text-xs text-muted-foreground mb-2">
                 DESCRIPTION
               </div>
+              <h1 className="sr-only">
+                JS-Stack CLI - Modern Full-Stack JavaScript Development Tool
+              </h1>
               <div className="text-sm text-foreground">
                 A powerful, modern CLI tool for scaffolding production-ready
                 JavaScript full-stack projects with extensive customization
