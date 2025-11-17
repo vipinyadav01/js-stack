@@ -25,11 +25,14 @@ export function analyzeStackCompatibility(
 
   // Convert StackState to BuilderState format
   // Handle multiple frontends - use first one for compatibility checks
+  const frontends =
+    Array.isArray(stack.frontend) && stack.frontend.length > 0
+      ? stack.frontend
+      : ["none"];
+
   const builderState: BuilderState = {
     projectName: stack.projectName || "my-app",
-    frontend: (stack.frontend.length > 0
-      ? stack.frontend[0]
-      : "none") as BuilderState["frontend"],
+    frontend: (frontends[0] || "none") as BuilderState["frontend"],
     backend: (stack.backend || "none") as BuilderState["backend"],
     database: (stack.database || "none") as BuilderState["database"],
     orm: (stack.orm || "none") as BuilderState["orm"],
@@ -50,17 +53,29 @@ export function analyzeStackCompatibility(
   const validation = validateConfiguration(adjustedBuilderState);
 
   // Convert back to StackState format
+  // Preserve original frontends if multiple were selected, otherwise use adjusted
+  const adjustedFrontend =
+    adjustedBuilderState.frontend !== "none"
+      ? adjustedBuilderState.frontend
+      : "none";
+
+  // If original had multiple frontends and adjusted is different, preserve originals
+  // Otherwise, use adjusted frontend
+  const finalFrontend =
+    frontends.length > 1 && frontends[0] !== "none"
+      ? frontends // Preserve multiple frontends
+      : adjustedFrontend !== "none"
+        ? [adjustedFrontend]
+        : [];
+
   const adjustedStack: Partial<StackState> = {
-    frontend:
-      adjustedBuilderState.frontend !== "none"
-        ? [adjustedBuilderState.frontend]
-        : [],
-    backend: adjustedBuilderState.backend,
-    database: adjustedBuilderState.database,
-    orm: adjustedBuilderState.orm,
-    auth: adjustedBuilderState.auth,
-    addons: adjustedBuilderState.addons,
-    packageManager: adjustedBuilderState.packageManager,
+    frontend: finalFrontend,
+    backend: adjustedBuilderState.backend || "none",
+    database: adjustedBuilderState.database || "none",
+    orm: adjustedBuilderState.orm || "none",
+    auth: adjustedBuilderState.auth || "none",
+    addons: adjustedBuilderState.addons || [],
+    packageManager: adjustedBuilderState.packageManager || "npm",
     git: adjustedBuilderState.initializeGit ? "true" : "false",
     install: adjustedBuilderState.installDependencies ? "true" : "false",
   };

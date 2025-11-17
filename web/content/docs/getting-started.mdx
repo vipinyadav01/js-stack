@@ -1,25 +1,35 @@
 ---
 title: Getting Started
-description: Learn how to get started with JS-Stack CLI
+description: Learn how to get started with JS-Stack CLI - Create production-ready JavaScript full-stack applications in minutes
 ---
 
-# Getting Started
+# Getting Started with JS-Stack CLI
 
-JS-Stack CLI is a powerful tool for scaffolding production-ready JavaScript full-stack applications. Get started in minutes, not hours.
+JS-Stack CLI is a powerful, opinionated tool for scaffolding production-ready JavaScript full-stack applications. Get started in minutes, not hours.
+
+## What is JS-Stack?
+
+JS-Stack is a comprehensive CLI tool that generates complete, production-ready JavaScript projects with:
+
+- 🚀 **Modern Stack**: Latest versions of popular frameworks
+- 🛡️ **Best Practices**: Security, performance, and code quality built-in
+- 📦 **Complete Setup**: Everything from dependencies to deployment configs
+- ⚡ **Fast**: Generate projects in seconds
+- 🎯 **Flexible**: Choose your stack or use presets
 
 ## Installation
 
-Install JS-Stack CLI using npm:
+No installation required! Use `npx` to run JS-Stack CLI directly:
 
 ```bash
 npx create-js-stack@latest my-app
 ```
 
-No global installation required! The CLI runs directly via `npx`.
+The CLI will download and run automatically. No global installation needed!
 
 ## Quick Start
 
-### Interactive Mode
+### Option 1: Interactive Mode (Recommended)
 
 The easiest way to get started is using the interactive mode:
 
@@ -28,13 +38,34 @@ npx create-js-stack@latest my-app
 ```
 
 This will guide you through:
-- Frontend framework selection
-- Backend framework selection
+- Frontend framework selection (React, Next.js, Vue, etc.)
+- Backend framework selection (Express, Fastify, NestJS, etc.)
 - Database and ORM setup
 - Authentication configuration
-- Additional addons
+- Additional addons (Docker, Testing, Biome, Turborepo)
+- Package manager choice
+- Git initialization
+- Dependency installation
 
-### Non-Interactive Mode
+### Option 2: Use Presets
+
+Quick start with a preset configuration:
+
+```bash
+# Next.js full-stack application
+npx create-js-stack@latest my-app --preset nextjs-app
+
+# Express API server
+npx create-js-stack@latest my-api --preset express-api
+
+# MERN stack
+npx create-js-stack@latest my-app --preset mern-stack
+
+# Optimal full-stack setup
+npx create-js-stack@latest my-app --preset optimal-fullstack
+```
+
+### Option 3: Command-Line Flags
 
 For CI/CD or automated setups, use flags:
 
@@ -42,30 +73,152 @@ For CI/CD or automated setups, use flags:
 npx create-js-stack@latest my-app \
   --frontend react \
   --backend express \
-  --database postgresql \
+  --database postgres \
   --orm prisma \
   --auth jwt \
+  --addons docker,testing,biome \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+### Option 4: Interactive Builder
+
+Use our [interactive web builder](/new) to visually select your stack and get the exact command to run.
+
+## What Gets Generated
+
+JS-Stack CLI generates a complete, production-ready project structure:
+
+### Project Structure
+
+```
+my-app/
+├── src/                    # Source code
+│   ├── app/               # Application code
+│   ├── components/        # Reusable components
+│   ├── lib/               # Utilities
+│   └── ...
+├── public/                # Static assets
+├── tests/                 # Test files (if testing addon)
+├── docker-compose.yml     # Docker config (if docker addon)
+├── Dockerfile             # Dockerfile (if docker addon)
+├── .env.example           # Environment variables template
+├── .gitignore             # Git ignore rules
+├── package.json           # Dependencies and scripts
+├── tsconfig.json          # TypeScript config (if TypeScript)
+└── README.md              # Project documentation
+```
+
+### Features Included
+
+- ✅ **Production-ready configuration**
+- ✅ **Best practices built-in** (security, performance, SEO)
+- ✅ **TypeScript support** (optional)
+- ✅ **Testing setup** (Jest/Vitest with Testing Library)
+- ✅ **Docker configuration** (optional)
+- ✅ **CI/CD templates** (optional)
+- ✅ **Linting & Formatting** (ESLint/Prettier or Biome)
+- ✅ **Monorepo support** (Turborepo, optional)
+- ✅ **Complete documentation**
+
+## First Steps After Generation
+
+1. **Navigate to your project:**
+   ```bash
+   cd my-app
+   ```
+
+2. **Install dependencies** (if not auto-installed):
+   ```bash
+   npm install
+   # or
+   pnpm install
+   # or
+   yarn install
+   ```
+
+3. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+4. **Set up database** (if using a database):
+   ```bash
+   # For PostgreSQL
+   createdb my-app
+   npx prisma migrate dev  # if using Prisma
+   
+   # For MongoDB
+   # Make sure MongoDB is running
+   ```
+
+5. **Start development server:**
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   ```
+
+## Common Workflows
+
+### Full-Stack Next.js Application
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend nextjs \
+  --database postgres \
+  --orm prisma \
+  --auth better-auth \
+  --addons testing,biome,docker \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+### React + Express API
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend react \
+  --backend express \
+  --database postgres \
+  --orm prisma \
+  --auth jwt \
+  --addons testing,docker \
   --package-manager npm \
   --git \
   --install
 ```
 
-## What Gets Generated
+### API-Only Backend
 
-JS-Stack CLI generates a complete project structure with:
-
-- ✅ Production-ready configuration
-- ✅ Best practices built-in
-- ✅ TypeScript support (optional)
-- ✅ Testing setup
-- ✅ Docker configuration (optional)
-- ✅ CI/CD templates (optional)
-- ✅ Documentation
+```bash
+npx create-js-stack@latest my-api \
+  --frontend none \
+  --backend nestjs \
+  --database postgres \
+  --orm typeorm \
+  --auth passport \
+  --addons testing,docker \
+  --package-manager pnpm \
+  --git \
+  --install
+```
 
 ## Next Steps
 
-- [Learn about available technologies](/docs/technologies)
-- [Explore command options](/docs/commands)
-- [See examples](/docs/examples)
-- [Try the interactive builder](/new)
+- 📚 [Learn about all supported technologies](/docs/technologies)
+- 📖 [Explore complete command reference](/docs/commands)
+- 💡 [See real-world examples](/docs/examples)
+- 🎨 [Try the interactive builder](/new)
+- 🐛 [Report issues on GitHub](https://github.com/vipinyadav01/js-stack/issues)
+
+## Need Help?
+
+- Check the [FAQ section](/docs)
+- Browse [examples](/docs/examples)
+- Visit our [GitHub repository](https://github.com/vipinyadav01/js-stack)
+- Open an [issue](https://github.com/vipinyadav01/js-stack/issues) for bugs or feature requests
 

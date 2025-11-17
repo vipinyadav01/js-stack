@@ -48,20 +48,31 @@ export function StackBuilder() {
 
   const getStackUrl = (): string => {
     const stackToUse = compatibilityAnalysis.adjustedStack || stack;
-    const projectName = stackToUse.projectName || "Js-Stack";
+    const projectName = stackToUse.projectName || stack.projectName || "my-app";
     const formattedProjectName = formatProjectName(projectName);
     const stackWithProjectName: StackState = {
       projectName: formattedProjectName,
-      frontend: stackToUse.frontend || [],
-      backend: stackToUse.backend || "none",
-      database: stackToUse.database || "none",
-      orm: stackToUse.orm || "none",
-      auth: stackToUse.auth || "none",
-      addons: stackToUse.addons || [],
-      packageManager: stackToUse.packageManager || "npm",
-      git: stackToUse.git || "true",
-      install: stackToUse.install || "true",
-      yolo: stackToUse.yolo || "true",
+      frontend:
+        Array.isArray(stackToUse.frontend) && stackToUse.frontend.length > 0
+          ? stackToUse.frontend
+          : Array.isArray(stack.frontend)
+            ? stack.frontend
+            : [],
+      backend: stackToUse.backend || stack.backend || "none",
+      database: stackToUse.database || stack.database || "none",
+      orm: stackToUse.orm || stack.orm || "none",
+      auth: stackToUse.auth || stack.auth || "none",
+      addons:
+        Array.isArray(stackToUse.addons) && stackToUse.addons.length > 0
+          ? stackToUse.addons
+          : Array.isArray(stack.addons)
+            ? stack.addons
+            : [],
+      packageManager:
+        stackToUse.packageManager || stack.packageManager || "npm",
+      git: stackToUse.git || stack.git || "true",
+      install: stackToUse.install || stack.install || "true",
+      yolo: stackToUse.yolo || stack.yolo || "true",
     };
     return generateStackSharingUrl(stackWithProjectName);
   };

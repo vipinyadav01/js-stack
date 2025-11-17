@@ -40,40 +40,83 @@ export function useStackState() {
     const state: Partial<StackState> = { ...DEFAULT_STACK };
 
     for (const [key, value] of searchParams.entries()) {
-      if (key in DEFAULT_STACK) {
+      if (key in DEFAULT_STACK && value !== null && value !== undefined) {
         const defaultValue = DEFAULT_STACK[key as keyof StackState];
         if (Array.isArray(defaultValue)) {
-          (state as Record<string, unknown>)[key] = value
-            ? value.split(",")
+          // Handle array values (frontend, addons)
+          const parsedValue = value.trim()
+            ? value
+                .split(",")
+                .map((v) => v.trim())
+                .filter(Boolean)
             : [];
+          (state as Record<string, unknown>)[key] = parsedValue;
         } else {
-          (state as Record<string, unknown>)[key] = value;
+          // Handle string values
+          (state as Record<string, unknown>)[key] =
+            value.trim() || defaultValue;
         }
       }
     }
 
-    return state as StackState;
+    // Ensure required fields have valid defaults
+    return {
+      ...DEFAULT_STACK,
+      ...state,
+      frontend: Array.isArray(state.frontend)
+        ? state.frontend
+        : DEFAULT_STACK.frontend,
+      addons: Array.isArray(state.addons) ? state.addons : DEFAULT_STACK.addons,
+    } as StackState;
   }, [searchParams]);
 
   // Update stack and URL
   const setStack = useCallback(
     (updates: Partial<StackState>) => {
-      const newStack = { ...stack, ...updates };
+      // Merge updates with current stack, ensuring arrays are properly handled
+      const newStack: StackState = {
+        ...stack,
+        ...updates,
+        // Ensure arrays are properly set
+        frontend:
+          updates.frontend !== undefined
+            ? Array.isArray(updates.frontend)
+              ? updates.frontend
+              : [updates.frontend as string]
+            : stack.frontend,
+        addons:
+          updates.addons !== undefined
+            ? Array.isArray(updates.addons)
+              ? updates.addons
+              : [updates.addons as string]
+            : stack.addons,
+      };
+
       const params = new URLSearchParams();
 
       // Add all non-default values to URL
       Object.entries(newStack).forEach(([key, value]) => {
         const defaultValue = DEFAULT_STACK[key as keyof StackState];
+
+        // Check if value is different from default
         const isDefault =
           JSON.stringify(value) === JSON.stringify(defaultValue);
 
         if (!isDefault) {
           if (Array.isArray(value)) {
-            if (value.length > 0) {
+            // Only add array params if they have values
+            if (
+              value.length > 0 &&
+              !(value.length === 1 && value[0] === "none")
+            ) {
               params.set(key, value.join(","));
             }
-          } else if (value !== undefined && value !== null) {
-            params.set(key, value.toString());
+          } else if (value !== undefined && value !== null && value !== "") {
+            // Only add non-empty string values
+            const stringValue = value.toString().trim();
+            if (stringValue) {
+              params.set(key, stringValue);
+            }
           }
         }
       });

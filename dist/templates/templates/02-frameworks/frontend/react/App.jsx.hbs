@@ -1,17 +1,4 @@
-{{#if typescript}}import './App.css';
-
-{{#if useTanstackQuery}}const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000,
-    },
-  },
-});{{/if}}
-
-function App(): JSX.Element {
-{{else}}import React from 'react';
+import React from 'react';
 import { BrowserRouter , Routes, Route } from 'react-router-dom';
 {{#if useTanstackQuery}}import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';{{/if}}
@@ -29,7 +16,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';{{/if}}
 });{{/if}}
 
 function App() {
-{{/if}}
   return (
     {{#if useTanstackQuery}}<QueryClientProvider client={queryClient}>{{/if}}
       <Router>
@@ -109,3 +95,4 @@ function About() {
 }
 
 export default App;
+

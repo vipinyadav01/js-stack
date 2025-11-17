@@ -1,187 +1,493 @@
 ---
 title: Supported Technologies
-description: All technologies supported by JS-Stack CLI
+description: Complete guide to all technologies, frameworks, and tools supported by JS-Stack CLI
 ---
 
 # Supported Technologies
 
-JS-Stack CLI supports a wide range of modern JavaScript technologies.
+JS-Stack CLI supports a comprehensive range of modern JavaScript technologies, allowing you to build any type of application - from simple static sites to complex enterprise applications.
 
 ## Frontend Frameworks
 
-### React
-- **Package**: `react`
+### React ⚛️
+- **Package**: `react`, `react-dom`
 - **Build Tool**: Vite
-- **Features**: Hot reload, fast builds, modern tooling
+- **Version**: React 18+
+- **Features**: 
+  - Hot module replacement (HMR)
+  - Fast builds with Vite
+  - Modern ES modules
+  - Component-based architecture
+  - Large ecosystem
+- **Best For**: SPAs, component libraries, interactive UIs
+- **Example**: `--frontend react`
 
-### Next.js
+### Next.js ▲
 - **Package**: `next`
-- **Features**: SSR, SSG, API routes, file-based routing
-- **Note**: Full-stack framework (no separate backend needed)
+- **Version**: Next.js 15+
+- **Features**: 
+  - Server-Side Rendering (SSR)
+  - Static Site Generation (SSG)
+  - API Routes (built-in backend)
+  - File-based routing
+  - Image optimization
+  - Middleware support
+- **Note**: Full-stack framework - no separate backend needed
+- **Best For**: Full-stack applications, SEO-optimized sites, production apps
+- **Example**: `--frontend nextjs`
 
-### Vue.js
+### Vue.js 💚
 - **Package**: `vue`
 - **Build Tool**: Vite
-- **Features**: Progressive framework, component-based
+- **Version**: Vue 3+
+- **Features**: 
+  - Progressive framework
+  - Composition API
+  - Reactive data binding
+  - Component-based
+  - Easy learning curve
+- **Best For**: Modern web apps, rapid prototyping
+- **Example**: `--frontend vue`
 
-### Angular
+### Nuxt 💚
+- **Package**: `nuxt`
+- **Version**: Nuxt 3+
+- **Features**: 
+  - Vue-based full-stack framework
+  - Server-side rendering
+  - Auto-imports
+  - File-based routing
+  - Built-in TypeScript support
+- **Note**: Full-stack framework - no separate backend needed
+- **Best For**: Vue-based full-stack applications
+- **Example**: `--frontend nuxt`
+
+### Angular 🔴
 - **Package**: `@angular/core`
-- **Features**: Enterprise-ready, TypeScript-first
+- **Version**: Angular 17+
+- **Features**: 
+  - Enterprise-ready
+  - TypeScript-first
+  - Dependency injection
+  - RxJS integration
+  - Comprehensive tooling
+- **Best For**: Large-scale enterprise applications
+- **Example**: `--frontend angular`
 
-### Svelte
+### Svelte 🍊
 - **Package**: `svelte`
 - **Build Tool**: Vite
-- **Features**: Compile-time optimization
+- **Version**: Svelte 5+
+- **Features**: 
+  - Compile-time optimization
+  - No virtual DOM
+  - Small bundle size
+  - Reactive by default
+- **Best For**: Performance-critical apps, small to medium projects
+- **Example**: `--frontend svelte`
 
-### SvelteKit
-- **Package**: `@sveltejs/kit`
-- **Features**: Full-stack framework with SSR
-
-### Nuxt
-- **Package**: `nuxt`
-- **Features**: Vue-based full-stack framework
-
-### Remix
-- **Package**: `@remix-run/react`
-- **Features**: Web standards-based framework
-
-### Astro
-- **Package**: `astro`
-- **Features**: Content-focused, island architecture
-
-### React Native
+### React Native 📱
 - **Package**: `react-native`
-- **Features**: Mobile app development
+- **Version**: Latest stable
+- **Features**: 
+  - Cross-platform mobile development
+  - Native performance
+  - Hot reload
+  - Large ecosystem
+- **Note**: Requires a backend (cannot be "none")
+- **Best For**: Mobile applications (iOS & Android)
+- **Example**: `--frontend react-native`
 
 ## Backend Frameworks
 
-### Express
+### Express 🚂
 - **Package**: `express`
-- **Features**: Minimal, flexible, widely used
+- **Version**: Express 4.18+
+- **Features**: 
+  - Minimal and flexible
+  - Widely used and documented
+  - Large middleware ecosystem
+  - Easy to learn
+  - Works with all databases
+- **Best For**: REST APIs, microservices, general backend development
+- **Example**: `--backend express`
 
-### Fastify
+### Fastify ⚡
 - **Package**: `fastify`
-- **Features**: High performance, low overhead
+- **Version**: Fastify 4+
+- **Features**: 
+  - High performance (2x faster than Express)
+  - Low overhead
+  - Schema validation built-in
+  - TypeScript support
+  - Plugin architecture
+- **Note**: Limited Passport.js support (use JWT instead)
+- **Best For**: High-performance APIs, microservices
+- **Example**: `--backend fastify`
 
-### Koa
-- **Package**: `koa`
-- **Features**: Modern, lightweight, async/await
-
-### Hapi
-- **Package**: `@hapi/hapi`
-- **Features**: Rich plugin ecosystem
-
-### NestJS
+### NestJS 🪺
 - **Package**: `@nestjs/core`
-- **Features**: Enterprise-ready, TypeScript-first, decorators
+- **Version**: NestJS 10+
+- **Features**: 
+  - Enterprise-ready architecture
+  - TypeScript-first
+  - Decorator-based (like Angular)
+  - Dependency injection
+  - Built-in testing support
+  - Module system
+- **Best For**: Large-scale applications, enterprise backends
+- **Example**: `--backend nestjs`
+
+### Koa 🎋
+- **Package**: `koa`
+- **Version**: Koa 2+
+- **Features**: 
+  - Modern async/await syntax
+  - Lightweight
+  - Context-based
+  - Better error handling
+- **Best For**: Modern Node.js applications
+- **Example**: `--backend koa`
+
+### Hapi 🎯
+- **Package**: `@hapi/hapi`
+- **Version**: Latest
+- **Features**: 
+  - Rich plugin ecosystem
+  - Configuration-driven
+  - Built-in input validation
+- **Best For**: Complex APIs with many plugins
+- **Example**: `--backend hapi`
 
 ## Databases
 
-### PostgreSQL
+### PostgreSQL 🐘
 - **Type**: Relational (SQL)
 - **ORMs**: Prisma, Sequelize, TypeORM
+- **Features**: 
+  - ACID compliant
+  - Advanced features (JSON, arrays, full-text search)
+  - Excellent performance
+  - Open source
+- **Best For**: Production applications, complex queries
+- **Example**: `--database postgres`
 
-### MySQL
+### MySQL 🐬
 - **Type**: Relational (SQL)
 - **ORMs**: Prisma, Sequelize, TypeORM
+- **Features**: 
+  - Widely used
+  - Stable and reliable
+  - Good performance
+  - Large community
+- **Best For**: Traditional web applications
+- **Example**: `--database mysql`
 
-### SQLite
+### SQLite 🗄️
 - **Type**: Relational (SQL)
 - **ORMs**: Prisma, Sequelize, TypeORM
-- **Note**: File-based, great for development
+- **Features**: 
+  - File-based (no server needed)
+  - Zero configuration
+  - Perfect for development
+  - Lightweight
+- **Best For**: Development, prototypes, small applications
+- **Example**: `--database sqlite`
 
-### MongoDB
+### MongoDB 🍃
 - **Type**: Document (NoSQL)
-- **ODM**: Mongoose
-- **Note**: Only Mongoose works with MongoDB
+- **ODM**: Mongoose (only compatible ORM)
+- **Features**: 
+  - Flexible schema
+  - Horizontal scaling
+  - JSON-like documents
+  - Fast queries
+- **Important**: MongoDB only works with Mongoose ORM
+- **Best For**: Content management, real-time apps, flexible schemas
+- **Example**: `--database mongodb --orm mongoose`
 
 ## ORMs & ODMs
 
-### Prisma
+### Prisma ⚡
 - **Supports**: PostgreSQL, MySQL, SQLite, MongoDB
-- **Features**: Type-safe, migrations, great DX
+- **Version**: Prisma 5+
+- **Features**: 
+  - JavaScript database client
+  - Auto-generated TypeScript types
+  - Migrations system
+  - Excellent developer experience
+  - Prisma Studio (database GUI)
+  - Query optimization
+- **Best For**: TypeScript projects, modern applications
+- **Example**: `--orm prisma`
 
-### Sequelize
+### Sequelize 🔷
 - **Supports**: PostgreSQL, MySQL, SQLite
-- **Features**: Mature, feature-rich
+- **Version**: Sequelize 6+
+- **Features**: 
+  - Mature and stable
+  - Feature-rich
+  - Associations and relations
+  - Transactions
+  - Hooks and lifecycle events
+- **Best For**: Traditional applications, complex relationships
+- **Example**: `--orm sequelize`
 
-### TypeORM
+### TypeORM 📘
 - **Supports**: PostgreSQL, MySQL, SQLite
-- **Features**: Decorators, TypeScript-first
+- **Version**: TypeORM 0.3+
+- **Features**: 
+  - Decorator-based syntax
+  - JavaScript-first
+  - Active Record and Data Mapper patterns
+  - Migrations
+  - Works great with NestJS
+- **Best For**: JavaScript projects, NestJS applications
+- **Example**: `--orm typeorm`
 
-### Mongoose
+### Mongoose 🦫
 - **Supports**: MongoDB only
-- **Features**: Schema validation, middleware
+- **Version**: Mongoose 7+
+- **Features**: 
+  - Schema validation
+  - Middleware (pre/post hooks)
+  - Population (joins)
+  - Query building
+  - Model methods
+- **Important**: Only ORM that works with MongoDB
+- **Best For**: MongoDB applications
+- **Example**: `--orm mongoose` (requires `--database mongodb`)
 
 ## Authentication
 
-### JWT
-- **Type**: Token-based
-- **Features**: Stateless, scalable
+### JWT 🔑
+- **Type**: Token-based authentication
+- **Features**: 
+  - Stateless (no server-side sessions)
+  - Scalable
+  - Works with all frameworks
+  - Simple implementation
+  - Self-contained tokens
+- **Best For**: APIs, microservices, stateless applications
+- **Example**: `--auth jwt`
 
-### Passport
-- **Type**: Strategy-based
-- **Features**: Multiple strategies (local, OAuth, etc.)
+### Passport 🛂
+- **Type**: Strategy-based authentication middleware
+- **Features**: 
+  - Multiple strategies (local, OAuth, JWT, etc.)
+  - Flexible and extensible
+  - Works with Express, Koa, NestJS
+  - Large strategy ecosystem
+- **Note**: Not compatible with Fastify
+- **Best For**: Complex authentication needs, multiple providers
+- **Example**: `--auth passport`
 
-### Auth0
-- **Type**: Third-party service
-- **Features**: Enterprise-ready, social login
+### Auth0 🔐
+- **Type**: Third-party authentication service
+- **Features**: 
+  - Enterprise-ready
+  - Social login (Google, GitHub, etc.)
+  - Multi-factor authentication
+  - User management dashboard
+  - Works with all frameworks
+- **Best For**: Applications requiring enterprise auth features
+- **Example**: `--auth auth0`
 
-### OAuth
-- **Type**: Standard protocol
-- **Features**: Social login support
+### OAuth 🔓
+- **Type**: Standard OAuth 2.0 protocol
+- **Features**: 
+  - Social login support
+  - Industry standard
+  - Multiple providers
+  - Secure token exchange
+- **Best For**: Social login, third-party integrations
+- **Example**: `--auth oauth`
 
-### Better Auth
-- **Type**: Modern auth library
-- **Features**: Type-safe, Next.js optimized
+### Better Auth 🔒
+- **Type**: Modern authentication library
+- **Version**: Latest
+- **Features**: 
+  - JavaScript (TypeScript-first)
+  - Next.js optimized
+  - Built-in session management
+  - OAuth providers included
+  - Passwordless authentication
+  - Modern API design
+- **Best For**: Next.js applications, JavaScript projects
+- **Example**: `--auth better-auth`
 
 ## Addons
 
-### Docker
-- **Includes**: Dockerfile, docker-compose.yml
-- **Features**: Containerization, easy deployment
+### Docker 🐳
+- **Includes**: 
+  - `Dockerfile` for production builds
+  - `docker-compose.yml` for local development
+  - Multi-stage builds
+  - Development and production configs
+- **Features**: 
+  - Containerization
+  - Easy deployment
+  - Consistent environments
+  - Database containers included
+- **Best For**: Production deployments, team consistency
+- **Example**: `--addons docker`
 
-### Testing
-- **Frameworks**: Jest, Vitest
-- **Features**: Unit tests, integration tests
+### Testing 🧪
+- **Frameworks**: 
+  - Jest (default for most frameworks)
+  - Vitest (for Vite-based projects)
+  - React Testing Library (for React)
+- **Features**: 
+  - Unit test setup
+  - Integration test examples
+  - Test utilities configured
+  - Coverage reporting
+- **Best For**: All production applications
+- **Example**: `--addons testing`
 
-### Biome
-- **Type**: Linter & Formatter
-- **Features**: Fast, all-in-one tooling
+### Biome 🌿
+- **Type**: Linter & Formatter (all-in-one)
+- **Features**: 
+  - 35x faster than ESLint + Prettier
+  - Single tool for linting and formatting
+  - Zero configuration
+  - Built-in import sorting
+  - TypeScript support
+- **Best For**: Fast development, modern tooling
+- **Example**: `--addons biome`
 
-### Turborepo
-- **Type**: Monorepo tool
-- **Features**: Fast builds, caching
+### Turborepo ⚡
+- **Type**: Monorepo build system
+- **Features**: 
+  - Intelligent build caching
+  - Parallel task execution
+  - Remote caching support
+  - Task pipelines
+  - Fast incremental builds
+- **Best For**: Monorepos, multi-package projects
+- **Example**: `--addons turborepo`
 
 ## Package Managers
 
-- **npm** (default)
-- **yarn**
-- **pnpm**
-- **bun**
+### npm 📦
+- **Default**: Yes
+- **Features**: Comes with Node.js, widely supported
+- **Example**: `--package-manager npm`
+
+### yarn 🧶
+- **Features**: Fast, reliable, secure
+- **Lock file**: `yarn.lock`
+- **Example**: `--package-manager yarn`
+
+### pnpm ⚡
+- **Features**: 
+  - Fastest package manager
+  - Disk space efficient (shared store)
+  - Strict dependency management
+  - Great for monorepos
+- **Example**: `--package-manager pnpm`
+
+### bun 🥖
+- **Features**: 
+  - All-in-one runtime and package manager
+  - Extremely fast
+  - Built-in bundler and test runner
+- **Example**: `--package-manager bun`
 
 ## Compatibility Matrix
 
-### MongoDB
-- ✅ Mongoose only
-- ❌ No other ORMs work with MongoDB
+### Database ↔ ORM Compatibility
 
-### PostgreSQL/MySQL/SQLite
-- ✅ Prisma
-- ✅ Sequelize
-- ✅ TypeORM
+#### MongoDB
+- ✅ **Mongoose** (only compatible ORM)
+- ✅ **Prisma** (with MongoDB adapter)
+- ❌ Sequelize (SQL only)
+- ❌ TypeORM (SQL only)
+
+#### PostgreSQL / MySQL / SQLite
+- ✅ **Prisma** (recommended)
+- ✅ **Sequelize** (mature, feature-rich)
+- ✅ **TypeORM** (TypeScript-first)
 - ❌ Mongoose (MongoDB only)
 
-### Next.js
-- ✅ Better Auth
+### Frontend ↔ Backend Compatibility
+
+#### Next.js / Nuxt
+- ✅ **Backend: none** (they have built-in API routes)
+- ❌ Cannot use separate backend (Express, Fastify, etc.)
+
+#### React / Vue / Angular / Svelte
+- ✅ All backends work
+- ✅ Can use `none` for frontend-only apps
+
+#### React Native
+- ✅ Requires a backend (cannot be "none")
+- ✅ All backends work (Express, Fastify, NestJS, etc.)
+
+### Backend ↔ Auth Compatibility
+
+#### Express
+- ✅ All auth methods work (JWT, Passport, Auth0, OAuth, Better Auth)
+
+#### Fastify
+- ✅ JWT, Auth0, OAuth, Better Auth
+- ❌ Passport (limited support - use JWT instead)
+
+#### NestJS
+- ✅ All auth methods work
+
+#### Koa / Hapi
+- ✅ Most auth methods work
+
+### Frontend ↔ Auth Compatibility
+
+#### Next.js
+- ✅ Better Auth (recommended)
 - ✅ Auth0
 - ✅ JWT
 - ✅ OAuth
 
-### React/Vue
-- ✅ Auth0
-- ✅ Better Auth
-- ✅ JWT
-- ✅ OAuth
-- ✅ Passport
+#### React / Vue
+- ✅ All auth methods work
+
+#### Angular
+- ✅ Auth0, JWT, OAuth, Passport
+
+## Recommended Stacks
+
+### Production Full-Stack
+- **Frontend**: Next.js
+- **Backend**: none (Next.js API routes)
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Auth**: Better Auth
+- **Package Manager**: pnpm
+- **Addons**: testing, biome, docker
+
+### High-Performance API
+- **Frontend**: none
+- **Backend**: Fastify
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Auth**: JWT
+- **Package Manager**: pnpm
+- **Addons**: testing, docker
+
+### Enterprise Application
+- **Frontend**: React
+- **Backend**: NestJS
+- **Database**: PostgreSQL
+- **ORM**: TypeORM
+- **Auth**: Passport
+- **Package Manager**: pnpm
+- **Addons**: testing, docker, turborepo
+
+### Rapid Prototyping
+- **Frontend**: React
+- **Backend**: Express
+- **Database**: SQLite
+- **ORM**: Prisma
+- **Auth**: none
+- **Package Manager**: bun
+- **Addons**: testing
 

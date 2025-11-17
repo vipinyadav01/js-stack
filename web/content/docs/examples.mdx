@@ -1,52 +1,71 @@
 ---
-title: Examples
-description: Real-world examples and use cases
+title: Examples & Use Cases
+description: Real-world examples, use cases, and project templates you can create with JS-Stack CLI
 ---
 
-# Examples
+# Examples & Use Cases
 
-Real-world examples of projects you can create with JS-Stack CLI.
+Real-world examples of projects you can create with JS-Stack CLI. Each example includes the complete command and what you'll get.
 
-## SaaS Application
+## SaaS Application 💼
 
-A complete SaaS application with authentication and database:
+A complete SaaS application with authentication, database, and production-ready setup:
 
 ```bash
 npx create-js-stack@latest my-saas \
   --frontend nextjs \
-  --database postgresql \
+  --database postgres \
   --orm prisma \
   --auth better-auth \
-  --addons docker,testing \
+  --addons docker,testing,biome \
   --package-manager pnpm \
   --git \
   --install
 ```
 
 **What you get:**
-- Next.js full-stack application
-- PostgreSQL database with Prisma
-- Better Auth for authentication
-- Docker configuration
-- Testing setup
-- Git initialized
+- ✅ Next.js 15 full-stack application with App Router
+- ✅ PostgreSQL database with Prisma ORM
+- ✅ Better Auth for authentication (sessions, OAuth)
+- ✅ Docker configuration for deployment
+- ✅ Testing setup (Vitest + Testing Library)
+- ✅ Biome for linting and formatting
+- ✅ Git repository initialized
+- ✅ Dependencies installed
 
-## E-Commerce Platform
+**Perfect for:** SaaS platforms, web applications, dashboards
+
+## E-Commerce Platform 🛒
+
+Complete e-commerce platform with React frontend and Express API:
 
 ```bash
 npx create-js-stack@latest my-store \
   --frontend react \
   --backend express \
-  --database postgresql \
+  --database postgres \
   --orm prisma \
   --auth jwt \
   --addons docker,testing,biome \
-  --package-manager npm \
+  --package-manager pnpm \
   --git \
   --install
 ```
 
-## Blog Platform
+**What you get:**
+- ✅ React frontend with Vite
+- ✅ Express REST API backend
+- ✅ PostgreSQL database with Prisma
+- ✅ JWT authentication
+- ✅ Docker for containerization
+- ✅ Testing framework
+- ✅ Biome for code quality
+
+**Perfect for:** Online stores, marketplaces, product catalogs
+
+## Blog Platform 📝
+
+Content-focused blog with Next.js and SQLite:
 
 ```bash
 npx create-js-stack@latest my-blog \
@@ -54,55 +73,126 @@ npx create-js-stack@latest my-blog \
   --database sqlite \
   --orm prisma \
   --auth none \
+  --addons testing,biome \
   --package-manager pnpm \
   --git
 ```
 
-## API Backend
+**What you get:**
+- ✅ Next.js with SSG for fast static pages
+- ✅ SQLite database (no server needed)
+- ✅ Prisma for content management
+- ✅ No authentication (public blog)
+- ✅ Testing and linting setup
+
+**Perfect for:** Personal blogs, content sites, documentation sites
+
+## Enterprise API Backend 🏢
+
+Production-ready API with NestJS and TypeORM:
 
 ```bash
 npx create-js-stack@latest my-api \
   --frontend none \
   --backend nestjs \
-  --database postgresql \
+  --database postgres \
   --orm typeorm \
-  --auth jwt \
+  --auth passport \
   --addons docker,testing \
-  --package-manager npm \
-  --git \
-  --install
-```
-
-## Mobile App
-
-```bash
-npx create-js-stack@latest my-app \
-  --frontend react-native \
-  --backend express \
-  --database mongodb \
-  --orm mongoose \
-  --auth jwt \
-  --package-manager yarn \
-  --git
-```
-
-## Monorepo Setup
-
-```bash
-npx create-js-stack@latest my-monorepo \
-  --frontend react \
-  --backend express \
-  --database postgresql \
-  --orm prisma \
-  --addons turborepo,testing \
   --package-manager pnpm \
   --git \
   --install
 ```
 
-## Quick Prototype
+**What you get:**
+- ✅ NestJS enterprise framework
+- ✅ TypeORM with decorators
+- ✅ Passport.js authentication
+- ✅ Docker configuration
+- ✅ Comprehensive testing
 
-For rapid prototyping:
+**Perfect for:** Enterprise APIs, microservices, B2B applications
+
+## Mobile Application 📱
+
+Cross-platform mobile app with React Native:
+
+```bash
+npx create-js-stack@latest my-mobile-app \
+  --frontend react-native \
+  --backend express \
+  --database mongodb \
+  --orm mongoose \
+  --auth jwt \
+  --addons testing,docker \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+**What you get:**
+- ✅ React Native mobile app
+- ✅ Express API backend
+- ✅ MongoDB with Mongoose
+- ✅ JWT authentication
+- ✅ Testing setup
+- ✅ Docker for backend
+
+**Perfect for:** Mobile apps, cross-platform applications
+
+## Monorepo Setup 📦
+
+Multi-package monorepo with Turborepo:
+
+```bash
+npx create-js-stack@latest my-monorepo \
+  --frontend react vue \
+  --backend express \
+  --database postgres \
+  --orm prisma \
+  --addons turborepo,testing,biome \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+**What you get:**
+- ✅ Multiple frontends (React + Vue)
+- ✅ Shared backend API
+- ✅ Turborepo for build orchestration
+- ✅ Shared packages structure
+- ✅ Fast incremental builds
+
+**Perfect for:** Large projects, multiple products, shared codebases
+
+## High-Performance API ⚡
+
+Fast API with Fastify and PostgreSQL:
+
+```bash
+npx create-js-stack@latest my-fast-api \
+  --frontend none \
+  --backend fastify \
+  --database postgres \
+  --orm prisma \
+  --auth jwt \
+  --addons docker,testing \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+**What you get:**
+- ✅ Fastify (2x faster than Express)
+- ✅ PostgreSQL with Prisma
+- ✅ JWT authentication
+- ✅ Optimized for performance
+
+**Perfect for:** High-traffic APIs, real-time applications, microservices
+
+## Quick Prototype 🚀
+
+Rapid prototyping with minimal setup:
 
 ```bash
 npx create-js-stack@latest my-prototype \
@@ -110,9 +200,63 @@ npx create-js-stack@latest my-prototype \
   --backend express \
   --database sqlite \
   --orm prisma \
-  --package-manager npm \
+  --package-manager bun \
   --yes
 ```
 
-The `--yes` flag skips all prompts and uses sensible defaults.
+**What you get:**
+- ✅ React + Express stack
+- ✅ SQLite (no database server)
+- ✅ Fast Bun package manager
+- ✅ Quick setup with `--yes` flag
+
+**Perfect for:** Prototypes, MVPs, proof of concepts
+
+## Full-Stack with Nuxt 🟢
+
+Vue-based full-stack application:
+
+```bash
+npx create-js-stack@latest my-nuxt-app \
+  --frontend nuxt \
+  --database postgres \
+  --orm prisma \
+  --auth better-auth \
+  --addons testing,biome,docker \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+**What you get:**
+- ✅ Nuxt 3 full-stack framework
+- ✅ PostgreSQL with Prisma
+- ✅ Better Auth integration
+- ✅ Complete tooling setup
+
+**Perfect for:** Vue-based applications, content sites, full-stack apps
+
+## Using Presets
+
+Instead of typing all flags, use presets:
+
+```bash
+# Optimal full-stack setup
+npx create-js-stack@latest my-app --preset optimal-fullstack
+
+# Next.js application
+npx create-js-stack@latest my-app --preset nextjs-app
+
+# Express API
+npx create-js-stack@latest my-api --preset express-api
+
+# MERN stack
+npx create-js-stack@latest my-app --preset mern-stack
+```
+
+See all available presets in the [interactive builder](/new) or run:
+
+```bash
+npx create-js-stack@latest presets
+```
 

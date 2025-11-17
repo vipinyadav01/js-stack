@@ -1,11 +1,11 @@
 ---
-title: CLI Commands
-description: Complete reference for JS-Stack CLI commands
+title: CLI Commands Reference
+description: Complete reference guide for all JS-Stack CLI commands, options, and flags
 ---
 
-# CLI Commands
+# CLI Commands Reference
 
-Complete reference for all JS-Stack CLI commands and options.
+Complete reference for all JS-Stack CLI commands, options, and flags. Use this guide to understand all available options and how to use them.
 
 ## Init Command
 
@@ -20,25 +20,42 @@ npx create-js-stack@latest <project-name> [options]
 #### Frontend
 
 ```bash
---frontend <framework>
+--frontend <framework> [<framework2> ...]
 ```
 
 **Available options:**
 - `react` - React with Vite
-- `nextjs` - Next.js (full-stack)
-- `vue` - Vue.js with Vite
-- `angular` - Angular
-- `svelte` - Svelte
-- `sveltekit` - SvelteKit
-- `nuxt` - Nuxt.js
-- `remix` - Remix
-- `astro` - Astro
-- `react-native` - React Native
+- `nextjs` - Next.js 15 (full-stack, includes API routes)
+- `vue` - Vue.js 3 with Vite
+- `nuxt` - Nuxt 3 (full-stack, includes server routes)
+- `angular` - Angular 17+
+- `svelte` - Svelte 5 with Vite
+- `react-native` - React Native (mobile)
+- `none` - No frontend (API-only)
 
-**Example:**
+**Multiple Frontends:**
+You can select multiple frontends (e.g., React + Vue for a monorepo):
+
 ```bash
-npx create-js-stack@latest my-app --frontend react
+npx create-js-stack@latest my-app --frontend react vue
 ```
+
+**Examples:**
+```bash
+# Single frontend
+npx create-js-stack@latest my-app --frontend react
+
+# Multiple frontends (monorepo)
+npx create-js-stack@latest my-app --frontend react vue
+
+# Next.js (full-stack, no separate backend)
+npx create-js-stack@latest my-app --frontend nextjs
+```
+
+**Important Notes:**
+- Next.js and Nuxt are full-stack frameworks - they include API routes, so set `--backend none`
+- React Native requires a backend (cannot be "none")
+- Multiple frontends work best with Turborepo addon
 
 #### Backend
 
@@ -47,17 +64,32 @@ npx create-js-stack@latest my-app --frontend react
 ```
 
 **Available options:**
-- `express` - Express.js
-- `fastify` - Fastify
-- `koa` - Koa.js
-- `hapi` - Hapi.js
-- `nestjs` - NestJS
-- `none` - No backend (frontend only)
+- `express` - Express.js (most popular)
+- `fastify` - Fastify (high performance)
+- `koa` - Koa.js (modern async/await)
+- `hapi` - Hapi.js (plugin-rich)
+- `nestjs` - NestJS (enterprise-ready)
+- `none` - No backend (frontend-only or full-stack framework)
 
-**Example:**
+**Examples:**
 ```bash
+# Express backend
 npx create-js-stack@latest my-app --backend express
+
+# Fastify (high performance)
+npx create-js-stack@latest my-app --backend fastify
+
+# NestJS (enterprise)
+npx create-js-stack@latest my-app --backend nestjs
+
+# No backend (for Next.js/Nuxt or frontend-only)
+npx create-js-stack@latest my-app --backend none
 ```
+
+**Important Notes:**
+- Use `none` with Next.js or Nuxt (they have built-in API routes)
+- React Native requires a backend (cannot be "none")
+- Fastify has limited Passport.js support (use JWT instead)
 
 #### Database
 
@@ -66,16 +98,28 @@ npx create-js-stack@latest my-app --backend express
 ```
 
 **Available options:**
-- `postgresql` - PostgreSQL
+- `postgres` - PostgreSQL (recommended for production)
 - `mysql` - MySQL
-- `sqlite` - SQLite
-- `mongodb` - MongoDB
+- `sqlite` - SQLite (great for development)
+- `mongodb` - MongoDB (NoSQL)
 - `none` - No database
 
-**Example:**
+**Examples:**
 ```bash
-npx create-js-stack@latest my-app --database postgresql
+# PostgreSQL (production)
+npx create-js-stack@latest my-app --database postgres
+
+# SQLite (development/prototyping)
+npx create-js-stack@latest my-app --database sqlite
+
+# MongoDB (NoSQL)
+npx create-js-stack@latest my-app --database mongodb
 ```
+
+**Important Notes:**
+- PostgreSQL and MySQL require a running database server
+- SQLite is file-based (no server needed) - perfect for development
+- MongoDB requires Mongoose ORM (automatically selected)
 
 #### ORM
 
@@ -84,16 +128,28 @@ npx create-js-stack@latest my-app --database postgresql
 ```
 
 **Available options:**
-- `prisma` - Prisma
-- `sequelize` - Sequelize
-- `typeorm` - TypeORM
+- `prisma` - Prisma (recommended, JavaScript)
+- `sequelize` - Sequelize (mature, feature-rich)
+- `typeorm` - TypeORM (JavaScript-first, decorators)
 - `mongoose` - Mongoose (MongoDB only)
-- `none` - No ORM
+- `none` - No ORM (raw queries)
 
-**Example:**
+**Examples:**
 ```bash
+# Prisma (modern, JavaScript)
 npx create-js-stack@latest my-app --orm prisma
+
+# TypeORM (works great with NestJS)
+npx create-js-stack@latest my-app --orm typeorm
+
+# Mongoose (for MongoDB)
+npx create-js-stack@latest my-app --orm mongoose --database mongodb
 ```
+
+**Compatibility:**
+- **MongoDB**: Only Mongoose or Prisma
+- **PostgreSQL/MySQL/SQLite**: Prisma, Sequelize, or TypeORM
+- The CLI automatically adjusts ORM based on database selection
 
 #### Authentication
 
@@ -102,17 +158,29 @@ npx create-js-stack@latest my-app --orm prisma
 ```
 
 **Available options:**
-- `jwt` - JSON Web Tokens
-- `passport` - Passport.js
-- `auth0` - Auth0
-- `oauth` - OAuth 2.0
-- `better-auth` - Better Auth
+- `jwt` - JSON Web Tokens (stateless, simple)
+- `passport` - Passport.js (strategy-based, flexible)
+- `auth0` - Auth0 (third-party service, enterprise)
+- `oauth` - OAuth 2.0 (social login)
+- `better-auth` - Better Auth (modern, Next.js optimized)
 - `none` - No authentication
 
-**Example:**
+**Examples:**
 ```bash
+# JWT (simple, stateless)
 npx create-js-stack@latest my-app --auth jwt
+
+# Better Auth (Next.js recommended)
+npx create-js-stack@latest my-app --auth better-auth
+
+# Passport (Express/NestJS)
+npx create-js-stack@latest my-app --auth passport
 ```
+
+**Compatibility Notes:**
+- **Fastify**: Use JWT instead of Passport (limited support)
+- **Next.js**: Better Auth is recommended
+- **Express/NestJS**: All methods work
 
 #### Package Manager
 
@@ -138,15 +206,28 @@ npx create-js-stack@latest my-app --package-manager pnpm
 ```
 
 **Available options:**
-- `docker` - Docker configuration
-- `testing` - Testing setup (Jest/Vitest)
-- `biome` - Biome linter/formatter
-- `turborepo` - Turborepo monorepo setup
+- `docker` - Docker configuration (Dockerfile + docker-compose.yml)
+- `testing` - Testing setup (Jest/Vitest + Testing Library)
+- `biome` - Biome linter & formatter (fast alternative to ESLint+Prettier)
+- `turborepo` - Turborepo monorepo setup (for multi-package projects)
 
-**Example:**
+**Examples:**
 ```bash
-npx create-js-stack@latest my-app --addons docker,testing
+# Single addon
+npx create-js-stack@latest my-app --addons docker
+
+# Multiple addons
+npx create-js-stack@latest my-app --addons docker,testing,biome
+
+# Monorepo setup
+npx create-js-stack@latest my-app --addons turborepo,testing
 ```
+
+**Recommendations:**
+- Always include `testing` for production apps
+- Use `biome` for faster linting/formatting
+- Use `docker` for containerized deployments
+- Use `turborepo` for monorepos or multiple frontends
 
 #### Git
 
@@ -178,23 +259,71 @@ Skip dependency installation.
 
 #### Other Options
 
+##### Quick Start Flag
+
 ```bash
 --yes
 ```
 
-Skip all prompts and use defaults or provided flags.
+Skip all prompts and use defaults or provided flags. The project name is still customizable as the first argument.
+
+**Example:**
+```bash
+npx create-js-stack@latest my-custom-name --yes
+```
+
+##### Dry Run
 
 ```bash
 --dry-run
 ```
 
-Preview what would be generated without creating files.
+Preview what would be generated without creating any files. Useful for testing configurations.
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --frontend react --dry-run
+```
+
+##### Verbose Output
 
 ```bash
 --verbose
 ```
 
-Show detailed output during generation.
+Show detailed output during generation, including all file operations and template processing.
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --verbose
+```
+
+##### Preset Configuration
+
+```bash
+--preset <preset-name>
+```
+
+Use a predefined preset configuration. See available presets:
+
+- `nextjs-app` - Next.js full-stack application
+- `express-api` - Express REST API
+- `mern-stack` - MERN stack (MongoDB + Express + React)
+- `nestjs-api` - NestJS enterprise API
+- `vue-app` - Vue.js application
+- `nuxt-app` - Nuxt full-stack application
+- `mobile-app` - React Native mobile app
+- `optimal-monorepo` - Optimal monorepo setup
+- `optimal-fullstack` - Optimal full-stack setup
+- `fastify-api` - Fastify high-performance API
+- `svelte-app` - Svelte application
+- `angular-app` - Angular application
+- `minimal-api` - Minimal Fastify API
+
+**Example:**
+```bash
+npx create-js-stack@latest my-app --preset nextjs-app
+```
 
 ## Examples
 

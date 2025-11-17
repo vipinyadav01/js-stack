@@ -79,11 +79,19 @@ function processFilenameTemplate(filename, context = {}) {
   try {
     // Handle complex conditional patterns first
     if (filename.includes("{{#if") && filename.includes("{{else}}")) {
-      const extension =
-        context.typescript || context.useTypeScript ? "ts" : "js";
+      // Check if we need tsx/jsx (React components) or ts/js (regular files)
+      const isReactFile = filename.includes("tsx") || filename.includes("jsx");
+      const extension = isReactFile
+        ? context.typescript || context.useTypeScript
+          ? "tsx"
+          : "jsx"
+        : context.typescript || context.useTypeScript
+          ? "ts"
+          : "js";
 
       // Match patterns like: {{#if useTypeScript}}ts{{else}}js{{/if}}
       // Also handle: {{#if typescript}}ts{{else}}js{{/if}}
+      // And: {{#if typescript}}tsx{{else}}jsx{{/if}}
       const conditionalPattern =
         /\{\{#if\s+(?:useTypeScript|typescript)\s*\}\}[^{]*\{\{else\}\}[^{]*\{\{\/if\}\}/g;
       return filename.replace(conditionalPattern, extension);
