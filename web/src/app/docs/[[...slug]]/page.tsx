@@ -18,6 +18,13 @@ export default async function Page({
   params: Promise<{ slug?: string[] }>;
 }) {
   const { slug } = await params;
+
+  // The root /docs route is handled by /docs/page.tsx
+  // This route only handles /docs/[slug] paths
+  if (!slug || slug.length === 0) {
+    notFound();
+  }
+
   const page = source.getPage(slug);
 
   if (!page) {
