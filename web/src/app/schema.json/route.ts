@@ -4,7 +4,7 @@ export const dynamic = "force-static";
 export const revalidate = false;
 
 export async function GET() {
-  const baseUrl = "https://js-stack.pages.dev";
+  const baseUrl = "https://createjsstack.dev";
 
   const schema = {
     "@context": "https://schema.org",

@@ -4,14 +4,14 @@ export const dynamic = "force-static";
 export const revalidate = false;
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://js-stack.pages.dev";
+  const baseUrl = "https://createjsstack.dev";
 
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/_next/", "/out/", "*.json"],
+        disallow: ["/api/", "/_next/", "/out/"],
       },
       {
         userAgent: "Googlebot",

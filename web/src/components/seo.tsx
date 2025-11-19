@@ -27,7 +27,7 @@ export function generateSEOMetadata({
   section,
   tags = [],
 }: SEOProps): Metadata {
-  const baseUrl = "https://js-stack.pages.dev";
+  const baseUrl = "https://createjsstack.dev";
   const fullUrl = url ? `${baseUrl}${url}` : baseUrl;
   const fullTitle = title
     ? `${title} | JS-Stack CLI`

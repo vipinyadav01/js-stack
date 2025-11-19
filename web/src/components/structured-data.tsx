@@ -9,7 +9,7 @@ export function StructuredData({
   type = "website",
   data = {},
 }: StructuredDataProps) {
-  const baseUrl = "https://js-stack.pages.dev";
+  const baseUrl = "https://createjsstack.dev";
 
   const getStructuredData = () => {
     const baseData = {

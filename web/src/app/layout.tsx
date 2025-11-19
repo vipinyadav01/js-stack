@@ -65,7 +65,7 @@ const jetbrainsMono = localFont({
 
 const resolveMetadataBase = (): URL => {
   const candidate = (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://js-stack.pages.dev"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
   ).trim();
   try {
     // Ensure we have an absolute URL with protocol
@@ -75,11 +75,11 @@ const resolveMetadataBase = (): URL => {
         : `https://${candidate}`;
     return new URL(normalized);
   } catch {
-    return new URL("https://js-stack.pages.dev");
+    return new URL("https://createjsstack.dev");
   }
 };
 const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://js-stack.pages.dev"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
 ).trim();
 const metadataBase = resolveMetadataBase();
 

@@ -7,10 +7,61 @@ import {
 } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { docsPageMetadata } from "@/components/seo";
+import { generateSEOMetadata } from "@/components/seo";
+import { BreadcrumbStructuredData } from "@/components/structured-data";
 import type { ComponentType } from "react";
 
-export const metadata: Metadata = docsPageMetadata;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug?: string[] }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+
+  if (!slug || slug.length === 0) {
+    return generateSEOMetadata({
+      title: "Documentation - Complete Guide",
+      description:
+        "Complete documentation for JS-Stack CLI. Learn how to create, customize, and deploy modern JavaScript full-stack applications.",
+      url: "/docs",
+      keywords: [
+        "js-stack documentation",
+        "cli documentation",
+        "javascript tutorial",
+        "full-stack development guide",
+        "project setup tutorial",
+      ],
+    });
+  }
+
+  const page = source.getPage(slug);
+  if (!page) {
+    return generateSEOMetadata({
+      title: "Documentation",
+      description: "JS-Stack CLI Documentation",
+      url: `/docs/${slug.join("/")}`,
+    });
+  }
+
+  const pageData = page.data as {
+    title: string;
+    description: string;
+  };
+
+  return generateSEOMetadata({
+    title: pageData.title || "Documentation",
+    description: pageData.description || "JS-Stack CLI Documentation",
+    url: `/docs/${slug.join("/")}`,
+    keywords: [
+      "js-stack",
+      "documentation",
+      "cli",
+      "javascript",
+      "full-stack",
+      slug.join(" "),
+    ],
+  });
+}
 
 export default async function Page({
   params,
@@ -48,14 +99,37 @@ export default async function Page({
     notFound();
   }
 
+  // Generate breadcrumb items
+  const breadcrumbItems = [
+    { name: "Home", url: "https://createjsstack.dev" },
+    { name: "Documentation", url: "https://createjsstack.dev/docs" },
+  ];
+
+  if (slug && slug.length > 0) {
+    let currentPath = "/docs";
+    slug.forEach((segment) => {
+      currentPath += `/${segment}`;
+      breadcrumbItems.push({
+        name: segment
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" "),
+        url: `https://createjsstack.dev${currentPath}`,
+      });
+    });
+  }
+
   return (
-    <DocsPage toc={pageData.exports?.toc || []}>
-      <DocsTitle>{pageData.title}</DocsTitle>
-      <DocsDescription>{pageData.description}</DocsDescription>
-      <DocsBody>
-        <MDX />
-      </DocsBody>
-    </DocsPage>
+    <>
+      <BreadcrumbStructuredData items={breadcrumbItems} />
+      <DocsPage toc={pageData.exports?.toc || []}>
+        <DocsTitle>{pageData.title}</DocsTitle>
+        <DocsDescription>{pageData.description}</DocsDescription>
+        <DocsBody>
+          <MDX />
+        </DocsBody>
+      </DocsPage>
+    </>
   );
 }
 
