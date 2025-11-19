@@ -28,7 +28,7 @@ export default function Home() {
     {
       question: "How do I install JS-Stack CLI?",
       answer:
-        "You can install JS-Stack CLI using npm with the command: npx create-js-stack@latest init my-app. No global installation required.",
+        "You can install JS-Stack CLI using npm with the command: npx create-js-stack@latest my-app. No global installation required. You can also use 'npx create-js-stack@latest init my-app' for the same result.",
     },
     {
       question: "What technologies does JS-Stack support?",
@@ -82,97 +82,119 @@ export default function Home() {
           </motion.div>
 
           {/* Top Sponsors */}
-          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
+          <motion.div className="mb-8 sm:mb-12" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
-              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-                <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
-                    TOP_SPONSORS.LOG
-                  </h2>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <Heart className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-lg sm:text-xl lg:text-2xl">
+                      Top Sponsors
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Supported by community
+                    </p>
+                  </div>
                 </div>
-                <div className="hidden h-px flex-1 bg-border sm:block" />
-                <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                  [SUPPORTED BY COMMUNITY]
-                </span>
               </div>
 
-              <TopSponsors repository="vipinyadav01" limit={10} />
+              <div className="rounded-lg border border-border bg-card/50 p-6 backdrop-blur-sm">
+                <TopSponsors repository="vipinyadav01" limit={10} />
+              </div>
             </div>
           </motion.div>
 
           {/* Top Comments */}
-          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
+          <motion.div className="mb-8 sm:mb-12" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
-              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-                <div className="flex items-center gap-2">
-                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
-                    TOP_COMMENTS.LOG
-                  </h2>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <MessageCircle className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-lg sm:text-xl lg:text-2xl">
+                      Community Feedback
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      What developers are saying
+                    </p>
+                  </div>
                 </div>
-                <div className="hidden h-px flex-1 bg-border sm:block" />
-                <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                  [COMMUNITY FEEDBACK & MENTIONS]
-                </span>
               </div>
 
-              <TopComments repository="js-stack" limit={10} />
+              <div className="rounded-lg border border-border bg-card/50 p-6 backdrop-blur-sm">
+                <TopComments repository="js-stack" limit={10} />
+              </div>
             </div>
           </motion.div>
 
           {/* Video Tutorials */}
-          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
+          <motion.div className="mb-8 sm:mb-12" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
-              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-                <div className="flex items-center gap-2">
-                  <Play className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
-                    VIDEO_TUTORIALS.LOG
-                  </h2>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <Play className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-lg sm:text-xl lg:text-2xl">
+                      Video Tutorials
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Learn with step-by-step guides
+                    </p>
+                  </div>
                 </div>
-                <div className="hidden h-px flex-1 bg-border sm:block" />
-                <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                  [LEARN WITH VIDEOS]
-                </span>
               </div>
 
-              <VideoTutorials limit={4} />
+              <div className="rounded-lg border border-border bg-card/50 p-6 backdrop-blur-sm">
+                <VideoTutorials limit={4} />
+              </div>
             </div>
           </motion.div>
 
           {/* Community Section */}
-          <motion.div className="mb-6 sm:mb-8" variants={containerVariants}>
+          <motion.div className="mb-8 sm:mb-12" variants={containerVariants}>
             <div className="mx-auto max-w-[1280px]">
-              <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-                <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  <h2 className="font-bold text-base sm:text-lg lg:text-xl">
-                    COMMUNITY.SUPPORT
-                  </h2>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <Heart className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-lg sm:text-xl lg:text-2xl">
+                      Community Support
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Open source and free forever
+                    </p>
+                  </div>
                 </div>
-                <div className="hidden h-px flex-1 bg-border sm:block" />
-                <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                  [OPEN SOURCE]
-                </span>
               </div>
 
-              <div className="rounded border border-border p-4 sm:p-6">
-                <div className="text-center space-y-3 sm:space-y-4">
-                  <div className="text-sm sm:text-base text-foreground">
+              <div className="rounded-lg border border-border bg-gradient-to-br from-card/50 to-card/30 p-6 sm:p-8 backdrop-blur-sm">
+                <div className="text-center space-y-4">
+                  <p className="text-base sm:text-lg text-foreground font-medium">
                     Built with ❤️ by the open source community
-                  </div>
-                  <div className="flex justify-center gap-3 sm:gap-4">
+                  </p>
+                  <div className="flex justify-center gap-4">
                     <a
                       href="https://github.com/vipinyadav01/js-stack"
-                      className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
                     >
                       <Github className="h-4 w-4" />
                       GitHub
                     </a>
                     <a
                       href="https://vipinyadav01.vercel.app"
-                      className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
                     >
                       <Heart className="h-4 w-4" />
                       Author

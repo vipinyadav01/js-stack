@@ -79,19 +79,15 @@ function processFilenameTemplate(filename, context = {}) {
   try {
     // Handle complex conditional patterns first
     if (filename.includes("{{#if") && filename.includes("{{else}}")) {
-      // Check if we need tsx/jsx (React components) or ts/js (regular files)
-      const isReactFile = filename.includes("tsx") || filename.includes("jsx");
-      const extension = isReactFile
-        ? context.typescript || context.useTypeScript
-          ? "tsx"
-          : "jsx"
-        : context.typescript || context.useTypeScript
-          ? "ts"
-          : "js";
+      // Check if we need jsx (React components) or js (regular files)
+      // Note: We only generate .jsx/.js files, not .tsx/.ts
+      const isReactFile = filename.includes("jsx") || filename.includes("tsx");
+      const extension = isReactFile ? "jsx" : "js";
 
       // Match patterns like: {{#if useTypeScript}}ts{{else}}js{{/if}}
       // Also handle: {{#if typescript}}ts{{else}}js{{/if}}
       // And: {{#if typescript}}tsx{{else}}jsx{{/if}}
+      // Always use jsx/js since we don't generate TypeScript files
       const conditionalPattern =
         /\{\{#if\s+(?:useTypeScript|typescript)\s*\}\}[^{]*\{\{else\}\}[^{]*\{\{\/if\}\}/g;
       return filename.replace(conditionalPattern, extension);
@@ -117,8 +113,8 @@ function processFilenameTemplate(filename, context = {}) {
       filename.includes("utils") ||
       filename.includes("config")
     ) {
-      const extension =
-        context.typescript || context.useTypeScript ? "ts" : "js";
+      // Always use .js extension (no TypeScript)
+      const extension = "js";
       return filename.replace(/\{\{[^}]*\}\}/g, extension);
     }
 
@@ -198,19 +194,13 @@ export async function copyTemplates(
     for (const file of files) {
       if (exclude.includes(file)) continue;
 
-      // Skip language-specific alternates: prefer .ts.* when TypeScript, else .js.*
+      // Skip TypeScript templates (we only generate JavaScript files)
       const isTsTemplate =
         /\.ts\.(hbs|handlebars)$/i.test(file) ||
         /\.tsx\.(hbs|handlebars)$/i.test(file);
-      const isJsTemplate =
-        /\.js\.(hbs|handlebars)$/i.test(file) ||
-        /\.jsx\.(hbs|handlebars)$/i.test(file);
-      const wantsTs = Boolean(context.typescript || context.useTypeScript);
 
-      // Skip TypeScript templates if not using TypeScript
-      if (isTsTemplate && !wantsTs) continue;
-      // Skip JavaScript templates if using TypeScript
-      if (isJsTemplate && wantsTs) continue;
+      // Always skip TypeScript templates since we only generate .js/.jsx files
+      if (isTsTemplate) continue;
 
       const srcPath = path.join(templateDir, file);
 

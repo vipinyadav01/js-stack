@@ -52,55 +52,124 @@ export function SidebarContent({
   stackUrl,
 }: SidebarContentProps) {
   const [copied, setCopied] = useState(false);
-  const projectNameError = "";
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(command);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(command);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy command:", error);
+    }
   };
+
+  // Validate project name
+  const validateProjectName = (name: string): string => {
+    if (!name || name.trim() === "") {
+      return ""; // Empty is allowed (will use default)
+    }
+
+    // Check for invalid characters (only allow alphanumeric, hyphens, underscores)
+    const invalidChars = /[^a-zA-Z0-9\-_]/g;
+    if (invalidChars.test(name)) {
+      return "Project name can only contain letters, numbers, hyphens, and underscores";
+    }
+
+    // Check if starts with a number or hyphen
+    if (/^[0-9\-]/.test(name)) {
+      return "Project name cannot start with a number or hyphen";
+    }
+
+    // Check length
+    if (name.length > 214) {
+      return "Project name is too long (max 214 characters)";
+    }
+
+    return ""; // Valid
+  };
+
+  const projectNameError = validateProjectName(stack.projectName || "");
 
   return (
     <div className="flex h-full flex-col gap-3">
       <div className="space-y-3">
         {/* Project Name */}
         <label className="flex flex-col">
-          <span className="mb-1 text-muted-foreground text-xs">
-            Project Name:
-            <span className="ml-1 text-muted-foreground/70">
-              (customizable even with --yes)
+          <span className="mb-1.5 flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
+            <span>Project Name / Folder Name:</span>
+            <span className="text-muted-foreground/70 text-[10px]">
+              (fully customizable)
             </span>
           </span>
           <input
             type="text"
             value={stack.projectName || ""}
             onChange={(e) => {
-              onProjectNameChange(e.target.value);
+              const value = e.target.value;
+              // Allow any input, validation will show error if needed
+              onProjectNameChange(value);
+            }}
+            onBlur={(e) => {
+              // Format on blur: replace spaces with hyphens and remove invalid chars
+              const formatted = e.target.value
+                .trim()
+                .replace(/\s+/g, "-")
+                .replace(/[^a-zA-Z0-9\-_]/g, "")
+                .replace(/^[0-9\-]+/, "")
+                .toLowerCase();
+
+              // If empty after formatting, use default
+              const finalValue = formatted || "my-app";
+
+              if (finalValue !== stack.projectName) {
+                onProjectNameChange(finalValue);
+              }
             }}
             className={cn(
-              "w-full rounded border px-2 py-1 text-sm focus:outline-none",
+              "w-full rounded-md border bg-background px-3 py-2 text-sm font-mono transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20",
               projectNameError
-                ? "border-destructive bg-destructive/10 text-destructive-foreground"
+                ? "border-destructive bg-destructive/10 text-destructive-foreground focus:border-destructive"
                 : "border-border focus:border-primary",
             )}
             placeholder="my-app"
+            title="Enter your project name. This will be used as the folder name when creating the project. Spaces will be converted to hyphens."
           />
           {projectNameError && (
-            <p className="mt-1 text-destructive text-xs">{projectNameError}</p>
-          )}
-          {(stack.projectName || "my-app").includes(" ") && (
-            <p className="mt-1 text-muted-foreground text-xs">
-              Will be saved as:{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-xs">
-                {(stack.projectName || "my-app").replace(/\s+/g, "-")}
-              </code>
+            <p className="mt-1.5 text-destructive text-xs">
+              {projectNameError}
             </p>
           )}
-          {!stack.projectName && (
-            <p className="mt-1 text-muted-foreground text-xs">
-              💡 You can change this name anytime, even when using --yes flag
-            </p>
-          )}
+          {stack.projectName &&
+            stack.projectName !== "my-app" &&
+            (stack.projectName.includes(" ") ||
+              /[^a-zA-Z0-9\-_]/.test(stack.projectName)) &&
+            !projectNameError && (
+              <p className="mt-1.5 text-muted-foreground text-xs">
+                Will be formatted as:{" "}
+                <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono">
+                  {stack.projectName
+                    .trim()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-zA-Z0-9\-_]/g, "")
+                    .replace(/^[0-9\-]+/, "")
+                    .toLowerCase() || "my-app"}
+                </code>
+              </p>
+            )}
+          {!projectNameError &&
+            stack.projectName &&
+            stack.projectName !== "my-app" && (
+              <p className="mt-1.5 text-muted-foreground text-xs">
+                ✓ This name will be used as your project folder name
+              </p>
+            )}
+          {!projectNameError &&
+            (!stack.projectName || stack.projectName === "my-app") && (
+              <p className="mt-1.5 text-muted-foreground text-xs">
+                💡 Change this to customize your project folder name. The
+                command below will update automatically.
+              </p>
+            )}
         </label>
 
         {/* CLI Command Preview */}

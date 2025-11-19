@@ -21,120 +21,121 @@ export default function Hero() {
 
         {/* ASCII Art Section */}
         <div className="mb-8">
-          <div className="rounded border border-border p-4">
-            <div className="rounded border border-border p-4">
-              <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 w-full">
-                <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
-                  {` ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
+          <div className="rounded-lg border border-border bg-card/50 p-6 backdrop-blur-sm">
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 w-full">
+              <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
+                {` ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝
 ██║     ██████╔╝█████╗  ███████║   ██║   █████╗  
 ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝  
 ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝`}
-                </pre>
+              </pre>
 
-                <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
-                  {`     ██╗███████╗
+              <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
+                {`     ██╗███████╗
      ██║██╔════╝
      ██║███████╗
 ██   ██║╚════██║
 ╚█████╔╝███████║
  ╚════╝ ╚══════╝`}
-                </pre>
+              </pre>
 
-                <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
-                  {`███████╗████████╗ █████╗  ██████╗██╗  ██╗
+              <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
+                {`███████╗████████╗ █████╗  ██████╗██╗  ██╗
 ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
 ███████╗   ██║   ███████║██║     █████╔╝ 
 ╚════██║   ██║   ██╔══██║██║     ██╔═██╗ 
 ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
 ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝`}
-                </pre>
-              </div>
+              </pre>
             </div>
           </div>
         </div>
 
         {/* Description Section */}
         <div className="mb-8">
-          <div className="rounded border border-border p-4">
-            <div className="rounded border border-border p-4">
-              <div className="text-xs text-muted-foreground mb-2">
-                DESCRIPTION
-              </div>
-              <h1 className="sr-only">
-                JS-Stack CLI - Modern Full-Stack JavaScript Development Tool
-              </h1>
-              <div className="text-sm text-foreground">
-                A powerful, modern CLI tool for scaffolding production-ready
-                JavaScript full-stack projects with extensive customization
-                options and best practices built-in.
-              </div>
+          <div className="rounded-lg border border-border bg-card/50 p-6 backdrop-blur-sm">
+            <div className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+              DESCRIPTION
             </div>
+            <h1 className="sr-only">
+              JS-Stack CLI - Modern Full-Stack JavaScript Development Tool
+            </h1>
+            <p className="text-base leading-relaxed text-foreground">
+              A powerful, modern CLI tool for scaffolding production-ready
+              JavaScript full-stack projects with extensive customization
+              options and best practices built-in.
+            </p>
           </div>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="rounded border border-border p-4">
+          <div className="group rounded-lg border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-md">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4 text-primary" />
                 <span className="font-semibold text-sm">NPM_PACKAGE</span>
               </div>
-              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+              <div className="rounded-md border border-border bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                 PUBLIC
               </div>
             </div>
-            <div className="rounded border border-border p-3">
+            <div className="rounded-md border border-border bg-muted/30 p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-foreground font-mono">
+                  <span className="text-foreground font-mono font-medium">
                     create-js-stack
                   </span>
                 </div>
-                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                <div className="rounded-md border border-border bg-green-500/10 px-2 py-1 text-xs font-medium text-green-600 dark:text-green-400">
                   LATEST
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded border border-border p-4">
+          <div className="group rounded-lg border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-md">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Github className="h-4 w-4 text-primary" />
                 <span className="font-semibold text-sm">GITHUB_REPO</span>
               </div>
-              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+              <div className="rounded-md border border-border bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                 OPEN
               </div>
             </div>
-            <div className="rounded border border-border p-3">
+            <div className="rounded-md border border-border bg-muted/30 p-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-foreground font-mono">
+                <a
+                  href="https://github.com/vipinyadav01/js-stack"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
+                >
+                  <span className="text-foreground font-mono font-medium">
                     vipinyadav01/js-stack
                   </span>
-                </div>
-                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+                </a>
+                <div className="rounded-md border border-border bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400">
                   ACTIVE
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="rounded border border-border p-4">
+          <div className="group rounded-lg border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-md">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Terminal className="h-4 w-4 text-primary" />
                 <span className="font-semibold text-sm">VERSION</span>
               </div>
-              <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
+              <div className="rounded-md border border-border bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                 CURRENT
               </div>
             </div>
-            <div className="rounded border border-border p-3">
+            <div className="rounded-md border border-border bg-muted/30 p-3">
               <NpmVersion />
             </div>
           </div>

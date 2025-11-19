@@ -203,7 +203,14 @@ ${icons.sparkles} ${chalk.bold("New Features:")}
 const registerProjectCreationCommand = (command) => {
   applyProjectCreationOptions(command);
   command.addHelpText("after", buildUsageExamples);
-  command.action(runProjectCreation);
+  // Use async action handler to properly handle the project name argument
+  command.action(async (projectName, options, commandObj) => {
+    // Merge options from command object to ensure all options are captured
+    const mergedOptions = commandObj
+      ? { ...commandObj.opts(), ...options }
+      : options;
+    await runProjectCreation(projectName, mergedOptions);
+  });
   return command;
 };
 
@@ -397,9 +404,13 @@ program
   );
 
 // Main command configuration for project creation
-registerProjectCreationCommand(
-  program.argument("[projectName]", "Name of the project to create"),
-);
+// This allows: npx create-js-stack@latest my-app (without 'init')
+// Set up the main program to handle project creation directly
+program
+  .argument("[projectName]", "Name of the project to create")
+  .allowUnknownOption(true); // Allow unknown options to be passed through
+
+registerProjectCreationCommand(program);
 
 // Modern Init command with enhanced UX and comprehensive options
 registerProjectCreationCommand(
