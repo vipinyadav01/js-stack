@@ -1,0 +1,80 @@
+# {{projectName}}
+
+{{#if (includes frontend "next")}}
+This project was created with [JS Stack](https://createjsstack.dev) using Next.js.
+{{else if (includes frontend "react")}}
+This project was created with [JS Stack](https://createjsstack.dev) using React.
+{{else}}
+This project was created with [JS Stack](https://createjsstack.dev).
+{{/if}}
+
+## Getting Started
+
+{{#if (eq packageManager "npm")}}
+```bash
+npm install
+npm run dev
+```
+{{else if (eq packageManager "pnpm")}}
+```bash
+pnpm install
+pnpm dev
+```
+{{else if (eq packageManager "bun")}}
+```bash
+bun install
+bun dev
+```
+{{/if}}
+
+## Project Structure
+
+{{#if (includes frontend "next")}}
+- `app/` - Next.js app directory
+- `components/` - React components
+{{else if (includes frontend "react")}}
+- `src/` - Source files
+- `src/components/` - React components
+{{/if}}
+
+{{#if (ne backend "none")}}
+- `server/` - Backend code
+{{/if}}
+
+{{#if (ne database "none")}}
+- `db/` - Database configuration
+{{/if}}
+
+## Tech Stack
+
+{{#if (includes frontend "next")}}
+- **Frontend**: Next.js {{#if (includes frontend "react")}}+ React{{/if}}
+{{else if (includes frontend "react")}}
+- **Frontend**: React
+{{/if}}
+
+{{#if (ne backend "none")}}
+- **Backend**: {{backend}}
+{{/if}}
+
+{{#if (ne database "none")}}
+- **Database**: {{database}}
+{{/if}}
+
+{{#if (ne orm "none")}}
+- **ORM**: {{orm}}
+{{/if}}
+
+{{#if (ne auth "none")}}
+- **Auth**: {{auth}}
+{{/if}}
+
+{{#if (ne api "none")}}
+- **API**: {{api}}
+{{/if}}
+
+## Learn More
+
+- [JS Stack Documentation](https://createjsstack.dev/docs)
+- [JS Stack GitHub](https://github.com/vipinyadav01/js-stack)
+

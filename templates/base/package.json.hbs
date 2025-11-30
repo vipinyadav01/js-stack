@@ -1,0 +1,210 @@
+{
+  "name": "{{projectName}}",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    {{#if (includes addons "vitest")}}
+    "test": "vitest",
+    {{/if}}
+    {{#if (includes addons "playwright")}}
+    "test:e2e": "playwright test",
+    {{/if}}
+    "dev": "{{#if (eq runtime "bun")}}bun{{else}}node{{/if}} --watch src/index.js",
+    "build": "echo 'Build script not configured'",
+    "start": "{{#if (eq runtime "bun")}}bun{{else}}node{{/if}} src/index.js"
+  },
+  "dependencies": {
+    {{#if (includes frontend "next")}}
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    {{/if}}
+    {{#if (includes frontend "react")}}
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    {{/if}}
+    {{#if (eq backend "express")}}
+    "express": "^4.18.2",
+    {{/if}}
+    {{#if (eq backend "hono")}}
+    "hono": "^3.11.0",
+    {{/if}}
+    {{#if (eq auth "better-auth")}}
+    "better-auth": "^1.0.0",
+    {{/if}}
+    {{#if (eq auth "clerk")}}
+    "@clerk/clerk-react": "^4.29.0",
+    {{/if}}
+    {{#if (eq api "trpc")}}
+    "@trpc/server": "^10.45.0",
+    "@trpc/client": "^10.45.0",
+    {{/if}}
+    {{#if (eq orm "prisma")}}
+    "@prisma/client": "^5.7.0",
+    {{/if}}
+    {{#if (eq orm "drizzle")}}
+    "drizzle-orm": "^0.29.0",
+    {{/if}}
+    {{#if (eq orm "mongoose")}}
+    "mongoose": "^8.0.0",
+    {{/if}}
+    {{#if (eq database "postgres")}}
+    "pg": "^8.11.0",
+    {{/if}}
+    {{#if (eq database "mysql")}}
+    "mysql2": "^3.6.0",
+    {{/if}}
+    {{#if (eq database "sqlite")}}
+    "better-sqlite3": "^9.2.0",
+    {{/if}}
+    {{#if (eq database "mongodb")}}
+    "mongodb": "^6.3.0",
+    {{/if}}
+    {{#if (includes addons "pwa")}}
+    "workbox-precaching": "^7.0.0",
+    {{/if}}
+    {{#if (includes addons "tauri")}}
+    "@tauri-apps/api": "^1.5.0",
+    {{/if}}
+    {{#if (includes addons "vitest")}}
+    "vitest": "^1.0.0",
+    {{/if}}
+    {{#if (includes addons "playwright")}}
+    "@playwright/test": "^1.40.0",
+    {{/if}}
+    {{#if (includes addons "cypress")}}
+    "cypress": "^13.6.0",
+    {{/if}}
+    {{#if (includes addons "docker")}}
+    "docker": "^1.0.0",
+    {{/if}}
+    {{#if (includes addons "biome")}}
+    "@biomejs/biome": "^1.8.0",
+    {{/if}}
+    {{#if (includes addons "husky")}}
+    "husky": "^8.0.3",
+    {{/if}}
+    {{#if (includes addons "turborepo")}}
+    "turbo": "^1.11.2",
+    {{/if}}
+    {{#if (eq runtime "bun")}}
+    "bun": "latest",
+    {{/if}}
+    {{#if (eq runtime "workers")}}
+    "@cloudflare/workers-types": "^4.20231121.0",
+    {{/if}}
+    {{#if (eq webDeploy "wrangler")}}
+    "wrangler": "^3.19.0",
+    {{/if}}
+    {{#if (eq serverDeploy "wrangler")}}
+    "wrangler": "^3.19.0",
+    {{/if}}
+    {{#if (eq dbSetup "turso")}}
+    "@libsql/client": "^0.11.0",
+    {{/if}}
+    {{#if (eq dbSetup "neon")}}
+    "@neondatabase/serverless": "^0.5.0",
+    {{/if}}
+    {{#if (eq dbSetup "supabase")}}
+    "@supabase/supabase-js": "^2.38.0",
+    {{/if}}
+    {{#if (eq api "orpc")}}
+    "orpc": "^1.0.0",
+    {{/if}}
+    {{#if (includes frontend "tanstack-router")}}
+    "@tanstack/react-router": "^1.0.0",
+    {{/if}}
+    {{#if (includes frontend "react-router")}}
+    "react-router-dom": "^6.20.0",
+    {{/if}}
+    {{#if (includes frontend "tanstack-start")}}
+    "@tanstack/start": "^1.0.0",
+    {{/if}}
+    {{#if (includes frontend "nuxt")}}
+    "nuxt": "^3.8.0",
+    {{/if}}
+    {{#if (includes frontend "svelte")}}
+    "svelte": "^4.2.0",
+    {{/if}}
+    {{#if (includes frontend "solid")}}
+    "solid-js": "^1.8.0",
+    {{/if}}
+    {{#if (includes frontend "native-nativewind")}}
+    "react-native": "^0.73.0",
+    "nativewind": "^4.0.0",
+    {{/if}}
+    {{#if (includes frontend "native-unistyles")}}
+    "react-native": "^0.73.0",
+    "react-native-unistyles": "^2.8.0",
+    {{/if}}
+    {{#if (eq backend "fastify")}}
+    "fastify": "^4.24.3",
+    {{/if}}
+    {{#if (eq backend "elysia")}}
+    "elysia": "^1.0.0",
+    {{/if}}
+    {{#if (eq backend "convex")}}
+    "convex": "^1.0.0",
+    {{/if}}
+    {{#if (eq backend "next")}}
+    "next": "^14.0.0",
+    {{/if}}
+  },
+  "devDependencies": {
+    {{#if (eq orm "prisma")}}
+    "prisma": "^5.7.0",
+    {{/if}}
+    {{#if (eq orm "drizzle")}}
+    "drizzle-kit": "^0.20.0",
+    {{/if}}
+    {{#if (includes addons "vitest")}}
+    "vitest": "^1.0.0",
+    {{/if}}
+    {{#if (includes addons "playwright")}}
+    "@playwright/test": "^1.40.0",
+    {{/if}}
+    {{#if (includes addons "cypress")}}
+    "cypress": "^13.6.0",
+    {{/if}}
+    {{#if (includes addons "biome")}}
+    "@biomejs/biome": "^1.8.0",
+    {{/if}}
+    {{#if (includes addons "husky")}}
+    "husky": "^8.0.3",
+    {{/if}}
+    {{#if (includes addons "turborepo")}}
+    "turbo": "^1.11.2",
+    {{/if}}
+    {{#if (eq runtime "bun")}}
+    "bun": "latest",
+    {{/if}}
+    {{#if (eq runtime "workers")}}
+    "@cloudflare/workers-types": "^4.20231121.0",
+    {{/if}}
+    {{#if (eq webDeploy "wrangler")}}
+    "wrangler": "^3.19.0",
+    {{/if}}
+    {{#if (eq serverDeploy "wrangler")}}
+    "wrangler": "^3.19.0",
+    {{/if}}
+    {{#if (eq dbSetup "turso")}}
+    "@libsql/client": "^0.11.0",
+    {{/if}}
+    {{#if (eq dbSetup "neon")}}
+    "@neondatabase/serverless": "^0.5.0",
+    {{/if}}
+    {{#if (eq dbSetup "supabase")}}
+    "@supabase/supabase-js": "^2.38.0",
+    {{/if}}
+    {{#if (eq api "orpc")}}
+    "orpc": "^1.0.0",
+    {{/if}}
+    {{#if (includes addons "pwa")}}
+    "workbox-precaching": "^7.0.0",
+    {{/if}}
+    {{#if (includes addons "tauri")}}
+    "@tauri-apps/api": "^1.5.0",
+    {{/if}}
+  }
+}

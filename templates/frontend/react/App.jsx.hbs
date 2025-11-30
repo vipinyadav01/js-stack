@@ -1,0 +1,43 @@
+import React from 'react';
+{{#if (includes addons "pwa")}}
+import { useServiceWorker } from './hooks/useServiceWorker';
+{{/if}}
+{{#if (eq auth "better-auth")}}
+import { AuthProvider } from './providers/AuthProvider';
+{{else if (eq auth "clerk")}}
+import { ClerkProvider } from '@clerk/clerk-react';
+{{/if}}
+
+{{#if (includes addons "pwa")}}
+// Initialize service worker for PWA
+useServiceWorker();
+{{/if}}
+
+export default function App() {
+  return (
+    {{#if (eq auth "better-auth")}}
+    <AuthProvider>
+      <div className="app">
+        <h1>Welcome to {{projectName}}</h1>
+        <p>Built with React</p>
+      </div>
+    </AuthProvider>
+    {{else if (eq auth "clerk")}}
+    <ClerkProvider publishableKey={process.env.VITE_CLERK_PUBLISHABLE_KEY}>
+      <div className="app">
+        <h1>Welcome to {{projectName}}</h1>
+        <p>Built with React</p>
+      </div>
+    </ClerkProvider>
+    {{else}}
+    <div className="app">
+      <h1>Welcome to {{projectName}}</h1>
+      <p>Built with React</p>
+      {{#if (includes addons "pwa")}}
+      <p>PWA enabled</p>
+      {{/if}}
+    </div>
+    {{/if}}
+  );
+}
+

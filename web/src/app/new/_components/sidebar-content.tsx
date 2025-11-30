@@ -172,38 +172,47 @@ export function SidebarContent({
             )}
         </label>
 
-        {/* CLI Command Preview */}
-        <div className="rounded border border-border p-2">
-          <div className="flex">
-            <span className="mr-2 select-none text-chart-4">$</span>
-            <code className="block break-all text-muted-foreground text-xs sm:text-sm">
-              {command}
-            </code>
-          </div>
-          <div className="mt-2 flex justify-end">
+        <div className="overflow-hidden rounded border border-border">
+          <div className="flex items-center justify-between border-b border-border px-2 py-1.5">
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
+              <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
+              <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+            </div>
             <button
               type="button"
               onClick={copyToClipboard}
+              aria-live="polite"
               className={cn(
-                "flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors",
+                "flex items-center gap-1 rounded px-2 py-1 text-xs",
                 copied
-                  ? "bg-muted text-chart-4"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  ? "bg-green-500/10 text-green-600"
+                  : "text-muted-foreground hover:bg-primary/10 hover:text-foreground",
               )}
               title={copied ? "Copied!" : "Copy command"}
             >
               {copied ? (
                 <>
                   <Check className="h-3 w-3 flex-shrink-0" />
-                  <span className="">Copied</span>
+                  <span>Copied</span>
                 </>
               ) : (
                 <>
                   <ClipboardCopy className="h-3 w-3 flex-shrink-0" />
-                  <span className="">Copy</span>
+                  <span>Copy</span>
                 </>
               )}
             </button>
+          </div>
+          <div className="px-2 py-2">
+            <div className="flex">
+              <span className="mr-2 select-none text-muted-foreground">$</span>
+              <pre className="m-0 max-w-full overflow-x-auto whitespace-pre-wrap break-words">
+                <code className="block break-all text-foreground text-xs sm:text-sm">
+                  {command}
+                </code>
+              </pre>
+            </div>
           </div>
         </div>
 

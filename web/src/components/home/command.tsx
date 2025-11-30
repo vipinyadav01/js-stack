@@ -95,44 +95,53 @@ export default function Command() {
             </DropdownMenu>
           </div>
 
-          {/* Command Display */}
-          <div className="relative rounded-xl bg-muted/30 p-4 backdrop-blur-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 font-mono text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-red-500" />
-                  <div className="h-2 w-2 rounded-full bg-yellow-500" />
-                  <div className="h-2 w-2 rounded-full bg-green-500" />
+          <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card/60 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
                 </div>
-                <span className="text-muted-foreground">$</span>
-                <span className="text-foreground font-medium">
-                  {commands[selectedPM]}
-                </span>
+                <div className="ml-2 flex items-center gap-2 text-muted-foreground text-xs">
+                  <Terminal className="h-3.5 w-3.5" />
+                  <span>Command</span>
+                </div>
               </div>
 
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => copyCommand(commands[selectedPM], selectedPM)}
+                aria-live="polite"
                 className={cn(
-                  "transition-all duration-200",
+                  "rounded-md px-2 py-1 text-xs",
                   copiedCommand === selectedPM
-                    ? "bg-green-500/10 text-green-600 hover:bg-green-500/20"
-                    : "hover:bg-primary/10",
+                    ? "bg-green-500/10 text-green-600"
+                    : "text-muted-foreground hover:bg-primary/10 hover:text-foreground",
                 )}
               >
                 {copiedCommand === selectedPM ? (
                   <>
-                    <Check className="h-4 w-4" />
-                    <span className="ml-2 font-medium">Copied!</span>
+                    <Check className="h-3.5 w-3.5" />
+                    <span className="ml-1">Copied</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="h-4 w-4" />
-                    <span className="ml-2 font-medium">Copy</span>
+                    <Copy className="h-3.5 w-3.5" />
+                    <span className="ml-1">Copy</span>
                   </>
                 )}
               </Button>
+            </div>
+
+            <div className="px-3 py-3">
+              <div className="flex items-start gap-2 font-mono text-sm">
+                <span className="select-none text-muted-foreground">$</span>
+                <pre className="m-0 max-w-full overflow-x-auto whitespace-pre-wrap break-words text-foreground">
+                  <code className="font-medium">{commands[selectedPM]}</code>
+                </pre>
+              </div>
             </div>
           </div>
         </div>

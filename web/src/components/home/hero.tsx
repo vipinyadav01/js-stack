@@ -21,34 +21,49 @@ export default function Hero() {
 
         {/* ASCII Art Section */}
         <div className="mb-8">
-          <div className="rounded-lg border border-border bg-card/50 p-6 backdrop-blur-sm">
-            <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 w-full">
-              <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
-                {` ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
+          <div className="overflow-hidden rounded-lg border border-border bg-card/60 shadow-sm">
+            <div className="flex items-center justify-between border-b border-border px-3 py-2">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                </div>
+                <div className="ml-2 flex items-center gap-2 text-muted-foreground text-xs">
+                  <Terminal className="h-3.5 w-3.5" />
+                  <span>Display</span>
+                </div>
+              </div>
+            </div>
+            <div className="p-6 backdrop-blur-sm">
+              <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 w-full">
+                <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
+                  {` ██████╗██████╗ ███████╗ █████╗ ████████╗███████╗
 ██╔════╝██╔══██╗██╔════╝██╔══██╗╚══██╔══╝██╔════╝
 ██║     ██████╔╝█████╗  ███████║   ██║   █████╗  
 ██║     ██╔══██╗██╔══╝  ██╔══██║   ██║   ██╔══╝  
 ╚██████╗██║  ██║███████╗██║  ██║   ██║   ███████╗
  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝`}
-              </pre>
+                </pre>
 
-              <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
-                {`     ██╗███████╗
+                <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
+                  {`     ██╗███████╗
      ██║██╔════╝
      ██║███████╗
 ██   ██║╚════██║
 ╚█████╔╝███████║
  ╚════╝ ╚══════╝`}
-              </pre>
+                </pre>
 
-              <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
-                {`███████╗████████╗ █████╗  ██████╗██╗  ██╗
+                <pre className="ascii-art text-primary text-[0.5rem] sm:text-[0.6rem] md:text-xs lg:text-sm xl:text-base leading-tight overflow-x-auto max-w-full whitespace-pre-wrap break-words font-mono">
+                  {`███████╗████████╗ █████╗  ██████╗██╗  ██╗
 ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
 ███████╗   ██║   ███████║██║     █████╔╝ 
 ╚════██║   ██║   ██╔══██║██║     ██╔═██╗ 
 ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
 ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝`}
-              </pre>
+                </pre>
+              </div>
             </div>
           </div>
         </div>
