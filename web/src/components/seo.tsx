@@ -18,7 +18,7 @@ export function generateSEOMetadata({
   title,
   description,
   keywords = [],
-  image = "/og-image.png",
+  image = "/opengraph-image",
   url,
   type = "website",
   publishedTime,
@@ -27,7 +27,10 @@ export function generateSEOMetadata({
   section,
   tags = [],
 }: SEOProps): Metadata {
-  const baseUrl = "https://createjsstack.dev";
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+  ).trim();
+  const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
   const fullUrl = url ? `${baseUrl}${url}` : baseUrl;
   const fullTitle = title
     ? `${title} | JS-Stack CLI`

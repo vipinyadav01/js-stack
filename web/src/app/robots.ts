@@ -4,7 +4,10 @@ export const dynamic = "force-static";
 export const revalidate = false;
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://createjsstack.dev";
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+  ).trim();
+  const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
 
   return {
     rules: [

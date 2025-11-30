@@ -83,6 +83,22 @@ const siteUrl = (
 ).trim();
 const metadataBase = resolveMetadataBase();
 
+const verificationMeta: Metadata["verification"] = {};
+const otherVerification: Record<string, string> = {};
+if (process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION) {
+  verificationMeta.google = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION;
+}
+if (process.env.NEXT_PUBLIC_BING_VERIFICATION) {
+  otherVerification["msvalidate.01"] =
+    process.env.NEXT_PUBLIC_BING_VERIFICATION;
+}
+if (process.env.NEXT_PUBLIC_YANDEX_VERIFICATION) {
+  verificationMeta.yandex = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION;
+}
+if (Object.keys(otherVerification).length > 0) {
+  verificationMeta.other = otherVerification;
+}
+
 export const metadata: Metadata = {
   title: {
     default: "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool",
@@ -148,43 +164,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  icons: {
-    icon: [
-      {
-        url: "/favicon.svg",
-        type: "image/svg+xml",
-      },
-      {
-        url: "/favicon-96x96.png",
-        sizes: "96x96",
-        type: "image/png",
-      },
-      {
-        url: "/web-app-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-      {
-        url: "/web-app-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
-      },
-    ],
-    shortcut: "/favicon.ico",
-    apple: [
-      {
-        url: "/apple-touch-icon.png",
-        sizes: "180x180",
-        type: "image/png",
-      },
-      {
-        url: "/web-app-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
-      },
-    ],
-  },
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
   openGraph: {
     title:
       "JS-Stack CLI (create-js-stack) - Create Modern Full-Stack JavaScript Applications Instantly",
@@ -196,17 +176,10 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/og-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "JS-Stack CLI - Modern Full-Stack Development Tool",
-        type: "image/png",
-      },
-      {
-        url: "/web-app-512x512.png",
-        width: 512,
-        height: 512,
-        alt: "JS-Stack CLI Logo",
         type: "image/png",
       },
     ],
@@ -220,7 +193,7 @@ export const metadata: Metadata = {
     description:
       "JS-Stack CLI - Create JavaScript projects instantly. The ultimate CLI for JS full-stack development. React, Next.js, Node.js, databases & more. Production-ready in seconds.",
     images: {
-      url: "/og-image.png",
+      url: "/opengraph-image",
       alt: "JS-Stack CLI - Modern Full-Stack Development Tool",
     },
   },
@@ -229,20 +202,13 @@ export const metadata: Metadata = {
     title: "JS-Stack CLI",
     statusBarStyle: "default",
   },
-  verification: {
-    // Add your verification tokens here when available
-    // google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
-    // yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
-    // bing: process.env.NEXT_PUBLIC_BING_VERIFICATION || "",
-  },
+  verification: verificationMeta,
   category: "technology",
   classification: "Developer Tools",
   other: {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
-    "msapplication-TileColor": "#3b82f6",
-    "msapplication-config": "/browserconfig.xml",
     "theme-color": "#3b82f6",
     "color-scheme": "dark light",
     "supported-color-schemes": "dark light",
@@ -288,8 +254,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="msapplication-TileColor" content="#3b82f6" />
-        <meta name="msapplication-TileImage" content="/web-app-192x192.png" />
-        <meta name="msapplication-config" content="/browserconfig.xml" />
 
         {/* DNS Prefetch for Performance */}
         <link rel="dns-prefetch" href="//github.com" />
@@ -297,41 +261,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <link rel="dns-prefetch" href="//unpkg.com" />
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
-
-        {/* Preload Critical Resources */}
-        <link
-          rel="preload"
-          href="/web-app-512x512.png"
-          as="image"
-          type="image/png"
-        />
-
-        {/* Comprehensive favicon setup for development and production */}
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="96x96"
-          href="/favicon-96x96.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="192x192"
-          href="/web-app-192x192.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="512x512"
-          href="/web-app-512x512.png"
-        />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
 
         {/* Structured Data */}
         <StructuredData type="website" />

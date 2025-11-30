@@ -5,7 +5,10 @@ export const dynamic = "force-static";
 export const revalidate = false;
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://createjsstack.dev";
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+  ).trim();
+  const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
   const now = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
 
   // Get all docs pages from Fumadocs source
