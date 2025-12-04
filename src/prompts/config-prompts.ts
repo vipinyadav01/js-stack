@@ -104,39 +104,70 @@ export async function promptConfiguration(options: {
         p.multiselect({
           message: "Select frontend framework(s):",
           options: [
-            { value: "tanstack-router", label: "TanStack Router" },
-            { value: "react-router", label: "React Router" },
-            { value: "tanstack-start", label: "TanStack Start" },
             { value: "next", label: "Next.js" },
             { value: "nuxt", label: "Nuxt" },
+            { value: "sveltekit", label: "SvelteKit" },
+            { value: "remix", label: "Remix" },
+            { value: "astro", label: "Astro" },
+            { value: "tanstack-start", label: "TanStack Start" },
+            { value: "tanstack-router", label: "TanStack Router (SPA)" },
+            { value: "react-router", label: "React Router (SPA)" },
+            { value: "vue", label: "Vue.js (Vite)" },
+            { value: "angular", label: "Angular" },
+            { value: "svelte", label: "Svelte (Vite)" },
+            { value: "solid", label: "Solid.js (Vite)" },
+            { value: "qwik", label: "Qwik" },
             { value: "native-nativewind", label: "React Native (NativeWind)" },
             { value: "native-unistyles", label: "React Native (Unistyles)" },
-            { value: "svelte", label: "Svelte" },
-            { value: "solid", label: "Solid.js" },
             { value: "none", label: "None" },
           ],
           initialValues: ["none"],
+          required: true,
         }),
-      backend: () =>
-        p.select({
-          message: "Select backend framework:",
-          options: [
-            { value: "none", label: "None" },
-            { value: "hono", label: "Hono" },
-            { value: "express", label: "Express" },
-            { value: "fastify", label: "Fastify" },
-            { value: "next", label: "Next.js (API Routes)" },
-            { value: "elysia", label: "Elysia" },
-            { value: "convex", label: "Convex" },
-          ],
+      backend: ({ results }: { results: any }) => {
+        const frontend = results.frontend as string[];
+        const metaFrameworks = [
+          "next",
+          "nuxt",
+          "sveltekit",
+          "remix",
+          "astro",
+          "solid-start",
+          "qwik",
+        ];
+        const hasMetaFramework = frontend.some((f) =>
+          metaFrameworks.includes(f),
+        );
+
+        const options = [
+          { value: "none", label: "None" },
+          { value: "hono", label: "Hono" },
+          { value: "express", label: "Express" },
+          { value: "fastify", label: "Fastify" },
+          { value: "nest", label: "NestJS" },
+          { value: "koa", label: "Koa" },
+          { value: "elysia", label: "Elysia" },
+          { value: "convex", label: "Convex" },
+        ];
+
+        if (frontend.includes("next")) {
+          options.push({ value: "next", label: "Next.js API Routes" });
+        }
+        return p.select({
+          message: hasMetaFramework
+            ? "Select backend (Meta-frameworks usually have their own):"
+            : "Select backend framework:",
+          options,
           initialValue: "none",
-        }),
+        });
+      },
       runtime: () =>
         p.select({
           message: "Select runtime:",
           options: [
             { value: "node", label: "Node.js" },
             { value: "bun", label: "Bun" },
+            { value: "deno", label: "Deno" },
             { value: "workers", label: "Cloudflare Workers" },
             { value: "none", label: "None" },
           ],
@@ -154,37 +185,75 @@ export async function promptConfiguration(options: {
           ],
           initialValue: "none",
         }),
-      orm: () =>
-        p.select({
-          message: "Select ORM:",
-          options: [
-            { value: "none", label: "None" },
+      orm: ({ results }: { results: any }) => {
+        const db = results.database;
+        const options = [{ value: "none", label: "None" }];
+
+        if (db === "mongodb") {
+          options.push(
+            { value: "mongoose", label: "Mongoose" },
+            { value: "prisma", label: "Prisma" },
+            { value: "typeorm", label: "TypeORM" },
+          );
+        } else if (db !== "none") {
+          // SQL Databases
+          options.push(
+            { value: "drizzle", label: "Drizzle ORM" },
+            { value: "prisma", label: "Prisma" },
+            { value: "typeorm", label: "TypeORM" },
+            { value: "mikro-orm", label: "MikroORM" },
+          );
+        } else {
+          // No DB selected, show all
+          options.push(
             { value: "drizzle", label: "Drizzle ORM" },
             { value: "prisma", label: "Prisma" },
             { value: "mongoose", label: "Mongoose" },
-          ],
+            { value: "typeorm", label: "TypeORM" },
+            { value: "mikro-orm", label: "MikroORM" },
+          );
+        }
+
+        return p.select({
+          message: "Select ORM:",
+          options,
           initialValue: "none",
-        }),
+        });
+      },
       api: () =>
         p.select({
-          message: "Select API framework:",
+          message: "Select API style:",
           options: [
             { value: "none", label: "None" },
             { value: "trpc", label: "tRPC" },
             { value: "orpc", label: "oRPC" },
+            { value: "graphql", label: "GraphQL" },
+            { value: "rest", label: "REST" },
           ],
           initialValue: "none",
         }),
-      auth: () =>
-        p.select({
+      auth: ({ results }: { results: any }) => {
+        const frontend = results.frontend as string[];
+        const backend = results.backend as string;
+
+        const options = [
+          { value: "none", label: "None" },
+          { value: "better-auth", label: "Better Auth" },
+          { value: "clerk", label: "Clerk" },
+          { value: "lucia", label: "Lucia" },
+          { value: "kinde", label: "Kinde" },
+        ];
+
+        if (frontend.includes("next") || backend === "next") {
+          options.push({ value: "next-auth", label: "NextAuth.js / Auth.js" });
+        }
+
+        return p.select({
           message: "Select authentication:",
-          options: [
-            { value: "none", label: "None" },
-            { value: "better-auth", label: "Better Auth" },
-            { value: "clerk", label: "Clerk" },
-          ],
+          options,
           initialValue: "none",
-        }),
+        });
+      },
       addons: () =>
         p.multiselect({
           message: "Select addons:",
@@ -197,6 +266,8 @@ export async function promptConfiguration(options: {
             { value: "vitest", label: "Vitest (Testing)" },
             { value: "playwright", label: "Playwright (E2E Testing)" },
             { value: "cypress", label: "Cypress (E2E Testing)" },
+            { value: "storybook", label: "Storybook" },
+            { value: "changesets", label: "Changesets" },
             { value: "docker", label: "Docker" },
             { value: "testing", label: "Testing Setup" },
           ],
@@ -220,7 +291,7 @@ export async function promptConfiguration(options: {
             { value: "none", label: "None" },
             { value: "turso", label: "Turso" },
             { value: "neon", label: "Neon" },
-            { value: "docker", label: "Docker Compose" },
+            { value: "docker-compose", label: "Docker Compose" },
             { value: "supabase", label: "Supabase" },
           ],
           initialValue: "none",
@@ -230,7 +301,7 @@ export async function promptConfiguration(options: {
           message: "Web deployment:",
           options: [
             { value: "none", label: "None" },
-            { value: "wrangler", label: "Cloudflare Pages (Wrangler)" },
+            { value: "cloudflare-pages", label: "Cloudflare Pages (Wrangler)" },
             { value: "alchemy", label: "Alchemy" },
           ],
           initialValue: "none",
@@ -240,7 +311,10 @@ export async function promptConfiguration(options: {
           message: "Server deployment:",
           options: [
             { value: "none", label: "None" },
-            { value: "wrangler", label: "Cloudflare Workers (Wrangler)" },
+            {
+              value: "cloudflare-workers",
+              label: "Cloudflare Workers (Wrangler)",
+            },
             { value: "alchemy", label: "Alchemy" },
           ],
           initialValue: "none",

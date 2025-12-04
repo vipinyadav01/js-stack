@@ -11,6 +11,9 @@ export interface StackState {
   orm: string;
   auth: string;
   addons: string[];
+  dbSetup: string;
+  webDeploy: string;
+  serverDeploy: string;
   packageManager: string;
   git: string;
   install: string;
@@ -25,6 +28,9 @@ const DEFAULT_STACK: StackState = {
   orm: "none",
   auth: "none",
   addons: [],
+  dbSetup: "none",
+  webDeploy: "none",
+  serverDeploy: "none",
   packageManager: "npm",
   git: "true",
   install: "true",

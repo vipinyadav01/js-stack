@@ -1,0 +1,25 @@
+import "reflect-metadata"
+import { DataSource } from "typeorm"
+import { User } from "./entity/User"
+
+export const AppDataSource = new DataSource({
+    {{#if (eq database "sqlite")}}
+    type: "sqlite",
+    database: "database.sqlite",
+    {{else if (eq database "postgres")}}
+    type: "postgres",
+    url: process.env.DATABASE_URL,
+    {{else if (eq database "mysql")}}
+    type: "mysql",
+    url: process.env.DATABASE_URL,
+    {{else if (eq database "mongodb")}}
+    type: "mongodb",
+    url: process.env.DATABASE_URL,
+    useNewUrlParser: true,
+    {{/if}}
+    synchronize: true,
+    logging: false,
+    entities: [User],
+    migrations: [],
+    subscribers: [],
+})

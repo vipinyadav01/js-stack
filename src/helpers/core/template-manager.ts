@@ -31,10 +31,11 @@ function getTemplatePath(relativePath: string): string {
       path.dirname(normalizedFilename),
       "..",
       "..",
+      "..",
       "templates",
       relativePath,
     ),
-    path.join(path.dirname(normalizedFilename), "..", "..", relativePath),
+    path.join(path.dirname(normalizedFilename), "..", "..", "..", relativePath),
   ];
 
   for (const templatePath of possiblePaths) {
@@ -246,6 +247,27 @@ export async function setupDeploymentTemplates(
   if (context.serverDeploy !== "none") {
     const srcDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.deploy, context.serverDeploy),
+    );
+    if (await fs.pathExists(srcDir)) {
+      await processAndCopyFiles(
+        srcDir,
+        destDir,
+        context as Record<string, unknown>,
+      );
+    }
+  }
+}
+
+/**
+ * Setup database setup templates
+ */
+export async function setupDbSetupTemplate(
+  destDir: string,
+  context: ProjectConfig,
+): Promise<void> {
+  if (context.dbSetup !== "none") {
+    const srcDir = getTemplatePath(
+      path.join(TEMPLATE_PATHS.dbSetup, context.dbSetup),
     );
     if (await fs.pathExists(srcDir)) {
       await processAndCopyFiles(

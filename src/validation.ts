@@ -28,7 +28,7 @@ export function validateDatabaseORM(
     };
   }
 
-  // SQL databases work with Drizzle, Prisma, but not Mongoose
+  // SQL databases work with Drizzle, Prisma, TypeORM, MikroORM but not Mongoose
   if (
     (database === "postgres" ||
       database === "mysql" ||
@@ -38,6 +38,14 @@ export function validateDatabaseORM(
     return {
       valid: false,
       error: "Mongoose can only be used with MongoDB",
+    };
+  }
+
+  // Drizzle only works with SQL databases
+  if (database === "mongodb" && orm === "drizzle") {
+    return {
+      valid: false,
+      error: "Drizzle ORM does not support MongoDB",
     };
   }
 
@@ -89,11 +97,22 @@ export function validateFrontendBackend(
     };
   }
 
-  // Nuxt includes its own backend
-  if (frontend.includes("nuxt") && backend !== "none") {
+  // Meta-frameworks include their own backend
+  const metaFrameworks = [
+    "nuxt",
+    "sveltekit",
+    "remix",
+    "astro",
+    "solid-start",
+    "qwik",
+  ];
+  const hasMetaFramework = frontend.some((f) => metaFrameworks.includes(f));
+
+  if (hasMetaFramework && backend !== "none") {
     return {
       valid: false,
-      error: "Nuxt includes its own backend. Set backend to 'none'",
+      error:
+        "Selected meta-framework includes its own backend. Set backend to 'none'",
     };
   }
 
@@ -195,8 +214,8 @@ export function autoFixConfig(
   const fixed = { ...config };
 
   // Fix MongoDB + ORM
-  if (fixed.database === "mongodb" && fixed.orm && fixed.orm !== "mongoose") {
-    fixed.orm = "mongoose";
+  if (fixed.database === "mongodb" && fixed.orm === "drizzle") {
+    fixed.orm = "prisma"; // Default to Prisma for Mongo if Drizzle was selected
   }
 
   // Fix SQL databases + Mongoose
@@ -218,9 +237,17 @@ export function autoFixConfig(
     fixed.backend = "none";
   }
 
-  // Fix Nuxt + backend
+  // Fix Meta-frameworks + backend
+  const metaFrameworks = [
+    "nuxt",
+    "sveltekit",
+    "remix",
+    "astro",
+    "solid-start",
+    "qwik",
+  ];
   if (
-    fixed.frontend?.includes("nuxt") &&
+    fixed.frontend?.some((f) => metaFrameworks.includes(f)) &&
     fixed.backend &&
     fixed.backend !== "none"
   ) {

@@ -1,0 +1,32 @@
+import { component$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
+
+export default component$(() => {
+  return (
+    <div class="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+        Welcome to <span class="text-purple-600">Qwik</span>
+      </h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+        Edit <code class="font-mono bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">src/routes/index.tsx</code> to get started.
+      </p>
+      <a
+        href="https://qwik.builder.io/docs"
+        target="_blank"
+        class="text-blue-600 hover:underline dark:text-blue-400"
+      >
+        Read the docs
+      </a>
+    </div>
+  );
+});
+
+export const head: DocumentHead = {
+  title: "Welcome to Qwik",
+  meta: [
+    {
+      name: "description",
+      content: "Qwik site description",
+    },
+  ],
+};

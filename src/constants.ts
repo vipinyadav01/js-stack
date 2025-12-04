@@ -71,6 +71,7 @@ export const TEMPLATE_PATHS = {
   addons: "templates/addons",
   examples: "templates/examples",
   deploy: "templates/deploy",
+  dbSetup: "templates/db-setup",
   extras: "templates/extras",
 } as const;
 

@@ -1,0 +1,6 @@
+import { createRouter } from './router'
+import { StartServer, createRequestHandler } from '@tanstack/start/server'
+
+export default createRequestHandler({
+  createRouter,
+})

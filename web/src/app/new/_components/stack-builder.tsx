@@ -68,6 +68,9 @@ export function StackBuilder() {
           : Array.isArray(stack.addons)
             ? stack.addons
             : [],
+      dbSetup: stackToUse.dbSetup || stack.dbSetup || "none",
+      webDeploy: stackToUse.webDeploy || stack.webDeploy || "none",
+      serverDeploy: stackToUse.serverDeploy || stack.serverDeploy || "none",
       packageManager:
         stackToUse.packageManager || stack.packageManager || "npm",
       git: stackToUse.git || stack.git || "true",
@@ -118,6 +121,9 @@ export function StackBuilder() {
         orm: "none",
         auth: "none",
         addons: [],
+        dbSetup: "none",
+        webDeploy: "none",
+        serverDeploy: "none",
         packageManager: "npm",
         git: "true",
         install: "true",
@@ -246,9 +252,6 @@ export function StackBuilder() {
               onProjectNameChange={(value) => setStack({ projectName: value })}
               onReset={handleReset}
               onRandom={handleRandom}
-              onSave={() => {}}
-              onLoad={() => {}}
-              hasSavedStack={false}
               onApplyPreset={handlePresetSelect}
               onYoloToggle={(enabled) =>
                 setStack({ yolo: enabled ? "true" : "false" })
@@ -284,9 +287,6 @@ export function StackBuilder() {
                 }
                 onReset={handleReset}
                 onRandom={handleRandom}
-                onSave={() => {}}
-                onLoad={() => {}}
-                hasSavedStack={false}
                 onApplyPreset={handlePresetSelect}
                 onYoloToggle={(enabled) =>
                   setStack({ yolo: enabled ? "true" : "false" })

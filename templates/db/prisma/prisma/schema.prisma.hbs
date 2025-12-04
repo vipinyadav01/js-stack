@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  {{#if (eq database "sqlite")}}
+  provider = "sqlite"
+  {{else if (eq database "postgres")}}
+  provider = "postgresql"
+  {{else if (eq database "mysql")}}
+  provider = "mysql"
+  {{else if (eq database "mongodb")}}
+  provider = "mongodb"
+  {{/if}}
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  {{#if (eq database "mongodb")}}
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  {{else}}
+  id    Int    @id @default(autoincrement())
+  {{/if}}
+  email String @unique
+  name  String?
+}

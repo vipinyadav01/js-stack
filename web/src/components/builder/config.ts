@@ -6,7 +6,17 @@ export type Frontend =
   | "svelte"
   | "nextjs"
   | "nuxt"
-  | "react-native";
+  | "react-native"
+  | "sveltekit"
+  | "remix"
+  | "astro"
+  | "solid"
+  | "qwik"
+  | "tanstack-start"
+  | "tanstack-router"
+  | "react-router"
+  | "native-nativewind"
+  | "native-unistyles";
 
 export type Backend =
   | "none"
@@ -14,11 +24,22 @@ export type Backend =
   | "fastify"
   | "koa"
   | "hapi"
-  | "nestjs";
+  | "nestjs"
+  | "hono"
+  | "elysia"
+  | "convex"
+  | "next";
 
 export type Database = "none" | "sqlite" | "postgres" | "mysql" | "mongodb";
 
-export type ORM = "none" | "prisma" | "sequelize" | "mongoose" | "typeorm";
+export type ORM =
+  | "none"
+  | "prisma"
+  | "sequelize"
+  | "mongoose"
+  | "typeorm"
+  | "drizzle"
+  | "mikro-orm";
 
 export type Auth =
   | "none"
@@ -26,9 +47,36 @@ export type Auth =
   | "passport"
   | "auth0"
   | "oauth"
-  | "better-auth";
+  | "better-auth"
+  | "clerk"
+  | "lucia"
+  | "kinde"
+  | "next-auth";
 
-export type Addon = "docker" | "testing" | "biome" | "turborepo";
+export type Addon =
+  | "docker"
+  | "testing"
+  | "biome"
+  | "turborepo"
+  | "pwa"
+  | "tauri"
+  | "husky"
+  | "storybook"
+  | "changesets"
+  | "vitest"
+  | "playwright"
+  | "cypress";
+
+export type DBSetup = "none" | "docker-compose" | "turso" | "neon" | "supabase";
+
+export type WebDeploy = "none" | "cloudflare-pages" | "vercel" | "netlify";
+
+export type ServerDeploy =
+  | "none"
+  | "cloudflare-workers"
+  | "fly"
+  | "railway"
+  | "alchemy";
 
 export type PackageManager = "npm" | "yarn" | "pnpm" | "bun";
 
@@ -40,6 +88,9 @@ export interface BuilderState {
   orm: ORM;
   auth: Auth;
   addons: Addon[];
+  dbSetup?: DBSetup;
+  webDeploy?: WebDeploy;
+  serverDeploy?: ServerDeploy;
   packageManager: PackageManager;
   installDependencies: boolean;
   initializeGit: boolean;
@@ -53,6 +104,9 @@ export const defaultConfig: BuilderState = {
   orm: "mongoose",
   auth: "jwt",
   addons: [],
+  dbSetup: "none",
+  webDeploy: "none",
+  serverDeploy: "none",
   packageManager: "npm",
   installDependencies: true,
   initializeGit: true,
@@ -286,6 +340,66 @@ export const techCatalog = {
       desc: "Cross-platform mobile apps",
       badge: "Mobile",
     },
+    {
+      key: "sveltekit",
+      name: "SvelteKit",
+      desc: "Web application framework for Svelte",
+      badge: "Full-Stack",
+    },
+    {
+      key: "remix",
+      name: "Remix",
+      desc: "Full stack web framework",
+      badge: "Full-Stack",
+    },
+    {
+      key: "astro",
+      name: "Astro",
+      desc: "The web framework for content-driven websites",
+      badge: "Static",
+    },
+    {
+      key: "solid",
+      name: "Solid",
+      desc: "Simple and performant reactivity",
+      badge: "Fast",
+    },
+    {
+      key: "qwik",
+      name: "Qwik",
+      desc: "Resumable web framework",
+      badge: "Fast",
+    },
+    {
+      key: "tanstack-start",
+      name: "TanStack Start",
+      desc: "Full-stack React framework",
+      badge: "New",
+    },
+    {
+      key: "tanstack-router",
+      name: "TanStack Router",
+      desc: "Type-safe routing for React",
+      badge: "SPA",
+    },
+    {
+      key: "react-router",
+      name: "React Router",
+      desc: "Declarative routing for React",
+      badge: "SPA",
+    },
+    {
+      key: "native-nativewind",
+      name: "NativeWind",
+      desc: "Tailwind CSS for React Native",
+      badge: "Mobile",
+    },
+    {
+      key: "native-unistyles",
+      name: "Unistyles",
+      desc: "Supercharged styles for React Native",
+      badge: "Mobile",
+    },
     { key: "none", name: "None", desc: "API-only backend service" },
   ],
   backend: [
@@ -309,6 +423,30 @@ export const techCatalog = {
     },
     { key: "koa", name: "Koa", desc: "Expressive middleware framework" },
     { key: "hapi", name: "Hapi", desc: "Rich configuration framework" },
+    {
+      key: "hono",
+      name: "Hono",
+      desc: "Ultrafast web framework",
+      badge: "Fast",
+    },
+    {
+      key: "elysia",
+      name: "Elysia",
+      desc: "Ergonomic framework for Bun",
+      badge: "Bun",
+    },
+    {
+      key: "convex",
+      name: "Convex",
+      desc: "Backend as a Service",
+      badge: "BaaS",
+    },
+    {
+      key: "next",
+      name: "Next.js API",
+      desc: "Next.js API Routes",
+      badge: "Full-Stack",
+    },
     { key: "none", name: "None", desc: "Frontend-only application" },
   ],
   database: [
@@ -363,6 +501,18 @@ export const techCatalog = {
       desc: "TypeScript-first ORM",
       badge: "TypeScript",
     },
+    {
+      key: "drizzle",
+      name: "Drizzle",
+      desc: "Lightweight SQL ORM",
+      badge: "Modern",
+    },
+    {
+      key: "mikro-orm",
+      name: "MikroORM",
+      desc: "TypeScript ORM",
+      badge: "TypeScript",
+    },
     { key: "none", name: "None", desc: "Direct database queries" },
   ],
   auth: [
@@ -396,6 +546,30 @@ export const techCatalog = {
       desc: "Industry-standard authorization",
       badge: "Standard",
     },
+    {
+      key: "clerk",
+      name: "Clerk",
+      desc: "Complete user management",
+      badge: "Hosted",
+    },
+    {
+      key: "lucia",
+      name: "Lucia",
+      desc: "Simple and flexible auth",
+      badge: "Library",
+    },
+    {
+      key: "kinde",
+      name: "Kinde",
+      desc: "Auth made simple",
+      badge: "Hosted",
+    },
+    {
+      key: "next-auth",
+      name: "NextAuth",
+      desc: "Auth for Next.js",
+      badge: "Next.js",
+    },
     { key: "none", name: "None", desc: "No user authentication" },
   ],
   addons: [
@@ -423,6 +597,49 @@ export const techCatalog = {
       desc: "High-performance monorepo",
       badge: "Monorepo",
     },
+    {
+      key: "pwa",
+      name: "PWA",
+      desc: "Progressive Web App support",
+      badge: "Web",
+    },
+    {
+      key: "tauri",
+      name: "Tauri",
+      desc: "Build smaller, faster, and more secure desktop applications",
+      badge: "Desktop",
+    },
+    { key: "husky", name: "Husky", desc: "Git hooks made easy", badge: "Git" },
+    {
+      key: "storybook",
+      name: "Storybook",
+      desc: "Frontend workshop for building UI components",
+      badge: "UI",
+    },
+    {
+      key: "changesets",
+      name: "Changesets",
+      desc: "A way to manage your versioning and changelogs",
+      badge: "Version",
+    },
+    {
+      key: "vitest",
+      name: "Vitest",
+      desc: "Blazing fast unit test framework",
+      badge: "Test",
+    },
+    {
+      key: "playwright",
+      name: "Playwright",
+      desc: "Fast and reliable end-to-end testing",
+      badge: "Test",
+    },
+    {
+      key: "cypress",
+      name: "Cypress",
+      desc: "Fast, easy and reliable testing for anything that runs in a browser",
+      badge: "Test",
+    },
   ],
   packageManager: [
     { key: "npm", name: "npm", desc: "Node Package Manager", badge: "Default" },
@@ -435,6 +652,76 @@ export const techCatalog = {
       badge: "Fast",
     },
   ],
+  dbSetup: [
+    {
+      key: "docker-compose",
+      name: "Docker Compose",
+      desc: "Local database with Docker",
+      badge: "Local",
+    },
+    { key: "turso", name: "Turso", desc: "Edge-hosted SQLite", badge: "Cloud" },
+    {
+      key: "neon",
+      name: "Neon",
+      desc: "Serverless PostgreSQL",
+      badge: "Cloud",
+    },
+    {
+      key: "supabase",
+      name: "Supabase",
+      desc: "Open Source Firebase Alternative",
+      badge: "Cloud",
+    },
+    { key: "none", name: "None", desc: "Manual database setup" },
+  ],
+  webDeploy: [
+    {
+      key: "cloudflare-pages",
+      name: "Cloudflare Pages",
+      desc: "Fast, secure static site hosting",
+      badge: "Edge",
+    },
+    {
+      key: "vercel",
+      name: "Vercel",
+      desc: "Develop. Preview. Ship.",
+      badge: "Cloud",
+    },
+    {
+      key: "netlify",
+      name: "Netlify",
+      desc: "Fastest way to build the fastest sites",
+      badge: "Cloud",
+    },
+    { key: "none", name: "None", desc: "No deployment configuration" },
+  ],
+  serverDeploy: [
+    {
+      key: "cloudflare-workers",
+      name: "Cloudflare Workers",
+      desc: "Deploy serverless code instantly",
+      badge: "Edge",
+    },
+    {
+      key: "fly",
+      name: "Fly.io",
+      desc: "Run your full stack apps globally",
+      badge: "Cloud",
+    },
+    {
+      key: "railway",
+      name: "Railway",
+      desc: "Infrastructure, instantly",
+      badge: "Cloud",
+    },
+    {
+      key: "alchemy",
+      name: "Alchemy",
+      desc: "The web3 development platform",
+      badge: "Web3",
+    },
+    { key: "none", name: "None", desc: "No deployment configuration" },
+  ],
 } as const;
 
 export function normalizeState(input: Partial<BuilderState>): BuilderState {
@@ -446,6 +733,9 @@ export function normalizeState(input: Partial<BuilderState>): BuilderState {
     orm: input.orm || defaultConfig.orm,
     auth: input.auth || defaultConfig.auth,
     addons: Array.isArray(input.addons) ? input.addons : defaultConfig.addons,
+    dbSetup: input.dbSetup || defaultConfig.dbSetup,
+    webDeploy: input.webDeploy || defaultConfig.webDeploy,
+    serverDeploy: input.serverDeploy || defaultConfig.serverDeploy,
     packageManager: input.packageManager || defaultConfig.packageManager,
     installDependencies:
       input.installDependencies ?? defaultConfig.installDependencies,
@@ -903,6 +1193,21 @@ export function buildCliCommand(state: BuilderState): string {
   // Addons - only include if there are addons
   if (state.addons.length > 0) {
     parts.push(`--addons ${state.addons.join(",")}`);
+  }
+
+  // DB Setup
+  if (state.dbSetup && state.dbSetup !== "none") {
+    parts.push(`--db-setup ${state.dbSetup}`);
+  }
+
+  // Web Deploy
+  if (state.webDeploy && state.webDeploy !== "none") {
+    parts.push(`--web-deploy ${state.webDeploy}`);
+  }
+
+  // Server Deploy
+  if (state.serverDeploy && state.serverDeploy !== "none") {
+    parts.push(`--server-deploy ${state.serverDeploy}`);
   }
 
   // Package manager - always include

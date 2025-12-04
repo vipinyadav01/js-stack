@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,14 +18,11 @@ export function PresetDropdown({ onApplyPreset }: PresetDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
-        >
-          <Zap className="h-3 w-3" />
+        <Button variant="outline" size="sm" className="flex-1">
+          <Zap className="mr-2 h-3.5 w-3.5" />
           Presets
-          <ChevronDown className="ml-auto h-3 w-3" />
-        </button>
+          <ChevronDown className="ml-2 h-3.5 w-3.5" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64 bg-background">
         {PRESET_TEMPLATES.map((preset) => (

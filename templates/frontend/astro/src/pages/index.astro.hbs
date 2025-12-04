@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Welcome to Astro.">
+	<main class="flex min-h-screen flex-col items-center justify-center p-24">
+		<h1 class="text-4xl font-bold text-center mb-8">
+			Welcome to <span class="text-orange-500">Astro</span>
+		</h1>
+		<p class="text-lg mb-8 text-center max-w-2xl">
+			To get started, open the directory <code class="bg-gray-100 dark:bg-gray-800 p-1 rounded">src/pages</code> in your project.
+		</p>
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-4xl">
+			<a href="https://docs.astro.build" class="p-6 border rounded-lg hover:border-orange-500 transition-colors">
+				<h2 class="text-2xl font-semibold mb-2">Documentation &rarr;</h2>
+				<p>Learn how Astro works and explore the official API docs.</p>
+			</a>
+			<a href="https://astro.build/integrations/" class="p-6 border rounded-lg hover:border-orange-500 transition-colors">
+				<h2 class="text-2xl font-semibold mb-2">Integrations &rarr;</h2>
+				<p>Supercharge your project with new frameworks and libraries.</p>
+			</a>
+		</div>
+	</main>
+</Layout>

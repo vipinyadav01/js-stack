@@ -15,7 +15,14 @@ export const DatabaseSchema = z.enum([
 export type Database = z.infer<typeof DatabaseSchema>;
 
 // ORM types
-export const ORMSchema = z.enum(["none", "drizzle", "prisma", "mongoose"]);
+export const ORMSchema = z.enum([
+  "none",
+  "drizzle",
+  "prisma",
+  "mongoose",
+  "typeorm",
+  "mikro-orm",
+]);
 export type ORM = z.infer<typeof ORMSchema>;
 
 // Backend types
@@ -24,6 +31,8 @@ export const BackendSchema = z.enum([
   "hono",
   "express",
   "fastify",
+  "nest",
+  "koa",
   "next",
   "elysia",
   "convex",
@@ -31,7 +40,7 @@ export const BackendSchema = z.enum([
 export type Backend = z.infer<typeof BackendSchema>;
 
 // Runtime types
-export const RuntimeSchema = z.enum(["none", "bun", "node", "workers"]);
+export const RuntimeSchema = z.enum(["none", "bun", "node", "workers", "deno"]);
 export type Runtime = z.infer<typeof RuntimeSchema>;
 
 // Frontend types (array)
@@ -42,6 +51,12 @@ export const FrontendSchema = z.array(
     "tanstack-start",
     "next",
     "nuxt",
+    "sveltekit",
+    "remix",
+    "astro",
+    "vue",
+    "angular",
+    "qwik",
     "native-nativewind",
     "native-unistyles",
     "svelte",
@@ -64,6 +79,8 @@ export const AddonsSchema = z.array(
     "cypress",
     "docker",
     "testing",
+    "storybook",
+    "changesets",
   ]),
 );
 export type Addons = z.infer<typeof AddonsSchema>;
@@ -75,11 +92,18 @@ export const ExamplesSchema = z.array(
 export type Examples = z.infer<typeof ExamplesSchema>;
 
 // Auth types
-export const AuthSchema = z.enum(["none", "better-auth", "clerk"]);
+export const AuthSchema = z.enum([
+  "none",
+  "better-auth",
+  "clerk",
+  "next-auth",
+  "lucia",
+  "kinde",
+]);
 export type Auth = z.infer<typeof AuthSchema>;
 
 // API types
-export const APISchema = z.enum(["none", "trpc", "orpc"]);
+export const APISchema = z.enum(["none", "trpc", "orpc", "graphql", "rest"]);
 export type API = z.infer<typeof APISchema>;
 
 // Package manager types
@@ -91,17 +115,21 @@ export const DatabaseSetupSchema = z.enum([
   "none",
   "turso",
   "neon",
-  "docker",
+  "docker-compose",
   "supabase",
 ]);
 export type DatabaseSetup = z.infer<typeof DatabaseSetupSchema>;
 
 // Web deployment types
-export const WebDeploySchema = z.enum(["none", "wrangler", "alchemy"]);
+export const WebDeploySchema = z.enum(["none", "cloudflare-pages", "alchemy"]);
 export type WebDeploy = z.infer<typeof WebDeploySchema>;
 
 // Server deployment types
-export const ServerDeploySchema = z.enum(["none", "wrangler", "alchemy"]);
+export const ServerDeploySchema = z.enum([
+  "none",
+  "cloudflare-workers",
+  "alchemy",
+]);
 export type ServerDeploy = z.infer<typeof ServerDeploySchema>;
 
 // Directory conflict handling
@@ -143,6 +171,7 @@ export const CLIOptionsSchema = z.object({
   yes: z.boolean().default(false),
   yolo: z.boolean().default(false),
   verbose: z.boolean().default(false),
+  dryRun: z.boolean().default(false),
   projectName: z.string().optional(),
   database: DatabaseSchema.optional(),
   orm: ORMSchema.optional(),

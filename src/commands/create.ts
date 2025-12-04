@@ -1,5 +1,5 @@
 /**
- * Init command handler
+ * Create command handler
  */
 
 import path from "path";
@@ -15,7 +15,7 @@ import {
   getProjectDir,
   handleDirectoryConflict,
 } from "../utils/project-directory.js";
-import { createProject } from "../helpers/core/create-project.js";
+import { createProject as createProjectCore } from "../helpers/core/create-project.js";
 import { displayConfig } from "../utils/display-config.js";
 import { generateReproducibleCommand } from "../utils/generate-reproducible-command.js";
 import { saveConfig } from "../utils/js-stack-config.js";
@@ -33,17 +33,13 @@ function parseArray(value?: string): string[] {
 }
 
 /**
- * Init command
+ * Create command
  */
-export async function initCommand(
+export async function createProject(
   projectName?: string,
   options: Partial<CLIOptions> = {},
 ): Promise<void> {
   try {
-    // Show title
-    const { renderTitle } = await import("../utils/render-title.js");
-    renderTitle();
-
     // Get project name
     let finalProjectName = projectName;
     if (!finalProjectName) {
@@ -104,7 +100,12 @@ export async function initCommand(
       };
     } else {
       // Interactive prompts or parse from options
-      if (options.yolo || Object.keys(options).length > 0) {
+      // Check if any options other than project name are provided
+      const hasOptions = Object.keys(options).length > 0;
+
+      // If no options provided (or only project name via argument which isn't in options object here), show prompts
+      // The options object only contains flags passed to the command
+      if (options.yolo || hasOptions) {
         // Parse from CLI options
         config = {
           projectName: finalProjectName,
@@ -179,13 +180,26 @@ export async function initCommand(
     }
 
     // Create project
-    await createProject(config as ProjectConfig, { verbose: options.verbose });
+    // Create project
+    if (options.dryRun) {
+      p.log.info("Dry run enabled. Skipping project creation.");
+    } else {
+      await createProjectCore(config as ProjectConfig, {
+        verbose: options.verbose,
+      });
+    }
 
     // Save config file
-    await saveConfig(finalProjectDir, config);
+    if (!options.dryRun) {
+      await saveConfig(finalProjectDir, config);
+    }
 
     // Display success message
-    p.log.success(`Project ${finalProjectName} created successfully!`);
+    if (options.dryRun) {
+      p.log.success(`Dry run complete for project ${finalProjectName}!`);
+    } else {
+      p.log.success(`Project ${finalProjectName} created successfully!`);
+    }
     console.log();
     p.log.info("Next steps:");
     console.log(`  cd ${relativePath}`);

@@ -14,5 +14,5 @@ export * from "./utils/generate-reproducible-command.js";
 export * from "./utils/js-stack-config.js";
 
 // Re-export for programmatic use
-export { initCommand } from "./commands/init.js";
+export { createProject as createCommand } from "./commands/create.js";
 export { createProject } from "./helpers/core/create-project.js";

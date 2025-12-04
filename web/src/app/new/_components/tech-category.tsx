@@ -47,6 +47,9 @@ export function TechCategory({
       database: "Database",
       orm: "ORM/ODM",
       auth: "Authentication",
+      dbSetup: "Database Setup",
+      webDeploy: "Web Deployment",
+      serverDeploy: "Server Deployment",
       addons: "Add-ons",
       packageManager: "Package Manager",
       git: "Git Repository",
@@ -101,9 +104,9 @@ export function TechCategory({
                       <div className="flex-grow">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
-                            {tech.icon && (
+                            {(tech.icon || tech.emoji) && (
                               <TechIcon
-                                icon={tech.icon}
+                                icon={tech.icon || tech.emoji || ""}
                                 name={tech.name}
                                 className="mr-1.5 h-3 w-3 sm:h-4 sm:w-4"
                               />

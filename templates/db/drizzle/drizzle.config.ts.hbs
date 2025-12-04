@@ -1,0 +1,25 @@
+import type { Config } from "drizzle-kit";
+import * as dotenv from "dotenv";
+dotenv.config();
+
+export default {
+  schema: "./src/db/schema.ts",
+  out: "./drizzle",
+  {{#if (eq database "sqlite")}}
+  driver: "turso",
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+    authToken: process.env.DATABASE_AUTH_TOKEN,
+  },
+  {{else if (eq database "postgres")}}
+  driver: "pg",
+  dbCredentials: {
+    connectionString: process.env.DATABASE_URL!,
+  },
+  {{else if (eq database "mysql")}}
+  driver: "mysql2",
+  dbCredentials: {
+    uri: process.env.DATABASE_URL!,
+  },
+  {{/if}}
+} satisfies Config;

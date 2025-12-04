@@ -1,0 +1,5 @@
+import { oslo } from "@orpc/server";
+
+export const router = oslo.router({
+  hello: oslo.procedure.query(() => "Hello oRPC"),
+});

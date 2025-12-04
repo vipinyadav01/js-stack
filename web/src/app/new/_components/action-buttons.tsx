@@ -1,62 +1,53 @@
 "use client";
 
-import { RefreshCw, Settings, Shuffle, Star } from "lucide-react";
+import { RotateCcw, Shuffle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ActionButtonsProps {
   onReset: () => void;
   onRandom: () => void;
-  onSave: () => void;
-  onLoad: () => void;
-  hasSavedStack: boolean;
 }
 
-export function ActionButtons({
-  onReset,
-  onRandom,
-  onSave,
-  onLoad,
-  hasSavedStack,
-}: ActionButtonsProps) {
+export function ActionButtons({ onReset, onRandom }: ActionButtonsProps) {
   return (
-    <div className="flex gap-1">
-      <button
-        type="button"
-        onClick={onReset}
-        className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
-        title="Reset to defaults"
-      >
-        <RefreshCw className="h-3 w-3" />
-        Reset
-      </button>
-      <button
-        type="button"
-        onClick={onRandom}
-        className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
-        title="Generate a random stack"
-      >
-        <Shuffle className="h-3 w-3" />
-        Random
-      </button>
-      <button
-        type="button"
-        onClick={onSave}
-        className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
-        title="Save current preferences"
-      >
-        <Star className="h-3 w-3" />
-        Save
-      </button>
-      {hasSavedStack && (
-        <button
-          type="button"
-          onClick={onLoad}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
-          title="Load saved preferences"
-        >
-          <Settings className="h-3 w-3" />
-          Load
-        </button>
-      )}
+    <div className="flex gap-2">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onReset}
+              className="flex-1"
+            >
+              <RotateCcw className="mr-2 h-3.5 w-3.5" />
+              Reset
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Reset to default configuration</TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRandom}
+              className="flex-1"
+            >
+              <Shuffle className="mr-2 h-3.5 w-3.5" />
+              Random
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Generate a random valid stack</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 }

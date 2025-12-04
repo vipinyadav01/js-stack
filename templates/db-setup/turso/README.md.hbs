@@ -1,0 +1,8 @@
+# Turso Setup
+
+1. Install the Turso CLI: `curl -sSfL https://get.tur.so/install.sh | bash`
+2. Login: `turso auth login`
+3. Create a database: `turso db create my-db`
+4. Get the database URL: `turso db show my-db --url`
+5. Get the auth token: `turso db tokens create my-db`
+6. Update your `.env` file with `DATABASE_URL` and `DATABASE_AUTH_TOKEN`.

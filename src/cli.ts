@@ -1,98 +1,94 @@
 #!/usr/bin/env node
 
-/**
- * CLI Entry Point
- */
-
 import { Command } from "commander";
-import { renderTitle } from "./utils/render-title.js";
-import { initCommand } from "./commands/init.js";
-import { addCommand } from "./commands/add.js";
-import { sponsorsCommand } from "./commands/sponsors.js";
-import { docsCommand } from "./commands/docs.js";
-import { builderCommand } from "./commands/builder.js";
+import chalk from "chalk";
+import { createProject } from "./commands/create.js";
+import { listPresets } from "./commands/list.js";
+import { addPreset } from "./commands/add-preset.js";
+import { version } from "./utils/version.js";
 
 const program = new Command();
 
+console.log(
+  chalk.cyan(`
+     ╦╔═╗╔═╗╔╦╗╔═╗╔═╗╦╔═
+     ║╚═╗╚═╗ ║ ╠═╣║  ╠╩╗
+    ╚╝╚═╝╚═╝ ╩ ╩ ╩╚═╝╩ ╩
+    Modern Web Project Generator
+`),
+);
+
 program
-  .name("create-js-stack")
+  .name("jsstack")
   .description(
-    "Modern CLI tool for scaffolding full-stack JavaScript/TypeScript projects",
+    "A comprehensive scaffold project generator for modern web development",
   )
-  .version("1.0.0");
+  .version(version);
 
-// Show title on help
-program.configureHelp({
-  helpWidth: 100,
-});
-
-// Main init command (default)
 program
-  .argument("[project-name]", "Name of the project to create")
-  .option("-y, --yes", "Use default configuration")
-  .option("--yolo", "Bypass validations (not recommended)")
-  .option("-v, --verbose", "Show detailed output")
-  .option("--frontend <frameworks>", "Frontend framework(s) (comma-separated)")
-  .option("--backend <framework>", "Backend framework")
-  .option("--runtime <runtime>", "Runtime (node, bun, workers)")
-  .option("--database <database>", "Database")
-  .option("--orm <orm>", "ORM")
-  .option("--api <api>", "API framework")
-  .option("--auth <auth>", "Authentication")
-  .option("--addons <addons>", "Addons (comma-separated)")
-  .option("--examples <examples>", "Examples (comma-separated)")
-  .option("--db-setup <setup>", "Database setup")
-  .option("--web-deploy <deploy>", "Web deployment")
-  .option("--server-deploy <deploy>", "Server deployment")
-  .option("--package-manager <manager>", "Package manager (npm, pnpm, bun)")
-  .option("--no-git", "Skip Git initialization")
-  .option("--no-install", "Skip dependency installation")
+  .command("create [project-name]")
+  .description("Create a new project with selected preset")
   .option(
-    "--directory-conflict <strategy>",
-    "Directory conflict strategy (merge, overwrite, increment, error)",
+    "-p, --preset <preset>",
+    "Use a specific preset (mern, next-fullstack, react-vite, express-api)",
   )
-  .action(async (projectName, options) => {
-    await initCommand(projectName, options);
-  });
+  .option("-t, --typescript", "Use TypeScript", true)
+  .option("--no-typescript", "Use JavaScript instead of TypeScript")
+  .option(
+    "-s, --styling <styling>",
+    "Styling solution (tailwind, styled-components, css-modules, sass)",
+  )
+  .option(
+    "-d, --database <database>",
+    "Database (mongodb, postgresql, mysql, sqlite)",
+  )
+  .option("--orm <orm>", "ORM (drizzle, prisma, mongoose, typeorm)")
+  .option(
+    "--auth <auth>",
+    "Authentication (better-auth, clerk, next-auth, lucia)",
+  )
+  .option("--frontend <frameworks>", "Frontend frameworks (comma-separated)")
+  .option("--backend <framework>", "Backend framework")
+  .option("--api <api>", "API style (trpc, orpc, graphql, rest)")
+  .option("--addons <addons>", "Addons (pwa, tauri, docker, etc.)")
+  .option("--docker", "Include Docker configuration")
+  .option("--cicd <cicd>", "CI/CD configuration (github-actions, gitlab-ci)")
+  .option(
+    "--db-setup <dbSetup>",
+    "Database setup (turso, neon, docker-compose, supabase)",
+  )
+  .option(
+    "--web-deploy <webDeploy>",
+    "Web deployment (cloudflare-pages, alchemy)",
+  )
+  .option(
+    "--server-deploy <serverDeploy>",
+    "Server deployment (cloudflare-workers, alchemy)",
+  )
+  .option("-y, --yes", "Skip prompts and use defaults")
+  .option("--dry-run", "Preview files without creating them")
+  .action(createProject);
 
-// Add command
 program
-  .command("add")
-  .description("Add addons or deployment configs to existing project")
-  .option("--addon <addon>", "Addon to add")
-  .option("--deploy <deploy>", "Deployment config to add")
-  .action(async (options) => {
-    await addCommand(options);
-  });
+  .command("list")
+  .description("List all available presets")
+  .option("--json", "Output as JSON")
+  .action(listPresets);
 
-// Sponsors command
 program
-  .command("sponsors")
-  .description("Display sponsors")
-  .action(async () => {
-    await sponsorsCommand();
-  });
+  .command("add-preset <name>")
+  .description("Add a custom preset from a template directory")
+  .option("-s, --source <path>", "Source directory for preset templates")
+  .action(addPreset);
 
-// Docs command
 program
-  .command("docs")
-  .description("Open documentation in browser")
-  .action(async () => {
-    await docsCommand();
+  .command("info")
+  .description("Display environment info")
+  .action(() => {
+    console.log(chalk.cyan("\nEnvironment Information:"));
+    console.log(chalk.white(`  Node.js: ${process.version}`));
+    console.log(chalk.white(`  Platform: ${process.platform}`));
+    console.log(chalk.white(`  jsStack Version: ${version}`));
   });
 
-// Builder command
-program
-  .command("builder")
-  .description("Open web-based builder")
-  .action(async () => {
-    await builderCommand();
-  });
-
-// Show title if no command provided
-if (process.argv.length === 2) {
-  renderTitle();
-}
-
-// Parse arguments
 program.parse();

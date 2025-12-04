@@ -40,6 +40,10 @@ export function analyzeStackCompatibility(
     addons: (Array.isArray(stack.addons)
       ? stack.addons
       : []) as BuilderState["addons"],
+    dbSetup: (stack.dbSetup || "none") as BuilderState["dbSetup"],
+    webDeploy: (stack.webDeploy || "none") as BuilderState["webDeploy"],
+    serverDeploy: (stack.serverDeploy ||
+      "none") as BuilderState["serverDeploy"],
     packageManager: (stack.packageManager ||
       "npm") as BuilderState["packageManager"],
     installDependencies: stack.install === "true",
@@ -69,12 +73,17 @@ export function analyzeStackCompatibility(
         : [];
 
   const adjustedStack: Partial<StackState> = {
+    projectName:
+      adjustedBuilderState.projectName || stack.projectName || "my-app",
     frontend: finalFrontend,
     backend: adjustedBuilderState.backend || "none",
     database: adjustedBuilderState.database || "none",
     orm: adjustedBuilderState.orm || "none",
     auth: adjustedBuilderState.auth || "none",
     addons: adjustedBuilderState.addons || [],
+    dbSetup: adjustedBuilderState.dbSetup || "none",
+    webDeploy: adjustedBuilderState.webDeploy || "none",
+    serverDeploy: adjustedBuilderState.serverDeploy || "none",
     packageManager: adjustedBuilderState.packageManager || "npm",
     git: adjustedBuilderState.initializeGit ? "true" : "false",
     install: adjustedBuilderState.installDependencies ? "true" : "false",

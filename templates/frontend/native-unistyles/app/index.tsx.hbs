@@ -1,0 +1,40 @@
+import { Text, View } from "react-native";
+import { createStyleSheet, useStyles } from "react-native-unistyles";
+
+export default function Page() {
+  const { styles, theme } = useStyles(stylesheet);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>
+        Welcome to <Text style={styles.highlight}>Unistyles</Text>
+      </Text>
+      <Text style={styles.subtitle}>
+        Open up App.js to start working on your app!
+      </Text>
+    </View>
+  );
+}
+
+const stylesheet = createStyleSheet((theme) => ({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.background,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: theme.colors.typography,
+  },
+  highlight: {
+    color: theme.colors.primary,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: theme.colors.typography,
+    opacity: 0.7,
+  },
+}));

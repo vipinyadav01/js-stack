@@ -1,0 +1,23 @@
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+
+@Entity()
+export class User {
+
+    {{#if (eq database "mongodb")}}
+    @ObjectIdColumn()
+    id: ObjectID
+    {{else}}
+    @PrimaryGeneratedColumn()
+    id: number
+    {{/if}}
+
+    @Column()
+    firstName: string
+
+    @Column()
+    lastName: string
+
+    @Column()
+    age: number
+
+}

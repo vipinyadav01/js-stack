@@ -1,0 +1,20 @@
+import { MikroORM } from '@mikro-orm/core';
+import { User } from './entities/User';
+
+export default {
+  entities: [User],
+  {{#if (eq database "sqlite")}}
+  dbName: 'database.sqlite',
+  type: 'sqlite',
+  {{else if (eq database "postgres")}}
+  clientUrl: process.env.DATABASE_URL,
+  type: 'postgresql',
+  {{else if (eq database "mysql")}}
+  clientUrl: process.env.DATABASE_URL,
+  type: 'mysql',
+  {{else if (eq database "mongodb")}}
+  clientUrl: process.env.DATABASE_URL,
+  type: 'mongo',
+  {{/if}}
+  debug: process.env.NODE_ENV !== 'production',
+};

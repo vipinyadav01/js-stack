@@ -1,0 +1,24 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet],
+  template: `
+    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+        Welcome to <span class="text-red-600">Angular</span>
+      </h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+        Start building your app by editing <code class="font-mono bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">src/app/app.component.ts</code>
+      </p>
+      <router-outlet></router-outlet>
+    </div>
+  `,
+  styles: [],
+})
+export class AppComponent {
+  title = 'angular-app';
+}

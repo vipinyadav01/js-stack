@@ -21,6 +21,10 @@ export function generateStackCommand(stack: StackState): string {
     addons: (Array.isArray(stack.addons)
       ? stack.addons
       : []) as BuilderState["addons"],
+    dbSetup: (stack.dbSetup || "none") as BuilderState["dbSetup"],
+    webDeploy: (stack.webDeploy || "none") as BuilderState["webDeploy"],
+    serverDeploy: (stack.serverDeploy ||
+      "none") as BuilderState["serverDeploy"],
     packageManager: (stack.packageManager ||
       "npm") as BuilderState["packageManager"],
     installDependencies: stack.install === "true",
@@ -33,11 +37,11 @@ export function generateStackCommand(stack: StackState): string {
   // If multiple frontends selected, update the frontend flag
   if (frontends.length > 1 && frontends[0] !== "none") {
     // Replace single frontend with multiple frontends
-    const frontendPattern = /--frontend\s+\w+/;
+    const frontendPattern = /--frontend\s+[\w-]+/;
     if (frontendPattern.test(command)) {
       command = command.replace(
         frontendPattern,
-        `--frontend ${frontends.join(" ")}`,
+        `--frontend ${frontends.join(",")}`,
       );
     } else {
       // If frontend flag doesn't exist, add it
@@ -45,7 +49,7 @@ export function generateStackCommand(stack: StackState): string {
       if (projectNameMatch) {
         command = command.replace(
           projectNameMatch[0],
-          `${projectNameMatch[0]} --frontend ${frontends.join(" ")}`,
+          `${projectNameMatch[0]} --frontend ${frontends.join(",")}`,
         );
       }
     }

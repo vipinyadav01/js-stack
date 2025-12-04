@@ -17,6 +17,7 @@ import {
   setupAddonsTemplate,
   setupExamplesTemplate,
   setupDeploymentTemplates,
+  setupDbSetupTemplate,
   handleExtras,
 } from "./template-manager.js";
 import {
@@ -87,6 +88,12 @@ export async function createProjectStructure(
     if (config.webDeploy !== "none" || config.serverDeploy !== "none") {
       spinner.message("Setting up deployment configs...");
       await setupDeploymentTemplates(config.projectDir, config);
+    }
+
+    // Setup DB setup
+    if (config.dbSetup !== "none") {
+      spinner.message("Setting up database environment...");
+      await setupDbSetupTemplate(config.projectDir, config);
     }
 
     // Handle extras

@@ -2,6 +2,7 @@
 
 import { Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import type { StackState } from "./use-stack-state";
 
 interface ShareButtonProps {
@@ -16,13 +17,14 @@ export function ShareButton({ stackUrl }: ShareButtonProps) {
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="outline"
+      size="sm"
       onClick={handleShare}
-      className="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-fd-background px-2 py-1.5 font-medium text-muted-foreground text-xs transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
+      className="flex-1"
     >
-      <Share2 className="h-3 w-3" />
+      <Share2 className="mr-2 h-3.5 w-3.5" />
       Share
-    </button>
+    </Button>
   );
 }
