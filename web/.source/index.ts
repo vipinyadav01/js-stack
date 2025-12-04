@@ -1,4 +1,3 @@
-// @ts-nocheck -- skip type checking
 import * as meta_0 from "../content/docs/meta.json?collection=meta&hash=1764876314118";
 import * as docs_3 from "../content/docs/technologies.mdx?collection=docs&hash=1764876314118";
 import * as docs_2 from "../content/docs/getting-started.mdx?collection=docs&hash=1764876314118";

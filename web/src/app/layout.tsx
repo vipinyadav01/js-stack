@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Navigation } from "@/components/navigation";
@@ -223,21 +224,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Google Tag Manager - Placed as high as possible in <head> */}
-        {process.env.NEXT_PUBLIC_GTM_ID && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
-          `,
-            }}
-          />
-        )}
-
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -272,6 +258,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         className={`${jetbrainsMono.variable} font-mono antialiased bg-background text-foreground`}
         suppressHydrationWarning
       >
+        {/* Google Tag Manager - Using next/script component */}
+        {process.env.NEXT_PUBLIC_GTM_ID && (
+          <Script
+            id="gtm-init"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID}');
+          `,
+            }}
+          />
+        )}
         <GoogleTagManager />
         <RootProvider>
           <ThemeProvider
