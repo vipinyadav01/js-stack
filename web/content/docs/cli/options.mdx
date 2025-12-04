@@ -1,0 +1,242 @@
+---
+title: CLI Options
+description: Complete reference for all CLI command options and flags
+---
+
+# CLI Options Reference
+
+Complete reference for all available CLI options. See [Commands Reference](/docs/commands) for usage examples.
+
+## Frontend Options
+
+```bash
+--frontend <framework1,framework2,...>
+```
+
+**Available frameworks:**
+- `tanstack-router` - TanStack Router (React)
+- `react-router` - React Router
+- `tanstack-start` - TanStack Start (full-stack)
+- `next` - Next.js (full-stack)
+- `nuxt` - Nuxt 3 (full-stack)
+- `sveltekit` - SvelteKit (full-stack)
+- `remix` - Remix (full-stack)
+- `astro` - Astro (content-focused)
+- `vue` - Vue.js 3
+- `angular` - Angular 17+
+- `qwik` - Qwik (resumable)
+- `native-nativewind` - React Native with NativeWind
+- `native-unistyles` - React Native with Unistyles
+- `svelte` - Svelte 5
+- `solid` - SolidJS
+- `none` - No frontend
+
+**Multiple frontends:** Use comma-separated values for monorepo setups.
+
+## Backend Options
+
+```bash
+--backend <framework>
+```
+
+**Available frameworks:**
+- `hono` - Hono (ultra-fast, edge-ready)
+- `express` - Express.js
+- `fastify` - Fastify (high performance)
+- `nest` - NestJS (enterprise)
+- `koa` - Koa.js
+- `next` - Next.js API routes
+- `elysia` - Elysia (Bun-first)
+- `convex` - Convex (BaaS)
+- `none` - No backend
+
+## Runtime Options
+
+```bash
+--runtime <runtime>
+```
+
+**Available runtimes:**
+- `node` - Node.js (default)
+- `bun` - Bun runtime
+- `deno` - Deno runtime
+- `workers` - Cloudflare Workers
+- `none` - No specific runtime
+
+## Database Options
+
+```bash
+--database <database>
+```
+
+**Available databases:**
+- `postgres` - PostgreSQL
+- `mysql` - MySQL
+- `sqlite` - SQLite
+- `mongodb` - MongoDB
+- `none` - No database
+
+## ORM Options
+
+```bash
+--orm <orm>
+```
+
+**Available ORMs:**
+- `drizzle` - Drizzle ORM
+- `prisma` - Prisma
+- `mongoose` - Mongoose (MongoDB only)
+- `typeorm` - TypeORM
+- `mikro-orm` - MikroORM
+- `none` - No ORM
+
+## API Options
+
+```bash
+--api <style>
+```
+
+**Available API styles:**
+- `trpc` - tRPC (type-safe)
+- `orpc` - ORPC (lightweight)
+- `graphql` - GraphQL
+- `rest` - REST API
+- `none` - No API layer
+
+## Authentication Options
+
+```bash
+--auth <method>
+```
+
+**Available methods:**
+- `better-auth` - Better Auth
+- `clerk` - Clerk
+- `next-auth` - NextAuth.js
+- `lucia` - Lucia
+- `kinde` - Kinde
+- `none` - No authentication
+
+## Addons Options
+
+```bash
+--addons <addon1,addon2,...>
+```
+
+**Available addons:**
+- `docker` - Docker configuration
+- `testing` - Testing setup
+- `biome` - Biome linter/formatter
+- `turborepo` - Turborepo monorepo
+- `pwa` - Progressive Web App
+- `tauri` - Tauri desktop
+- `husky` - Git hooks
+- `vitest` - Vitest test runner
+- `playwright` - Playwright E2E
+- `cypress` - Cypress E2E
+- `storybook` - Storybook
+- `changesets` - Changesets
+
+## Examples Options
+
+```bash
+--examples <example1,example2,...>
+```
+
+**Available examples:**
+- `todo` - Todo list
+- `ai` - AI integration
+- `dashboard` - Dashboard
+- `auth` - Authentication
+- `api` - API example
+- `none` - No examples
+
+## Package Manager Options
+
+```bash
+--package-manager <manager>
+```
+
+**Available managers:**
+- `npm` - npm (default)
+- `pnpm` - pnpm
+- `bun` - bun
+
+## Database Setup Options
+
+```bash
+--db-setup <setup>
+```
+
+**Available setups:**
+- `turso` - Turso
+- `neon` - Neon
+- `docker-compose` - Docker Compose
+- `supabase` - Supabase
+- `none` - No setup
+
+## Deployment Options
+
+### Web Deployment
+
+```bash
+--web-deploy <platform>
+```
+
+**Available platforms:**
+- `cloudflare-pages` - Cloudflare Pages
+- `alchemy` - Alchemy
+- `none` - No config
+
+### Server Deployment
+
+```bash
+--server-deploy <platform>
+```
+
+**Available platforms:**
+- `cloudflare-workers` - Cloudflare Workers
+- `alchemy` - Alchemy
+- `none` - No config
+
+## Other Options
+
+### Git
+
+```bash
+--git          # Initialize git repository
+--no-git       # Skip git initialization
+```
+
+### Install
+
+```bash
+--install      # Install dependencies automatically
+--no-install   # Skip dependency installation
+```
+
+### Quick Start
+
+```bash
+--yes          # Skip prompts, use defaults
+```
+
+### Preview
+
+```bash
+--dry-run      # Preview without creating files
+--verbose      # Show detailed output
+```
+
+### Directory Conflict
+
+```bash
+--directory-conflict <strategy>
+```
+
+**Strategies:**
+- `error` - Throw error (default)
+- `merge` - Merge with existing
+- `overwrite` - Overwrite existing
+- `increment` - Create with incremented name
+

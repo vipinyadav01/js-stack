@@ -1,0 +1,142 @@
+---
+title: CLI Overview
+description: Overview of the JS-Stack CLI tool and its capabilities
+---
+
+# CLI Overview
+
+The JS-Stack CLI is a powerful command-line tool for scaffolding production-ready JavaScript/TypeScript projects. It supports a wide range of modern frameworks, databases, authentication methods, and deployment options.
+
+## Installation
+
+No installation required! Use `npx` to run the CLI directly:
+
+```bash
+npx create-js-stack@latest my-app
+```
+
+The CLI will download and run automatically. No global installation needed!
+
+## Quick Start
+
+### Interactive Mode
+
+The easiest way to get started:
+
+```bash
+npx create-js-stack@latest my-app
+```
+
+The CLI will guide you through all configuration options interactively.
+
+### Command-Line Flags
+
+For automated setups or CI/CD:
+
+```bash
+npx create-js-stack@latest my-app \
+  --frontend next \
+  --backend express \
+  --database postgres \
+  --orm prisma \
+  --auth better-auth \
+  --addons docker,testing,biome \
+  --package-manager pnpm \
+  --git \
+  --install
+```
+
+### Quick Start with Defaults
+
+Use the `--yes` flag to skip prompts:
+
+```bash
+npx create-js-stack@latest my-app --yes
+```
+
+## Key Features
+
+- 🚀 **Modern Stack**: Latest versions of popular frameworks
+- 🛡️ **Best Practices**: Security, performance, and code quality built-in
+- 📦 **Complete Setup**: Everything from dependencies to deployment configs
+- ⚡ **Fast**: Generate projects in seconds
+- 🎯 **Flexible**: Choose your stack or use defaults
+- 🔧 **Type-Safe**: Full TypeScript support with Zod validation
+- 📝 **JSX/TSX Templates**: Generate React components and TypeScript files
+- 🎨 **Interactive Prompts**: Beautiful CLI interface with @clack/prompts
+
+## Commands
+
+### Create
+
+Create a new project:
+
+```bash
+npx create-js-stack@latest <project-name> [options]
+```
+
+See [Options Reference](/docs/cli/options) for all available options.
+
+### List
+
+List available presets:
+
+```bash
+npx create-js-stack@latest list
+```
+
+### Info
+
+Display environment information:
+
+```bash
+npx create-js-stack@latest info
+```
+
+### Sponsors
+
+Display sponsors:
+
+```bash
+npx create-js-stack@latest sponsors
+```
+
+### Docs
+
+Open documentation in browser:
+
+```bash
+npx create-js-stack@latest docs
+```
+
+### Builder
+
+Open web-based interactive builder:
+
+```bash
+npx create-js-stack@latest builder
+```
+
+## What Gets Generated
+
+The CLI generates a complete, production-ready project structure:
+
+- ✅ Project structure with best practices
+- ✅ Package configuration with correct dependencies
+- ✅ Framework-specific setup files
+- ✅ Database and ORM configuration
+- ✅ Authentication setup
+- ✅ API layer configuration
+- ✅ Testing setup (if selected)
+- ✅ Docker configuration (if selected)
+- ✅ Deployment configs (if selected)
+- ✅ Git repository (if selected)
+- ✅ README with project-specific documentation
+
+## Next Steps
+
+- 📖 [Complete Options Reference](/docs/cli/options)
+- 🔌 [Programmatic API](/docs/cli/programmatic-api)
+- 🔗 [Compatibility Guide](/docs/cli/compatibility)
+- 📚 [Getting Started Guide](/docs/getting-started)
+

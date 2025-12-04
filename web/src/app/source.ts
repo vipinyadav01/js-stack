@@ -1,63 +1,100 @@
 import { loader } from "fumadocs-core/source";
 import { createMDXSource } from "fumadocs-mdx";
-import { readFileSync, readdirSync } from "fs";
+import * as fs from "fs";
 import { join } from "path";
 
 // Read MDX files from content/docs directory
-const docsDir = join(process.cwd(), "web", "content", "docs");
+const currentDir = process.cwd();
+let docsDir = join(currentDir, "content", "docs");
 
-function getMDXFiles() {
+// If not found, try web/content/docs (in case running from root)
+if (fs.existsSync && !fs.existsSync(docsDir)) {
+  docsDir = join(currentDir, "web", "content", "docs");
+}
+
+function getFiles(
+  dir: string,
+  baseDir: string = "",
+): Array<{ file: string; content: string }> {
   try {
-    const files = readdirSync(docsDir);
-    return files
-      .filter((file) => file.endsWith(".mdx"))
-      .map((file) => {
-        const filePath = join(docsDir, file);
-        const content = readFileSync(filePath, "utf-8");
-        return { file: file, content };
-      });
-  } catch {
+    if (!fs.existsSync(dir)) {
+      return [];
+    }
+
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    let files: Array<{ file: string; content: string }> = [];
+
+    for (const entry of entries) {
+      const fullPath = join(dir, entry.name);
+      const relativePath = baseDir ? join(baseDir, entry.name) : entry.name;
+
+      if (entry.isDirectory()) {
+        files = [...files, ...getFiles(fullPath, relativePath)];
+      } else if (
+        entry.isFile() &&
+        (entry.name.endsWith(".mdx") || entry.name === "meta.json")
+      ) {
+        try {
+          const content = fs.readFileSync(fullPath, "utf-8");
+          files.push({ file: relativePath.replace(/\\/g, "/"), content });
+        } catch (err) {
+          // Skip files that can't be read
+          console.warn(`Failed to read file: ${fullPath}`, err);
+        }
+      }
+    }
+
+    return files;
+  } catch (err) {
+    console.warn(`Failed to read directory: ${dir}`, err);
     return [];
   }
 }
 
-const mdxFiles = getMDXFiles();
-const docs = mdxFiles.map((f) => ({
-  file: f.file,
-  url: f.file.replace(".mdx", ""),
-  content: f.content,
-}));
+const allFiles = getFiles(docsDir);
 
-const meta = mdxFiles.map((f) => {
-  const frontmatterMatch = f.content.match(/^---\n([\s\S]*?)\n---/);
-  const frontmatter = frontmatterMatch
-    ? frontmatterMatch[1].split("\n").reduce(
-        (acc, line) => {
-          const [key, ...valueParts] = line.split(":");
-          if (key && valueParts.length > 0) {
-            acc[key.trim()] = valueParts
-              .join(":")
-              .trim()
-              .replace(/^["']|["']$/g, "");
-          }
-          return acc;
-        },
-        {} as Record<string, string>,
-      )
-    : {};
+const docs = allFiles
+  .filter((f) => f.file.endsWith(".mdx"))
+  .map((f: { file: string; content: string }) => {
+    const url = f.file.replace(".mdx", "").replace(/\\/g, "/");
+    const fullPath = url.startsWith("/") ? url : `/${url}`;
+    return {
+      file: f.file,
+      url: fullPath,
+      fullPath: fullPath,
+      content: f.content,
+    };
+  });
 
-  return {
-    file: f.file,
-    url: f.file.replace(".mdx", ""),
-    title: frontmatter.title || f.file.replace(".mdx", ""),
-    description: frontmatter.description || "",
-  };
-});
+const meta = allFiles
+  .filter((f) => f.file.endsWith("meta.json"))
+  .map((f) => {
+    const path = f.file.replace("meta.json", "").replace(/\\/g, "/");
+    const fullPath = path.startsWith("/") ? path : `/${path}`;
+    return {
+      file: f.file,
+      path: fullPath,
+      fullPath: fullPath,
+      content: f.content,
+    };
+  });
 
-// Use type assertion to work with Fumadocs API
-export const source = loader({
-  baseUrl: "/docs",
-  source: createMDXSource(docs as never, meta as never),
-});
+let sourceInstance;
+try {
+  sourceInstance = loader({
+    baseUrl: "/docs",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    source: createMDXSource(docs as any, meta as any),
+  });
+} catch (error) {
+  console.error("Failed to create source:", error);
+  // Fallback to empty source
+  sourceInstance = loader({
+    baseUrl: "/docs",
+    source: createMDXSource([], []),
+  });
+}
+
+export const source = sourceInstance;
 
 export const pageTree = source.pageTree;

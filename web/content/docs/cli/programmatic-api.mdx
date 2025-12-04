@@ -1,0 +1,216 @@
+---
+title: Programmatic API
+description: Use JS-Stack CLI programmatically in your code
+---
+
+# Programmatic API
+
+The JS-Stack CLI can be used programmatically in your Node.js/TypeScript code.
+
+## Installation
+
+```bash
+npm install create-js-stack
+```
+
+## Basic Usage
+
+```typescript
+import { createProject } from "create-js-stack";
+
+await createProject({
+  projectName: "my-app",
+  projectDir: "./my-app",
+  relativePath: "./my-app",
+  frontend: ["next"],
+  backend: "express",
+  runtime: "node",
+  database: "postgres",
+  orm: "prisma",
+  api: "trpc",
+  auth: "better-auth",
+  addons: ["docker", "testing", "biome"],
+  examples: [],
+  packageManager: "pnpm",
+  git: true,
+  install: true,
+  dbSetup: "none",
+  webDeploy: "none",
+  serverDeploy: "none",
+  directoryConflict: "error",
+});
+```
+
+## Type Definitions
+
+All types are exported from the package:
+
+```typescript
+import type {
+  ProjectConfig,
+  Database,
+  ORM,
+  Backend,
+  Runtime,
+  Frontend,
+  Addons,
+  Examples,
+  Auth,
+  API,
+  PackageManager,
+} from "create-js-stack";
+```
+
+## Validation
+
+Validate configuration before creating project:
+
+```typescript
+import { validateConfig, autoFixConfig } from "create-js-stack";
+
+const config = {
+  // ... your config
+};
+
+const validation = validateConfig(config);
+if (!validation.valid) {
+  console.error("Validation errors:", validation.errors);
+  // Auto-fix if possible
+  const fixed = autoFixConfig(config);
+}
+```
+
+## Template Processing
+
+Process templates programmatically:
+
+```typescript
+import { processTemplate } from "create-js-stack";
+
+const content = await processTemplate(
+  "templates/component.jsx.hbs",
+  {
+    projectName: "my-app",
+    // ... other context
+  }
+);
+```
+
+## Project Directory Utilities
+
+```typescript
+import {
+  validateProjectName,
+  getProjectDir,
+  handleDirectoryConflict,
+} from "create-js-stack";
+
+// Validate project name
+const validation = validateProjectName("my-app");
+if (!validation.valid) {
+  console.error(validation.error);
+}
+
+// Get project directory
+const projectDir = getProjectDir("my-app");
+
+// Handle directory conflicts
+const finalDir = await handleDirectoryConflict(projectDir, "merge");
+```
+
+## Configuration Management
+
+Save and load project configuration:
+
+```typescript
+import { saveConfig, loadConfig } from "create-js-stack";
+
+// Save configuration
+await saveConfig("./my-app", config);
+
+// Load configuration
+const config = await loadConfig("./my-app");
+```
+
+## Generate Reproducible Command
+
+Generate the CLI command that would recreate a project:
+
+```typescript
+import { generateReproducibleCommand } from "create-js-stack";
+
+const command = generateReproducibleCommand(config);
+console.log(command);
+// Output: create-js-stack my-app --frontend next --backend express ...
+```
+
+## Constants
+
+Access default configurations and constants:
+
+```typescript
+import { DEFAULT_CONFIG, DEPENDENCY_VERSIONS, TEMPLATE_PATHS } from "create-js-stack";
+
+console.log(DEFAULT_CONFIG);
+console.log(DEPENDENCY_VERSIONS.react);
+console.log(TEMPLATE_PATHS.frontend);
+```
+
+## Error Handling
+
+All functions throw errors that should be caught:
+
+```typescript
+import { createProject } from "create-js-stack";
+
+try {
+  await createProject(config);
+} catch (error) {
+  if (error instanceof Error) {
+    console.error("Failed to create project:", error.message);
+  }
+}
+```
+
+## Example: Custom CLI Wrapper
+
+```typescript
+import { createProject, validateConfig } from "create-js-stack";
+import type { ProjectConfig } from "create-js-stack";
+
+async function createMyProject(name: string) {
+  const config: ProjectConfig = {
+    projectName: name,
+    projectDir: `./${name}`,
+    relativePath: `./${name}`,
+    frontend: ["next"],
+    backend: "none",
+    runtime: "node",
+    database: "postgres",
+    orm: "prisma",
+    api: "trpc",
+    auth: "better-auth",
+    addons: ["testing", "biome"],
+    examples: [],
+    packageManager: "pnpm",
+    git: true,
+    install: true,
+    dbSetup: "none",
+    webDeploy: "none",
+    serverDeploy: "none",
+    directoryConflict: "error",
+  };
+
+  // Validate
+  const validation = validateConfig(config);
+  if (!validation.valid) {
+    throw new Error(`Invalid config: ${validation.errors.join(", ")}`);
+  }
+
+  // Create project
+  await createProject(config);
+}
+
+createMyProject("my-app").catch(console.error);
+```
+

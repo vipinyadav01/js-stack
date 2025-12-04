@@ -1,0 +1,226 @@
+---
+title: Compatibility Guide
+description: Compatibility matrix for frameworks, databases, ORMs, and authentication methods
+---
+
+# Compatibility Guide
+
+This guide helps you understand which technologies work together in JS-Stack CLI.
+
+## Database ↔ ORM Compatibility
+
+### MongoDB
+- ✅ **Mongoose** (only compatible ODM)
+- ✅ **Prisma** (with MongoDB adapter)
+- ❌ Drizzle (SQL only)
+- ❌ TypeORM (SQL only)
+- ❌ MikroORM (SQL only)
+
+### PostgreSQL / MySQL / SQLite
+- ✅ **Drizzle** (lightweight, type-safe)
+- ✅ **Prisma** (recommended)
+- ✅ **TypeORM** (JavaScript-first)
+- ✅ **MikroORM** (feature-rich)
+- ❌ Mongoose (MongoDB only)
+
+## Frontend ↔ Backend Compatibility
+
+### Full-Stack Frameworks
+These frameworks include built-in API routes, so use `--backend none`:
+
+- ✅ **Next.js** - Use `--frontend next --backend none`
+- ✅ **Nuxt** - Use `--frontend nuxt --backend none`
+- ✅ **SvelteKit** - Use `--frontend sveltekit --backend none`
+- ✅ **Remix** - Use `--frontend remix --backend none`
+- ✅ **TanStack Start** - Use `--frontend tanstack-start --backend none`
+
+### Frontend-Only Frameworks
+These require a separate backend:
+
+- ✅ **React Router** - Works with all backends
+- ✅ **TanStack Router** - Works with all backends
+- ✅ **Vue** - Works with all backends
+- ✅ **Angular** - Works with all backends
+- ✅ **Svelte** - Works with all backends
+- ✅ **SolidJS** - Works with all backends
+- ✅ **Qwik** - Works with all backends
+- ✅ **Astro** - Works with all backends
+
+### React Native
+- ✅ Requires a backend (cannot be "none")
+- ✅ Works with Express, Fastify, Hono, NestJS, Koa
+- ✅ Works with all authentication methods
+
+## Backend ↔ Runtime Compatibility
+
+### Node.js Runtime
+- ✅ All backends work
+- ✅ Express, Fastify, NestJS, Koa, Hono
+
+### Bun Runtime
+- ✅ Elysia (optimized for Bun)
+- ✅ Hono (works on Bun)
+- ✅ Express, Fastify (compatible)
+- ⚠️ NestJS (may have limitations)
+
+### Cloudflare Workers
+- ✅ Hono (optimized for Workers)
+- ✅ Express (with adapter)
+- ❌ NestJS (not compatible)
+- ❌ Koa (not compatible)
+
+### Deno Runtime
+- ✅ Hono (works on Deno)
+- ⚠️ Express (may require adapter)
+- ❌ NestJS (not compatible)
+
+## Backend ↔ Auth Compatibility
+
+### Express
+- ✅ All auth methods work
+- ✅ Better Auth, Clerk, NextAuth.js, Lucia, Kinde
+
+### Fastify
+- ✅ Better Auth, Clerk, Lucia, Kinde
+- ⚠️ NextAuth.js (may require adapter)
+
+### NestJS
+- ✅ All auth methods work
+- ✅ Better Auth, Clerk, NextAuth.js, Lucia, Kinde
+
+### Hono
+- ✅ Better Auth, Clerk, Lucia, Kinde
+- ⚠️ NextAuth.js (may require adapter)
+
+### Koa
+- ✅ Better Auth, Clerk, Lucia, Kinde
+- ⚠️ NextAuth.js (may require adapter)
+
+### Elysia
+- ✅ Better Auth, Clerk, Lucia, Kinde
+- ⚠️ NextAuth.js (may require adapter)
+
+## Frontend ↔ Auth Compatibility
+
+### Next.js
+- ✅ Better Auth (recommended)
+- ✅ NextAuth.js (native)
+- ✅ Clerk
+- ✅ Lucia
+- ✅ Kinde
+
+### Nuxt
+- ✅ Better Auth
+- ✅ Clerk
+- ✅ Lucia
+- ✅ Kinde
+- ⚠️ NextAuth.js (Next.js only)
+
+### React Router / TanStack Router
+- ✅ Better Auth
+- ✅ Clerk
+- ✅ Lucia
+- ✅ Kinde
+- ⚠️ NextAuth.js (Next.js only)
+
+### Vue / Angular / Svelte
+- ✅ Better Auth
+- ✅ Clerk
+- ✅ Lucia
+- ✅ Kinde
+- ⚠️ NextAuth.js (Next.js only)
+
+## API ↔ Backend Compatibility
+
+### tRPC
+- ✅ Express
+- ✅ Fastify
+- ✅ Hono
+- ✅ NestJS
+- ✅ Next.js API routes
+- ⚠️ Koa (may require adapter)
+
+### ORPC
+- ✅ Express
+- ✅ Fastify
+- ✅ Hono
+- ✅ NestJS
+- ✅ Next.js API routes
+
+### GraphQL
+- ✅ Express (with Apollo Server)
+- ✅ Fastify (with Mercurius)
+- ✅ NestJS (built-in support)
+- ✅ Hono (with adapter)
+
+### REST
+- ✅ All backends support REST
+
+## Runtime ↔ Database Compatibility
+
+### Node.js
+- ✅ All databases work
+- ✅ PostgreSQL, MySQL, SQLite, MongoDB
+
+### Bun
+- ✅ PostgreSQL, MySQL, SQLite
+- ✅ MongoDB (with native driver)
+- ⚠️ Some ORMs may have limitations
+
+### Cloudflare Workers
+- ✅ Turso (SQLite-compatible)
+- ✅ D1 (SQLite)
+- ⚠️ PostgreSQL/MySQL (require external connection)
+- ❌ MongoDB (not directly supported)
+
+### Deno
+- ✅ PostgreSQL, MySQL, SQLite
+- ✅ MongoDB (with native driver)
+
+## Recommended Combinations
+
+### Production Full-Stack
+- **Frontend**: Next.js
+- **Backend**: none (Next.js API routes)
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **API**: tRPC
+- **Auth**: Better Auth
+- **Runtime**: Node.js
+
+### High-Performance API
+- **Frontend**: none
+- **Backend**: Hono
+- **Database**: PostgreSQL
+- **ORM**: Drizzle
+- **API**: REST
+- **Auth**: Better Auth
+- **Runtime**: Cloudflare Workers
+
+### Enterprise Application
+- **Frontend**: React Router
+- **Backend**: NestJS
+- **Database**: PostgreSQL
+- **ORM**: TypeORM
+- **API**: tRPC
+- **Auth**: Clerk
+- **Runtime**: Node.js
+
+### Edge-Ready Application
+- **Frontend**: Next.js
+- **Backend**: none (Next.js API routes)
+- **Database**: Turso
+- **ORM**: Drizzle
+- **API**: tRPC
+- **Auth**: Better Auth
+- **Runtime**: Cloudflare Workers
+
+### Rapid Prototyping
+- **Frontend**: React Router
+- **Backend**: Express
+- **Database**: SQLite
+- **ORM**: Prisma
+- **API**: REST
+- **Auth**: none
+- **Runtime**: Bun
+

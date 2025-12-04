@@ -1,0 +1,223 @@
+---
+title: User Guides
+description: Step-by-step guides for common use cases and workflows
+---
+
+# User Guides
+
+Step-by-step guides to help you get the most out of JS-Stack CLI.
+
+## Getting Started Guides
+
+### Creating Your First Project
+
+1. **Choose your project name:**
+   ```bash
+   npx create-js-stack@latest my-first-app
+   ```
+
+2. **Follow the interactive prompts:**
+   - Select your frontend framework
+   - Choose a backend (or none for full-stack frameworks)
+   - Pick a database and ORM
+   - Configure authentication
+   - Select addons
+
+3. **Navigate to your project:**
+   ```bash
+   cd my-first-app
+   ```
+
+4. **Install dependencies** (if not auto-installed):
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+5. **Start development:**
+   ```bash
+   npm run dev
+   ```
+
+## Common Workflows
+
+### Building a SaaS Application
+
+1. **Create the project:**
+   ```bash
+   npx create-js-stack@latest my-saas \
+     --frontend next \
+     --database postgres \
+     --orm prisma \
+     --api trpc \
+     --auth better-auth \
+     --addons docker,testing,biome \
+     --package-manager pnpm \
+     --git \
+     --install
+   ```
+
+2. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. **Set up database:**
+   ```bash
+   npx prisma migrate dev
+   ```
+
+4. **Start development:**
+   ```bash
+   pnpm dev
+   ```
+
+### Creating an API Backend
+
+1. **Create API-only project:**
+   ```bash
+   npx create-js-stack@latest my-api \
+     --frontend none \
+     --backend express \
+     --database postgres \
+     --orm prisma \
+     --api trpc \
+     --auth better-auth \
+     --addons docker,testing \
+     --package-manager pnpm \
+     --git \
+     --install
+   ```
+
+2. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   # Add database URL and other configs
+   ```
+
+3. **Run migrations:**
+   ```bash
+   npx prisma migrate dev
+   ```
+
+4. **Start server:**
+   ```bash
+   pnpm dev
+   ```
+
+### Setting Up a Monorepo
+
+1. **Create monorepo project:**
+   ```bash
+   npx create-js-stack@latest my-monorepo \
+     --frontend react-router,vue \
+     --backend express \
+     --database postgres \
+     --orm prisma \
+     --addons turborepo,testing,biome \
+     --package-manager pnpm \
+     --git \
+     --install
+   ```
+
+2. **Project structure:**
+   ```
+   my-monorepo/
+   ├── apps/
+   │   ├── web-react/
+   │   └── web-vue/
+   ├── packages/
+   │   ├── api/
+   │   └── shared/
+   └── turbo.json
+   ```
+
+3. **Run all projects:**
+   ```bash
+   pnpm dev
+   ```
+
+## Advanced Topics
+
+### Custom Templates
+
+You can extend the CLI with custom templates:
+
+1. **Create template directory:**
+   ```
+   templates/
+   └── custom/
+       └── component.jsx.hbs
+   ```
+
+2. **Use Handlebars syntax:**
+   ```handlebars
+   import React from 'react';
+
+   export default function {{componentName}}() {
+     return (
+       <div>
+         <h1>{{projectName}}</h1>
+       </div>
+     );
+   }
+   ```
+
+### Programmatic Usage
+
+Use the CLI programmatically in your code:
+
+```typescript
+import { createProject } from "create-js-stack";
+
+await createProject({
+  projectName: "my-app",
+  // ... configuration
+});
+```
+
+See [Programmatic API](/docs/cli/programmatic-api) for details.
+
+### CI/CD Integration
+
+Use the CLI in your CI/CD pipeline:
+
+```yaml
+# .github/workflows/setup.yml
+- name: Create project
+  run: |
+    npx create-js-stack@latest my-app \
+      --frontend next \
+      --backend none \
+      --database postgres \
+      --orm prisma \
+      --auth better-auth \
+      --yes \
+      --no-install
+```
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue: Template not found**
+- Solution: Ensure templates directory exists and paths are correct
+
+**Issue: Compatibility error**
+- Solution: Check [Compatibility Guide](/docs/cli/compatibility) for valid combinations
+
+**Issue: Directory already exists**
+- Solution: Use `--directory-conflict merge` or `--directory-conflict overwrite`
+
+**Issue: Dependencies fail to install**
+- Solution: Try `--no-install` and install manually
+
+## Next Steps
+
+- 📖 [Complete Commands Reference](/docs/commands)
+- 🔌 [CLI Options](/docs/cli/options)
+- 🔗 [Compatibility Guide](/docs/cli/compatibility)
+- 💡 [Examples](/docs/examples)
+

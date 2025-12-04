@@ -1,0 +1,11 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "getting-started",
+    "technologies",
+    "commands",
+    "examples",
+    "cli",
+    "guides"
+  ]
+}

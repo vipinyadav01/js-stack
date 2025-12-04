@@ -112,8 +112,8 @@ const nextConfig: NextConfig = {
       };
     }
 
-    // Allow fs module in server-side code
-    if (isServer) {
+    // Prevent fs module errors in client-side code
+    if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,

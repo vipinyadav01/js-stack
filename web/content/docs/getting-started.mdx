@@ -38,53 +38,53 @@ npx create-js-stack@latest my-app
 ```
 
 This will guide you through:
-- Frontend framework selection (React, Next.js, Vue, etc.)
-- Backend framework selection (Express, Fastify, NestJS, etc.)
+- Frontend framework selection (React, Next.js, Vue, Nuxt, Svelte, etc.)
+- Backend framework selection (Express, Fastify, Hono, NestJS, etc.)
+- Runtime selection (Node.js, Bun, Deno, Cloudflare Workers)
 - Database and ORM setup
+- API style selection (tRPC, ORPC, GraphQL, REST)
 - Authentication configuration
-- Additional addons (Docker, Testing, Biome, Turborepo)
+- Additional addons (Docker, Testing, Biome, Turborepo, PWA, etc.)
 - Package manager choice
 - Git initialization
 - Dependency installation
 
-### Option 2: Use Presets
-
-Quick start with a preset configuration:
-
-```bash
-# Next.js full-stack application
-npx create-js-stack@latest my-app --preset nextjs-app
-
-# Express API server
-npx create-js-stack@latest my-api --preset express-api
-
-# MERN stack
-npx create-js-stack@latest my-app --preset mern-stack
-
-# Optimal full-stack setup
-npx create-js-stack@latest my-app --preset optimal-fullstack
-```
-
-### Option 3: Command-Line Flags
+### Option 2: Command-Line Flags
 
 For CI/CD or automated setups, use flags:
 
 ```bash
 npx create-js-stack@latest my-app \
-  --frontend react \
+  --frontend next \
   --backend express \
+  --runtime node \
   --database postgres \
   --orm prisma \
-  --auth jwt \
+  --api trpc \
+  --auth better-auth \
   --addons docker,testing,biome \
   --package-manager pnpm \
   --git \
   --install
 ```
 
+### Option 3: Quick Start with Defaults
+
+Use the `--yes` flag to skip prompts and use defaults:
+
+```bash
+npx create-js-stack@latest my-app --yes
+```
+
+You can combine `--yes` with specific options:
+
+```bash
+npx create-js-stack@latest my-app --frontend next --yes
+```
+
 ### Option 4: Interactive Builder
 
-Use our [interactive web builder](/new) to visually select your stack and get the exact command to run.
+Use our [interactive web builder](/new) to visually select your stack and get the exact command to run. The builder shows all available options and generates the exact CLI command for you.
 
 ## What Gets Generated
 
@@ -167,9 +167,10 @@ my-app/
 
 ```bash
 npx create-js-stack@latest my-app \
-  --frontend nextjs \
+  --frontend next \
   --database postgres \
   --orm prisma \
+  --api trpc \
   --auth better-auth \
   --addons testing,biome,docker \
   --package-manager pnpm \
@@ -177,17 +178,19 @@ npx create-js-stack@latest my-app \
   --install
 ```
 
-### React + Express API
+### React with Express API
 
 ```bash
 npx create-js-stack@latest my-app \
-  --frontend react \
+  --frontend react-router \
   --backend express \
+  --runtime node \
   --database postgres \
   --orm prisma \
-  --auth jwt \
+  --api trpc \
+  --auth better-auth \
   --addons testing,docker \
-  --package-manager npm \
+  --package-manager pnpm \
   --git \
   --install
 ```
@@ -197,10 +200,12 @@ npx create-js-stack@latest my-app \
 ```bash
 npx create-js-stack@latest my-api \
   --frontend none \
-  --backend nestjs \
+  --backend nest \
+  --runtime node \
   --database postgres \
   --orm typeorm \
-  --auth passport \
+  --api rest \
+  --auth lucia \
   --addons testing,docker \
   --package-manager pnpm \
   --git \
