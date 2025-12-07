@@ -37,22 +37,26 @@ export function generateSEOMetadata({
     : "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool";
   const fullDescription =
     description ||
-    "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in. Features React, Next.js, Node.js, Express, databases, authentication, testing, and deployment configurations.";
+    "Stop configuring, start building. JS-Stack CLI (create-js-stack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.";
 
   const allKeywords = [
     ...keywords,
-    "js",
-    "jsstack",
     "js-stack",
-    "createjs",
-    "create jsstack",
     "create-js-stack",
-    "javascript cli",
+    "javascript project generator",
     "typescript cli",
-    "react boilerplate",
     "nextjs starter",
-    "nodejs scaffolding",
-    "full-stack development",
+    "react boilerplate",
+    "full-stack scaffolding",
+    "nodejs framework",
+    "production-ready template",
+    "monorepo setup",
+    "turborepo",
+    "docker configuration",
+    "ci/cd pipelines",
+    "prisma orm",
+    "shadcn/ui",
+    "tailwind css components",
   ];
 
   return {
@@ -116,9 +120,9 @@ export function generateSEOMetadata({
 
 // Pre-configured metadata for common pages
 export const homePageMetadata = generateSEOMetadata({
-  title: "Modern Full-Stack JavaScript & TypeScript Development Tool",
+  title: "The Ultimate JavaScript Project Generator",
   description:
-    "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in. Features React, Next.js, Node.js, Express, databases, authentication, testing, and deployment configurations. Save hours of setup time.",
+    "Stop configuring, start building. JS-Stack CLI (create-js-stack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.",
   keywords: [
     "javascript project generator",
     "typescript boilerplate",

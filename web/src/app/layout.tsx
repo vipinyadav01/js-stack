@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -100,40 +100,45 @@ if (Object.keys(otherVerification).length > 0) {
   verificationMeta.other = otherVerification;
 }
 
+export const viewport: Viewport = {
+  themeColor: "#3b82f6",
+  colorScheme: "dark light",
+};
+
 export const metadata: Metadata = {
   title: {
-    default: "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool",
+    default: "JS-Stack CLI | The Ultimate JavaScript Project Generator",
     template: "%s | JS-Stack CLI",
   },
   description:
-    "JS-Stack CLI (create-js-stack) - A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects. Create JS projects instantly with React, Next.js, Node.js, Express, databases, authentication, and more. Save hours of setup time with our comprehensive JavaScript project generator.",
+    "Stop configuring, start building. JS-Stack CLI (create-js-stack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.",
   keywords: [
-    "js",
-    "jsstack",
     "js-stack",
-    "createjs",
-    "create jsstack",
     "create-js-stack",
-    "javascript cli",
     "javascript project generator",
-    "react boilerplate",
+    "typescript cli",
     "nextjs starter",
-    "nodejs scaffolding",
-    "full-stack cli",
-    "project generator",
-    "development tool",
+    "react boilerplate",
+    "full-stack scaffolding",
+    "nodejs framework",
+    "production-ready template",
+    "monorepo setup",
+    "turborepo",
+    "docker configuration",
+    "ci/cd pipelines",
+    "prisma orm",
+    "shadcn/ui",
+    "tailwind css components",
+    "authentication ready",
+    "database setup",
+    "backend integration",
+    "developer productivity tools",
     "web development cli",
-    "javascript framework",
-    "react template",
     "express generator",
-    "full-stack development",
-    "javascript project setup",
-    "modern web development",
-    "development productivity",
+    "modern web stack",
     "code scaffolding",
     "project initialization",
-    "typescript cli",
-    "typescript boilerplate",
+    "automated setup",
   ],
   authors: [{ name: "Vipin Yadav", url: "https://github.com/vipinyadav01" }],
   creator: "Vipin Yadav",
@@ -167,10 +172,9 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.webmanifest",
   openGraph: {
-    title:
-      "JS-Stack CLI (create-js-stack) - Create Modern Full-Stack JavaScript Applications Instantly",
+    title: "JS-Stack CLI - The Ultimate JavaScript Project Generator",
     description:
-      "JS-Stack CLI - The ultimate tool for creating JavaScript projects. Scaffold production-ready JS applications with React, Next.js, Node.js, databases, authentication, and more. Start building in seconds, not hours.",
+      "Stop configuring, start building. Scaffold production-ready full-stack apps with Next.js, React, Node.js, and TypeScript + CI/CD, Docker, and more.",
     url: siteUrl,
     siteName: "JS-Stack CLI",
     type: "website",
@@ -180,7 +184,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "JS-Stack CLI - Modern Full-Stack Development Tool",
+        alt: "JS-Stack CLI - Modern Full-Stack Development",
         type: "image/png",
       },
     ],
@@ -189,13 +193,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@jsstack_cli",
     creator: "@vipinyadav",
-    title:
-      "JS-Stack CLI (create-js-stack) - Create Modern Full-Stack Apps Instantly",
+    title: "JS-Stack CLI - The Ultimate JavaScript Project Generator",
     description:
-      "JS-Stack CLI - Create JavaScript projects instantly. The ultimate CLI for JS full-stack development. React, Next.js, Node.js, databases & more. Production-ready in seconds.",
+      "Stop configuring, start building. Scaffold production-ready full-stack apps with Next.js, React, Node.js, and TypeScript in seconds.",
     images: {
       url: "/opengraph-image",
-      alt: "JS-Stack CLI - Modern Full-Stack Development Tool",
+      alt: "JS-Stack CLI - Modern Full-Stack Development",
     },
   },
   appleWebApp: {
@@ -208,11 +211,6 @@ export const metadata: Metadata = {
   classification: "Developer Tools",
   other: {
     "mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-    "theme-color": "#3b82f6",
-    "color-scheme": "dark light",
-    "supported-color-schemes": "dark light",
   },
 };
 
@@ -230,16 +228,6 @@ export default function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-
-        {/* Enhanced Meta Tags for SEO */}
-        <meta name="apple-mobile-web-app-title" content="JS-Stack CLI" />
-        <meta name="application-name" content="JS-Stack CLI" />
-        <meta name="theme-color" content="#3b82f6" />
-        <meta name="color-scheme" content="dark light" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="msapplication-TileColor" content="#3b82f6" />
 
         {/* DNS Prefetch for Performance */}
         <link rel="dns-prefetch" href="//github.com" />
