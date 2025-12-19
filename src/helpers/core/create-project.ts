@@ -43,7 +43,7 @@ export async function createProjectStructure(
     await copyBaseTemplate(config.projectDir, config);
 
     // Setup frontend
-    if (config.frontend.some((f) => f !== "none")) {
+    if (config.frontend && config.frontend !== "none") {
       spinner.message("Setting up frontend...");
       await setupFrontendTemplates(config.projectDir, config);
     }

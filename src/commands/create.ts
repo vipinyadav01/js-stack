@@ -76,7 +76,7 @@ export async function createProject(
         relativePath,
         // Override with CLI options if provided
         frontend: options.frontend
-          ? (parseArray(options.frontend) as any)
+          ? (options.frontend as any)
           : DEFAULT_CONFIG.frontend,
         backend: options.backend || DEFAULT_CONFIG.backend,
         runtime: options.runtime || DEFAULT_CONFIG.runtime,
@@ -111,7 +111,7 @@ export async function createProject(
           projectName: finalProjectName,
           projectDir: finalProjectDir,
           relativePath,
-          frontend: parseArray(options.frontend) as any,
+          frontend: (options.frontend || DEFAULT_CONFIG.frontend) as any,
           backend: options.backend || DEFAULT_CONFIG.backend,
           runtime: options.runtime || DEFAULT_CONFIG.runtime,
           database: options.database || DEFAULT_CONFIG.database,

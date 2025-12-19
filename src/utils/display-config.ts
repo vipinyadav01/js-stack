@@ -14,7 +14,8 @@ export function displayConfig(config: ProjectConfig): void {
 
   const configDisplay = {
     "Project Name": config.projectName,
-    Frontend: config.frontend.join(", ") || "None",
+    Frontend:
+      config.frontend && config.frontend !== "none" ? config.frontend : "None",
     Backend: config.backend,
     Runtime: config.runtime,
     Database: config.database,

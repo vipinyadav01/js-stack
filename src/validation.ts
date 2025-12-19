@@ -89,7 +89,7 @@ export function validateFrontendBackend(
   backend: Backend,
 ): { valid: boolean; error?: string } {
   // Next.js includes its own backend
-  if (frontend.includes("next") && backend !== "none" && backend !== "next") {
+  if (frontend === "next" && backend !== "none" && backend !== "next") {
     return {
       valid: false,
       error:
@@ -106,7 +106,7 @@ export function validateFrontendBackend(
     "solid-start",
     "qwik",
   ];
-  const hasMetaFramework = frontend.some((f) => metaFrameworks.includes(f));
+  const hasMetaFramework = metaFrameworks.includes(frontend);
 
   if (hasMetaFramework && backend !== "none") {
     return {
@@ -229,11 +229,7 @@ export function autoFixConfig(
   }
 
   // Fix Next.js + backend
-  if (
-    fixed.frontend?.includes("next") &&
-    fixed.backend &&
-    fixed.backend !== "next"
-  ) {
+  if (fixed.frontend === "next" && fixed.backend && fixed.backend !== "next") {
     fixed.backend = "none";
   }
 
@@ -247,7 +243,8 @@ export function autoFixConfig(
     "qwik",
   ];
   if (
-    fixed.frontend?.some((f) => metaFrameworks.includes(f)) &&
+    fixed.frontend &&
+    metaFrameworks.includes(fixed.frontend) &&
     fixed.backend &&
     fixed.backend !== "none"
   ) {

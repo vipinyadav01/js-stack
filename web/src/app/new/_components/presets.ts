@@ -11,7 +11,7 @@ export const PRESET_TEMPLATES: PresetTemplate[] = [
     name: "Todo App Example",
     description: "A simple Todo application to get you started",
     stack: {
-      frontend: ["react"],
+      frontend: "react", // Changed from array to single string
       backend: "express",
       database: "sqlite",
       orm: "prisma",

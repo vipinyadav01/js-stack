@@ -43,27 +43,25 @@ export type Backend = z.infer<typeof BackendSchema>;
 export const RuntimeSchema = z.enum(["none", "bun", "node", "workers", "deno"]);
 export type Runtime = z.infer<typeof RuntimeSchema>;
 
-// Frontend types (array)
-export const FrontendSchema = z.array(
-  z.enum([
-    "tanstack-router",
-    "react-router",
-    "tanstack-start",
-    "next",
-    "nuxt",
-    "sveltekit",
-    "remix",
-    "astro",
-    "vue",
-    "angular",
-    "qwik",
-    "native-nativewind",
-    "native-unistyles",
-    "svelte",
-    "solid",
-    "none",
-  ]),
-);
+// Frontend types (single selection)
+export const FrontendSchema = z.enum([
+  "tanstack-router",
+  "react-router",
+  "tanstack-start",
+  "next",
+  "nuxt",
+  "sveltekit",
+  "remix",
+  "astro",
+  "vue",
+  "angular",
+  "qwik",
+  "native-nativewind",
+  "native-unistyles",
+  "svelte",
+  "solid",
+  "none",
+]);
 export type Frontend = z.infer<typeof FrontendSchema>;
 
 // Addons types

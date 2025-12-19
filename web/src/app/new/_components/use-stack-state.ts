@@ -5,12 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 export interface StackState {
   projectName: string;
-  frontend: string[];
+  frontend: string; // Changed from string[] to string for single selection
   backend: string;
   database: string;
   orm: string;
   auth: string;
-  addons: string[];
+  addons: string[]; // Only addons allows multiple selections
   dbSetup: string;
   webDeploy: string;
   serverDeploy: string;
@@ -22,7 +22,7 @@ export interface StackState {
 
 const DEFAULT_STACK: StackState = {
   projectName: "my-app", // Default project name - always customizable
-  frontend: [],
+  frontend: "none", // Changed from [] to "none" for single selection
   backend: "none",
   database: "none",
   orm: "none",
@@ -49,7 +49,7 @@ export function useStackState() {
       if (key in DEFAULT_STACK && value !== null && value !== undefined) {
         const defaultValue = DEFAULT_STACK[key as keyof StackState];
         if (Array.isArray(defaultValue)) {
-          // Handle array values (frontend, addons)
+          // Handle array values (only addons now)
           const parsedValue = value.trim()
             ? value
                 .split(",")
@@ -58,9 +58,16 @@ export function useStackState() {
             : [];
           (state as Record<string, unknown>)[key] = parsedValue;
         } else {
-          // Handle string values
-          (state as Record<string, unknown>)[key] =
-            value.trim() || defaultValue;
+          // Handle string values (frontend, backend, database, etc.)
+          // For backward compatibility, if frontend has comma-separated values, use first one
+          if (key === "frontend" && value.includes(",")) {
+            const firstValue = value.split(",")[0].trim();
+            (state as Record<string, unknown>)[key] =
+              firstValue || defaultValue;
+          } else {
+            (state as Record<string, unknown>)[key] =
+              value.trim() || defaultValue;
+          }
         }
       }
     }
@@ -69,9 +76,10 @@ export function useStackState() {
     return {
       ...DEFAULT_STACK,
       ...state,
-      frontend: Array.isArray(state.frontend)
-        ? state.frontend
-        : DEFAULT_STACK.frontend,
+      frontend:
+        typeof state.frontend === "string"
+          ? state.frontend
+          : DEFAULT_STACK.frontend,
       addons: Array.isArray(state.addons) ? state.addons : DEFAULT_STACK.addons,
     } as StackState;
   }, [searchParams]);
@@ -83,18 +91,24 @@ export function useStackState() {
       const newStack: StackState = {
         ...stack,
         ...updates,
-        // Ensure arrays are properly set
+        // Frontend is now a single string value
         frontend:
           updates.frontend !== undefined
-            ? Array.isArray(updates.frontend)
+            ? typeof updates.frontend === "string"
               ? updates.frontend
-              : [updates.frontend as string]
+              : Array.isArray(updates.frontend) &&
+                  (updates.frontend as string[]).length > 0
+                ? (updates.frontend as string[])[0]
+                : stack.frontend
             : stack.frontend,
+        // Only addons is an array
         addons:
           updates.addons !== undefined
             ? Array.isArray(updates.addons)
               ? updates.addons
-              : [updates.addons as string]
+              : typeof updates.addons === "string"
+                ? [updates.addons]
+                : []
             : stack.addons,
       };
 
@@ -110,7 +124,7 @@ export function useStackState() {
 
         if (!isDefault) {
           if (Array.isArray(value)) {
-            // Only add array params if they have values
+            // Only add array params if they have values (for addons)
             if (
               value.length > 0 &&
               !(value.length === 1 && value[0] === "none")
@@ -118,9 +132,9 @@ export function useStackState() {
               params.set(key, value.join(","));
             }
           } else if (value !== undefined && value !== null && value !== "") {
-            // Only add non-empty string values
+            // Only add non-empty string values (for frontend, backend, etc.)
             const stringValue = value.toString().trim();
-            if (stringValue) {
+            if (stringValue && stringValue !== "none") {
               params.set(key, stringValue);
             }
           }

@@ -215,6 +215,44 @@ export type CompatibilityType =
   | "backendFrontend"
   | "frontendAddons";
 
+/**
+ * Categories that allow only ONE selection (single-select)
+ * All other categories default to single-select unless explicitly listed in MULTI_SELECT_CATEGORIES
+ */
+export const SINGLE_SELECT_CATEGORIES = [
+  "frontend",
+  "backend",
+  "database",
+  "orm",
+  "auth",
+  "dbSetup",
+  "webDeploy",
+  "serverDeploy",
+  "packageManager",
+  "git",
+  "install",
+] as const;
+
+/**
+ * Categories that allow MULTIPLE selections (multi-select)
+ * Only addons should allow multiple selections
+ */
+export const MULTI_SELECT_CATEGORIES = ["addons"] as const;
+
+/**
+ * Check if a category allows multiple selections
+ */
+export function isMultiSelectCategory(category: string): boolean {
+  return MULTI_SELECT_CATEGORIES.includes(category as any);
+}
+
+/**
+ * Check if a category allows only single selection
+ */
+export function isSingleSelectCategory(category: string): boolean {
+  return SINGLE_SELECT_CATEGORIES.includes(category as any);
+}
+
 // Well-tested, production-ready stack combinations
 export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
   // Modern full-stack combinations

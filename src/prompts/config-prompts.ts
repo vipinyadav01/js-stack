@@ -101,8 +101,8 @@ export async function promptConfiguration(options: {
   const config = await group(
     {
       frontend: () =>
-        p.multiselect({
-          message: "Select frontend framework(s):",
+        p.select({
+          message: "Select frontend framework:",
           options: [
             { value: "next", label: "Next.js" },
             { value: "nuxt", label: "Nuxt" },
@@ -121,11 +121,10 @@ export async function promptConfiguration(options: {
             { value: "native-unistyles", label: "React Native (Unistyles)" },
             { value: "none", label: "None" },
           ],
-          initialValues: ["none"],
-          required: true,
+          initialValue: "none",
         }),
       backend: ({ results }: { results: any }) => {
-        const frontend = results.frontend as string[];
+        const frontend = results.frontend as string;
         const metaFrameworks = [
           "next",
           "nuxt",
@@ -135,9 +134,7 @@ export async function promptConfiguration(options: {
           "solid-start",
           "qwik",
         ];
-        const hasMetaFramework = frontend.some((f) =>
-          metaFrameworks.includes(f),
-        );
+        const hasMetaFramework = metaFrameworks.includes(frontend);
 
         const options = [
           { value: "none", label: "None" },
@@ -150,7 +147,7 @@ export async function promptConfiguration(options: {
           { value: "convex", label: "Convex" },
         ];
 
-        if (frontend.includes("next")) {
+        if (frontend === "next") {
           options.push({ value: "next", label: "Next.js API Routes" });
         }
         return p.select({
@@ -233,7 +230,7 @@ export async function promptConfiguration(options: {
           initialValue: "none",
         }),
       auth: ({ results }: { results: any }) => {
-        const frontend = results.frontend as string[];
+        const frontend = results.frontend as string;
         const backend = results.backend as string;
 
         const options = [
@@ -244,7 +241,7 @@ export async function promptConfiguration(options: {
           { value: "kinde", label: "Kinde" },
         ];
 
-        if (frontend.includes("next") || backend === "next") {
+        if (frontend === "next" || backend === "next") {
           options.push({ value: "next-auth", label: "NextAuth.js / Auth.js" });
         }
 

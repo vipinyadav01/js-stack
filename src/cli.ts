@@ -47,7 +47,10 @@ program
     "--auth <auth>",
     "Authentication (better-auth, clerk, next-auth, lucia)",
   )
-  .option("--frontend <frameworks>", "Frontend frameworks (comma-separated)")
+  .option(
+    "--frontend <framework>",
+    "Frontend framework (react, vue, nextjs, etc.)",
+  )
   .option("--backend <framework>", "Backend framework")
   .option("--api <api>", "API style (trpc, orpc, graphql, rest)")
   .option("--addons <addons>", "Addons (pwa, tauri, docker, etc.)")

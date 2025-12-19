@@ -24,15 +24,17 @@ export function analyzeStackCompatibility(
   }
 
   // Convert StackState to BuilderState format
-  // Handle multiple frontends - use first one for compatibility checks
-  const frontends =
-    Array.isArray(stack.frontend) && stack.frontend.length > 0
+  // Frontend is now a single string value
+  const frontend =
+    typeof stack.frontend === "string"
       ? stack.frontend
-      : ["none"];
+      : Array.isArray(stack.frontend) && (stack.frontend as string[]).length > 0
+        ? (stack.frontend as string[])[0] // Backward compatibility: if array, use first value
+        : "none";
 
   const builderState: BuilderState = {
     projectName: stack.projectName || "my-app",
-    frontend: (frontends[0] || "none") as BuilderState["frontend"],
+    frontend: frontend as BuilderState["frontend"],
     backend: (stack.backend || "none") as BuilderState["backend"],
     database: (stack.database || "none") as BuilderState["database"],
     orm: (stack.orm || "none") as BuilderState["orm"],
@@ -57,25 +59,16 @@ export function analyzeStackCompatibility(
   const validation = validateConfiguration(adjustedBuilderState);
 
   // Convert back to StackState format
-  // Preserve original frontends if multiple were selected, otherwise use adjusted
+  // Frontend is now a single string value
   const adjustedFrontend =
     adjustedBuilderState.frontend !== "none"
       ? adjustedBuilderState.frontend
       : "none";
 
-  // If original had multiple frontends and adjusted is different, preserve originals
-  // Otherwise, use adjusted frontend
-  const finalFrontend =
-    frontends.length > 1 && frontends[0] !== "none"
-      ? frontends // Preserve multiple frontends
-      : adjustedFrontend !== "none"
-        ? [adjustedFrontend]
-        : [];
-
   const adjustedStack: Partial<StackState> = {
     projectName:
       adjustedBuilderState.projectName || stack.projectName || "my-app",
-    frontend: finalFrontend,
+    frontend: adjustedFrontend,
     backend: adjustedBuilderState.backend || "none",
     database: adjustedBuilderState.database || "none",
     orm: adjustedBuilderState.orm || "none",

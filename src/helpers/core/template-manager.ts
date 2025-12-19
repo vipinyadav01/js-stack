@@ -71,9 +71,12 @@ export async function setupFrontendTemplates(
   destDir: string,
   context: ProjectConfig,
 ): Promise<void> {
-  const frontendFrameworks = context.frontend.filter((f) => f !== "none");
+  // Frontend is now a single value, not an array
+  const frontendFramework =
+    context.frontend && context.frontend !== "none" ? context.frontend : null;
 
-  for (const framework of frontendFrameworks) {
+  if (frontendFramework) {
+    const framework = frontendFramework;
     const srcDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.frontend, framework),
     );

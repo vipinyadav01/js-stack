@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useMemo } from "react";
 import { StackState, useStackState } from "./use-stack-state";
 import { TechCategory } from "./tech-category";
 import { analyzeStackCompatibility } from "./utils";
@@ -14,6 +14,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { SidebarContent } from "./sidebar-content";
+import { UseCasePresets } from "./use-case-presets";
+import {
+  getRecommendations,
+  findBestMatchingUseCase,
+} from "@/lib/recommendations";
+import type { BuilderState } from "@/components/builder/config";
 
 export function StackBuilder() {
   const [stack, setStack] = useStackState();
@@ -23,7 +29,35 @@ export function StackBuilder() {
 
   const displayStack = compatibilityAnalysis.adjustedStack || stack;
 
-  const command = generateStackCommand(displayStack as StackState);
+  const command = generateStackCommand(displayStack as StackState, true);
+
+  // Get smart recommendations based on current selections
+  const recommendations = useMemo(() => {
+    const builderState: Partial<BuilderState> = {
+      frontend: (displayStack.frontend as BuilderState["frontend"]) || "none",
+      backend: (displayStack.backend as BuilderState["backend"]) || "none",
+      database: (displayStack.database as BuilderState["database"]) || "none",
+      orm: (displayStack.orm as BuilderState["orm"]) || "none",
+      auth: (displayStack.auth as BuilderState["auth"]) || "none",
+      addons: (displayStack.addons as BuilderState["addons"]) || [],
+      packageManager:
+        (displayStack.packageManager as BuilderState["packageManager"]) ||
+        "npm",
+    };
+    return getRecommendations(builderState);
+  }, [displayStack]);
+
+  // Find best matching use case
+  const matchingUseCase = useMemo(() => {
+    const builderState: Partial<BuilderState> = {
+      frontend: (displayStack.frontend as BuilderState["frontend"]) || "none",
+      backend: (displayStack.backend as BuilderState["backend"]) || "none",
+      database: (displayStack.database as BuilderState["database"]) || "none",
+      orm: (displayStack.orm as BuilderState["orm"]) || "none",
+      auth: (displayStack.auth as BuilderState["auth"]) || "none",
+    };
+    return findBestMatchingUseCase(builderState);
+  }, [displayStack]);
 
   const formatProjectName = (name: string): string => {
     return name.replace(/\s+/g, "-");
@@ -53,11 +87,11 @@ export function StackBuilder() {
     const stackWithProjectName: StackState = {
       projectName: formattedProjectName,
       frontend:
-        Array.isArray(stackToUse.frontend) && stackToUse.frontend.length > 0
+        typeof stackToUse.frontend === "string"
           ? stackToUse.frontend
-          : Array.isArray(stack.frontend)
+          : typeof stack.frontend === "string"
             ? stack.frontend
-            : [],
+            : "none",
       backend: stackToUse.backend || stack.backend || "none",
       database: stackToUse.database || stack.database || "none",
       orm: stackToUse.orm || stack.orm || "none",
@@ -83,6 +117,7 @@ export function StackBuilder() {
   const handleTechSelect = (category: string, techId: string) => {
     startTransition(() => {
       if (isMultiSelectCategory(category)) {
+        // Multi-select: toggle in array (only for addons)
         const current = (stack[category as keyof StackState] as string[]) || [];
         if (current.includes(techId)) {
           setStack({
@@ -94,9 +129,19 @@ export function StackBuilder() {
           } as Partial<StackState>);
         }
       } else {
-        setStack({
-          [category]: techId,
-        } as Partial<StackState>);
+        // Single-select: replace previous selection (frontend, backend, database, ORM, auth, etc.)
+        const current = stack[category as keyof StackState];
+        // If clicking the same option, deselect it (set to "none" for most categories)
+        if (current === techId) {
+          setStack({
+            [category]: category === "packageManager" ? "npm" : "none",
+          } as Partial<StackState>);
+        } else {
+          // Replace with new selection
+          setStack({
+            [category]: techId,
+          } as Partial<StackState>);
+        }
       }
     });
   };
@@ -111,11 +156,18 @@ export function StackBuilder() {
     }
   };
 
+  const handleUseCaseSelect = (preset: Partial<StackState>) => {
+    startTransition(() => {
+      setStack(preset);
+      toast.success("Use case preset applied!");
+    });
+  };
+
   const handleReset = () => {
     startTransition(() => {
       setStack({
         projectName: "my-app", // Reset to default, but user can always change it
-        frontend: [],
+        frontend: "none", // Changed from [] to "none" for single selection
         backend: "none",
         database: "none",
         orm: "none",
@@ -143,6 +195,7 @@ export function StackBuilder() {
         const options = TECH_OPTIONS[category] || [];
 
         if (isMultiSelectCategory(category)) {
+          // Multi-select: pick random number of options (only for addons)
           const numToPick = Math.floor(
             Math.random() * Math.min(options.length, 3),
           );
@@ -158,6 +211,7 @@ export function StackBuilder() {
             );
           }
         } else {
+          // Single-select: pick one random option
           const randomIndex = Math.floor(Math.random() * options.length);
           (randomStack as Record<string, unknown>)[category] =
             options[randomIndex].id;
@@ -170,7 +224,8 @@ export function StackBuilder() {
   };
 
   const isMultiSelectCategory = (category: string): boolean => {
-    return ["frontend", "addons"].includes(category);
+    // Only addons allows multiple selections
+    return category === "addons";
   };
 
   const selectedBadges: React.ReactNode = (() => {
@@ -183,6 +238,7 @@ export function StackBuilder() {
       if (!options) continue;
 
       if (Array.isArray(selectedValue)) {
+        // Handle array values (only addons now)
         if (
           selectedValue.length === 0 ||
           (selectedValue.length === 1 && selectedValue[0] === "none")
@@ -206,6 +262,7 @@ export function StackBuilder() {
           }
         }
       } else {
+        // Handle string values (frontend, backend, database, ORM, auth, etc.)
         const tech = options.find((opt) => opt.id === selectedValue);
         if (
           !tech ||
@@ -302,22 +359,138 @@ export function StackBuilder() {
       <main className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           <div className="p-3 sm:p-4 lg:p-6">
+            {/* Use Case Presets Section */}
+            <div className="mb-8">
+              <UseCasePresets
+                onSelectPreset={handleUseCaseSelect}
+                currentStack={displayStack}
+              />
+            </div>
+
+            {/* Matching Use Case Badge */}
+            {matchingUseCase && (
+              <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 p-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="default" className="text-xs">
+                    💡 Best Match
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    Your stack matches: <strong>{matchingUseCase.name}</strong>
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Recommendations Warnings */}
+            {recommendations.warnings.length > 0 && (
+              <div className="mb-6 space-y-2">
+                {recommendations.warnings.map((warning, idx) => (
+                  <div
+                    key={idx}
+                    className={`rounded-lg border p-3 text-xs ${
+                      warning.severity === "high"
+                        ? "border-destructive bg-destructive/10"
+                        : warning.severity === "medium"
+                          ? "border-yellow-500/50 bg-yellow-500/10"
+                          : "border-blue-500/50 bg-blue-500/10"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="mt-0.5">
+                        {warning.severity === "high" ? "❌" : "⚠️"}
+                      </span>
+                      <div className="flex-1">
+                        <p className="font-medium">{warning.message}</p>
+                        {warning.fix && (
+                          <Button
+                            variant="link"
+                            size="sm"
+                            className="h-auto p-0 text-xs"
+                            onClick={() => {
+                              setStack({
+                                [warning.type === "incompatibility"
+                                  ? warning.fix?.includes("mongoose") ||
+                                    warning.fix?.includes("prisma") ||
+                                    warning.fix?.includes("drizzle")
+                                    ? "orm"
+                                    : warning.fix === "fastify"
+                                      ? "backend"
+                                      : "packageManager"
+                                  : "backend"]: warning.fix,
+                              } as Partial<StackState>);
+                            }}
+                          >
+                            Fix: Use {warning.fix}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Compatibility Score */}
+            {recommendations.compatibilityScore < 100 && (
+              <div className="mb-6 rounded-lg border bg-muted/50 p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium">
+                    Stack Compatibility
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold">
+                      {recommendations.compatibilityScore}/100
+                    </span>
+                    <div className="h-2 w-24 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className={`h-full transition-all ${
+                          recommendations.compatibilityScore >= 80
+                            ? "bg-green-500"
+                            : recommendations.compatibilityScore >= 60
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
+                        }`}
+                        style={{
+                          width: `${recommendations.compatibilityScore}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="space-y-6 sm:space-y-8">
-              {CATEGORY_ORDER.map((category: string) => (
-                <TechCategory
-                  key={category}
-                  category={category}
-                  options={TECH_OPTIONS[category] || []}
-                  selected={
-                    isMultiSelectCategory(category)
-                      ? (stack[category as keyof StackState] as string[]) || []
-                      : stack[category as keyof StackState]
-                  }
-                  onSelect={handleTechSelect}
-                  isMultiSelect={isMultiSelectCategory(category)}
-                  notes={compatibilityAnalysis.notes?.[category]}
-                />
-              ))}
+              {CATEGORY_ORDER.map((category: string) => {
+                // Get recommendations for this category
+                const categoryRecommendation =
+                  category === "orm"
+                    ? recommendations.orm
+                    : category === "auth"
+                      ? recommendations.auth
+                      : category === "backend"
+                        ? recommendations.backend
+                        : undefined;
+
+                return (
+                  <TechCategory
+                    key={category}
+                    category={category}
+                    options={TECH_OPTIONS[category] || []}
+                    selected={
+                      isMultiSelectCategory(category)
+                        ? (stack[category as keyof StackState] as string[]) ||
+                          []
+                        : (stack[category as keyof StackState] as string) ||
+                          "none"
+                    }
+                    onSelect={handleTechSelect}
+                    isMultiSelect={isMultiSelectCategory(category)}
+                    notes={compatibilityAnalysis.notes?.[category]}
+                    recommendation={categoryRecommendation}
+                  />
+                );
+              })}
             </div>
             <div className="h-10" />
           </div>

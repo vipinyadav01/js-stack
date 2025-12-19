@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import type React from "react";
-import { InfoIcon, Terminal } from "lucide-react";
+import { Check, InfoIcon, Terminal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -23,6 +24,11 @@ interface TechCategoryProps {
     notes: string[];
     hasIssue: boolean;
   };
+  recommendation?: {
+    id: string;
+    reason: string;
+    strength: "required" | "recommended" | "suggested";
+  };
 }
 
 export function TechCategory({
@@ -32,6 +38,7 @@ export function TechCategory({
   onSelect,
   isMultiSelect,
   notes,
+  recommendation,
 }: TechCategoryProps) {
   const isSelected = (techId: string) => {
     if (isMultiSelect) {
@@ -84,7 +91,9 @@ export function TechCategory({
 
         <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 sm:gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
           {options.map((tech) => {
-            const selected = isSelected(tech.id);
+            const isTechSelected = isSelected(tech.id);
+            const isRecommended = recommendation?.id === tech.id;
+            const recommendationStrength = recommendation?.strength;
 
             return (
               <Tooltip key={tech.id} delayDuration={100}>
@@ -92,9 +101,13 @@ export function TechCategory({
                   <motion.div
                     className={cn(
                       "relative cursor-pointer rounded border p-2 transition-all sm:p-3",
-                      selected
+                      isTechSelected
                         ? "border-primary bg-primary/10"
-                        : "border-border hover:border-muted hover:bg-muted",
+                        : isRecommended && recommendationStrength === "required"
+                          ? "border-destructive bg-destructive/5"
+                          : isRecommended
+                            ? "border-green-500/50 bg-green-500/5 hover:border-green-500/70"
+                            : "border-border hover:border-muted hover:bg-muted",
                     )}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -114,22 +127,80 @@ export function TechCategory({
                             <span
                               className={cn(
                                 "font-medium text-xs sm:text-sm",
-                                selected ? "text-primary" : "text-foreground",
+                                isTechSelected
+                                  ? "text-primary"
+                                  : "text-foreground",
                               )}
                             >
                               {tech.name}
                             </span>
+                            {/* Recommendation badge */}
+                            {isRecommended && !isTechSelected && (
+                              <Badge
+                                variant="secondary"
+                                className={cn(
+                                  "ml-1.5 text-[9px] px-1 py-0",
+                                  recommendationStrength === "required"
+                                    ? "bg-destructive/20 text-destructive"
+                                    : "bg-green-500/20 text-green-600 dark:text-green-400",
+                                )}
+                              >
+                                {recommendationStrength === "required"
+                                  ? "Required"
+                                  : recommendationStrength === "recommended"
+                                    ? "⭐ Recommended"
+                                    : "💡 Suggested"}
+                              </Badge>
+                            )}
                           </div>
+                          {/* Show checkmark for selected items in single-select mode */}
+                          {isTechSelected && !isMultiSelect && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ duration: 0.2 }}
+                              className="ml-2 flex-shrink-0"
+                            >
+                              <Check className="h-4 w-4 text-primary" />
+                            </motion.div>
+                          )}
+                          {/* Show count badge for multi-select (addons) */}
+                          {isMultiSelect && isTechSelected && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-semibold"
+                            >
+                              ✓
+                            </motion.div>
+                          )}
                         </div>
                         <p className="mt-0.5 text-muted-foreground text-xs">
                           {tech.description}
                         </p>
                       </div>
                     </div>
-                    {tech.default && !selected && (
+                    {tech.default && !isTechSelected && (
                       <span className="absolute top-1 right-1 ml-2 flex-shrink-0 rounded bg-muted px-1 py-0.5 text-[10px] text-muted-foreground">
                         Default
                       </span>
+                    )}
+                    {/* Recommendation tooltip content */}
+                    {isRecommended && (
+                      <TooltipContent
+                        side="top"
+                        align="start"
+                        className="max-w-xs"
+                      >
+                        <p className="text-xs font-medium">
+                          {recommendationStrength === "required"
+                            ? "Required"
+                            : "Recommended"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {recommendation?.reason}
+                        </p>
+                      </TooltipContent>
                     )}
                   </motion.div>
                 </TooltipTrigger>

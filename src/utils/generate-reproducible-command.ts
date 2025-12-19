@@ -11,8 +11,8 @@ export function generateReproducibleCommand(config: ProjectConfig): string {
   const parts: string[] = ["create-js-stack", config.projectName];
 
   // Add flags
-  if (config.frontend.length > 0 && !config.frontend.includes("none")) {
-    parts.push(`--frontend ${config.frontend.join(",")}`);
+  if (config.frontend && config.frontend !== "none") {
+    parts.push(`--frontend ${config.frontend}`);
   }
 
   if (config.backend !== "none") {

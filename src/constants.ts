@@ -24,7 +24,7 @@ export const DEFAULT_CONFIG = {
   orm: "none" as ORM,
   backend: "none" as Backend,
   runtime: "node" as Runtime,
-  frontend: ["none"] as Frontend,
+  frontend: "none" as Frontend,
   addons: [] as Addons,
   examples: [] as Examples,
   auth: "none" as Auth,
