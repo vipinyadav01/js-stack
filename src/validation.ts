@@ -12,6 +12,7 @@ import type {
   Auth,
   API,
 } from "./types.js";
+import { analytics } from "./analytics/posthog.js";
 
 /**
  * Validate database and ORM compatibility
@@ -22,9 +23,20 @@ export function validateDatabaseORM(
 ): { valid: boolean; error?: string } {
   // MongoDB only works with Mongoose
   if (database === "mongodb" && orm !== "mongoose" && orm !== "none") {
+    const error = "MongoDB can only be used with Mongoose ORM";
+
+    // Track validation error
+    analytics.track("validation_error", {
+      error_type: "compatibility",
+      error_message: error,
+      database,
+      orm,
+      auto_fixed: false,
+    });
+
     return {
       valid: false,
-      error: "MongoDB can only be used with Mongoose ORM",
+      error,
     };
   }
 

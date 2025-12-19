@@ -1,6 +1,7 @@
 "use client";
 
-import { useTransition, useMemo } from "react";
+import { useTransition, useMemo, useEffect, useState } from "react";
+import { usePostHog } from "posthog-js/react";
 import { StackState, useStackState } from "./use-stack-state";
 import { TechCategory } from "./tech-category";
 import { analyzeStackCompatibility } from "./utils";
@@ -24,6 +25,29 @@ import type { BuilderState } from "@/components/builder/config";
 export function StackBuilder() {
   const [stack, setStack] = useStackState();
   const [, startTransition] = useTransition();
+  const posthog = usePostHog();
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [showUseCasePresets, setShowUseCasePresets] = useState(false);
+
+  // Track performance metrics on page load
+  useEffect(() => {
+    if (posthog && typeof window !== "undefined" && "performance" in window) {
+      const perfData = window.performance.getEntriesByType(
+        "navigation",
+      )[0] as PerformanceNavigationTiming;
+      if (perfData) {
+        posthog.capture("page_performance", {
+          page: "/new",
+          page_title: "Stack Builder",
+          ttfb: perfData.responseStart - perfData.requestStart,
+          dom_load:
+            perfData.domContentLoadedEventEnd -
+            perfData.domContentLoadedEventStart,
+          full_load: perfData.loadEventEnd - perfData.loadEventStart,
+        });
+      }
+    }
+  }, [posthog]);
 
   const compatibilityAnalysis = analyzeStackCompatibility(stack);
 
@@ -116,32 +140,44 @@ export function StackBuilder() {
 
   const handleTechSelect = (category: string, techId: string) => {
     startTransition(() => {
+      const previousValue = stack[category as keyof StackState];
+      const newStack: Partial<StackState> = {};
+
       if (isMultiSelectCategory(category)) {
         // Multi-select: toggle in array (only for addons)
         const current = (stack[category as keyof StackState] as string[]) || [];
         if (current.includes(techId)) {
-          setStack({
-            [category]: current.filter((id: string) => id !== techId),
-          } as Partial<StackState>);
+          (newStack as any)[category] = current.filter(
+            (id: string) => id !== techId,
+          );
         } else {
-          setStack({
-            [category]: [...current, techId],
-          } as Partial<StackState>);
+          (newStack as any)[category] = [...current, techId];
         }
       } else {
         // Single-select: replace previous selection (frontend, backend, database, ORM, auth, etc.)
         const current = stack[category as keyof StackState];
         // If clicking the same option, deselect it (set to "none" for most categories)
         if (current === techId) {
-          setStack({
-            [category]: category === "packageManager" ? "npm" : "none",
-          } as Partial<StackState>);
+          (newStack as any)[category] =
+            category === "packageManager" ? "npm" : "none";
         } else {
           // Replace with new selection
-          setStack({
-            [category]: techId,
-          } as Partial<StackState>);
+          (newStack as any)[category] = techId;
         }
+      }
+
+      setStack(newStack);
+
+      // Track selection
+      if (posthog) {
+        const updatedStack = { ...stack, ...newStack };
+        posthog.capture("stack_option_selected", {
+          category,
+          option: techId,
+          previous_value: previousValue,
+          full_stack: updatedStack,
+          timestamp: new Date().toISOString(),
+        });
       }
     });
   };
@@ -152,6 +188,15 @@ export function StackBuilder() {
       startTransition(() => {
         setStack(preset.stack as Partial<StackState>);
         toast.success(`Applied preset: ${preset.name}`);
+
+        // Track preset selection
+        if (posthog) {
+          posthog.capture("preset_selected", {
+            preset_id: presetId,
+            preset_name: preset.name,
+            preset_stack: preset.stack,
+          });
+        }
       });
     }
   };
@@ -160,6 +205,13 @@ export function StackBuilder() {
     startTransition(() => {
       setStack(preset);
       toast.success("Use case preset applied!");
+
+      // Track use case preset selection
+      if (posthog) {
+        posthog.capture("use_case_preset_selected", {
+          preset_stack: preset,
+        });
+      }
     });
   };
 
@@ -296,11 +348,11 @@ export function StackBuilder() {
   })();
 
   return (
-    <div className="flex h-screen w-full overflow-hidden border-border text-foreground lg:grid lg:grid-cols-[30%_1fr]">
+    <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-full flex-col border-border border-r sm:max-w-3xs md:max-w-xs lg:max-w-sm">
+      <aside className="hidden lg:flex w-[30%] max-w-sm flex-col border-r border-border fixed left-0 top-0 h-screen z-10 bg-background shadow-lg">
         <ScrollArea className="flex-1">
-          <div className="flex h-full flex-col gap-3 p-3 sm:p-4 md:h-[calc(100vh-64px)]">
+          <div className="flex h-full flex-col gap-3 p-3 sm:p-4">
             <SidebarContent
               stack={stack}
               command={command}
@@ -314,6 +366,16 @@ export function StackBuilder() {
                 setStack({ yolo: enabled ? "true" : "false" })
               }
               stackUrl={getStackUrl()}
+              showRecommendations={showRecommendations}
+              onToggleRecommendations={() =>
+                setShowRecommendations(!showRecommendations)
+              }
+              recommendations={recommendations}
+              matchingUseCase={matchingUseCase}
+              showUseCasePresets={showUseCasePresets}
+              onToggleUseCasePresets={() =>
+                setShowUseCasePresets(!showUseCasePresets)
+              }
             />
           </div>
         </ScrollArea>
@@ -333,7 +395,7 @@ export function StackBuilder() {
         </SheetTrigger>
         <SheetContent side="left" className="w-[320px] sm:w-[400px] p-0">
           <ScrollArea className="flex-1">
-            <div className="flex h-full flex-col gap-3 p-3 sm:p-4 md:h-[calc(100vh-64px)]">
+            <div className="flex h-full flex-col gap-3 p-3 sm:p-4">
               <SidebarContent
                 stack={stack}
                 command={command}
@@ -349,6 +411,16 @@ export function StackBuilder() {
                   setStack({ yolo: enabled ? "true" : "false" })
                 }
                 stackUrl={getStackUrl()}
+                showRecommendations={showRecommendations}
+                onToggleRecommendations={() =>
+                  setShowRecommendations(!showRecommendations)
+                }
+                recommendations={recommendations}
+                matchingUseCase={matchingUseCase}
+                showUseCasePresets={showUseCasePresets}
+                onToggleUseCasePresets={() =>
+                  setShowUseCasePresets(!showUseCasePresets)
+                }
               />
             </div>
           </ScrollArea>
@@ -356,143 +428,52 @@ export function StackBuilder() {
       </Sheet>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden lg:ml-[30%]">
         <ScrollArea className="h-full">
-          <div className="p-3 sm:p-4 lg:p-6">
-            {/* Use Case Presets Section */}
-            <div className="mb-8">
-              <UseCasePresets
-                onSelectPreset={handleUseCaseSelect}
-                currentStack={displayStack}
-              />
-            </div>
-
-            {/* Matching Use Case Badge */}
-            {matchingUseCase && (
-              <div className="mb-6 rounded-lg border border-primary/20 bg-primary/5 p-3">
-                <div className="flex items-center gap-2">
-                  <Badge variant="default" className="text-xs">
-                    💡 Best Match
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    Your stack matches: <strong>{matchingUseCase.name}</strong>
-                  </span>
+          <div className="min-h-full bg-gradient-to-b from-background to-muted/20">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+              {/* Use Case Presets Section - Only show when toggled */}
+              {showUseCasePresets && (
+                <div className="mb-10 sm:mb-12">
+                  <UseCasePresets onSelectPreset={handleUseCaseSelect} />
                 </div>
+              )}
+
+              {/* Tech Categories Section */}
+              <div className="space-y-8 sm:space-y-10">
+                {CATEGORY_ORDER.map((category: string) => {
+                  // Get recommendations for this category
+                  const categoryRecommendation =
+                    category === "orm"
+                      ? recommendations.orm
+                      : category === "auth"
+                        ? recommendations.auth
+                        : category === "backend"
+                          ? recommendations.backend
+                          : undefined;
+
+                  return (
+                    <TechCategory
+                      key={category}
+                      category={category}
+                      options={TECH_OPTIONS[category] || []}
+                      selected={
+                        isMultiSelectCategory(category)
+                          ? (stack[category as keyof StackState] as string[]) ||
+                            []
+                          : (stack[category as keyof StackState] as string) ||
+                            "none"
+                      }
+                      onSelect={handleTechSelect}
+                      isMultiSelect={isMultiSelectCategory(category)}
+                      notes={compatibilityAnalysis.notes?.[category]}
+                      recommendation={categoryRecommendation}
+                    />
+                  );
+                })}
               </div>
-            )}
-
-            {/* Recommendations Warnings */}
-            {recommendations.warnings.length > 0 && (
-              <div className="mb-6 space-y-2">
-                {recommendations.warnings.map((warning, idx) => (
-                  <div
-                    key={idx}
-                    className={`rounded-lg border p-3 text-xs ${
-                      warning.severity === "high"
-                        ? "border-destructive bg-destructive/10"
-                        : warning.severity === "medium"
-                          ? "border-yellow-500/50 bg-yellow-500/10"
-                          : "border-blue-500/50 bg-blue-500/10"
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <span className="mt-0.5">
-                        {warning.severity === "high" ? "❌" : "⚠️"}
-                      </span>
-                      <div className="flex-1">
-                        <p className="font-medium">{warning.message}</p>
-                        {warning.fix && (
-                          <Button
-                            variant="link"
-                            size="sm"
-                            className="h-auto p-0 text-xs"
-                            onClick={() => {
-                              setStack({
-                                [warning.type === "incompatibility"
-                                  ? warning.fix?.includes("mongoose") ||
-                                    warning.fix?.includes("prisma") ||
-                                    warning.fix?.includes("drizzle")
-                                    ? "orm"
-                                    : warning.fix === "fastify"
-                                      ? "backend"
-                                      : "packageManager"
-                                  : "backend"]: warning.fix,
-                              } as Partial<StackState>);
-                            }}
-                          >
-                            Fix: Use {warning.fix}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Compatibility Score */}
-            {recommendations.compatibilityScore < 100 && (
-              <div className="mb-6 rounded-lg border bg-muted/50 p-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium">
-                    Stack Compatibility
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold">
-                      {recommendations.compatibilityScore}/100
-                    </span>
-                    <div className="h-2 w-24 overflow-hidden rounded-full bg-muted">
-                      <div
-                        className={`h-full transition-all ${
-                          recommendations.compatibilityScore >= 80
-                            ? "bg-green-500"
-                            : recommendations.compatibilityScore >= 60
-                              ? "bg-yellow-500"
-                              : "bg-red-500"
-                        }`}
-                        style={{
-                          width: `${recommendations.compatibilityScore}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-6 sm:space-y-8">
-              {CATEGORY_ORDER.map((category: string) => {
-                // Get recommendations for this category
-                const categoryRecommendation =
-                  category === "orm"
-                    ? recommendations.orm
-                    : category === "auth"
-                      ? recommendations.auth
-                      : category === "backend"
-                        ? recommendations.backend
-                        : undefined;
-
-                return (
-                  <TechCategory
-                    key={category}
-                    category={category}
-                    options={TECH_OPTIONS[category] || []}
-                    selected={
-                      isMultiSelectCategory(category)
-                        ? (stack[category as keyof StackState] as string[]) ||
-                          []
-                        : (stack[category as keyof StackState] as string) ||
-                          "none"
-                    }
-                    onSelect={handleTechSelect}
-                    isMultiSelect={isMultiSelectCategory(category)}
-                    notes={compatibilityAnalysis.notes?.[category]}
-                    recommendation={categoryRecommendation}
-                  />
-                );
-              })}
+              <div className="h-16" />
             </div>
-            <div className="h-10" />
           </div>
         </ScrollArea>
       </main>

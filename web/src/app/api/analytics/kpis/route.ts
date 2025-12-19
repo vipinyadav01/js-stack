@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import { getKPIs } from "@/lib/analytics-service";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 export async function GET() {
-  const data = await getKPIs();
-  return NextResponse.json(data, {
-    headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=600" },
-  });
+  try {
+    const data = await getKPIs();
+    return NextResponse.json(data, {
+      headers: {
+        "Cache-Control": "s-maxage=300, stale-while-revalidate=600",
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching KPIs:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch KPIs" },
+      { status: 500 },
+    );
+  }
 }

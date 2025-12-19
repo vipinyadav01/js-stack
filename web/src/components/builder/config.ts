@@ -243,14 +243,16 @@ export const MULTI_SELECT_CATEGORIES = ["addons"] as const;
  * Check if a category allows multiple selections
  */
 export function isMultiSelectCategory(category: string): boolean {
-  return (MULTI_SELECT_CATEGORIES as readonly string[]).includes(category);
+  const categories: readonly string[] = MULTI_SELECT_CATEGORIES;
+  return categories.includes(category);
 }
 
 /**
  * Check if a category allows only single selection
  */
 export function isSingleSelectCategory(category: string): boolean {
-  return (SINGLE_SELECT_CATEGORIES as readonly string[]).includes(category);
+  const categories: readonly string[] = SINGLE_SELECT_CATEGORIES;
+  return categories.includes(category);
 }
 
 // Well-tested, production-ready stack combinations

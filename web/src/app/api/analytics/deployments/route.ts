@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import { getDeploymentAnalytics } from "@/lib/analytics-service";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 export const revalidate = 600;
 
 export async function GET() {
-  const data = await getDeploymentAnalytics();
-  return NextResponse.json(data, {
-    headers: { "Cache-Control": "s-maxage=600, stale-while-revalidate=1200" },
-  });
+  try {
+    const data = await getDeploymentAnalytics();
+    return NextResponse.json(data, {
+      headers: {
+        "Cache-Control": "s-maxage=600, stale-while-revalidate=1200",
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching deployment analytics:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch deployment analytics" },
+      { status: 500 },
+    );
+  }
 }

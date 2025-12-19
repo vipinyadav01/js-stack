@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   TrendingUp,
   Star,
@@ -7,6 +8,9 @@ import {
   Download,
   Users,
   Code2,
+  BarChart3,
+  CheckCircle2,
+  Zap,
 } from "lucide-react";
 import { NpmPackageData, GitHubRepoData } from "@/lib/api";
 
@@ -28,8 +32,55 @@ export default function KPICards({
   githubData,
   formatNumber = (num) => num.toString(),
 }: KPICardsProps) {
+  const [posthogKPIs, setPosthogKPIs] = useState<KPI[]>([]);
+  const [loadingKPIs, setLoadingKPIs] = useState(true);
+
+  // Fetch PostHog KPIs
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/analytics/kpis")
+      .then((r) => r.json())
+      .then((d) => {
+        if (mounted && Array.isArray(d)) {
+          const kpis: KPI[] = d.map(
+            (kpi: {
+              label: string;
+              value: string | number;
+              help?: string;
+            }) => ({
+              label: kpi.label,
+              value: kpi.value,
+              help: kpi.help,
+              icon: kpi.label.includes("adoption")
+                ? BarChart3
+                : kpi.label.includes("compatibility")
+                  ? CheckCircle2
+                  : kpi.label.includes("efficiency")
+                    ? Zap
+                    : TrendingUp,
+            }),
+          );
+          setPosthogKPIs(kpis);
+        }
+      })
+      .catch(() => {
+        // Silently fail - PostHog KPIs are optional
+      })
+      .finally(() => {
+        if (mounted) setLoadingKPIs(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const getKPIs = (): KPI[] => {
     const kpis: KPI[] = [];
+
+    // PostHog analytics KPIs (from PostHog data)
+    if (!loadingKPIs && posthogKPIs.length > 0) {
+      kpis.push(...posthogKPIs);
+    }
 
     // GitHub stats
     if (githubData?.info) {

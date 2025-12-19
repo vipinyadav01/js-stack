@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Github, Heart, MessageCircle, Play } from "lucide-react";
+import { useEffect } from "react";
+import { usePostHog } from "posthog-js/react";
 import Hero from "@/components/home/hero";
 import Command from "@/components/home/command";
 import ProjectInt from "@/components/home/ProjectInt";
@@ -11,6 +13,17 @@ import VideoTutorials from "@/components/home/VideoTutorials";
 import { FAQStructuredData } from "@/components/structured-data";
 
 export default function Home() {
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (posthog) {
+      posthog.capture("landing_page_viewed", {
+        feature: "hero",
+        page: "/",
+      });
+    }
+  }, [posthog]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

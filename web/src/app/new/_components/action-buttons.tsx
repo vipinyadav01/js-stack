@@ -24,7 +24,7 @@ export function ActionButtons({ onReset, onRandom }: ActionButtonsProps) {
               variant="outline"
               size="sm"
               onClick={onReset}
-              className="flex-1"
+              className="flex-1 font-semibold hover:bg-destructive/10 hover:border-destructive/50"
             >
               <RotateCcw className="mr-2 h-3.5 w-3.5" />
               Reset
@@ -39,7 +39,7 @@ export function ActionButtons({ onReset, onRandom }: ActionButtonsProps) {
               variant="outline"
               size="sm"
               onClick={onRandom}
-              className="flex-1"
+              className="flex-1 font-semibold hover:bg-primary/10 hover:border-primary/50"
             >
               <Shuffle className="mr-2 h-3.5 w-3.5" />
               Random

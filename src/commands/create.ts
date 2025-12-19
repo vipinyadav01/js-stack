@@ -20,6 +20,7 @@ import { displayConfig } from "../utils/display-config.js";
 import { generateReproducibleCommand } from "../utils/generate-reproducible-command.js";
 import { saveConfig } from "../utils/js-stack-config.js";
 import { validateConfig, autoFixConfig } from "../validation.js";
+import { analytics } from "../analytics/posthog.js";
 
 /**
  * Parse comma-separated string to array
@@ -39,6 +40,26 @@ export async function createProject(
   projectName?: string,
   options: Partial<CLIOptions> = {},
 ): Promise<void> {
+  const startTime = Date.now();
+
+  // Track command start
+  analytics.track("cli_command_started", {
+    command: "create",
+    project_name: projectName || "unknown",
+    options: {
+      frontend: options.frontend,
+      backend: options.backend,
+      database: options.database,
+      orm: options.orm,
+      auth: options.auth,
+      addons: options.addons,
+      package_manager: options.packageManager,
+      git: options.git,
+      install: options.install,
+      yolo: options.yolo,
+    },
+  });
+
   try {
     // Get project name
     let finalProjectName = projectName;
@@ -180,12 +201,35 @@ export async function createProject(
     }
 
     // Create project
-    // Create project
     if (options.dryRun) {
       p.log.info("Dry run enabled. Skipping project creation.");
     } else {
+      // Track template generation start
+      analytics.track("template_generation_started", {
+        stack: {
+          frontend: config.frontend,
+          backend: config.backend,
+          database: config.database,
+          orm: config.orm,
+          auth: config.auth,
+          addons: config.addons,
+        },
+      });
+
       await createProjectCore(config as ProjectConfig, {
         verbose: options.verbose,
+      });
+
+      // Track template generation completion
+      analytics.track("template_generation_completed", {
+        stack: {
+          frontend: config.frontend,
+          backend: config.backend,
+          database: config.database,
+          orm: config.orm,
+          auth: config.auth,
+          addons: config.addons,
+        },
       });
     }
 
@@ -193,6 +237,22 @@ export async function createProject(
     if (!options.dryRun) {
       await saveConfig(finalProjectDir, config);
     }
+
+    const duration = Date.now() - startTime;
+
+    // Track success
+    analytics.track("cli_command_completed", {
+      command: "create",
+      project_name: finalProjectName,
+      duration_ms: duration,
+      duration_seconds: Math.round(duration / 1000),
+      success: true,
+      stack_combination: `${config.frontend}-${config.backend}-${config.database}`,
+      package_manager: config.packageManager,
+      has_git: config.git,
+      has_install: config.install,
+      dry_run: options.dryRun || false,
+    });
 
     // Display success message
     if (options.dryRun) {
@@ -218,10 +278,24 @@ export async function createProject(
     p.log.info("Reproducible command:");
     console.log(`  ${reproducibleCommand}`);
     console.log();
-  } catch (error) {
+  } catch (error: any) {
+    const duration = Date.now() - startTime;
+
+    // Track error
+    analytics.track("cli_command_failed", {
+      command: "create",
+      duration_ms: duration,
+      error_message: error?.message || "Unknown error",
+      error_type: error?.name || "Error",
+      success: false,
+    });
+
     p.log.error(
       `Failed to create project: ${error instanceof Error ? error.message : String(error)}`,
     );
     process.exit(1);
+  } finally {
+    // Shutdown analytics client
+    await analytics.shutdown();
   }
 }

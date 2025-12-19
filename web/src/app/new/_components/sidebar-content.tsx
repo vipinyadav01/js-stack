@@ -8,6 +8,9 @@ import {
   Check,
   ClipboardCopy,
   Terminal,
+  Lightbulb,
+  X,
+  Sparkles,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -36,6 +39,12 @@ interface SidebarContentProps {
   onApplyPreset: (presetId: string) => void;
   onYoloToggle: (enabled: boolean) => void;
   stackUrl: string;
+  showRecommendations?: boolean;
+  onToggleRecommendations?: () => void;
+  recommendations?: any;
+  matchingUseCase?: any;
+  showUseCasePresets?: boolean;
+  onToggleUseCasePresets?: () => void;
 }
 
 export function SidebarContent({
@@ -49,6 +58,12 @@ export function SidebarContent({
   onApplyPreset,
   onYoloToggle,
   stackUrl,
+  showRecommendations = false,
+  onToggleRecommendations,
+  recommendations,
+  matchingUseCase,
+  showUseCasePresets = false,
+  onToggleUseCasePresets,
 }: SidebarContentProps) {
   const [copied, setCopied] = useState(false);
   const [localProjectName, setLocalProjectName] = useState(
@@ -84,6 +99,23 @@ export function SidebarContent({
       await navigator.clipboard.writeText(command);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+
+      // Track command copy
+      if (typeof window !== "undefined" && (window as any).posthog) {
+        (window as any).posthog.capture("command_copied", {
+          command_length: command.length,
+          has_comments: command.includes("#"),
+          stack: {
+            frontend: stack.frontend,
+            backend: stack.backend,
+            database: stack.database,
+            orm: stack.orm,
+            auth: stack.auth,
+            addons: stack.addons,
+            package_manager: stack.packageManager,
+          },
+        });
+      }
     } catch (error) {
       console.error("Failed to copy command:", error);
     }
@@ -118,6 +150,14 @@ export function SidebarContent({
 
   return (
     <div className="flex h-full flex-col gap-4">
+      {/* Header */}
+      <div className="pb-2 border-b border-border">
+        <h2 className="text-lg font-bold font-mono">Configuration</h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          Customize your project
+        </p>
+      </div>
+
       <div className="space-y-4">
         {/* Project Name */}
         <div className="space-y-2">
@@ -167,30 +207,32 @@ export function SidebarContent({
         </div>
 
         {/* Command Preview */}
-        <div className="overflow-hidden rounded-md border bg-muted/50">
-          <div className="flex items-center justify-between border-b bg-muted/50 px-3 py-2">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Terminal className="h-3.5 w-3.5" />
-              <span className="font-medium">Command</span>
+        <div className="overflow-hidden rounded-lg border-2 border-border bg-gradient-to-br from-card to-muted/30">
+          <div className="flex items-center justify-between border-b border-border bg-muted/30 px-3 py-2.5">
+            <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
+              <Terminal className="h-4 w-4 text-primary" />
+              <span>CLI Command</span>
             </div>
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6"
+              className="h-7 w-7 hover:bg-primary/10"
               onClick={copyToClipboard}
               title={copied ? "Copied!" : "Copy command"}
             >
               {copied ? (
-                <Check className="h-3.5 w-3.5 text-green-500" />
+                <Check className="h-4 w-4 text-green-500" />
               ) : (
-                <ClipboardCopy className="h-3.5 w-3.5" />
+                <ClipboardCopy className="h-4 w-4" />
               )}
             </Button>
           </div>
-          <div className="p-3">
-            <div className="flex gap-2">
-              <span className="select-none text-muted-foreground">$</span>
-              <code className="flex-1 break-all font-mono text-xs sm:text-sm">
+          <div className="p-3 bg-background/50">
+            <div className="flex gap-2 items-start">
+              <span className="select-none text-muted-foreground font-mono text-sm">
+                $
+              </span>
+              <code className="flex-1 break-all font-mono text-xs sm:text-sm leading-relaxed">
                 {command}
               </code>
             </div>
@@ -198,8 +240,8 @@ export function SidebarContent({
         </div>
 
         {/* Selected Stack */}
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Selected Stack</Label>
+        <div className="space-y-2 rounded-lg border border-border bg-muted/20 p-3">
+          <Label className="text-xs font-semibold">Selected Stack</Label>
           <div className="flex flex-wrap gap-1.5 min-h-[2rem]">
             {selectedBadges}
           </div>
@@ -207,6 +249,157 @@ export function SidebarContent({
       </div>
 
       <div className="mt-auto space-y-4 border-t pt-4">
+        {/* Use Case Presets Toggle Button */}
+        {onToggleUseCasePresets && (
+          <Button
+            variant={showUseCasePresets ? "default" : "outline"}
+            size="sm"
+            className="w-full font-semibold"
+            onClick={onToggleUseCasePresets}
+          >
+            <Sparkles className="mr-2 h-3.5 w-3.5" />
+            {showUseCasePresets ? "Hide" : "Show"} Use Cases
+          </Button>
+        )}
+
+        {/* Recommendations Toggle Button */}
+        {onToggleRecommendations && (
+          <Button
+            variant={showRecommendations ? "default" : "outline"}
+            size="sm"
+            className="w-full font-semibold"
+            onClick={onToggleRecommendations}
+          >
+            <Lightbulb className="mr-2 h-3.5 w-3.5" />
+            {showRecommendations ? "Hide" : "Show"} Recommendations
+          </Button>
+        )}
+
+        {/* Recommendations Panel */}
+        {showRecommendations && recommendations && (
+          <ScrollArea className="max-h-[300px] rounded-md border border-primary/20 bg-primary/5">
+            <div className="p-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-primary">
+                  <Lightbulb className="h-3.5 w-3.5" />
+                  <span className="text-xs font-medium">Recommendations</span>
+                </div>
+                {onToggleRecommendations && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5"
+                    onClick={onToggleRecommendations}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+
+              {/* Matching Use Case */}
+              {matchingUseCase && (
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold">💡 Best Match</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">
+                    <strong>{matchingUseCase.name}</strong>
+                  </p>
+                  {matchingUseCase.why && (
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {matchingUseCase.why}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Compatibility Score */}
+              {recommendations.compatibilityScore !== undefined && (
+                <div className="rounded-lg border bg-muted/50 p-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-medium">
+                      Compatibility
+                    </span>
+                    <span className="text-xs font-bold">
+                      {recommendations.compatibilityScore}/100
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className={`h-full transition-all ${
+                        recommendations.compatibilityScore >= 80
+                          ? "bg-green-500"
+                          : recommendations.compatibilityScore >= 60
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                      }`}
+                      style={{
+                        width: `${recommendations.compatibilityScore}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Warnings */}
+              {recommendations.warnings &&
+                recommendations.warnings.length > 0 && (
+                  <div className="space-y-1.5">
+                    {recommendations.warnings.map(
+                      (warning: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className={`rounded border p-2 text-[10px] ${
+                            warning.severity === "high"
+                              ? "border-destructive bg-destructive/10"
+                              : warning.severity === "medium"
+                                ? "border-yellow-500/50 bg-yellow-500/10"
+                                : "border-blue-500/50 bg-blue-500/10"
+                          }`}
+                        >
+                          <div className="flex items-start gap-1.5">
+                            <span className="mt-0.5">
+                              {warning.severity === "high" ? "❌" : "⚠️"}
+                            </span>
+                            <p className="flex-1 font-medium leading-tight">
+                              {warning.message}
+                            </p>
+                          </div>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
+
+              {/* ORM Recommendation */}
+              {recommendations.orm && (
+                <div className="rounded border border-blue-500/20 bg-blue-500/5 p-2">
+                  <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 mb-1">
+                    💡 ORM Recommendation
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    <strong>{recommendations.orm.id}</strong>:{" "}
+                    {recommendations.orm.reason}
+                  </p>
+                </div>
+              )}
+
+              {/* Auth Recommendation */}
+              {recommendations.auth && (
+                <div className="rounded border border-blue-500/20 bg-blue-500/5 p-2">
+                  <p className="text-[10px] font-medium text-blue-600 dark:text-blue-400 mb-1">
+                    💡 Auth Recommendation
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    <strong>{recommendations.auth.id}</strong>:{" "}
+                    {recommendations.auth.reason}
+                  </p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        )}
+
         {/* Compatibility Notes */}
         {!stack.yolo && Object.keys(compatibilityNotes).length > 0 && (
           <ScrollArea className="max-h-[120px] rounded-md border border-yellow-200 bg-yellow-50/50 dark:border-yellow-900/50 dark:bg-yellow-950/20">
@@ -232,7 +425,7 @@ export function SidebarContent({
           </ScrollArea>
         )}
 
-        <div className="space-y-2">
+        <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-3">
           <ActionButtons onReset={onReset} onRandom={onRandom} />
 
           <div className="grid grid-cols-3 gap-2">
@@ -240,9 +433,13 @@ export function SidebarContent({
             <PresetDropdown onApplyPreset={onApplyPreset} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="w-full px-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full px-2 font-medium"
+                >
                   <Settings className="mr-2 h-3.5 w-3.5" />
-                  <span className="truncate">Settings</span>
+                  <span className="truncate text-xs">Settings</span>
                   <ChevronDown className="ml-auto h-3.5 w-3.5 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>

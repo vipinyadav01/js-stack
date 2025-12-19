@@ -8,6 +8,7 @@ import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { StructuredData } from "@/components/structured-data";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { RootProvider } from "fumadocs-ui/provider";
+import { PostHogProvider, PostHogPageView } from "@/providers/posthog-provider";
 
 const jetbrainsMono = localFont({
   src: [
@@ -263,20 +264,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         )}
         <GoogleTagManager />
-        <RootProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <div className="relative flex min-h-screen flex-col">
-              <Navigation />
-              <main className="flex-1">{children}</main>
-              <ConditionalFooter />
-            </div>
-          </ThemeProvider>
-        </RootProvider>
+        <PostHogProvider>
+          <PostHogPageView />
+          <RootProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <div className="relative flex min-h-screen flex-col">
+                <Navigation />
+                <main className="flex-1">{children}</main>
+                <ConditionalFooter />
+              </div>
+            </ThemeProvider>
+          </RootProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

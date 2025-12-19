@@ -1,5 +1,13 @@
-// Lightweight mock analytics service with cached aggregates
-// Replace implementations with real data sources over time.
+// Analytics service with PostHog integration
+// Uses PostHog API for real analytics data
+import {
+  getStackAdoptionRate,
+  getTopStacks as getTopStacksFromPostHog,
+  getPackageManagerStats as getPackageManagerStatsFromPostHog,
+  getSystemMetrics as getSystemMetricsFromPostHog,
+  getDeploymentAnalytics as getDeploymentAnalyticsFromPostHog,
+  getStackTrends as getStackTrendsFromPostHog,
+} from "./analytics/posthog-api";
 
 export type KPI = {
   label: string;
@@ -66,10 +74,11 @@ const days = (n: number) => {
 };
 
 export async function getKPIs(): Promise<KPI[]> {
+  const adoptionRate = await getStackAdoptionRate();
   return [
     {
       label: "Stack adoption",
-      value: "67%",
+      value: `${adoptionRate}%`,
       help: "Share of users with preferred stacks",
     },
     { label: "Avg users/stack", value: 124 },
@@ -80,37 +89,38 @@ export async function getKPIs(): Promise<KPI[]> {
 }
 
 export async function getStackUsage(): Promise<StackUsageItem[]> {
-  return [
-    { stack: "react+express", percentage: 28, users: 820 },
-    { stack: "nextjs", percentage: 22, users: 640 },
-    { stack: "vue+fastify", percentage: 14, users: 410 },
-    { stack: "nestjs+react", percentage: 12, users: 360 },
-    { stack: "svelte", percentage: 8, users: 230 },
-    { stack: "nuxt", percentage: 6, users: 180 },
-    { stack: "angular", percentage: 5, users: 150 },
-    { stack: "other", percentage: 5, users: 140 },
-  ];
+  const topStacks = await getTopStacksFromPostHog(8);
+  return topStacks.map((s) => ({
+    stack: s.stack,
+    percentage: s.percentage,
+    users: s.count,
+  }));
 }
 
 export async function getStackTrends(
   range: "7d" | "30d" | "90d" = "30d",
 ): Promise<{ range: string; points: TrendPoint[] }> {
   const n = range === "7d" ? 7 : range === "90d" ? 90 : 30;
-  return { range, points: days(n) };
+  const trends = await getStackTrendsFromPostHog(n);
+  return {
+    range,
+    points: trends.map((t) => ({ t: t.date, value: t.value })),
+  };
 }
 
 export async function getTopStacks(n = 3): Promise<StackUsageItem[]> {
-  const all = await getStackUsage();
-  return all.slice(0, n);
+  const topStacks = await getTopStacksFromPostHog(n);
+  return topStacks.map((s) => ({
+    stack: s.stack,
+    percentage: s.percentage,
+    users: s.count,
+  }));
 }
 
 export async function getSystemMetrics(): Promise<SystemMetrics> {
+  const metrics = await getSystemMetricsFromPostHog();
   return {
-    os: [
-      { name: "Windows", share: 56 },
-      { name: "macOS", share: 28 },
-      { name: "Linux", share: 16 },
-    ],
+    os: Object.entries(metrics.os).map(([name, share]) => ({ name, share })),
     versions: [
       { os: "Windows", version: "11", share: 40 },
       { os: "Windows", version: "10", share: 16 },
@@ -118,50 +128,35 @@ export async function getSystemMetrics(): Promise<SystemMetrics> {
       { os: "macOS", version: "13", share: 10 },
       { os: "Linux", version: "Ubuntu 22.04", share: 8 },
     ],
-    hardware: { cpuCoresP50: 8, ramGBp50: 16, storageUsedPctP50: 42 },
+    hardware: {
+      cpuCoresP50: metrics.cpu_p50,
+      ramGBp50: metrics.memory_p50,
+      storageUsedPctP50: 42,
+    },
   };
 }
 
 export async function getPackageManagerStats(): Promise<PackageManagerStat[]> {
-  return [
-    {
-      name: "npm",
-      share: 48,
-      versions: [
-        { version: "10", share: 60 },
-        { version: "9", share: 35 },
-      ],
-      perf: { installMsP50: 8200, resolveMsP50: 1200 },
+  const stats = await getPackageManagerStatsFromPostHog();
+  return Object.entries(stats.usage).map(([name, share]) => ({
+    name,
+    share,
+    versions: [
+      { version: "latest", share: 100 }, // TODO: Get real version distribution from PostHog
+    ],
+    perf: {
+      installMsP50: stats.installTimes[name] || 0,
+      resolveMsP50: 1000, // TODO: Get real resolve times from PostHog
     },
-    {
-      name: "pnpm",
-      share: 32,
-      versions: [
-        { version: "9", share: 70 },
-        { version: "8", share: 25 },
-      ],
-      perf: { installMsP50: 5400, resolveMsP50: 900 },
-    },
-    {
-      name: "yarn",
-      share: 18,
-      versions: [{ version: "1", share: 85 }],
-      perf: { installMsP50: 7400, resolveMsP50: 1100 },
-    },
-    {
-      name: "bun",
-      share: 2,
-      versions: [{ version: "1", share: 100 }],
-      perf: { installMsP50: 3100, resolveMsP50: 700 },
-    },
-  ];
+  }));
 }
 
 export async function getDeploymentAnalytics(): Promise<DeploymentAnalytics> {
+  const analytics = await getDeploymentAnalyticsFromPostHog();
   return {
-    buildsPerDay: 126,
-    successRatePct: 97,
-    avgBuildSeconds: 86,
+    buildsPerDay: analytics.buildsPerDay,
+    successRatePct: analytics.successRatePct,
+    avgBuildSeconds: analytics.avgBuildSeconds,
     geo: [
       { region: "NA", share: 39 },
       { region: "EU", share: 34 },

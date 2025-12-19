@@ -22,7 +22,6 @@ import type { StackState } from "./use-stack-state";
 
 interface UseCasePresetsProps {
   onSelectPreset: (preset: Partial<StackState>) => void;
-  currentStack?: Partial<StackState>;
 }
 
 const difficultyColors = {
@@ -52,71 +51,86 @@ export function UseCasePresets({ onSelectPreset }: UseCasePresetsProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-semibold">Use Case Presets</h3>
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+          <Sparkles className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-lg sm:text-xl font-bold font-mono">
+            Use Case Presets
+          </h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Quick-start templates for common project types
+          </p>
+        </div>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {recommendations.map((preset) => (
           <motion.div
             key={preset.id}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <Card className="h-full cursor-pointer transition-all hover:border-primary/50 hover:shadow-md">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-sm font-semibold">
+            <Card className="group h-full cursor-pointer border-2 transition-all duration-300 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 space-y-1">
+                    <CardTitle className="text-base font-bold leading-tight">
                       {preset.name}
                     </CardTitle>
-                    <CardDescription className="mt-1 text-xs">
+                    <CardDescription className="text-xs leading-relaxed">
                       {preset.description}
                     </CardDescription>
                   </div>
-                  <CardAction>
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "text-[10px] font-medium",
-                        difficultyColors[preset.difficulty],
-                      )}
-                    >
-                      {preset.difficulty}
-                    </Badge>
-                  </CardAction>
+                  <Badge
+                    variant="secondary"
+                    className={cn(
+                      "text-[10px] font-semibold shrink-0",
+                      difficultyColors[preset.difficulty],
+                    )}
+                  >
+                    {preset.difficulty}
+                  </Badge>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-xs text-muted-foreground leading-relaxed">
+              <CardContent className="space-y-3 pb-3">
+                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
                   {preset.why}
                 </p>
-                <div className="flex flex-wrap gap-1">
-                  {preset.tags.map((tag) => (
+                <div className="flex flex-wrap gap-1.5">
+                  {preset.tags.slice(0, 3).map((tag) => (
                     <Badge
                       key={tag}
                       variant="outline"
-                      className="text-[10px] px-1.5 py-0"
+                      className="text-[10px] px-2 py-0.5 border-primary/20"
                     >
                       {tag}
                     </Badge>
                   ))}
+                  {preset.tags.length > 3 && (
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-2 py-0.5 border-primary/20"
+                    >
+                      +{preset.tags.length - 3}
+                    </Badge>
+                  )}
                 </div>
                 {preset.estimatedTime && (
-                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                    <Clock className="h-3 w-3" />
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5" />
                     <span>~{preset.estimatedTime} setup</span>
                   </div>
                 )}
               </CardContent>
-              <CardFooter className="border-t">
+              <CardFooter className="border-t pt-3">
                 <Button
                   size="sm"
-                  className="w-full"
+                  className="w-full font-semibold"
                   onClick={() => handleSelect(preset)}
                 >
-                  <TrendingUp className="mr-2 h-3 w-3" />
+                  <TrendingUp className="mr-2 h-3.5 w-3.5" />
                   Apply Preset
                 </Button>
               </CardFooter>
