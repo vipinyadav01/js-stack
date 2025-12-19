@@ -33,10 +33,7 @@ const difficultyColors = {
   Advanced: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
 };
 
-export function UseCasePresets({
-  onSelectPreset,
-  currentStack,
-}: UseCasePresetsProps) {
+export function UseCasePresets({ onSelectPreset }: UseCasePresetsProps) {
   const recommendations = getAllUseCaseRecommendations();
 
   const handleSelect = (preset: UseCaseRecommendation) => {

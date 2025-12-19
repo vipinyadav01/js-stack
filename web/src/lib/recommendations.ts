@@ -1,12 +1,4 @@
-import type {
-  Frontend,
-  Backend,
-  Database,
-  ORM,
-  Auth,
-  Addon,
-  BuilderState,
-} from "@/components/builder/config";
+import type { BuilderState } from "@/components/builder/config";
 
 export interface UseCaseRecommendation {
   id: string;

@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-import { renderTitle } from "./render-title-Be1PcEnl.js";
 import { Command } from "commander";
-import path from "path";
+import chalk from "chalk";
+import path, { join } from "path";
 import * as p from "@clack/prompts";
 import { group } from "@clack/prompts";
 import fs from "fs-extra";
 import { execa } from "execa";
 import Handlebars from "handlebars";
 import { globby } from "globby";
-import boxen from "boxen";
-import process$1 from "process";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
 
 //#region src/constants.ts
 const DEFAULT_CONFIG = {
@@ -17,7 +17,7 @@ const DEFAULT_CONFIG = {
   orm: "none",
   backend: "none",
   runtime: "node",
-  frontend: ["none"],
+  frontend: "none",
   addons: [],
   examples: [],
   auth: "none",
@@ -39,16 +39,15 @@ const TEMPLATE_PATHS = {
   addons: "templates/addons",
   examples: "templates/examples",
   deploy: "templates/deploy",
+  dbSetup: "templates/db-setup",
   extras: "templates/extras",
 };
 
 //#endregion
 //#region src/prompts/config-prompts.ts
 /**
-
-* Prompt for project name
-
-*/
+ * Prompt for project name
+ */
 async function promptProjectName(defaultValue) {
   const name = await p.text({
     message: "What is your project name?",
@@ -72,10 +71,8 @@ async function promptProjectName(defaultValue) {
   return name;
 }
 /**
-
-* Interactive configuration prompts
-
-*/
+ * Interactive configuration prompts
+ */
 async function promptConfiguration(options) {
   if (options.yes)
     return {
@@ -98,21 +95,9 @@ async function promptConfiguration(options) {
   const config = await group(
     {
       frontend: () =>
-        p.multiselect({
-          message: "Select frontend framework(s):",
+        p.select({
+          message: "Select frontend framework:",
           options: [
-            {
-              value: "tanstack-router",
-              label: "TanStack Router",
-            },
-            {
-              value: "react-router",
-              label: "React Router",
-            },
-            {
-              value: "tanstack-start",
-              label: "TanStack Start",
-            },
             {
               value: "next",
               label: "Next.js",
@@ -120,6 +105,50 @@ async function promptConfiguration(options) {
             {
               value: "nuxt",
               label: "Nuxt",
+            },
+            {
+              value: "sveltekit",
+              label: "SvelteKit",
+            },
+            {
+              value: "remix",
+              label: "Remix",
+            },
+            {
+              value: "astro",
+              label: "Astro",
+            },
+            {
+              value: "tanstack-start",
+              label: "TanStack Start",
+            },
+            {
+              value: "tanstack-router",
+              label: "TanStack Router (SPA)",
+            },
+            {
+              value: "react-router",
+              label: "React Router (SPA)",
+            },
+            {
+              value: "vue",
+              label: "Vue.js (Vite)",
+            },
+            {
+              value: "angular",
+              label: "Angular",
+            },
+            {
+              value: "svelte",
+              label: "Svelte (Vite)",
+            },
+            {
+              value: "solid",
+              label: "Solid.js (Vite)",
+            },
+            {
+              value: "qwik",
+              label: "Qwik",
             },
             {
               value: "native-nativewind",
@@ -130,55 +159,71 @@ async function promptConfiguration(options) {
               label: "React Native (Unistyles)",
             },
             {
-              value: "svelte",
-              label: "Svelte",
-            },
-            {
-              value: "solid",
-              label: "Solid.js",
-            },
-            {
               value: "none",
               label: "None",
-            },
-          ],
-          initialValues: ["none"],
-        }),
-      backend: () =>
-        p.select({
-          message: "Select backend framework:",
-          options: [
-            {
-              value: "none",
-              label: "None",
-            },
-            {
-              value: "hono",
-              label: "Hono",
-            },
-            {
-              value: "express",
-              label: "Express",
-            },
-            {
-              value: "fastify",
-              label: "Fastify",
-            },
-            {
-              value: "next",
-              label: "Next.js (API Routes)",
-            },
-            {
-              value: "elysia",
-              label: "Elysia",
-            },
-            {
-              value: "convex",
-              label: "Convex",
             },
           ],
           initialValue: "none",
         }),
+      backend: ({ results }) => {
+        const frontend = results.frontend;
+        const metaFrameworks = [
+          "next",
+          "nuxt",
+          "sveltekit",
+          "remix",
+          "astro",
+          "solid-start",
+          "qwik",
+        ];
+        const hasMetaFramework = metaFrameworks.includes(frontend);
+        const options$1 = [
+          {
+            value: "none",
+            label: "None",
+          },
+          {
+            value: "hono",
+            label: "Hono",
+          },
+          {
+            value: "express",
+            label: "Express",
+          },
+          {
+            value: "fastify",
+            label: "Fastify",
+          },
+          {
+            value: "nest",
+            label: "NestJS",
+          },
+          {
+            value: "koa",
+            label: "Koa",
+          },
+          {
+            value: "elysia",
+            label: "Elysia",
+          },
+          {
+            value: "convex",
+            label: "Convex",
+          },
+        ];
+        if (frontend === "next")
+          options$1.push({
+            value: "next",
+            label: "Next.js API Routes",
+          });
+        return p.select({
+          message: hasMetaFramework
+            ? "Select backend (Meta-frameworks usually have their own):"
+            : "Select backend framework:",
+          options: options$1,
+          initialValue: "none",
+        });
+      },
       runtime: () =>
         p.select({
           message: "Select runtime:",
@@ -190,6 +235,10 @@ async function promptConfiguration(options) {
             {
               value: "bun",
               label: "Bun",
+            },
+            {
+              value: "deno",
+              label: "Deno",
             },
             {
               value: "workers",
@@ -229,14 +278,50 @@ async function promptConfiguration(options) {
           ],
           initialValue: "none",
         }),
-      orm: () =>
-        p.select({
-          message: "Select ORM:",
-          options: [
+      orm: ({ results }) => {
+        const db = results.database;
+        const options$1 = [
+          {
+            value: "none",
+            label: "None",
+          },
+        ];
+        if (db === "mongodb")
+          options$1.push(
             {
-              value: "none",
-              label: "None",
+              value: "mongoose",
+              label: "Mongoose",
             },
+            {
+              value: "prisma",
+              label: "Prisma",
+            },
+            {
+              value: "typeorm",
+              label: "TypeORM",
+            },
+          );
+        else if (db !== "none")
+          options$1.push(
+            {
+              value: "drizzle",
+              label: "Drizzle ORM",
+            },
+            {
+              value: "prisma",
+              label: "Prisma",
+            },
+            {
+              value: "typeorm",
+              label: "TypeORM",
+            },
+            {
+              value: "mikro-orm",
+              label: "MikroORM",
+            },
+          );
+        else
+          options$1.push(
             {
               value: "drizzle",
               label: "Drizzle ORM",
@@ -249,12 +334,24 @@ async function promptConfiguration(options) {
               value: "mongoose",
               label: "Mongoose",
             },
-          ],
+            {
+              value: "typeorm",
+              label: "TypeORM",
+            },
+            {
+              value: "mikro-orm",
+              label: "MikroORM",
+            },
+          );
+        return p.select({
+          message: "Select ORM:",
+          options: options$1,
           initialValue: "none",
-        }),
+        });
+      },
       api: () =>
         p.select({
-          message: "Select API framework:",
+          message: "Select API style:",
           options: [
             {
               value: "none",
@@ -268,28 +365,53 @@ async function promptConfiguration(options) {
               value: "orpc",
               label: "oRPC",
             },
+            {
+              value: "graphql",
+              label: "GraphQL",
+            },
+            {
+              value: "rest",
+              label: "REST",
+            },
           ],
           initialValue: "none",
         }),
-      auth: () =>
-        p.select({
+      auth: ({ results }) => {
+        const frontend = results.frontend;
+        const backend = results.backend;
+        const options$1 = [
+          {
+            value: "none",
+            label: "None",
+          },
+          {
+            value: "better-auth",
+            label: "Better Auth",
+          },
+          {
+            value: "clerk",
+            label: "Clerk",
+          },
+          {
+            value: "lucia",
+            label: "Lucia",
+          },
+          {
+            value: "kinde",
+            label: "Kinde",
+          },
+        ];
+        if (frontend === "next" || backend === "next")
+          options$1.push({
+            value: "next-auth",
+            label: "NextAuth.js / Auth.js",
+          });
+        return p.select({
           message: "Select authentication:",
-          options: [
-            {
-              value: "none",
-              label: "None",
-            },
-            {
-              value: "better-auth",
-              label: "Better Auth",
-            },
-            {
-              value: "clerk",
-              label: "Clerk",
-            },
-          ],
+          options: options$1,
           initialValue: "none",
-        }),
+        });
+      },
       addons: () =>
         p.multiselect({
           message: "Select addons:",
@@ -325,6 +447,14 @@ async function promptConfiguration(options) {
             {
               value: "cypress",
               label: "Cypress (E2E Testing)",
+            },
+            {
+              value: "storybook",
+              label: "Storybook",
+            },
+            {
+              value: "changesets",
+              label: "Changesets",
             },
             {
               value: "docker",
@@ -383,7 +513,7 @@ async function promptConfiguration(options) {
               label: "Neon",
             },
             {
-              value: "docker",
+              value: "docker-compose",
               label: "Docker Compose",
             },
             {
@@ -402,7 +532,7 @@ async function promptConfiguration(options) {
               label: "None",
             },
             {
-              value: "wrangler",
+              value: "cloudflare-pages",
               label: "Cloudflare Pages (Wrangler)",
             },
             {
@@ -421,7 +551,7 @@ async function promptConfiguration(options) {
               label: "None",
             },
             {
-              value: "wrangler",
+              value: "cloudflare-workers",
               label: "Cloudflare Workers (Wrangler)",
             },
             {
@@ -490,10 +620,8 @@ async function promptConfiguration(options) {
 //#endregion
 //#region src/utils/project-directory.ts
 /**
-
-* Check if directory exists and is not empty
-
-*/
+ * Check if directory exists and is not empty
+ */
 async function directoryExists(dirPath) {
   try {
     const exists = await fs.pathExists(dirPath);
@@ -507,10 +635,8 @@ async function directoryExists(dirPath) {
   }
 }
 /**
-
-* Handle directory conflicts based on strategy
-
-*/
+ * Handle directory conflicts based on strategy
+ */
 async function handleDirectoryConflict(projectDir, strategy) {
   const exists = await directoryExists(projectDir);
   if (!exists) return projectDir;
@@ -543,10 +669,8 @@ async function handleDirectoryConflict(projectDir, strategy) {
   }
 }
 /**
-
-* Validate project name
-
-*/
+ * Validate project name
+ */
 function validateProjectName(name) {
   if (!name || name.trim().length === 0)
     return {
@@ -580,10 +704,8 @@ function validateProjectName(name) {
   return { valid: true };
 }
 /**
-
-* Get absolute project directory path
-
-*/
+ * Get absolute project directory path
+ */
 function getProjectDir(projectName, cwd = process.cwd()) {
   return path.resolve(cwd, projectName);
 }
@@ -591,10 +713,8 @@ function getProjectDir(projectName, cwd = process.cwd()) {
 //#endregion
 //#region src/validation.ts
 /**
-
-* Validate database and ORM compatibility
-
-*/
+ * Validate database and ORM compatibility
+ */
 function validateDatabaseORM(database, orm) {
   if (database === "mongodb" && orm !== "mongoose" && orm !== "none")
     return {
@@ -611,13 +731,16 @@ function validateDatabaseORM(database, orm) {
       valid: false,
       error: "Mongoose can only be used with MongoDB",
     };
+  if (database === "mongodb" && orm === "drizzle")
+    return {
+      valid: false,
+      error: "Drizzle ORM does not support MongoDB",
+    };
   return { valid: true };
 }
 /**
-
-* Validate backend and runtime compatibility
-
-*/
+ * Validate backend and runtime compatibility
+ */
 function validateBackendRuntime(backend, runtime) {
   if (backend === "convex" && runtime !== "node")
     return {
@@ -635,29 +758,35 @@ function validateBackendRuntime(backend, runtime) {
   return { valid: true };
 }
 /**
-
-* Validate frontend and backend compatibility
-
-*/
+ * Validate frontend and backend compatibility
+ */
 function validateFrontendBackend(frontend, backend) {
-  if (frontend.includes("next") && backend !== "none" && backend !== "next")
+  if (frontend === "next" && backend !== "none" && backend !== "next")
     return {
       valid: false,
       error:
         "Next.js includes its own backend. Set backend to 'none' or 'next'",
     };
-  if (frontend.includes("nuxt") && backend !== "none")
+  const metaFrameworks = [
+    "nuxt",
+    "sveltekit",
+    "remix",
+    "astro",
+    "solid-start",
+    "qwik",
+  ];
+  const hasMetaFramework = metaFrameworks.includes(frontend);
+  if (hasMetaFramework && backend !== "none")
     return {
       valid: false,
-      error: "Nuxt includes its own backend. Set backend to 'none'",
+      error:
+        "Selected meta-framework includes its own backend. Set backend to 'none'",
     };
   return { valid: true };
 }
 /**
-
-* Validate auth and database compatibility
-
-*/
+ * Validate auth and database compatibility
+ */
 function validateAuthDatabase(auth, database) {
   if (auth === "better-auth" && database === "none")
     return {
@@ -667,10 +796,8 @@ function validateAuthDatabase(auth, database) {
   return { valid: true };
 }
 /**
-
-* Validate API and backend compatibility
-
-*/
+ * Validate API and backend compatibility
+ */
 function validateAPIBackend(api, backend) {
   if ((api === "trpc" || api === "orpc") && backend === "none")
     return {
@@ -680,10 +807,8 @@ function validateAPIBackend(api, backend) {
   return { valid: true };
 }
 /**
-
-* Comprehensive configuration validation
-
-*/
+ * Comprehensive configuration validation
+ */
 function validateConfig(config) {
   const errors = [];
   if (config.database && config.orm) {
@@ -712,14 +837,12 @@ function validateConfig(config) {
   };
 }
 /**
-
-* Auto-fix configuration based on compatibility rules
-
-*/
+ * Auto-fix configuration based on compatibility rules
+ */
 function autoFixConfig(config) {
   const fixed = { ...config };
-  if (fixed.database === "mongodb" && fixed.orm && fixed.orm !== "mongoose")
-    fixed.orm = "mongoose";
+  if (fixed.database === "mongodb" && fixed.orm === "drizzle")
+    fixed.orm = "prisma";
   if (
     (fixed.database === "postgres" ||
       fixed.database === "mysql" ||
@@ -727,14 +850,19 @@ function autoFixConfig(config) {
     fixed.orm === "mongoose"
   )
     fixed.orm = "none";
-  if (
-    fixed.frontend?.includes("next") &&
-    fixed.backend &&
-    fixed.backend !== "next"
-  )
+  if (fixed.frontend === "next" && fixed.backend && fixed.backend !== "next")
     fixed.backend = "none";
+  const metaFrameworks = [
+    "nuxt",
+    "sveltekit",
+    "remix",
+    "astro",
+    "solid-start",
+    "qwik",
+  ];
   if (
-    fixed.frontend?.includes("nuxt") &&
+    fixed.frontend &&
+    metaFrameworks.includes(fixed.frontend) &&
     fixed.backend &&
     fixed.backend !== "none"
   )
@@ -778,12 +906,9 @@ function registerHelpers() {
 }
 registerHelpers();
 /**
-
-* Process a single template file with Handlebars
-
-* Handles JSX/TSX extensions: .jsx.hbs → .jsx, .tsx.hbs → .tsx
-
-*/
+ * Process a single template file with Handlebars
+ * Handles JSX/TSX extensions: .jsx.hbs → .jsx, .tsx.hbs → .tsx
+ */
 function processTemplate(srcPath, destPath, context) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -803,20 +928,13 @@ function processTemplate(srcPath, destPath, context) {
   });
 }
 /**
-
-* Get output filename from template filename
-
-* Handles special cases:
-
-* - .jsx.hbs → .jsx
-
-* - .tsx.hbs → .tsx
-
-* - .hbs → remove extension
-
-* - _gitignore → .gitignore
-
-*/
+ * Get output filename from template filename
+ * Handles special cases:
+ * - .jsx.hbs → .jsx
+ * - .tsx.hbs → .tsx
+ * - .hbs → remove extension
+ * - _gitignore → .gitignore
+ */
 function getOutputFilename(templatePath) {
   const basename = path.basename(templatePath);
   if (basename.endsWith(".jsx.hbs"))
@@ -834,10 +952,8 @@ function getOutputFilename(templatePath) {
   return basename;
 }
 /**
-
-* Check if file is a template (has .hbs extension)
-
-*/
+ * Check if file is a template (has .hbs extension)
+ */
 function isTemplate(filePath) {
   return (
     filePath.endsWith(".hbs") ||
@@ -846,10 +962,8 @@ function isTemplate(filePath) {
   );
 }
 /**
-
-* Check if file is binary (should be copied as-is)
-
-*/
+ * Check if file is binary (should be copied as-is)
+ */
 function isBinary(filePath) {
   const binaryExtensions = [
     ".png",
@@ -871,12 +985,9 @@ function isBinary(filePath) {
   return binaryExtensions.includes(ext);
 }
 /**
-
-* Process and copy files from template directory
-
-* Supports glob patterns and handles JSX/TSX templates
-
-*/
+ * Process and copy files from template directory
+ * Supports glob patterns and handles JSX/TSX templates
+ */
 async function processAndCopyFiles(srcDir, destDir, context, pattern = "**/*") {
   try {
     if (!(await fs.pathExists(srcDir)))
@@ -910,10 +1021,8 @@ async function processAndCopyFiles(srcDir, destDir, context, pattern = "**/*") {
   }
 }
 /**
-
-* Copy a single file or directory
-
-*/
+ * Copy a single file or directory
+ */
 async function copyFileOrDir(src, dest, context) {
   try {
     const stat = await fs.stat(src);
@@ -935,42 +1044,48 @@ async function copyFileOrDir(src, dest, context) {
 //#endregion
 //#region src/helpers/core/template-manager.ts
 /**
-
-* Get template directory path
-
-*/
+ * Get template directory path
+ */
 function getTemplatePath(relativePath) {
+  const __filename = new URL(import.meta.url).pathname;
+  const normalizedFilename =
+    process.platform === "win32"
+      ? __filename.replace(/^\//, "").replace(/\//g, "\\")
+      : __filename;
   const possiblePaths = [
-    path.join(process.cwd(), relativePath),
     path.join(process.cwd(), "templates", relativePath),
+    path.join(process.cwd(), relativePath),
     path.join(
-      path.dirname(new URL(import.meta.url).pathname),
+      path.dirname(normalizedFilename),
       "..",
       "..",
+      "..",
+      "templates",
       relativePath,
     ),
+    path.join(path.dirname(normalizedFilename), "..", "..", "..", relativePath),
   ];
   for (const templatePath of possiblePaths)
     if (fs.existsSync(templatePath)) return templatePath;
-  throw new Error(`Template path not found: ${relativePath}`);
+  throw new Error(
+    `Template path not found: ${relativePath}. Tried: ${possiblePaths.join(", ")}`,
+  );
 }
 /**
-
-* Copy base templates
-
-*/
+ * Copy base templates
+ */
 async function copyBaseTemplate(destDir, context) {
   const srcDir = getTemplatePath(TEMPLATE_PATHS.base);
   await processAndCopyFiles(srcDir, destDir, context);
 }
 /**
-
-* Setup frontend templates
-
-*/
+ * Setup frontend templates
+ */
 async function setupFrontendTemplates(destDir, context) {
-  const frontendFrameworks = context.frontend.filter((f) => f !== "none");
-  for (const framework of frontendFrameworks) {
+  const frontendFramework =
+    context.frontend && context.frontend !== "none" ? context.frontend : null;
+  if (frontendFramework) {
+    const framework = frontendFramework;
     const srcDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.frontend, framework),
     );
@@ -979,10 +1094,8 @@ async function setupFrontendTemplates(destDir, context) {
   }
 }
 /**
-
-* Setup backend templates
-
-*/
+ * Setup backend templates
+ */
 async function setupBackendFramework(destDir, context) {
   if (context.backend === "none") return;
   const srcDir = getTemplatePath(
@@ -992,10 +1105,8 @@ async function setupBackendFramework(destDir, context) {
     await processAndCopyFiles(srcDir, destDir, context);
 }
 /**
-
-* Setup database/ORM templates
-
-*/
+ * Setup database/ORM templates
+ */
 async function setupDbOrmTemplates(destDir, context) {
   if (context.database !== "none") {
     const dbDir = getTemplatePath(
@@ -1011,10 +1122,8 @@ async function setupDbOrmTemplates(destDir, context) {
   }
 }
 /**
-
-* Setup auth templates
-
-*/
+ * Setup auth templates
+ */
 async function setupAuthTemplate(destDir, context) {
   if (context.auth === "none") return;
   const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.auth, context.auth));
@@ -1022,10 +1131,8 @@ async function setupAuthTemplate(destDir, context) {
     await processAndCopyFiles(srcDir, destDir, context);
 }
 /**
-
-* Setup API templates
-
-*/
+ * Setup API templates
+ */
 async function setupAPITemplates(destDir, context) {
   if (context.api === "none") return;
   const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.api, context.api));
@@ -1033,10 +1140,8 @@ async function setupAPITemplates(destDir, context) {
     await processAndCopyFiles(srcDir, destDir, context);
 }
 /**
-
-* Setup addon templates
-
-*/
+ * Setup addon templates
+ */
 async function setupAddonsTemplate(destDir, context) {
   for (const addon of context.addons) {
     const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.addons, addon));
@@ -1045,10 +1150,8 @@ async function setupAddonsTemplate(destDir, context) {
   }
 }
 /**
-
-* Setup example templates
-
-*/
+ * Setup example templates
+ */
 async function setupExamplesTemplate(destDir, context) {
   const examples = context.examples.filter((e) => e !== "none");
   for (const example of examples) {
@@ -1058,10 +1161,8 @@ async function setupExamplesTemplate(destDir, context) {
   }
 }
 /**
-
-* Setup deployment templates
-
-*/
+ * Setup deployment templates
+ */
 async function setupDeploymentTemplates(destDir, context) {
   if (context.webDeploy !== "none") {
     const srcDir = getTemplatePath(
@@ -1079,10 +1180,20 @@ async function setupDeploymentTemplates(destDir, context) {
   }
 }
 /**
-
-* Handle extras (package manager specific files)
-
-*/
+ * Setup database setup templates
+ */
+async function setupDbSetupTemplate(destDir, context) {
+  if (context.dbSetup !== "none") {
+    const srcDir = getTemplatePath(
+      path.join(TEMPLATE_PATHS.dbSetup, context.dbSetup),
+    );
+    if (await fs.pathExists(srcDir))
+      await processAndCopyFiles(srcDir, destDir, context);
+  }
+}
+/**
+ * Handle extras (package manager specific files)
+ */
 async function handleExtras(destDir, context) {
   const extrasDir = getTemplatePath(TEMPLATE_PATHS.extras);
   if (context.packageManager === "pnpm") {
@@ -1103,10 +1214,8 @@ async function handleExtras(destDir, context) {
 //#endregion
 //#region src/utils/biome-formatter.ts
 /**
-
-* Format generated code with Biome
-
-*/
+ * Format generated code with Biome
+ */
 async function formatWithBiome(projectDir, files) {
   try {
     try {
@@ -1128,10 +1237,8 @@ async function formatWithBiome(projectDir, files) {
   }
 }
 /**
-
-* Create Biome configuration file
-
-*/
+ * Create Biome configuration file
+ */
 async function createBiomeConfig(projectDir) {
   const biomeConfig = {
     $schema: "https://biomejs.dev/schemas/1.8.0/schema.json",
@@ -1173,10 +1280,8 @@ async function createBiomeConfig(projectDir) {
 //#endregion
 //#region src/helpers/core/create-project.ts
 /**
-
-* Create project structure
-
-*/
+ * Create project structure
+ */
 async function createProjectStructure(config) {
   const spinner = p.spinner();
   spinner.start("Creating project structure...");
@@ -1184,7 +1289,7 @@ async function createProjectStructure(config) {
     await fs.ensureDir(config.projectDir);
     spinner.message("Copying base templates...");
     await copyBaseTemplate(config.projectDir, config);
-    if (config.frontend.some((f) => f !== "none")) {
+    if (config.frontend && config.frontend !== "none") {
       spinner.message("Setting up frontend...");
       await setupFrontendTemplates(config.projectDir, config);
     }
@@ -1216,6 +1321,10 @@ async function createProjectStructure(config) {
       spinner.message("Setting up deployment configs...");
       await setupDeploymentTemplates(config.projectDir, config);
     }
+    if (config.dbSetup !== "none") {
+      spinner.message("Setting up database environment...");
+      await setupDbSetupTemplate(config.projectDir, config);
+    }
     spinner.message("Handling extras...");
     await handleExtras(config.projectDir, config);
     spinner.stop("Project structure created!");
@@ -1225,10 +1334,8 @@ async function createProjectStructure(config) {
   }
 }
 /**
-
-* Initialize Git repository
-
-*/
+ * Initialize Git repository
+ */
 async function initializeGit(projectDir) {
   try {
     await execa("git", ["init"], { cwd: projectDir });
@@ -1245,10 +1352,8 @@ async function initializeGit(projectDir) {
   }
 }
 /**
-
-* Install dependencies
-
-*/
+ * Install dependencies
+ */
 async function installDependencies(projectDir, packageManager) {
   const spinner = p.spinner();
   spinner.start(`Installing dependencies with ${packageManager}...`);
@@ -1270,10 +1375,8 @@ async function installDependencies(projectDir, packageManager) {
   }
 }
 /**
-
-* Post-processing: format code, setup environment, etc.
-
-*/
+ * Post-processing: format code, setup environment, etc.
+ */
 async function postProcessProject(config) {
   const spinner = p.spinner();
   spinner.start("Post-processing project...");
@@ -1295,11 +1398,9 @@ async function postProcessProject(config) {
   }
 }
 /**
-
-* Main project creation function
-
-*/
-async function createProject(config, options = {}) {
+ * Main project creation function
+ */
+async function createProject$1(config, options = {}) {
   try {
     if (!options.verbose) {
       const validation = validateConfig(config);
@@ -1330,16 +1431,15 @@ async function createProject(config, options = {}) {
 //#endregion
 //#region src/utils/display-config.ts
 /**
-
-* Display configuration summary
-
-*/
+ * Display configuration summary
+ */
 function displayConfig(config) {
   p.log.info("Project Configuration:");
   console.log();
   const configDisplay = {
     "Project Name": config.projectName,
-    Frontend: config.frontend.join(", ") || "None",
+    Frontend:
+      config.frontend && config.frontend !== "none" ? config.frontend : "None",
     Backend: config.backend,
     Runtime: config.runtime,
     Database: config.database,
@@ -1360,14 +1460,12 @@ function displayConfig(config) {
 //#endregion
 //#region src/utils/generate-reproducible-command.ts
 /**
-
-* Generate CLI command that reproduces the exact configuration
-
-*/
+ * Generate CLI command that reproduces the exact configuration
+ */
 function generateReproducibleCommand(config) {
   const parts = ["create-js-stack", config.projectName];
-  if (config.frontend.length > 0 && !config.frontend.includes("none"))
-    parts.push(`--frontend ${config.frontend.join(",")}`);
+  if (config.frontend && config.frontend !== "none")
+    parts.push(`--frontend ${config.frontend}`);
   if (config.backend !== "none") parts.push(`--backend ${config.backend}`);
   if (config.runtime !== "none") parts.push(`--runtime ${config.runtime}`);
   if (config.database !== "none") parts.push(`--database ${config.database}`);
@@ -1393,22 +1491,18 @@ function generateReproducibleCommand(config) {
 //#endregion
 //#region src/utils/js-stack-config.ts
 /**
-
-* Save configuration to .js-stack.json
-
-*/
+ * Save configuration to .js-stack.json
+ */
 async function saveConfig(projectDir, config) {
   const configPath = path.join(projectDir, ".js-stack.json");
   await fs.writeJSON(configPath, config, { spaces: 2 });
 }
 
 //#endregion
-//#region src/commands/init.ts
+//#region src/commands/create.ts
 /**
-
-* Parse comma-separated string to array
-
-*/
+ * Parse comma-separated string to array
+ */
 function parseArray(value) {
   if (!value) return [];
   return value
@@ -1417,16 +1511,10 @@ function parseArray(value) {
     .filter(Boolean);
 }
 /**
-
-* Init command
-
-*/
-async function initCommand(projectName, options = {}) {
+ * Create command
+ */
+async function createProject(projectName, options = {}) {
   try {
-    const { renderTitle: renderTitle$1 } = await import(
-      "./render-title-liybVwBL.js"
-    );
-    renderTitle$1();
     let finalProjectName = projectName;
     if (!finalProjectName) finalProjectName = await promptProjectName();
     const nameValidation = validateProjectName(finalProjectName);
@@ -1448,21 +1536,17 @@ async function initCommand(projectName, options = {}) {
         projectName: finalProjectName,
         projectDir: finalProjectDir,
         relativePath,
-      };
-    else if (options.yolo || Object.keys(options).length > 0)
-      config = {
-        projectName: finalProjectName,
-        projectDir: finalProjectDir,
-        relativePath,
-        frontend: parseArray(options.frontend),
+        frontend: options.frontend ? options.frontend : DEFAULT_CONFIG.frontend,
         backend: options.backend || DEFAULT_CONFIG.backend,
         runtime: options.runtime || DEFAULT_CONFIG.runtime,
         database: options.database || DEFAULT_CONFIG.database,
         orm: options.orm || DEFAULT_CONFIG.orm,
         api: options.api || DEFAULT_CONFIG.api,
         auth: options.auth || DEFAULT_CONFIG.auth,
-        addons: parseArray(options.addons),
-        examples: parseArray(options.examples),
+        addons: options.addons
+          ? parseArray(options.addons)
+          : DEFAULT_CONFIG.addons,
+        examples: options.examples ? parseArray(options.examples) : [],
         dbSetup: options.dbSetup || DEFAULT_CONFIG.dbSetup,
         webDeploy: options.webDeploy || DEFAULT_CONFIG.webDeploy,
         serverDeploy: options.serverDeploy || DEFAULT_CONFIG.serverDeploy,
@@ -1472,16 +1556,44 @@ async function initCommand(projectName, options = {}) {
           options.install !== void 0 ? options.install : DEFAULT_CONFIG.install,
       };
     else {
-      const promptConfig = await promptConfiguration({
-        yes: false,
-        yolo: false,
-      });
-      config = {
-        projectName: finalProjectName,
-        projectDir: finalProjectDir,
-        relativePath,
-        ...promptConfig,
-      };
+      const hasOptions = Object.keys(options).length > 0;
+      if (options.yolo || hasOptions)
+        config = {
+          projectName: finalProjectName,
+          projectDir: finalProjectDir,
+          relativePath,
+          frontend: options.frontend || DEFAULT_CONFIG.frontend,
+          backend: options.backend || DEFAULT_CONFIG.backend,
+          runtime: options.runtime || DEFAULT_CONFIG.runtime,
+          database: options.database || DEFAULT_CONFIG.database,
+          orm: options.orm || DEFAULT_CONFIG.orm,
+          api: options.api || DEFAULT_CONFIG.api,
+          auth: options.auth || DEFAULT_CONFIG.auth,
+          addons: parseArray(options.addons),
+          examples: parseArray(options.examples),
+          dbSetup: options.dbSetup || DEFAULT_CONFIG.dbSetup,
+          webDeploy: options.webDeploy || DEFAULT_CONFIG.webDeploy,
+          serverDeploy: options.serverDeploy || DEFAULT_CONFIG.serverDeploy,
+          packageManager:
+            options.packageManager || DEFAULT_CONFIG.packageManager,
+          git: options.git !== void 0 ? options.git : DEFAULT_CONFIG.git,
+          install:
+            options.install !== void 0
+              ? options.install
+              : DEFAULT_CONFIG.install,
+        };
+      else {
+        const promptConfig = await promptConfiguration({
+          yes: false,
+          yolo: false,
+        });
+        config = {
+          projectName: finalProjectName,
+          projectDir: finalProjectDir,
+          relativePath,
+          ...promptConfig,
+        };
+      }
     }
     if (!options.yolo) {
       const validation = validateConfig(config);
@@ -1501,9 +1613,13 @@ async function initCommand(projectName, options = {}) {
       }
     }
     if (options.verbose) displayConfig(config);
-    await createProject(config, { verbose: options.verbose });
-    await saveConfig(finalProjectDir, config);
-    p.log.success(`Project ${finalProjectName} created successfully!`);
+    if (options.dryRun)
+      p.log.info("Dry run enabled. Skipping project creation.");
+    else await createProject$1(config, { verbose: options.verbose });
+    if (!options.dryRun) await saveConfig(finalProjectDir, config);
+    if (options.dryRun)
+      p.log.success(`Dry run complete for project ${finalProjectName}!`);
+    else p.log.success(`Project ${finalProjectName} created successfully!`);
     console.log();
     p.log.info("Next steps:");
     console.log(`  cd ${relativePath}`);
@@ -1525,190 +1641,119 @@ async function initCommand(projectName, options = {}) {
 }
 
 //#endregion
-//#region src/commands/add.ts
-/**
-
-* Add command - add addons or deployment configs to existing project
-
-*/
-async function addCommand(options) {
-  try {
-    p.log.info("Add command - Coming soon!");
-    p.log.info(
-      "This feature will allow you to add addons or deployment configs to existing projects.",
+//#region src/commands/list.ts
+async function listPresets(options) {
+  console.log(chalk.blue("Available presets:"));
+  console.log(chalk.green("- mern"));
+  console.log(chalk.green("- next-fullstack"));
+  console.log(chalk.green("- react-vite"));
+  console.log(chalk.green("- express-api"));
+  if (options.json)
+    console.log(
+      JSON.stringify(
+        ["mern", "next-fullstack", "react-vite", "express-api"],
+        null,
+        2,
+      ),
     );
-    if (options.addon) p.log.info(`Would add addon: ${options.addon}`);
-    if (options.deploy) p.log.info(`Would add deployment: ${options.deploy}`);
-  } catch (error) {
-    p.log.error(
-      `Failed to add: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    process.exit(1);
-  }
 }
 
 //#endregion
-//#region src/commands/sponsors.ts
-/**
-
-* Sponsors command - display sponsors
-
-*/
-async function sponsorsCommand() {
-  try {
-    const sponsorsBox = boxen(
-      "Thank you to all our sponsors!\n\nJS Stack is an open-source project.\nConsider sponsoring to help us continue development.\n\nVisit: https://github.com/sponsors/vipinyadav01",
-      {
-        padding: 1,
-        margin: 1,
-        borderStyle: "round",
-        borderColor: "cyan",
-      },
-    );
-    console.log(sponsorsBox);
-  } catch (error) {
-    p.log.error(
-      `Failed to display sponsors: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    process.exit(1);
-  }
+//#region src/commands/add-preset.ts
+async function addPreset(name, options) {
+  console.log(chalk.blue(`Adding preset: ${name}`));
+  if (options.source) console.log(chalk.gray(`Source: ${options.source}`));
 }
 
 //#endregion
-//#region src/utils/open-url.ts
-/**
-
-* Open URL in default browser
-
-*/
-async function openURL(url) {
-  const platform = process$1.platform;
-  let command;
-  let args;
-  if (platform === "win32") {
-    command = "cmd";
-    args = ["/c", "start", url];
-  } else if (platform === "darwin") {
-    command = "open";
-    args = [url];
-  } else {
-    command = "xdg-open";
-    args = [url];
-  }
-  try {
-    await execa(command, args, { stdio: "ignore" });
-  } catch (error) {
-    console.warn(
-      `Failed to open URL: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    console.log(`Please open: ${url}`);
-  }
-}
-
-//#endregion
-//#region src/commands/docs.ts
-/**
-
-* Docs command - open documentation in browser
-
-*/
-async function docsCommand() {
-  try {
-    const docsURL = "https://createjsstack.dev/docs";
-    p.log.info(`Opening documentation: ${docsURL}`);
-    await openURL(docsURL);
-  } catch (error) {
-    p.log.error(
-      `Failed to open docs: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    process.exit(1);
-  }
-}
-
-//#endregion
-//#region src/commands/builder.ts
-/**
-
-* Builder command - open web-based builder
-
-*/
-async function builderCommand() {
-  try {
-    const builderURL = "https://createjsstack.dev/new";
-    p.log.info(`Opening builder: ${builderURL}`);
-    await openURL(builderURL);
-  } catch (error) {
-    p.log.error(
-      `Failed to open builder: ${error instanceof Error ? error.message : String(error)}`,
-    );
-    process.exit(1);
-  }
-}
+//#region src/utils/version.ts
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const packageJsonPath = join(__dirname, "../../package.json");
+const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+const version = packageJson.version;
 
 //#endregion
 //#region src/cli.ts
 const program = new Command();
+console.log(
+  chalk.cyan(`
+     ╦╔═╗╔═╗╔╦╗╔═╗╔═╗╦╔═
+     ║╚═╗╚═╗ ║ ╠═╣║  ╠╩╗
+    ╚╝╚═╝╚═╝ ╩ ╩ ╩╚═╝╩ ╩
+    Modern Web Project Generator
+`),
+);
 program
-  .name("create-js-stack")
+  .name("jsstack")
   .description(
-    "Modern CLI tool for scaffolding full-stack JavaScript/TypeScript projects",
+    "A comprehensive scaffold project generator for modern web development",
   )
-  .version("1.0.0");
-program.configureHelp({ helpWidth: 100 });
+  .version(version);
 program
-  .argument("[project-name]", "Name of the project to create")
-  .option("-y, --yes", "Use default configuration")
-  .option("--yolo", "Bypass validations (not recommended)")
-  .option("-v, --verbose", "Show detailed output")
-  .option("--frontend <frameworks>", "Frontend framework(s) (comma-separated)")
-  .option("--backend <framework>", "Backend framework")
-  .option("--runtime <runtime>", "Runtime (node, bun, workers)")
-  .option("--database <database>", "Database")
-  .option("--orm <orm>", "ORM")
-  .option("--api <api>", "API framework")
-  .option("--auth <auth>", "Authentication")
-  .option("--addons <addons>", "Addons (comma-separated)")
-  .option("--examples <examples>", "Examples (comma-separated)")
-  .option("--db-setup <setup>", "Database setup")
-  .option("--web-deploy <deploy>", "Web deployment")
-  .option("--server-deploy <deploy>", "Server deployment")
-  .option("--package-manager <manager>", "Package manager (npm, pnpm, bun)")
-  .option("--no-git", "Skip Git initialization")
-  .option("--no-install", "Skip dependency installation")
+  .command("create [project-name]")
+  .description("Create a new project with selected preset")
   .option(
-    "--directory-conflict <strategy>",
-    "Directory conflict strategy (merge, overwrite, increment, error)",
+    "-p, --preset <preset>",
+    "Use a specific preset (mern, next-fullstack, react-vite, express-api)",
   )
-  .action(async (projectName, options) => {
-    await initCommand(projectName, options);
-  });
+  .option("-t, --typescript", "Use TypeScript", true)
+  .option("--no-typescript", "Use JavaScript instead of TypeScript")
+  .option(
+    "-s, --styling <styling>",
+    "Styling solution (tailwind, styled-components, css-modules, sass)",
+  )
+  .option(
+    "-d, --database <database>",
+    "Database (mongodb, postgresql, mysql, sqlite)",
+  )
+  .option("--orm <orm>", "ORM (drizzle, prisma, mongoose, typeorm)")
+  .option(
+    "--auth <auth>",
+    "Authentication (better-auth, clerk, next-auth, lucia)",
+  )
+  .option(
+    "--frontend <framework>",
+    "Frontend framework (react, vue, nextjs, etc.)",
+  )
+  .option("--backend <framework>", "Backend framework")
+  .option("--api <api>", "API style (trpc, orpc, graphql, rest)")
+  .option("--addons <addons>", "Addons (pwa, tauri, docker, etc.)")
+  .option("--docker", "Include Docker configuration")
+  .option("--cicd <cicd>", "CI/CD configuration (github-actions, gitlab-ci)")
+  .option(
+    "--db-setup <dbSetup>",
+    "Database setup (turso, neon, docker-compose, supabase)",
+  )
+  .option(
+    "--web-deploy <webDeploy>",
+    "Web deployment (cloudflare-pages, alchemy)",
+  )
+  .option(
+    "--server-deploy <serverDeploy>",
+    "Server deployment (cloudflare-workers, alchemy)",
+  )
+  .option("-y, --yes", "Skip prompts and use defaults")
+  .option("--dry-run", "Preview files without creating them")
+  .action(createProject);
 program
-  .command("add")
-  .description("Add addons or deployment configs to existing project")
-  .option("--addon <addon>", "Addon to add")
-  .option("--deploy <deploy>", "Deployment config to add")
-  .action(async (options) => {
-    await addCommand(options);
-  });
+  .command("list")
+  .description("List all available presets")
+  .option("--json", "Output as JSON")
+  .action(listPresets);
 program
-  .command("sponsors")
-  .description("Display sponsors")
-  .action(async () => {
-    await sponsorsCommand();
-  });
+  .command("add-preset <name>")
+  .description("Add a custom preset from a template directory")
+  .option("-s, --source <path>", "Source directory for preset templates")
+  .action(addPreset);
 program
-  .command("docs")
-  .description("Open documentation in browser")
-  .action(async () => {
-    await docsCommand();
+  .command("info")
+  .description("Display environment info")
+  .action(() => {
+    console.log(chalk.cyan("\nEnvironment Information:"));
+    console.log(chalk.white(`  Node.js: ${process.version}`));
+    console.log(chalk.white(`  Platform: ${process.platform}`));
+    console.log(chalk.white(`  jsStack Version: ${version}`));
   });
-program
-  .command("builder")
-  .description("Open web-based builder")
-  .action(async () => {
-    await builderCommand();
-  });
-if (process.argv.length === 2) renderTitle();
 program.parse();
 
 //#endregion
