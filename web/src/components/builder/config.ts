@@ -6,7 +6,6 @@ export type Frontend =
   | "svelte"
   | "nextjs"
   | "nuxt"
-  | "react-native"
   | "sveltekit"
   | "remix"
   | "astro"
@@ -23,7 +22,6 @@ export type Backend =
   | "express"
   | "fastify"
   | "koa"
-  | "hapi"
   | "nestjs"
   | "hono"
   | "elysia"
@@ -35,50 +33,29 @@ export type Database = "none" | "sqlite" | "postgres" | "mysql" | "mongodb";
 export type ORM =
   | "none"
   | "prisma"
-  | "sequelize"
   | "mongoose"
   | "typeorm"
   | "drizzle"
   | "mikro-orm";
 
-export type Auth =
-  | "none"
-  | "jwt"
-  | "passport"
-  | "auth0"
-  | "oauth"
-  | "better-auth"
-  | "clerk"
-  | "lucia"
-  | "kinde"
-  | "next-auth";
+export type Auth = "none" | "better-auth" | "clerk" | "lucia" | "next-auth";
 
 export type Addon =
   | "docker"
-  | "testing"
   | "biome"
   | "turborepo"
   | "pwa"
   | "tauri"
-  | "husky"
-  | "storybook"
-  | "changesets"
   | "vitest"
   | "playwright"
   | "cypress";
 
 export type DBSetup = "none" | "docker-compose" | "turso" | "neon" | "supabase";
 
-export type WebDeploy = "none" | "cloudflare-pages" | "vercel" | "netlify";
+export type WebDeploy = "none" | "cloudflare-pages";
+export type ServerDeploy = "none" | "cloudflare-workers" | "alchemy";
 
-export type ServerDeploy =
-  | "none"
-  | "cloudflare-workers"
-  | "fly"
-  | "railway"
-  | "alchemy";
-
-export type PackageManager = "npm" | "yarn" | "pnpm" | "bun";
+export type PackageManager = "npm" | "pnpm" | "bun";
 
 export interface BuilderState {
   projectName: string;
@@ -102,7 +79,7 @@ export const defaultConfig: BuilderState = {
   backend: "express",
   database: "mongodb",
   orm: "mongoose",
-  auth: "jwt",
+  auth: "better-auth",
   addons: [],
   dbSetup: "none",
   webDeploy: "none",
@@ -137,68 +114,130 @@ export const compatibilityRules = {
 
   // Frontend-Auth compatibility (optimal pairings)
   frontendAuth: {
-    nextjs: ["better-auth", "auth0", "jwt", "oauth", "none"],
-    react: ["auth0", "better-auth", "jwt", "oauth", "passport", "none"],
-    vue: ["auth0", "better-auth", "jwt", "oauth", "passport", "none"],
-    nuxt: ["auth0", "better-auth", "jwt", "oauth", "none"],
-    angular: ["auth0", "jwt", "oauth", "passport", "none"],
-    svelte: ["auth0", "better-auth", "jwt", "oauth", "none"],
-    "react-native": ["auth0", "better-auth", "jwt", "oauth", "none"],
+    nextjs: ["better-auth", "next-auth", "clerk", "lucia", "none"],
+    react: ["better-auth", "clerk", "lucia", "none"],
+    vue: ["better-auth", "clerk", "lucia", "none"],
+    nuxt: ["better-auth", "clerk", "lucia", "none"],
+    angular: ["better-auth", "clerk", "none"],
+    svelte: ["better-auth", "lucia", "clerk", "none"],
+    "native-nativewind": ["clerk", "better-auth", "none"],
+    "native-unistyles": ["clerk", "better-auth", "none"],
     none: ["none"],
   },
 
   // Backend-Auth compatibility (backend-specific auth support)
   backendAuth: {
-    express: ["jwt", "passport", "auth0", "oauth", "better-auth", "none"],
-    fastify: ["jwt", "auth0", "oauth", "better-auth", "none"], // No Passport support
-    koa: ["jwt", "passport", "auth0", "oauth", "better-auth", "none"],
-    hapi: ["jwt", "auth0", "oauth", "none"], // Limited auth support
-    nestjs: ["jwt", "passport", "auth0", "oauth", "better-auth", "none"],
-    none: ["better-auth", "auth0", "jwt", "oauth", "none"], // Frontend-only auth
+    express: ["better-auth", "lucia", "clerk", "none"],
+    fastify: ["better-auth", "lucia", "clerk", "none"],
+    koa: ["better-auth", "lucia", "clerk", "none"],
+    hono: ["better-auth", "lucia", "clerk", "none"],
+    elysia: ["better-auth", "lucia", "clerk", "none"],
+    nestjs: ["better-auth", "lucia", "clerk", "none"],
+    convex: ["clerk", "none"],
+    next: ["better-auth", "next-auth", "lucia", "clerk", "none"],
+    none: ["better-auth", "clerk", "lucia", "next-auth", "none"],
   },
 
   // Frontend-Backend compatibility (which backends work with which frontends)
   frontendBackend: {
-    nextjs: ["none"], // Built-in API routes
+    nextjs: ["none", "next"], // Built-in API routes
     nuxt: ["none"], // Built-in server routes
-    react: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
-    vue: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
-    angular: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
-    svelte: ["express", "fastify", "koa", "hapi", "nestjs", "none"],
-    "react-native": ["express", "fastify", "koa", "hapi", "nestjs"], // Requires backend
-    none: ["express", "fastify", "koa", "hapi", "nestjs"], // API-only
+    react: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "none"],
+    vue: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "none"],
+    angular: ["express", "fastify", "koa", "nestjs", "hono", "none"],
+    svelte: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "none"],
+    "native-nativewind": ["express", "fastify", "nestjs", "convex"],
+    "native-unistyles": ["express", "fastify", "nestjs", "convex"],
+    none: ["express", "fastify", "koa", "nestjs", "hono", "elysia"],
   },
 
   // Backend-Frontend compatibility (reverse lookup)
   backendFrontend: {
-    express: ["react", "vue", "angular", "svelte", "react-native", "none"],
-    fastify: ["react", "vue", "angular", "svelte", "react-native", "none"],
-    koa: ["react", "vue", "angular", "svelte", "react-native", "none"],
-    hapi: ["react", "vue", "angular", "svelte", "react-native", "none"],
-    nestjs: ["react", "vue", "angular", "svelte", "react-native", "none"],
-    none: ["nextjs", "nuxt", "react", "vue", "angular", "svelte"], // No React Native
+    express: [
+      "react",
+      "vue",
+      "angular",
+      "svelte",
+      "native-nativewind",
+      "native-unistyles",
+      "none",
+    ],
+    fastify: [
+      "react",
+      "vue",
+      "angular",
+      "svelte",
+      "native-nativewind",
+      "native-unistyles",
+      "none",
+    ],
+    koa: ["react", "vue", "angular", "svelte", "none"],
+    hono: ["react", "vue", "angular", "svelte", "none"],
+    elysia: ["react", "vue", "svelte", "none"],
+    nestjs: [
+      "react",
+      "vue",
+      "angular",
+      "svelte",
+      "native-nativewind",
+      "native-unistyles",
+      "none",
+    ],
+    convex: ["react", "native-nativewind", "native-unistyles", "none"],
+    next: ["nextjs"],
+    none: ["nextjs", "nuxt", "react", "vue", "angular", "svelte"],
   },
 
   // Backend-Database compatibility (tested combinations)
   backendDatabase: {
     express: ["mongodb", "postgres", "mysql", "sqlite", "none"],
-    fastify: ["postgres", "mysql", "sqlite", "mongodb", "none"], // Fastify works great with SQL
+    fastify: ["postgres", "mysql", "sqlite", "mongodb", "none"],
     koa: ["mongodb", "postgres", "mysql", "sqlite", "none"],
-    hapi: ["postgres", "mysql", "sqlite", "mongodb", "none"],
-    nestjs: ["postgres", "mysql", "sqlite", "mongodb", "none"], // NestJS supports all major DBs
+    hono: ["postgres", "mysql", "sqlite", "mongodb", "none"],
+    elysia: ["postgres", "mysql", "sqlite", "none"],
+    nestjs: ["postgres", "mysql", "sqlite", "mongodb", "none"],
+    convex: ["none"], // Convex has built-in database
+    next: ["postgres", "mysql", "sqlite", "mongodb", "none"],
     none: ["none"],
   },
 
   // Frontend-Addon compatibility (framework-specific support)
   frontendAddons: {
-    nextjs: ["testing", "biome", "turborepo", "docker"],
-    react: ["testing", "biome", "turborepo", "docker"],
-    vue: ["testing", "biome", "turborepo", "docker"],
-    angular: ["testing", "docker", "turborepo"], // Angular has its own linting, biome less common
-    svelte: ["testing", "biome", "turborepo", "docker"],
-    nuxt: ["testing", "biome", "turborepo", "docker"],
-    "react-native": ["testing", "docker"], // Limited addon support for mobile
-    none: ["docker", "testing", "biome", "turborepo"], // Backend-only supports all
+    nextjs: [
+      "biome",
+      "vitest",
+      "playwright",
+      "cypress",
+      "turborepo",
+      "docker",
+      "pwa",
+      "tauri",
+    ],
+    react: [
+      "biome",
+      "vitest",
+      "playwright",
+      "cypress",
+      "turborepo",
+      "docker",
+      "pwa",
+      "tauri",
+    ],
+    vue: [
+      "biome",
+      "vitest",
+      "playwright",
+      "cypress",
+      "turborepo",
+      "docker",
+      "pwa",
+    ],
+    angular: ["vitest", "playwright", "cypress", "docker", "turborepo"],
+    svelte: ["biome", "vitest", "playwright", "cypress", "turborepo", "docker"],
+    nuxt: ["biome", "vitest", "playwright", "cypress", "turborepo", "docker"],
+    "native-nativewind": ["biome", "vitest"],
+    "native-unistyles": ["biome", "vitest"],
+    none: ["docker", "biome", "vitest", "turborepo"],
   },
 } as const;
 
@@ -264,7 +303,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     database: "postgres",
     orm: "prisma",
     auth: "better-auth",
-    addons: ["testing", "biome"],
+    addons: ["vitest", "biome"],
     packageManager: "npm",
   },
   "react-express-postgres": {
@@ -272,17 +311,17 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     backend: "express",
     database: "postgres",
     orm: "prisma",
-    auth: "jwt",
-    addons: ["testing", "docker"],
+    auth: "better-auth",
+    addons: ["vitest", "docker"],
     packageManager: "npm",
   },
   "vue-express-mysql": {
     frontend: "vue",
     backend: "express",
     database: "mysql",
-    orm: "sequelize",
-    auth: "passport",
-    addons: ["testing", "biome"],
+    orm: "prisma",
+    auth: "better-auth",
+    addons: ["vitest", "biome"],
     packageManager: "npm",
   },
   // API-only combinations
@@ -291,8 +330,8 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     backend: "fastify",
     database: "postgres",
     orm: "prisma",
-    auth: "jwt",
-    addons: ["testing", "docker"],
+    auth: "better-auth",
+    addons: ["vitest", "docker"],
     packageManager: "npm",
   },
   "nestjs-postgres-typeorm": {
@@ -300,8 +339,8 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     backend: "nestjs",
     database: "postgres",
     orm: "typeorm",
-    auth: "passport",
-    addons: ["testing", "docker"],
+    auth: "better-auth",
+    addons: ["vitest", "docker"],
     packageManager: "npm",
   },
   // NoSQL combinations
@@ -310,18 +349,18 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
     backend: "express",
     database: "mongodb",
     orm: "mongoose",
-    auth: "jwt",
-    addons: ["testing"],
+    auth: "lucia",
+    addons: ["vitest"],
     packageManager: "npm",
   },
   // Mobile combinations
-  "react-native-express": {
-    frontend: "react-native",
+  "native-express": {
+    frontend: "native-nativewind",
     backend: "express",
     database: "postgres",
     orm: "prisma",
-    auth: "auth0",
-    addons: ["testing"],
+    auth: "clerk",
+    addons: ["biome"],
     packageManager: "npm",
   },
   // Rapid prototyping
@@ -338,6 +377,7 @@ export const testedStackCombinations: Record<string, Partial<BuilderState>> = {
 
 export const techCatalog = {
   frontend: [
+    // Note: "react" uses tanstack-router or react-router template
     {
       key: "react",
       name: "React",
@@ -374,12 +414,13 @@ export const techCatalog = {
       desc: "Full-featured enterprise framework",
       badge: "Enterprise",
     },
-    {
-      key: "react-native",
-      name: "React Native",
-      desc: "Cross-platform mobile apps",
-      badge: "Mobile",
-    },
+    // React Native is split into native-nativewind and native-unistyles
+    // {
+    //   key: "react-native",
+    //   name: "React Native",
+    //   desc: "Cross-platform mobile apps",
+    //   badge: "Mobile",
+    // },
     {
       key: "sveltekit",
       name: "SvelteKit",
@@ -462,7 +503,8 @@ export const techCatalog = {
       badge: "Enterprise",
     },
     { key: "koa", name: "Koa", desc: "Expressive middleware framework" },
-    { key: "hapi", name: "Hapi", desc: "Rich configuration framework" },
+    // Hapi template not implemented in CLI
+    // { key: "hapi", name: "Hapi", desc: "Rich configuration framework" },
     {
       key: "hono",
       name: "Hono",
@@ -524,16 +566,16 @@ export const techCatalog = {
       badge: "Modern",
     },
     {
+      key: "drizzle",
+      name: "Drizzle",
+      desc: "Lightweight SQL ORM",
+      badge: "Modern",
+    },
+    {
       key: "mongoose",
       name: "Mongoose",
       desc: "Elegant MongoDB ODM",
       badge: "MongoDB",
-    },
-    {
-      key: "sequelize",
-      name: "Sequelize",
-      desc: "Feature-rich SQL ORM",
-      badge: "Mature",
     },
     {
       key: "typeorm",
@@ -542,17 +584,18 @@ export const techCatalog = {
       badge: "TypeScript",
     },
     {
-      key: "drizzle",
-      name: "Drizzle",
-      desc: "Lightweight SQL ORM",
-      badge: "Modern",
-    },
-    {
       key: "mikro-orm",
       name: "MikroORM",
       desc: "TypeScript ORM",
       badge: "TypeScript",
     },
+    // Sequelize template not implemented in CLI
+    // {
+    //   key: "sequelize",
+    //   name: "Sequelize",
+    //   desc: "Feature-rich SQL ORM",
+    //   badge: "Mature",
+    // },
     { key: "none", name: "None", desc: "Direct database queries" },
   ],
   auth: [
@@ -561,30 +604,6 @@ export const techCatalog = {
       name: "Better Auth",
       desc: "Modern, flexible auth solution",
       badge: "New",
-    },
-    {
-      key: "auth0",
-      name: "Auth0",
-      desc: "Complete identity platform",
-      badge: "Hosted",
-    },
-    {
-      key: "jwt",
-      name: "JWT",
-      desc: "Simple stateless authentication",
-      badge: "Simple",
-    },
-    {
-      key: "passport",
-      name: "Passport",
-      desc: "Extensible auth middleware",
-      badge: "Flexible",
-    },
-    {
-      key: "oauth",
-      name: "OAuth",
-      desc: "Industry-standard authorization",
-      badge: "Standard",
     },
     {
       key: "clerk",
@@ -599,26 +618,46 @@ export const techCatalog = {
       badge: "Library",
     },
     {
-      key: "kinde",
-      name: "Kinde",
-      desc: "Auth made simple",
-      badge: "Hosted",
-    },
-    {
       key: "next-auth",
       name: "NextAuth",
       desc: "Auth for Next.js",
       badge: "Next.js",
     },
+    // Kinde template exists but is empty
+    // {
+    //   key: "kinde",
+    //   name: "Kinde",
+    //   desc: "Auth made simple",
+    //   badge: "Hosted",
+    // },
+    // The following auth options are not implemented in CLI templates:
+    // {
+    //   key: "auth0",
+    //   name: "Auth0",
+    //   desc: "Complete identity platform",
+    //   badge: "Hosted",
+    // },
+    // {
+    //   key: "jwt",
+    //   name: "JWT",
+    //   desc: "Simple stateless authentication",
+    //   badge: "Simple",
+    // },
+    // {
+    //   key: "passport",
+    //   name: "Passport",
+    //   desc: "Extensible auth middleware",
+    //   badge: "Flexible",
+    // },
+    // {
+    //   key: "oauth",
+    //   name: "OAuth",
+    //   desc: "Industry-standard authorization",
+    //   badge: "Standard",
+    // },
     { key: "none", name: "None", desc: "No user authentication" },
   ],
   addons: [
-    {
-      key: "testing",
-      name: "Testing",
-      desc: "Jest/Vitest testing framework",
-      badge: "Recommended",
-    },
     {
       key: "biome",
       name: "Biome",
@@ -649,19 +688,6 @@ export const techCatalog = {
       desc: "Build smaller, faster, and more secure desktop applications",
       badge: "Desktop",
     },
-    { key: "husky", name: "Husky", desc: "Git hooks made easy", badge: "Git" },
-    {
-      key: "storybook",
-      name: "Storybook",
-      desc: "Frontend workshop for building UI components",
-      badge: "UI",
-    },
-    {
-      key: "changesets",
-      name: "Changesets",
-      desc: "A way to manage your versioning and changelogs",
-      badge: "Version",
-    },
     {
       key: "vitest",
       name: "Vitest",
@@ -680,10 +706,31 @@ export const techCatalog = {
       desc: "Fast, easy and reliable testing for anything that runs in a browser",
       badge: "Test",
     },
+    // The following addons have empty templates:
+    // { key: "husky", name: "Husky", desc: "Git hooks made easy", badge: "Git" },
+    // {
+    //   key: "storybook",
+    //   name: "Storybook",
+    //   desc: "Frontend workshop for building UI components",
+    //   badge: "UI",
+    // },
+    // {
+    //   key: "changesets",
+    //   name: "Changesets",
+    //   desc: "A way to manage your versioning and changelogs",
+    //   badge: "Version",
+    // },
+    // {
+    //   key: "testing",
+    //   name: "Testing",
+    //   desc: "Jest/Vitest testing framework",
+    //   badge: "Recommended",
+    // },
   ],
   packageManager: [
     { key: "npm", name: "npm", desc: "Node Package Manager", badge: "Default" },
-    { key: "yarn", name: "Yarn", desc: "Fast, reliable, secure" },
+    // Yarn not supported by CLI
+    // { key: "yarn", name: "Yarn", desc: "Fast, reliable, secure" },
     { key: "pnpm", name: "pnpm", desc: "Fast, disk space efficient" },
     {
       key: "bun",
@@ -721,18 +768,19 @@ export const techCatalog = {
       desc: "Fast, secure static site hosting",
       badge: "Edge",
     },
-    {
-      key: "vercel",
-      name: "Vercel",
-      desc: "Develop. Preview. Ship.",
-      badge: "Cloud",
-    },
-    {
-      key: "netlify",
-      name: "Netlify",
-      desc: "Fastest way to build the fastest sites",
-      badge: "Cloud",
-    },
+    // Vercel and Netlify templates not implemented
+    // {
+    //   key: "vercel",
+    //   name: "Vercel",
+    //   desc: "Develop. Preview. Ship.",
+    //   badge: "Cloud",
+    // },
+    // {
+    //   key: "netlify",
+    //   name: "Netlify",
+    //   desc: "Fastest way to build the fastest sites",
+    //   badge: "Cloud",
+    // },
     { key: "none", name: "None", desc: "No deployment configuration" },
   ],
   serverDeploy: [
@@ -743,23 +791,24 @@ export const techCatalog = {
       badge: "Edge",
     },
     {
-      key: "fly",
-      name: "Fly.io",
-      desc: "Run your full stack apps globally",
-      badge: "Cloud",
-    },
-    {
-      key: "railway",
-      name: "Railway",
-      desc: "Infrastructure, instantly",
-      badge: "Cloud",
-    },
-    {
       key: "alchemy",
       name: "Alchemy",
       desc: "The web3 development platform",
       badge: "Web3",
     },
+    // Fly and Railway templates not implemented
+    // {
+    //   key: "fly",
+    //   name: "Fly.io",
+    //   desc: "Run your full stack apps globally",
+    //   badge: "Cloud",
+    // },
+    // {
+    //   key: "railway",
+    //   name: "Railway",
+    //   desc: "Infrastructure, instantly",
+    //   badge: "Cloud",
+    // },
     { key: "none", name: "None", desc: "No deployment configuration" },
   ],
 } as const;
@@ -895,8 +944,12 @@ export function applyCompatibility(state: BuilderState): BuilderState {
     adjusted.frontend = "react";
   }
 
-  // Rule 3: React Native must have a backend (cannot be "none")
-  if (state.frontend === "react-native" && state.backend === "none") {
+  // Rule 3: React Native (native-nativewind/native-unistyles) must have a backend
+  if (
+    (state.frontend === "native-nativewind" ||
+      state.frontend === "native-unistyles") &&
+    state.backend === "none"
+  ) {
     adjusted.backend = "express"; // Default to Express for React Native
   }
 
@@ -984,17 +1037,7 @@ export function applyCompatibility(state: BuilderState): BuilderState {
   // Backend-Auth Compatibility Rules
   // ============================================
 
-  // Rule 12: Passport doesn't work with Fastify
-  if (state.backend === "fastify" && state.auth === "passport") {
-    adjusted.auth = "jwt"; // Switch to JWT for Fastify
-  }
-
-  // Rule 13: Passport requires a proper backend (not "none")
-  if (state.backend === "none" && state.auth === "passport") {
-    adjusted.auth = "jwt"; // Switch to JWT for frontend-only
-  }
-
-  // Rule 14: Check backend-auth compatibility
+  // Check backend-auth compatibility
   if (!isCompatible("backendAuth", state.backend, state.auth)) {
     const compatibleAuths = getCompatibleOptions<Auth>(
       "backendAuth",
@@ -1058,8 +1101,12 @@ export function validateConfiguration(state: BuilderState): {
     );
   }
 
-  // Error 3: React Native must have a backend
-  if (state.frontend === "react-native" && state.backend === "none") {
+  // Error 3: React Native (native-nativewind/native-unistyles) must have a backend
+  if (
+    (state.frontend === "native-nativewind" ||
+      state.frontend === "native-unistyles") &&
+    state.backend === "none"
+  ) {
     errors.push(
       "React Native requires a backend framework. Please select a backend (e.g., Express, Fastify, NestJS).",
     );
@@ -1159,17 +1206,6 @@ export function validateConfiguration(state: BuilderState): {
     );
   }
 
-  if (!state.initializeGit) {
-    warnings.push("Manual git repository initialization required.");
-  }
-
-  // Warning 5: Passport with Fastify (should be caught by auto-correction, but warn if not)
-  if (state.backend === "fastify" && state.auth === "passport") {
-    warnings.push(
-      "Passport.js has limited support with Fastify. Consider using JWT or another auth method.",
-    );
-  }
-
   return {
     isValid: errors.length === 0,
     errors,
@@ -1189,8 +1225,6 @@ export function buildCliCommand(state: BuilderState): string {
     switch (packageManager) {
       case "npm":
         return "npx";
-      case "yarn":
-        return "yarn create";
       case "pnpm":
         return "pnpm create";
       case "bun":
@@ -1316,9 +1350,6 @@ export function generateReproducibleCommand(config: BuilderState): string {
     case "pnpm":
       baseCommand = "pnpm create js-stack@latest";
       break;
-    case "yarn":
-      baseCommand = "yarn create js-stack@latest";
-      break;
     case "npm":
     default:
       baseCommand = "npx create-js-stack@latest";
@@ -1347,9 +1378,6 @@ export function generateQuickStartCommand(config: BuilderState): string {
       break;
     case "pnpm":
       baseCommand = "pnpm create js-stack@latest";
-      break;
-    case "yarn":
-      baseCommand = "yarn create js-stack@latest";
       break;
     case "npm":
     default:
@@ -1421,7 +1449,7 @@ export function getRecommendedStack(useCase: string): Partial<BuilderState> {
       database: "postgres" as Database,
       orm: "prisma" as ORM,
       auth: "better-auth" as Auth,
-      addons: ["testing", "biome"] as Addon[],
+      addons: ["biome", "vitest"] as Addon[],
       packageManager: "npm" as PackageManager,
       installDependencies: true,
       initializeGit: true,
@@ -1431,8 +1459,8 @@ export function getRecommendedStack(useCase: string): Partial<BuilderState> {
       backend: "express" as Backend,
       database: "postgres" as Database,
       orm: "prisma" as ORM,
-      auth: "jwt" as Auth,
-      addons: ["testing", "docker"] as Addon[],
+      auth: "better-auth" as Auth,
+      addons: ["biome", "docker"] as Addon[],
       packageManager: "npm" as PackageManager,
       installDependencies: true,
       initializeGit: true,
@@ -1442,19 +1470,19 @@ export function getRecommendedStack(useCase: string): Partial<BuilderState> {
       backend: "fastify" as Backend,
       database: "postgres" as Database,
       orm: "prisma" as ORM,
-      auth: "jwt" as Auth,
-      addons: ["testing", "docker"] as Addon[],
+      auth: "better-auth" as Auth,
+      addons: ["biome", "docker"] as Addon[],
       packageManager: "npm" as PackageManager,
       installDependencies: true,
       initializeGit: true,
     },
     mobile: {
-      frontend: "react-native" as Frontend,
+      frontend: "native-nativewind" as Frontend,
       backend: "express" as Backend,
       database: "postgres" as Database,
       orm: "prisma" as ORM,
-      auth: "auth0" as Auth,
-      addons: ["testing"] as Addon[],
+      auth: "clerk" as Auth,
+      addons: ["biome"] as Addon[],
       packageManager: "npm" as PackageManager,
       installDependencies: true,
       initializeGit: true,
@@ -1522,12 +1550,19 @@ export function generateSetupInstructions(state: BuilderState): {
   }
 
   // Technology-specific setup notes
-  if (state.auth === "auth0") {
-    notes.push("Configure Auth0 domain and client ID in environment variables");
+
+  if (state.auth !== "none") {
+    notes.push("Ensure you have your auth provider credentials ready.");
   }
 
   if (state.auth === "better-auth") {
     notes.push("Configure Better Auth providers and database URL");
+  }
+
+  if (state.auth !== "none") {
+    notes.push(
+      "Authentication is handled by your chosen provider. Check their docs for setup.",
+    );
   }
 
   if (state.addons.includes("docker")) {
@@ -1562,10 +1597,6 @@ export function requiresManualSetup(state: BuilderState): {
 
   if (state.database === "postgres" || state.database === "mysql") {
     manualSteps.push("Set up and configure database server");
-  }
-
-  if (state.auth === "auth0") {
-    manualSteps.push("Configure Auth0 credentials and environment variables");
   }
 
   if (state.auth === "better-auth") {

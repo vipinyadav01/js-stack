@@ -16,7 +16,7 @@ export const PRESET_TEMPLATES: PresetTemplate[] = [
       database: "sqlite",
       orm: "prisma",
       auth: "none",
-      addons: ["testing"],
+      addons: ["vitest"],
       packageManager: "npm",
       git: "true",
       install: "true",

@@ -36,7 +36,7 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
       database: "postgres",
       orm: "prisma",
       auth: "better-auth",
-      addons: ["testing", "biome", "docker"],
+      addons: ["vitest", "biome", "docker"],
       packageManager: "npm",
       installDependencies: true,
       initializeGit: true,
@@ -56,8 +56,8 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
       backend: "fastify",
       database: "postgres",
       orm: "drizzle",
-      auth: "jwt",
-      addons: ["docker", "testing"],
+      auth: "lucia",
+      addons: ["docker", "vitest"],
       packageManager: "npm",
       installDependencies: true,
       initializeGit: true,
@@ -77,8 +77,8 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
       backend: "nestjs",
       database: "postgres",
       orm: "typeorm",
-      auth: "passport",
-      addons: ["docker", "testing", "turborepo"],
+      auth: "better-auth",
+      addons: ["docker", "vitest", "turborepo"],
       packageManager: "npm",
       installDependencies: true,
       initializeGit: true,
@@ -120,7 +120,7 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
       database: "postgres",
       orm: "drizzle",
       auth: "better-auth",
-      addons: ["testing"],
+      addons: ["vitest"],
       packageManager: "npm",
       installDependencies: true,
       initializeGit: true,
@@ -136,17 +136,17 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
     name: "Mobile + Web Cross-Platform",
     description: "React Native mobile + web dashboard",
     recommended: {
-      frontend: "react-native",
+      frontend: "native-nativewind",
       backend: "nestjs",
       database: "postgres",
       orm: "prisma",
-      auth: "auth0",
-      addons: ["docker", "testing", "turborepo"],
+      auth: "clerk",
+      addons: ["docker", "vitest", "turborepo"],
       packageManager: "npm",
       installDependencies: true,
       initializeGit: true,
     },
-    why: "Share code between mobile/web, Auth0 for universal auth",
+    why: "Share code between mobile/web, Clerk for universal auth",
     difficulty: "Advanced",
     tags: ["mobile", "cross-platform"],
     estimatedTime: "4-6 hours",
@@ -162,7 +162,7 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
       database: "none", // Convex includes DB
       orm: "none",
       auth: "clerk",
-      addons: ["testing"],
+      addons: ["vitest"],
       packageManager: "npm",
       installDependencies: true,
       initializeGit: true,
@@ -219,7 +219,7 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
 export const COMPATIBILITY_MATRIX = {
   database_orm: {
     postgres: {
-      compatible: ["prisma", "sequelize", "typeorm", "drizzle", "mikro-orm"],
+      compatible: ["prisma", "typeorm", "drizzle", "mikro-orm"],
       recommended: "prisma",
       reason: "Best TypeScript support, great developer experience",
       alternatives: [
@@ -228,16 +228,16 @@ export const COMPATIBILITY_MATRIX = {
       ],
     },
     mysql: {
-      compatible: ["prisma", "sequelize", "typeorm", "drizzle", "mikro-orm"],
+      compatible: ["prisma", "typeorm", "drizzle", "mikro-orm"],
       recommended: "prisma",
       reason: "Consistent API across SQL databases",
       alternatives: [
         { id: "drizzle", reason: "Lightweight, minimal overhead" },
-        { id: "sequelize", reason: "Mature, feature-rich" },
+        { id: "typeorm", reason: "Mature, feature-rich" },
       ],
     },
     sqlite: {
-      compatible: ["prisma", "sequelize", "typeorm", "drizzle"],
+      compatible: ["prisma", "typeorm", "drizzle"],
       recommended: "drizzle",
       reason: "Lightweight, perfect for SQLite's use case",
       alternatives: [
@@ -255,7 +255,7 @@ export const COMPATIBILITY_MATRIX = {
 
   frontend_auth: {
     nextjs: {
-      compatible: ["next-auth", "clerk", "auth0", "better-auth", "lucia"],
+      compatible: ["next-auth", "clerk", "better-auth", "lucia"],
       recommended: "next-auth",
       reason: "Built specifically for Next.js, seamless integration",
       alternatives: [
@@ -264,40 +264,34 @@ export const COMPATIBILITY_MATRIX = {
       ],
     },
     react: {
-      compatible: ["clerk", "auth0", "better-auth", "lucia", "jwt"],
+      compatible: ["clerk", "better-auth", "lucia"],
       recommended: "clerk",
       reason: "Drop-in components, handles UI + backend",
       alternatives: [
         { id: "better-auth", reason: "Modern, flexible" },
-        { id: "auth0", reason: "Enterprise-grade" },
+        { id: "lucia", reason: "Lightweight, full control" },
       ],
     },
     vue: {
-      compatible: ["auth0", "better-auth", "lucia", "jwt"],
+      compatible: ["better-auth", "lucia"],
       recommended: "better-auth",
       reason: "Framework-agnostic, works great with Vue",
       alternatives: [
         { id: "lucia", reason: "Lightweight, gives full control" },
-        { id: "auth0", reason: "Enterprise-grade" },
+        { id: "clerk", reason: "Hosted solution" },
       ],
     },
     angular: {
-      compatible: ["auth0", "passport", "jwt"],
-      recommended: "auth0",
+      compatible: ["clerk", "better-auth"],
+      recommended: "clerk",
       reason: "Enterprise-grade, good Angular support",
-      alternatives: [
-        { id: "passport", reason: "Flexible, many strategies" },
-        { id: "jwt", reason: "Simple, stateless" },
-      ],
+      alternatives: [{ id: "better-auth", reason: "Flexible auth solution" }],
     },
     svelte: {
-      compatible: ["better-auth", "lucia", "jwt"],
+      compatible: ["better-auth", "lucia"],
       recommended: "lucia",
       reason: "Lightweight, gives full control",
-      alternatives: [
-        { id: "better-auth", reason: "Modern, flexible" },
-        { id: "jwt", reason: "Simple, stateless" },
-      ],
+      alternatives: [{ id: "better-auth", reason: "Modern, flexible" }],
     },
   },
 

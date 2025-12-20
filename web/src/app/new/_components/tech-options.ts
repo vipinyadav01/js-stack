@@ -30,29 +30,27 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
                 ? "▲"
                 : opt.key === "nuxt"
                   ? "💚"
-                  : opt.key === "react-native"
-                    ? "📱"
-                    : opt.key === "sveltekit"
-                      ? "🍊"
-                      : opt.key === "remix"
-                        ? "💿"
-                        : opt.key === "astro"
-                          ? "🚀"
-                          : opt.key === "solid"
-                            ? "🔵"
-                            : opt.key === "qwik"
-                              ? "⚡"
-                              : opt.key === "tanstack-start"
-                                ? "🥞"
-                                : opt.key === "tanstack-router"
+                  : opt.key === "sveltekit"
+                    ? "🍊"
+                    : opt.key === "remix"
+                      ? "💿"
+                      : opt.key === "astro"
+                        ? "🚀"
+                        : opt.key === "solid"
+                          ? "🔵"
+                          : opt.key === "qwik"
+                            ? "⚡"
+                            : opt.key === "tanstack-start"
+                              ? "🥞"
+                              : opt.key === "tanstack-router"
+                                ? "🛣️"
+                                : opt.key === "react-router"
                                   ? "🛣️"
-                                  : opt.key === "react-router"
-                                    ? "🛣️"
-                                    : opt.key === "native-nativewind"
-                                      ? "🌬️"
-                                      : opt.key === "native-unistyles"
-                                        ? "🦄"
-                                        : "📦",
+                                  : opt.key === "native-nativewind"
+                                    ? "📱"
+                                    : opt.key === "native-unistyles"
+                                      ? "📱"
+                                      : "📦",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   backend: techCatalog.backend.map((opt) => ({
@@ -66,19 +64,17 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
           ? "⚡"
           : opt.key === "koa"
             ? "🎋"
-            : opt.key === "hapi"
-              ? "🎯"
-              : opt.key === "nestjs"
-                ? "🪺"
-                : opt.key === "hono"
-                  ? "🔥"
-                  : opt.key === "elysia"
-                    ? "🦊"
-                    : opt.key === "convex"
-                      ? "🔮"
-                      : opt.key === "next"
-                        ? "▲"
-                        : "🚫",
+            : opt.key === "nestjs"
+              ? "🪺"
+              : opt.key === "hono"
+                ? "🔥"
+                : opt.key === "elysia"
+                  ? "🦊"
+                  : opt.key === "convex"
+                    ? "🔮"
+                    : opt.key === "next"
+                      ? "▲"
+                      : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   database: techCatalog.database.map((opt) => ({
@@ -106,15 +102,13 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
         ? "🦫"
         : opt.key === "prisma"
           ? "⚡"
-          : opt.key === "sequelize"
-            ? "🔷"
-            : opt.key === "typeorm"
-              ? "📘"
-              : opt.key === "drizzle"
-                ? "🌧️"
-                : opt.key === "mikro-orm"
-                  ? "🐘"
-                  : "🚫",
+          : opt.key === "typeorm"
+            ? "📘"
+            : opt.key === "drizzle"
+              ? "🌧️"
+              : opt.key === "mikro-orm"
+                ? "🐘"
+                : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   auth: techCatalog.auth.map((opt) => ({
@@ -122,25 +116,15 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
     name: opt.name,
     description: opt.desc,
     emoji:
-      opt.key === "jwt"
-        ? "🔑"
-        : opt.key === "passport"
-          ? "🛂"
-          : opt.key === "auth0"
-            ? "🔐"
-            : opt.key === "oauth"
-              ? "🔓"
-              : opt.key === "better-auth"
-                ? "🔒"
-                : opt.key === "clerk"
-                  ? "👤"
-                  : opt.key === "lucia"
-                    ? "🗝️"
-                    : opt.key === "kinde"
-                      ? "🔑"
-                      : opt.key === "next-auth"
-                        ? "🛡️"
-                        : "🚫",
+      opt.key === "better-auth"
+        ? "🔐"
+        : opt.key === "clerk"
+          ? "👤"
+          : opt.key === "lucia"
+            ? "🗝️"
+            : opt.key === "next-auth"
+              ? "🛡️"
+              : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   addons: techCatalog.addons.map((opt) => ({
@@ -154,25 +138,17 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
           ? "🌿"
           : opt.key === "docker"
             ? "🐳"
-            : opt.key === "testing"
-              ? "🧪"
-              : opt.key === "pwa"
-                ? "📱"
-                : opt.key === "tauri"
-                  ? "🦀"
-                  : opt.key === "husky"
-                    ? "🐶"
-                    : opt.key === "storybook"
-                      ? "📕"
-                      : opt.key === "changesets"
-                        ? "🦋"
-                        : opt.key === "vitest"
-                          ? "⚡"
-                          : opt.key === "playwright"
-                            ? "🎭"
-                            : opt.key === "cypress"
-                              ? "🌲"
-                              : "📦",
+            : opt.key === "pwa"
+              ? "📱"
+              : opt.key === "tauri"
+                ? "🦀"
+                : opt.key === "vitest"
+                  ? "⚡"
+                  : opt.key === "playwright"
+                    ? "🎭"
+                    : opt.key === "cypress"
+                      ? "🌲"
+                      : "📦",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   packageManager: techCatalog.packageManager.map((opt) => ({
@@ -182,13 +158,11 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
     emoji:
       opt.key === "npm"
         ? "📦"
-        : opt.key === "yarn"
-          ? "🧶"
-          : opt.key === "pnpm"
-            ? "⚡"
-            : opt.key === "bun"
-              ? "🥖"
-              : "📦",
+        : opt.key === "pnpm"
+          ? "⚡"
+          : opt.key === "bun"
+            ? "🥖"
+            : "📦",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   dbSetup: techCatalog.dbSetup.map((opt) => ({
@@ -211,14 +185,7 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
     id: opt.key,
     name: opt.name,
     description: opt.desc,
-    emoji:
-      opt.key === "cloudflare-pages"
-        ? "🌩️"
-        : opt.key === "vercel"
-          ? "▲"
-          : opt.key === "netlify"
-            ? "💠"
-            : "🚫",
+    emoji: opt.key === "cloudflare-pages" ? "🌩️" : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   serverDeploy: techCatalog.serverDeploy.map((opt) => ({
@@ -228,13 +195,9 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
     emoji:
       opt.key === "cloudflare-workers"
         ? "👷"
-        : opt.key === "fly"
-          ? "🎈"
-          : opt.key === "railway"
-            ? "🚂"
-            : opt.key === "alchemy"
-              ? "⚗️"
-              : "🚫",
+        : opt.key === "alchemy"
+          ? "⚗️"
+          : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
 };

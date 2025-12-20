@@ -5,6 +5,7 @@ import chalk from "chalk";
 import { createProject } from "./commands/create.js";
 import { listPresets } from "./commands/list.js";
 import { addPreset } from "./commands/add-preset.js";
+import { analyticsCommand } from "./commands/analytics.js";
 import { version } from "./utils/version.js";
 
 const program = new Command();
@@ -93,5 +94,13 @@ program
     console.log(chalk.white(`  Platform: ${process.platform}`));
     console.log(chalk.white(`  jsStack Version: ${version}`));
   });
+
+program
+  .command("analytics")
+  .description("Manage anonymous analytics preferences")
+  .option("--enable", "Enable anonymous analytics")
+  .option("--disable", "Disable anonymous analytics")
+  .option("--status", "Show current analytics status")
+  .action(analyticsCommand);
 
 program.parse();

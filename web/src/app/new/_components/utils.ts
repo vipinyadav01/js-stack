@@ -1,4 +1,5 @@
 import { StackState } from "./use-stack-state";
+import { TECH_OPTIONS } from "./tech-options";
 import {
   applyCompatibility,
   validateConfiguration,
@@ -104,4 +105,185 @@ export function analyzeStackCompatibility(
     notes,
     changes: [],
   };
+}
+
+/**
+ * Get human-readable display name for a category
+ */
+export function getCategoryDisplayName(category: string): string {
+  const displayNames: Record<string, string> = {
+    frontend: "Frontend Framework",
+    backend: "Backend Framework",
+    database: "Database",
+    orm: "ORM / Database Client",
+    auth: "Authentication",
+    addons: "Add-ons & Tools",
+    dbSetup: "Database Setup",
+    webDeploy: "Web Deployment",
+    serverDeploy: "Server Deployment",
+    packageManager: "Package Manager",
+    git: "Git Repository",
+    install: "Install Dependencies",
+  };
+
+  return (
+    displayNames[category] ||
+    category.charAt(0).toUpperCase() + category.slice(1)
+  );
+}
+
+/**
+ * Check if an option is compatible with the current stack
+ */
+export function isOptionCompatible(
+  stack: StackState,
+  category: keyof typeof TECH_OPTIONS,
+  optionId: string,
+): boolean {
+  // In YOLO mode, everything is compatible
+  if (stack.yolo === "true") {
+    return true;
+  }
+
+  // Check database-ORM compatibility
+  if (category === "orm") {
+    const database = stack.database;
+
+    // MongoDB only works with Mongoose
+    if (
+      database === "mongodb" &&
+      optionId !== "mongoose" &&
+      optionId !== "none"
+    ) {
+      return false;
+    }
+
+    // SQL databases don't work with Mongoose
+    if (
+      (database === "postgres" ||
+        database === "mysql" ||
+        database === "sqlite") &&
+      optionId === "mongoose"
+    ) {
+      return false;
+    }
+  }
+
+  // Check database-dbSetup compatibility
+  if (category === "dbSetup") {
+    const database = stack.database;
+
+    // Turso only works with SQLite
+    if (optionId === "turso" && database !== "sqlite" && database !== "none") {
+      return false;
+    }
+
+    // Neon only works with PostgreSQL
+    if (optionId === "neon" && database !== "postgres" && database !== "none") {
+      return false;
+    }
+
+    // Supabase works with PostgreSQL
+    if (
+      optionId === "supabase" &&
+      database !== "postgres" &&
+      database !== "none"
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Get the reason why an option is disabled
+ */
+export function getDisabledReason(
+  stack: StackState,
+  category: keyof typeof TECH_OPTIONS,
+  optionId: string,
+): string | null {
+  if (stack.yolo === "true") {
+    return null;
+  }
+
+  if (category === "orm") {
+    const database = stack.database;
+
+    if (
+      database === "mongodb" &&
+      optionId !== "mongoose" &&
+      optionId !== "none"
+    ) {
+      return "This ORM is not compatible with MongoDB. MongoDB requires Mongoose.";
+    }
+
+    if (
+      (database === "postgres" ||
+        database === "mysql" ||
+        database === "sqlite") &&
+      optionId === "mongoose"
+    ) {
+      return "Mongoose only works with MongoDB databases.";
+    }
+  }
+
+  if (category === "dbSetup") {
+    const database = stack.database;
+
+    if (optionId === "turso" && database !== "sqlite" && database !== "none") {
+      return "Turso only supports SQLite databases.";
+    }
+
+    if (optionId === "neon" && database !== "postgres" && database !== "none") {
+      return "Neon only supports PostgreSQL databases.";
+    }
+
+    if (
+      optionId === "supabase" &&
+      database !== "postgres" &&
+      database !== "none"
+    ) {
+      return "Supabase requires PostgreSQL as the database.";
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Validate project name
+ */
+export function validateProjectName(name: string): string | null {
+  if (!name || name.trim() === "") {
+    return null; // Empty is allowed, will use default
+  }
+
+  // Check for valid npm package name format
+  const trimmed = name.trim();
+
+  if (trimmed.length > 214) {
+    return "Project name must be less than 214 characters";
+  }
+
+  if (/^[._]/.test(trimmed)) {
+    return "Project name cannot start with a dot or underscore";
+  }
+
+  if (/[A-Z]/.test(trimmed)) {
+    return "Project name must be lowercase";
+  }
+
+  if (/[~'!()*]/.test(trimmed)) {
+    return "Project name contains invalid characters";
+  }
+
+  // Reserved names
+  const reserved = ["node_modules", "favicon.ico"];
+  if (reserved.includes(trimmed.toLowerCase())) {
+    return "This is a reserved name";
+  }
+
+  return null;
 }

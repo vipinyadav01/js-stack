@@ -719,56 +719,115 @@ var Analytics = class {
   client = null;
   userId;
   enabled = true;
+  sessionId;
+  commandStartTime = 0;
   constructor() {
+    this.sessionId = randomBytes(8).toString("hex");
     this.userId = this.getOrCreateUserId();
-    const apiKey = process.env.POSTHOG_API_KEY;
-    const apiHost = process.env.POSTHOG_HOST || "https://app.posthog.com";
-    if (
-      !process.env.CI &&
-      process.env.NODE_ENV !== "test" &&
-      !this.isOptedOut() &&
-      apiKey
-    )
-      try {
-        this.client = new PostHog(apiKey, { host: apiHost });
-      } catch (error) {
-        this.enabled = false;
-      }
-    else this.enabled = false;
+    this.enabled = this.shouldEnableAnalytics();
+    if (this.enabled) {
+      const apiKey = process.env.POSTHOG_API_KEY;
+      const apiHost = process.env.POSTHOG_HOST || "https://us.i.posthog.com";
+      if (apiKey)
+        try {
+          this.client = new PostHog(apiKey, {
+            host: apiHost,
+            flushAt: 1,
+            flushInterval: 0,
+          });
+        } catch {
+          this.enabled = false;
+        }
+      else this.enabled = false;
+    }
   }
+  /**
+   * Check if analytics should be enabled based on environment and user preferences
+   */
+  shouldEnableAnalytics() {
+    if (this.isCI()) return false;
+    if (process.env.NODE_ENV === "test") return false;
+    if (this.isOptedOut()) return false;
+    if (
+      process.env.DISABLE_ANALYTICS === "true" ||
+      process.env.DO_NOT_TRACK === "1" ||
+      process.env.JSSTACK_NO_TELEMETRY === "true"
+    )
+      return false;
+    return true;
+  }
+  /**
+   * Detect CI environment
+   */
+  isCI() {
+    return !!(
+      process.env.CI ||
+      process.env.CONTINUOUS_INTEGRATION ||
+      process.env.GITHUB_ACTIONS ||
+      process.env.GITLAB_CI ||
+      process.env.CIRCLECI ||
+      process.env.TRAVIS ||
+      process.env.JENKINS_URL ||
+      process.env.BUILDKITE ||
+      process.env.CODEBUILD_BUILD_ID ||
+      process.env.TF_BUILD
+    );
+  }
+  /**
+   * Get or create persistent anonymous user ID
+   */
   getOrCreateUserId() {
     const configDir = path.join(os.homedir(), ".create-js-stack");
-    const idFile = path.join(configDir, "user-id");
+    const idFile = path.join(configDir, "anonymous-id");
     try {
-      if (fs$1.existsSync(idFile))
-        return fs$1.readFileSync(idFile, "utf-8").trim();
-    } catch (e) {}
-    const newId = `${randomBytes(16).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(12).toString("hex")}`;
+      if (fs$1.existsSync(idFile)) {
+        const id = fs$1.readFileSync(idFile, "utf-8").trim();
+        if (id && id.length > 0) return id;
+      }
+    } catch {}
+    const bytes = randomBytes(16);
+    bytes[6] = (bytes[6] & 15) | 64;
+    bytes[8] = (bytes[8] & 63) | 128;
+    const hex = bytes.toString("hex");
+    const newId = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
     try {
       fs$1.mkdirSync(configDir, { recursive: true });
       fs$1.writeFileSync(idFile, newId);
-    } catch (e) {}
+    } catch {}
     return newId;
   }
+  /**
+   * Check if user has opted out of analytics
+   */
   isOptedOut() {
-    const optOut =
-      process.env.DISABLE_ANALYTICS === "true" ||
-      fs$1.existsSync(
-        path.join(os.homedir(), ".create-js-stack", "no-analytics"),
-      );
-    return optOut === true;
+    const optOutFile = path.join(
+      os.homedir(),
+      ".create-js-stack",
+      "no-analytics",
+    );
+    return fs$1.existsSync(optOutFile);
   }
+  /**
+   * Get system information (anonymized)
+   */
   getSystemInfo() {
+    const cpus = os.cpus();
     return {
       os: os.platform(),
       os_version: os.release(),
       arch: os.arch(),
       node_version: process.version,
-      cpu_cores: os.cpus().length,
+      cpu_cores: cpus.length,
+      cpu_model: cpus[0]?.model?.split("@")[0]?.trim() || "unknown",
       total_memory_gb: Math.round(os.totalmem() / 1024 / 1024 / 1024),
       free_memory_gb: Math.round(os.freemem() / 1024 / 1024 / 1024),
+      shell: process.env.SHELL || process.env.COMSPEC || "unknown",
+      terminal: process.env.TERM_PROGRAM || process.env.TERM || "unknown",
     };
   }
+  /**
+   * Track an event
+   */
   track(event, properties) {
     if (!this.enabled || !this.client) return;
     try {
@@ -778,28 +837,196 @@ var Analytics = class {
         properties: {
           ...properties,
           ...this.getSystemInfo(),
+          session_id: this.sessionId,
           cli_version: process.env.npm_package_version || "unknown",
+          timestamp: /* @__PURE__ */ new Date().toISOString(),
         },
       });
-    } catch (error) {}
+    } catch {}
   }
+  /**
+   * Track command start
+   */
+  trackCommandStart(command, options) {
+    this.commandStartTime = Date.now();
+    this.track("cli_command_started", {
+      command,
+      options,
+    });
+  }
+  /**
+   * Track successful command completion
+   */
+  trackCommandSuccess(command, stack, metadata) {
+    const duration = Date.now() - this.commandStartTime;
+    this.track("cli_command_completed", {
+      command,
+      success: true,
+      duration_ms: duration,
+      duration_seconds: Math.round(duration / 1e3),
+      stack_combination: stack
+        ? `${stack.frontend || "none"}-${stack.backend || "none"}-${stack.database || "none"}`
+        : void 0,
+      stack_frontend: stack?.frontend,
+      stack_backend: stack?.backend,
+      stack_database: stack?.database,
+      stack_orm: stack?.orm,
+      stack_auth: stack?.auth,
+      stack_addons: stack?.addons?.join(","),
+      package_manager: stack?.packageManager,
+      ...metadata,
+    });
+  }
+  /**
+   * Track command failure
+   */
+  trackCommandFailure(command, error, metadata) {
+    const duration = Date.now() - this.commandStartTime;
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorType = error instanceof Error ? error.name : "Error";
+    this.track("cli_command_failed", {
+      command,
+      success: false,
+      duration_ms: duration,
+      error_message: this.sanitizeErrorMessage(errorMessage),
+      error_type: errorType,
+      ...metadata,
+    });
+  }
+  /**
+   * Track template generation
+   */
+  trackTemplateGeneration(stack, options) {
+    this.track("template_generation_started", {
+      stack_combination: `${stack.frontend || "none"}-${stack.backend || "none"}-${stack.database || "none"}`,
+      stack_frontend: stack.frontend,
+      stack_backend: stack.backend,
+      stack_database: stack.database,
+      stack_orm: stack.orm,
+      stack_auth: stack.auth,
+      stack_addons: stack.addons?.join(","),
+      package_manager: stack.packageManager,
+      ...options,
+    });
+  }
+  /**
+   * Track dependency installation
+   */
+  trackInstallation(packageManager, success, durationMs, dependencyCount) {
+    this.track("dependency_installation", {
+      package_manager: packageManager,
+      success,
+      duration_ms: durationMs,
+      dependency_count: dependencyCount,
+    });
+  }
+  /**
+   * Track validation events
+   */
+  trackValidation(valid, errors, autoFixed) {
+    this.track("config_validation", {
+      valid,
+      error_count: errors?.length || 0,
+      errors: errors?.slice(0, 5),
+      auto_fixed: autoFixed,
+    });
+  }
+  /**
+   * Sanitize error messages to remove potentially sensitive information
+   */
+  sanitizeErrorMessage(message) {
+    let sanitized = message.replace(/[A-Z]:\\[^\s]+|\/[^\s]+/gi, "[PATH]");
+    sanitized = sanitized.replace(/https?:\/\/[^\s]+/gi, "[URL]");
+    sanitized = sanitized.replace(/[a-zA-Z0-9]{32,}/g, "[REDACTED]");
+    return sanitized.slice(0, 500);
+  }
+  /**
+   * Identify user (for linking sessions)
+   */
   identify(properties) {
     if (!this.enabled || !this.client) return;
     try {
       this.client.identify({
         distinctId: this.userId,
-        properties,
+        properties: {
+          first_seen: /* @__PURE__ */ new Date().toISOString(),
+          ...this.getSystemInfo(),
+          ...properties,
+        },
       });
-    } catch (error) {}
+    } catch {}
   }
+  /**
+   * Flush and shutdown analytics
+   */
   async shutdown() {
     if (this.client)
       try {
         await this.client.shutdown();
-      } catch (error) {}
+      } catch {}
+  }
+  /**
+   * Check if analytics is enabled
+   */
+  isEnabled() {
+    return this.enabled;
+  }
+  /**
+   * Get the anonymous user ID (for transparency)
+   */
+  getAnonymousId() {
+    return this.userId;
   }
 };
 const analytics = new Analytics();
+function optOutOfAnalytics() {
+  const configDir = path.join(os.homedir(), ".create-js-stack");
+  const optOutFile = path.join(configDir, "no-analytics");
+  try {
+    fs$1.mkdirSync(configDir, { recursive: true });
+    fs$1.writeFileSync(optOutFile, "opted-out\n");
+    console.log("✓ Analytics disabled. You can re-enable by deleting:");
+    console.log(`  ${optOutFile}`);
+  } catch {
+    console.error("Failed to disable analytics");
+  }
+}
+function optInToAnalytics() {
+  const optOutFile = path.join(
+    os.homedir(),
+    ".create-js-stack",
+    "no-analytics",
+  );
+  try {
+    if (fs$1.existsSync(optOutFile)) {
+      fs$1.unlinkSync(optOutFile);
+      console.log("✓ Analytics enabled");
+    } else console.log("Analytics was already enabled");
+  } catch {
+    console.error("Failed to enable analytics");
+  }
+}
+function showAnalyticsStatus() {
+  const optOutFile = path.join(
+    os.homedir(),
+    ".create-js-stack",
+    "no-analytics",
+  );
+  const isOptedOut = fs$1.existsSync(optOutFile);
+  const isCI = !!(
+    process.env.CI ||
+    process.env.CONTINUOUS_INTEGRATION ||
+    process.env.GITHUB_ACTIONS
+  );
+  console.log("\n📊 Analytics Status:");
+  console.log(`  Opted Out: ${isOptedOut ? "Yes" : "No"}`);
+  console.log(`  CI Environment: ${isCI ? "Yes (disabled)" : "No"}`);
+  console.log(
+    `  Environment Opt-Out: ${process.env.DISABLE_ANALYTICS === "true" ? "Yes" : "No"}`,
+  );
+  console.log("\nTo opt out, run: jsstack analytics --disable");
+  console.log("To opt in, run: jsstack analytics --enable\n");
+}
 
 //#endregion
 //#region src/validation.ts
@@ -1828,6 +2055,60 @@ async function addPreset(name, options) {
 }
 
 //#endregion
+//#region src/commands/analytics.ts
+function analyticsCommand(options) {
+  console.log(
+    chalk.cyan(`
+    📊 JS-Stack Analytics
+    `),
+  );
+  if (options.disable) {
+    optOutOfAnalytics();
+    console.log(
+      chalk.dim(`
+  We respect your privacy. Anonymous analytics help us improve JS-Stack.
+  No personally identifiable information is ever collected.
+    `),
+    );
+    return;
+  }
+  if (options.enable) {
+    optInToAnalytics();
+    console.log(
+      chalk.dim(`
+  Thank you! Anonymous analytics help us understand usage patterns
+  and improve JS-Stack for everyone.
+    `),
+    );
+    return;
+  }
+  showAnalyticsStatus();
+  console.log(chalk.cyan("\n  What we collect (anonymously):"));
+  console.log(chalk.dim("  • Command usage (create, list, etc.)"));
+  console.log(chalk.dim("  • Stack combinations selected"));
+  console.log(chalk.dim("  • Build success/failure rates"));
+  console.log(chalk.dim("  • System info (OS, Node version, CPU cores)"));
+  console.log(chalk.dim("  • Build duration"));
+  console.log(chalk.cyan("\n  What we DON'T collect:"));
+  console.log(chalk.dim("  • Personal information"));
+  console.log(chalk.dim("  • Project names or file contents"));
+  console.log(chalk.dim("  • IP addresses (stripped before storage)"));
+  console.log(chalk.dim("  • Credentials or tokens"));
+  console.log(chalk.cyan("\n  Privacy features:"));
+  console.log(chalk.dim("  • Anonymous ID (not linked to you)"));
+  console.log(chalk.dim("  • Auto-disabled in CI environments"));
+  console.log(chalk.dim("  • Respects DO_NOT_TRACK environment variable"));
+  console.log(chalk.dim("  • Easy opt-out at any time"));
+  if (analytics.isEnabled())
+    console.log(
+      chalk.dim(
+        `\n  Your anonymous ID: ${analytics.getAnonymousId().slice(0, 8)}...`,
+      ),
+    );
+  console.log("");
+}
+
+//#endregion
 //#region src/utils/version.ts
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const packageJsonPath = join(__dirname, "../../package.json");
@@ -1916,6 +2197,13 @@ program
     console.log(chalk.white(`  Platform: ${process.platform}`));
     console.log(chalk.white(`  jsStack Version: ${version}`));
   });
+program
+  .command("analytics")
+  .description("Manage anonymous analytics preferences")
+  .option("--enable", "Enable anonymous analytics")
+  .option("--disable", "Disable anonymous analytics")
+  .option("--status", "Show current analytics status")
+  .action(analyticsCommand);
 program.parse();
 
 //#endregion
