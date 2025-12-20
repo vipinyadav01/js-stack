@@ -147,22 +147,24 @@ export function StackBuilder() {
         // Multi-select: toggle in array (only for addons)
         const current = (stack[category as keyof StackState] as string[]) || [];
         if (current.includes(techId)) {
-          (newStack as any)[category] = current.filter(
-            (id: string) => id !== techId,
-          );
+          (newStack as Record<string, string | string[]>)[category] =
+            current.filter((id: string) => id !== techId);
         } else {
-          (newStack as any)[category] = [...current, techId];
+          (newStack as Record<string, string | string[]>)[category] = [
+            ...current,
+            techId,
+          ];
         }
       } else {
         // Single-select: replace previous selection (frontend, backend, database, ORM, auth, etc.)
         const current = stack[category as keyof StackState];
         // If clicking the same option, deselect it (set to "none" for most categories)
         if (current === techId) {
-          (newStack as any)[category] =
+          (newStack as Record<string, string | string[]>)[category] =
             category === "packageManager" ? "npm" : "none";
         } else {
           // Replace with new selection
-          (newStack as any)[category] = techId;
+          (newStack as Record<string, string | string[]>)[category] = techId;
         }
       }
 
@@ -350,9 +352,9 @@ export function StackBuilder() {
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-[30%] max-w-sm flex-col border-r border-border fixed left-0 top-0 h-screen z-10 bg-background shadow-lg">
+      <aside className="hidden lg:flex w-[28%] max-w-[380px] flex-col border-r border-border fixed left-0 top-0 h-screen z-10 bg-background shadow-lg">
         <ScrollArea className="flex-1">
-          <div className="flex h-full flex-col gap-3 p-3 sm:p-4">
+          <div className="flex h-full flex-col gap-2 sm:gap-2.5 p-2 sm:p-3">
             <SidebarContent
               stack={stack}
               command={command}
@@ -387,15 +389,15 @@ export function StackBuilder() {
           <Button
             variant="ghost"
             size="icon"
-            className="fixed top-4 left-4 z-50 lg:hidden h-9 w-9"
+            className="fixed top-3 left-3 z-50 lg:hidden h-8 w-8"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-[320px] sm:w-[400px] p-0">
+        <SheetContent side="left" className="w-[300px] sm:w-[360px] p-0">
           <ScrollArea className="flex-1">
-            <div className="flex h-full flex-col gap-3 p-3 sm:p-4">
+            <div className="flex h-full flex-col gap-2 sm:gap-2.5 p-2 sm:p-3">
               <SidebarContent
                 stack={stack}
                 command={command}

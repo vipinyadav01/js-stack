@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { getStackTrends } from "@/lib/analytics-service";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const range = (searchParams.get("range") as "7d" | "30d" | "90d") || "30d";
+    // Use default value since static export doesn't support request.url
+    const range = "30d" as const;
     const data = await getStackTrends(range);
     return NextResponse.json(data, {
       headers: {

@@ -18,21 +18,29 @@ export function PresetDropdown({ onApplyPreset }: PresetDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="flex-1">
-          <Zap className="mr-2 h-3.5 w-3.5" />
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1 text-[10px] sm:text-xs h-7 sm:h-8 px-1.5 sm:px-2"
+        >
+          <Zap className="mr-1 sm:mr-1.5 h-3 w-3" />
           Presets
-          <ChevronDown className="ml-2 h-3.5 w-3.5" />
+          <ChevronDown className="ml-1 sm:ml-1.5 h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64 bg-background">
+      <DropdownMenuContent align="end" className="w-56 sm:w-64 bg-background">
         {PRESET_TEMPLATES.map((preset) => (
           <DropdownMenuItem
             key={preset.id}
             onClick={() => onApplyPreset(preset.id)}
-            className="flex flex-col items-start gap-1 p-3"
+            className="flex flex-col items-start gap-0.5 p-2"
           >
-            <div className="font-medium text-sm">{preset.name}</div>
-            <div className="text-xs">{preset.description}</div>
+            <div className="font-medium text-[10px] sm:text-xs">
+              {preset.name}
+            </div>
+            <div className="text-[9px] sm:text-[10px] text-muted-foreground">
+              {preset.description}
+            </div>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

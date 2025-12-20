@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getStackUsage } from "@/lib/analytics-service";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 export async function GET() {

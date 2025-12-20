@@ -6,9 +6,12 @@ import * as p from "@clack/prompts";
 import { group } from "@clack/prompts";
 import fs from "fs-extra";
 import { execa } from "execa";
+import { PostHog } from "posthog-node";
+import os from "os";
+import fs$1, { readFileSync } from "fs";
+import { randomBytes } from "crypto";
 import Handlebars from "handlebars";
 import { globby } from "globby";
-import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 
 //#region src/constants.ts
@@ -711,16 +714,113 @@ function getProjectDir(projectName, cwd = process.cwd()) {
 }
 
 //#endregion
+//#region src/analytics/posthog.ts
+var Analytics = class {
+  client = null;
+  userId;
+  enabled = true;
+  constructor() {
+    this.userId = this.getOrCreateUserId();
+    const apiKey = process.env.POSTHOG_API_KEY;
+    const apiHost = process.env.POSTHOG_HOST || "https://app.posthog.com";
+    if (
+      !process.env.CI &&
+      process.env.NODE_ENV !== "test" &&
+      !this.isOptedOut() &&
+      apiKey
+    )
+      try {
+        this.client = new PostHog(apiKey, { host: apiHost });
+      } catch (error) {
+        this.enabled = false;
+      }
+    else this.enabled = false;
+  }
+  getOrCreateUserId() {
+    const configDir = path.join(os.homedir(), ".create-js-stack");
+    const idFile = path.join(configDir, "user-id");
+    try {
+      if (fs$1.existsSync(idFile))
+        return fs$1.readFileSync(idFile, "utf-8").trim();
+    } catch (e) {}
+    const newId = `${randomBytes(16).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(12).toString("hex")}`;
+    try {
+      fs$1.mkdirSync(configDir, { recursive: true });
+      fs$1.writeFileSync(idFile, newId);
+    } catch (e) {}
+    return newId;
+  }
+  isOptedOut() {
+    const optOut =
+      process.env.DISABLE_ANALYTICS === "true" ||
+      fs$1.existsSync(
+        path.join(os.homedir(), ".create-js-stack", "no-analytics"),
+      );
+    return optOut === true;
+  }
+  getSystemInfo() {
+    return {
+      os: os.platform(),
+      os_version: os.release(),
+      arch: os.arch(),
+      node_version: process.version,
+      cpu_cores: os.cpus().length,
+      total_memory_gb: Math.round(os.totalmem() / 1024 / 1024 / 1024),
+      free_memory_gb: Math.round(os.freemem() / 1024 / 1024 / 1024),
+    };
+  }
+  track(event, properties) {
+    if (!this.enabled || !this.client) return;
+    try {
+      this.client.capture({
+        distinctId: this.userId,
+        event,
+        properties: {
+          ...properties,
+          ...this.getSystemInfo(),
+          cli_version: process.env.npm_package_version || "unknown",
+        },
+      });
+    } catch (error) {}
+  }
+  identify(properties) {
+    if (!this.enabled || !this.client) return;
+    try {
+      this.client.identify({
+        distinctId: this.userId,
+        properties,
+      });
+    } catch (error) {}
+  }
+  async shutdown() {
+    if (this.client)
+      try {
+        await this.client.shutdown();
+      } catch (error) {}
+  }
+};
+const analytics = new Analytics();
+
+//#endregion
 //#region src/validation.ts
 /**
  * Validate database and ORM compatibility
  */
 function validateDatabaseORM(database, orm) {
-  if (database === "mongodb" && orm !== "mongoose" && orm !== "none")
+  if (database === "mongodb" && orm !== "mongoose" && orm !== "none") {
+    const error = "MongoDB can only be used with Mongoose ORM";
+    analytics.track("validation_error", {
+      error_type: "compatibility",
+      error_message: error,
+      database,
+      orm,
+      auto_fixed: false,
+    });
     return {
       valid: false,
-      error: "MongoDB can only be used with Mongoose ORM",
+      error,
     };
+  }
   if (
     (database === "postgres" ||
       database === "mysql" ||
@@ -1514,6 +1614,23 @@ function parseArray(value) {
  * Create command
  */
 async function createProject(projectName, options = {}) {
+  const startTime = Date.now();
+  analytics.track("cli_command_started", {
+    command: "create",
+    project_name: projectName || "unknown",
+    options: {
+      frontend: options.frontend,
+      backend: options.backend,
+      database: options.database,
+      orm: options.orm,
+      auth: options.auth,
+      addons: options.addons,
+      package_manager: options.packageManager,
+      git: options.git,
+      install: options.install,
+      yolo: options.yolo,
+    },
+  });
   try {
     let finalProjectName = projectName;
     if (!finalProjectName) finalProjectName = await promptProjectName();
@@ -1615,8 +1732,43 @@ async function createProject(projectName, options = {}) {
     if (options.verbose) displayConfig(config);
     if (options.dryRun)
       p.log.info("Dry run enabled. Skipping project creation.");
-    else await createProject$1(config, { verbose: options.verbose });
+    else {
+      analytics.track("template_generation_started", {
+        stack: {
+          frontend: config.frontend,
+          backend: config.backend,
+          database: config.database,
+          orm: config.orm,
+          auth: config.auth,
+          addons: config.addons,
+        },
+      });
+      await createProject$1(config, { verbose: options.verbose });
+      analytics.track("template_generation_completed", {
+        stack: {
+          frontend: config.frontend,
+          backend: config.backend,
+          database: config.database,
+          orm: config.orm,
+          auth: config.auth,
+          addons: config.addons,
+        },
+      });
+    }
     if (!options.dryRun) await saveConfig(finalProjectDir, config);
+    const duration = Date.now() - startTime;
+    analytics.track("cli_command_completed", {
+      command: "create",
+      project_name: finalProjectName,
+      duration_ms: duration,
+      duration_seconds: Math.round(duration / 1e3),
+      success: true,
+      stack_combination: `${config.frontend}-${config.backend}-${config.database}`,
+      package_manager: config.packageManager,
+      has_git: config.git,
+      has_install: config.install,
+      dry_run: options.dryRun || false,
+    });
     if (options.dryRun)
       p.log.success(`Dry run complete for project ${finalProjectName}!`);
     else p.log.success(`Project ${finalProjectName} created successfully!`);
@@ -1633,10 +1785,20 @@ async function createProject(projectName, options = {}) {
     console.log(`  ${reproducibleCommand}`);
     console.log();
   } catch (error) {
+    const duration = Date.now() - startTime;
+    analytics.track("cli_command_failed", {
+      command: "create",
+      duration_ms: duration,
+      error_message: error?.message || "Unknown error",
+      error_type: error?.name || "Error",
+      success: false,
+    });
     p.log.error(
       `Failed to create project: ${error instanceof Error ? error.message : String(error)}`,
     );
     process.exit(1);
+  } finally {
+    await analytics.shutdown();
   }
 }
 

@@ -1,9 +1,13 @@
 import { z } from "zod";
+import { PostHog } from "posthog-node";
+import os from "os";
+import fs from "fs";
+import path from "path";
+import { randomBytes } from "crypto";
 import * as p from "@clack/prompts";
 import { group } from "@clack/prompts";
-import fs from "fs-extra";
+import fs$1 from "fs-extra";
 import { execa } from "execa";
-import path from "path";
 import Handlebars from "handlebars";
 import { globby } from "globby";
 
@@ -227,16 +231,112 @@ const SPECIAL_FILES = {
 };
 
 //#endregion
+//#region src/analytics/posthog.ts
+var Analytics = class {
+  client = null;
+  userId;
+  enabled = true;
+  constructor() {
+    this.userId = this.getOrCreateUserId();
+    const apiKey = process.env.POSTHOG_API_KEY;
+    const apiHost = process.env.POSTHOG_HOST || "https://app.posthog.com";
+    if (
+      !process.env.CI &&
+      process.env.NODE_ENV !== "test" &&
+      !this.isOptedOut() &&
+      apiKey
+    )
+      try {
+        this.client = new PostHog(apiKey, { host: apiHost });
+      } catch (error) {
+        this.enabled = false;
+      }
+    else this.enabled = false;
+  }
+  getOrCreateUserId() {
+    const configDir = path.join(os.homedir(), ".create-js-stack");
+    const idFile = path.join(configDir, "user-id");
+    try {
+      if (fs.existsSync(idFile)) return fs.readFileSync(idFile, "utf-8").trim();
+    } catch (e) {}
+    const newId = `${randomBytes(16).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(8).toString("hex")}-${randomBytes(12).toString("hex")}`;
+    try {
+      fs.mkdirSync(configDir, { recursive: true });
+      fs.writeFileSync(idFile, newId);
+    } catch (e) {}
+    return newId;
+  }
+  isOptedOut() {
+    const optOut =
+      process.env.DISABLE_ANALYTICS === "true" ||
+      fs.existsSync(
+        path.join(os.homedir(), ".create-js-stack", "no-analytics"),
+      );
+    return optOut === true;
+  }
+  getSystemInfo() {
+    return {
+      os: os.platform(),
+      os_version: os.release(),
+      arch: os.arch(),
+      node_version: process.version,
+      cpu_cores: os.cpus().length,
+      total_memory_gb: Math.round(os.totalmem() / 1024 / 1024 / 1024),
+      free_memory_gb: Math.round(os.freemem() / 1024 / 1024 / 1024),
+    };
+  }
+  track(event, properties) {
+    if (!this.enabled || !this.client) return;
+    try {
+      this.client.capture({
+        distinctId: this.userId,
+        event,
+        properties: {
+          ...properties,
+          ...this.getSystemInfo(),
+          cli_version: process.env.npm_package_version || "unknown",
+        },
+      });
+    } catch (error) {}
+  }
+  identify(properties) {
+    if (!this.enabled || !this.client) return;
+    try {
+      this.client.identify({
+        distinctId: this.userId,
+        properties,
+      });
+    } catch (error) {}
+  }
+  async shutdown() {
+    if (this.client)
+      try {
+        await this.client.shutdown();
+      } catch (error) {}
+  }
+};
+const analytics = new Analytics();
+
+//#endregion
 //#region src/validation.ts
 /**
  * Validate database and ORM compatibility
  */
 function validateDatabaseORM(database, orm) {
-  if (database === "mongodb" && orm !== "mongoose" && orm !== "none")
+  if (database === "mongodb" && orm !== "mongoose" && orm !== "none") {
+    const error = "MongoDB can only be used with Mongoose ORM";
+    analytics.track("validation_error", {
+      error_type: "compatibility",
+      error_message: error,
+      database,
+      orm,
+      auto_fixed: false,
+    });
     return {
       valid: false,
-      error: "MongoDB can only be used with Mongoose ORM",
+      error,
     };
+  }
   if (
     (database === "postgres" ||
       database === "mysql" ||
@@ -428,11 +528,11 @@ registerHelpers();
 function processTemplate(srcPath, destPath, context) {
   return new Promise(async (resolve, reject) => {
     try {
-      const templateContent = await fs.readFile(srcPath, "utf-8");
+      const templateContent = await fs$1.readFile(srcPath, "utf-8");
       const template = Handlebars.compile(templateContent);
       const rendered = template(context);
-      await fs.ensureDir(path.dirname(destPath));
-      await fs.writeFile(destPath, rendered, "utf-8");
+      await fs$1.ensureDir(path.dirname(destPath));
+      await fs$1.writeFile(destPath, rendered, "utf-8");
       resolve();
     } catch (error) {
       reject(
@@ -506,7 +606,7 @@ function isBinary(filePath) {
  */
 async function processAndCopyFiles(srcDir, destDir, context, pattern = "**/*") {
   try {
-    if (!(await fs.pathExists(srcDir)))
+    if (!(await fs$1.pathExists(srcDir)))
       throw new Error(`Template directory does not exist: ${srcDir}`);
     const files = await globby(pattern, {
       cwd: srcDir,
@@ -515,20 +615,20 @@ async function processAndCopyFiles(srcDir, destDir, context, pattern = "**/*") {
     });
     for (const file of files) {
       const srcPath = path.join(srcDir, file);
-      const stat = await fs.stat(srcPath);
+      const stat = await fs$1.stat(srcPath);
       if (stat.isDirectory()) continue;
       const outputFilename = getOutputFilename(file);
       const destPath = path.join(destDir, path.dirname(file), outputFilename);
-      await fs.ensureDir(path.dirname(destPath));
+      await fs$1.ensureDir(path.dirname(destPath));
       if (isBinary(srcPath)) {
-        await fs.copy(srcPath, destPath);
+        await fs$1.copy(srcPath, destPath);
         continue;
       }
       if (isTemplate(srcPath)) {
         await processTemplate(srcPath, destPath, context);
         continue;
       }
-      await fs.copy(srcPath, destPath);
+      await fs$1.copy(srcPath, destPath);
     }
   } catch (error) {
     throw new Error(
@@ -541,14 +641,14 @@ async function processAndCopyFiles(srcDir, destDir, context, pattern = "**/*") {
  */
 async function copyFileOrDir(src, dest, context) {
   try {
-    const stat = await fs.stat(src);
+    const stat = await fs$1.stat(src);
     if (stat.isDirectory()) await processAndCopyFiles(src, dest, context || {});
     else {
       const destDir = path.dirname(dest);
-      await fs.ensureDir(destDir);
+      await fs$1.ensureDir(destDir);
       if (isTemplate(src) && context) await processTemplate(src, dest, context);
-      else if (isBinary(src)) await fs.copy(src, dest);
-      else await fs.copy(src, dest);
+      else if (isBinary(src)) await fs$1.copy(src, dest);
+      else await fs$1.copy(src, dest);
     }
   } catch (error) {
     throw new Error(
@@ -582,7 +682,7 @@ function getTemplatePath(relativePath) {
     path.join(path.dirname(normalizedFilename), "..", "..", "..", relativePath),
   ];
   for (const templatePath of possiblePaths)
-    if (fs.existsSync(templatePath)) return templatePath;
+    if (fs$1.existsSync(templatePath)) return templatePath;
   throw new Error(
     `Template path not found: ${relativePath}. Tried: ${possiblePaths.join(", ")}`,
   );
@@ -605,7 +705,7 @@ async function setupFrontendTemplates(destDir, context) {
     const srcDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.frontend, framework),
     );
-    if (await fs.pathExists(srcDir))
+    if (await fs$1.pathExists(srcDir))
       await processAndCopyFiles(srcDir, destDir, context);
   }
 }
@@ -617,7 +717,7 @@ async function setupBackendFramework(destDir, context) {
   const srcDir = getTemplatePath(
     path.join(TEMPLATE_PATHS.backend, context.backend),
   );
-  if (await fs.pathExists(srcDir))
+  if (await fs$1.pathExists(srcDir))
     await processAndCopyFiles(srcDir, destDir, context);
 }
 /**
@@ -628,12 +728,12 @@ async function setupDbOrmTemplates(destDir, context) {
     const dbDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.db, context.database),
     );
-    if (await fs.pathExists(dbDir))
+    if (await fs$1.pathExists(dbDir))
       await processAndCopyFiles(dbDir, destDir, context);
   }
   if (context.orm !== "none") {
     const ormDir = getTemplatePath(path.join(TEMPLATE_PATHS.db, context.orm));
-    if (await fs.pathExists(ormDir))
+    if (await fs$1.pathExists(ormDir))
       await processAndCopyFiles(ormDir, destDir, context);
   }
 }
@@ -643,7 +743,7 @@ async function setupDbOrmTemplates(destDir, context) {
 async function setupAuthTemplate(destDir, context) {
   if (context.auth === "none") return;
   const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.auth, context.auth));
-  if (await fs.pathExists(srcDir))
+  if (await fs$1.pathExists(srcDir))
     await processAndCopyFiles(srcDir, destDir, context);
 }
 /**
@@ -652,7 +752,7 @@ async function setupAuthTemplate(destDir, context) {
 async function setupAPITemplates(destDir, context) {
   if (context.api === "none") return;
   const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.api, context.api));
-  if (await fs.pathExists(srcDir))
+  if (await fs$1.pathExists(srcDir))
     await processAndCopyFiles(srcDir, destDir, context);
 }
 /**
@@ -661,7 +761,7 @@ async function setupAPITemplates(destDir, context) {
 async function setupAddonsTemplate(destDir, context) {
   for (const addon of context.addons) {
     const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.addons, addon));
-    if (await fs.pathExists(srcDir))
+    if (await fs$1.pathExists(srcDir))
       await processAndCopyFiles(srcDir, destDir, context);
   }
 }
@@ -672,7 +772,7 @@ async function setupExamplesTemplate(destDir, context) {
   const examples = context.examples.filter((e) => e !== "none");
   for (const example of examples) {
     const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.examples, example));
-    if (await fs.pathExists(srcDir))
+    if (await fs$1.pathExists(srcDir))
       await processAndCopyFiles(srcDir, destDir, context);
   }
 }
@@ -684,14 +784,14 @@ async function setupDeploymentTemplates(destDir, context) {
     const srcDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.deploy, context.webDeploy),
     );
-    if (await fs.pathExists(srcDir))
+    if (await fs$1.pathExists(srcDir))
       await processAndCopyFiles(srcDir, destDir, context);
   }
   if (context.serverDeploy !== "none") {
     const srcDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.deploy, context.serverDeploy),
     );
-    if (await fs.pathExists(srcDir))
+    if (await fs$1.pathExists(srcDir))
       await processAndCopyFiles(srcDir, destDir, context);
   }
 }
@@ -703,7 +803,7 @@ async function setupDbSetupTemplate(destDir, context) {
     const srcDir = getTemplatePath(
       path.join(TEMPLATE_PATHS.dbSetup, context.dbSetup),
     );
-    if (await fs.pathExists(srcDir))
+    if (await fs$1.pathExists(srcDir))
       await processAndCopyFiles(srcDir, destDir, context);
   }
 }
@@ -714,7 +814,7 @@ async function handleExtras(destDir, context) {
   const extrasDir = getTemplatePath(TEMPLATE_PATHS.extras);
   if (context.packageManager === "pnpm") {
     const pnpmWorkspace = path.join(extrasDir, "pnpm-workspace.yaml");
-    if (await fs.pathExists(pnpmWorkspace))
+    if (await fs$1.pathExists(pnpmWorkspace))
       await copyFileOrDir(
         pnpmWorkspace,
         path.join(destDir, "pnpm-workspace.yaml"),
@@ -722,7 +822,7 @@ async function handleExtras(destDir, context) {
   }
   if (context.packageManager === "bun") {
     const bunfig = path.join(extrasDir, "bunfig.toml.hbs");
-    if (await fs.pathExists(bunfig))
+    if (await fs$1.pathExists(bunfig))
       await copyFileOrDir(bunfig, path.join(destDir, "bunfig.toml"), context);
   }
 }
@@ -790,7 +890,7 @@ async function createBiomeConfig(projectDir) {
     },
   };
   const configPath = path.join(projectDir, "biome.json");
-  await fs.writeJSON(configPath, biomeConfig, { spaces: 2 });
+  await fs$1.writeJSON(configPath, biomeConfig, { spaces: 2 });
 }
 
 //#endregion
@@ -802,7 +902,7 @@ async function createProjectStructure(config) {
   const spinner = p.spinner();
   spinner.start("Creating project structure...");
   try {
-    await fs.ensureDir(config.projectDir);
+    await fs$1.ensureDir(config.projectDir);
     spinner.message("Copying base templates...");
     await copyBaseTemplate(config.projectDir, config);
     if (config.frontend && config.frontend !== "none") {
@@ -951,11 +1051,11 @@ async function createProject$1(config, options = {}) {
  */
 async function directoryExists(dirPath) {
   try {
-    const exists = await fs.pathExists(dirPath);
+    const exists = await fs$1.pathExists(dirPath);
     if (!exists) return false;
-    const stat = await fs.stat(dirPath);
+    const stat = await fs$1.stat(dirPath);
     if (!stat.isDirectory()) return false;
-    const files = await fs.readdir(dirPath);
+    const files = await fs$1.readdir(dirPath);
     return files.length > 0;
   } catch {
     return false;
@@ -973,8 +1073,8 @@ async function handleDirectoryConflict(projectDir, strategy) {
         `Directory already exists: ${projectDir}\nUse --directory-conflict merge|overwrite|increment to handle this.`,
       );
     case "overwrite": {
-      await fs.remove(projectDir);
-      await fs.ensureDir(projectDir);
+      await fs$1.remove(projectDir);
+      await fs$1.ensureDir(projectDir);
       return projectDir;
     }
     case "merge":
@@ -988,7 +1088,7 @@ async function handleDirectoryConflict(projectDir, strategy) {
         newDir = path.join(parentDir, `${dirName}-${counter}`);
         counter++;
       }
-      await fs.ensureDir(newDir);
+      await fs$1.ensureDir(newDir);
       return newDir;
     }
     default:
@@ -1075,16 +1175,16 @@ function generateReproducibleCommand(config) {
  */
 async function saveConfig(projectDir, config) {
   const configPath = path.join(projectDir, ".js-stack.json");
-  await fs.writeJSON(configPath, config, { spaces: 2 });
+  await fs$1.writeJSON(configPath, config, { spaces: 2 });
 }
 /**
  * Load configuration from .js-stack.json
  */
 async function loadConfig(projectDir) {
   const configPath = path.join(projectDir, ".js-stack.json");
-  if (!(await fs.pathExists(configPath))) return null;
+  if (!(await fs$1.pathExists(configPath))) return null;
   try {
-    const config = await fs.readJSON(configPath);
+    const config = await fs$1.readJSON(configPath);
     return config;
   } catch {
     return null;
@@ -1710,6 +1810,23 @@ function parseArray(value) {
  * Create command
  */
 async function createProject(projectName, options = {}) {
+  const startTime = Date.now();
+  analytics.track("cli_command_started", {
+    command: "create",
+    project_name: projectName || "unknown",
+    options: {
+      frontend: options.frontend,
+      backend: options.backend,
+      database: options.database,
+      orm: options.orm,
+      auth: options.auth,
+      addons: options.addons,
+      package_manager: options.packageManager,
+      git: options.git,
+      install: options.install,
+      yolo: options.yolo,
+    },
+  });
   try {
     let finalProjectName = projectName;
     if (!finalProjectName) finalProjectName = await promptProjectName();
@@ -1811,8 +1928,43 @@ async function createProject(projectName, options = {}) {
     if (options.verbose) displayConfig(config);
     if (options.dryRun)
       p.log.info("Dry run enabled. Skipping project creation.");
-    else await createProject$1(config, { verbose: options.verbose });
+    else {
+      analytics.track("template_generation_started", {
+        stack: {
+          frontend: config.frontend,
+          backend: config.backend,
+          database: config.database,
+          orm: config.orm,
+          auth: config.auth,
+          addons: config.addons,
+        },
+      });
+      await createProject$1(config, { verbose: options.verbose });
+      analytics.track("template_generation_completed", {
+        stack: {
+          frontend: config.frontend,
+          backend: config.backend,
+          database: config.database,
+          orm: config.orm,
+          auth: config.auth,
+          addons: config.addons,
+        },
+      });
+    }
     if (!options.dryRun) await saveConfig(finalProjectDir, config);
+    const duration = Date.now() - startTime;
+    analytics.track("cli_command_completed", {
+      command: "create",
+      project_name: finalProjectName,
+      duration_ms: duration,
+      duration_seconds: Math.round(duration / 1e3),
+      success: true,
+      stack_combination: `${config.frontend}-${config.backend}-${config.database}`,
+      package_manager: config.packageManager,
+      has_git: config.git,
+      has_install: config.install,
+      dry_run: options.dryRun || false,
+    });
     if (options.dryRun)
       p.log.success(`Dry run complete for project ${finalProjectName}!`);
     else p.log.success(`Project ${finalProjectName} created successfully!`);
@@ -1829,10 +1981,20 @@ async function createProject(projectName, options = {}) {
     console.log(`  ${reproducibleCommand}`);
     console.log();
   } catch (error) {
+    const duration = Date.now() - startTime;
+    analytics.track("cli_command_failed", {
+      command: "create",
+      duration_ms: duration,
+      error_message: error?.message || "Unknown error",
+      error_type: error?.name || "Error",
+      success: false,
+    });
     p.log.error(
       `Failed to create project: ${error instanceof Error ? error.message : String(error)}`,
     );
     process.exit(1);
+  } finally {
+    await analytics.shutdown();
   }
 }
 

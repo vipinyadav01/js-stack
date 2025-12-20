@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getGeoMetrics } from "@/lib/analytics-service";
 
-export const dynamic = "force-static";
 export const revalidate = 600;
 
 export async function GET() {

@@ -5,7 +5,8 @@ const withMDX = createMDX();
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
-  output: "export", // Enable static export for Cloudflare Pages
+  // Cloudflare Pages supports Next.js natively via @cloudflare/next-on-pages
+  // No need for static export
   images: {
     unoptimized: true,
     formats: ["image/webp", "image/avif"],
@@ -68,7 +69,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/(.*\\.(ico|png|jpg|jpeg|svg|webp|avif))",
+        source: "/:path*\\.(ico|png|jpg|jpeg|svg|webp|avif)",
         headers: [
           {
             key: "Cache-Control",
@@ -77,7 +78,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/(.*\\.(js|css))",
+        source: "/:path*\\.(js|css)",
         headers: [
           {
             key: "Cache-Control",
@@ -90,7 +91,6 @@ const nextConfig: NextConfig = {
 
   // Experimental features for performance
   experimental: {
-    optimizeCss: true,
     scrollRestoration: true,
   },
 

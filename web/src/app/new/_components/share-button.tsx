@@ -21,9 +21,9 @@ export function ShareButton({ stackUrl }: ShareButtonProps) {
       variant="outline"
       size="sm"
       onClick={handleShare}
-      className="flex-1"
+      className="flex-1 text-[10px] sm:text-xs h-7 sm:h-8 px-1.5 sm:px-2"
     >
-      <Share2 className="mr-2 h-3.5 w-3.5" />
+      <Share2 className="mr-1 sm:mr-1.5 h-3 w-3" />
       Share
     </Button>
   );

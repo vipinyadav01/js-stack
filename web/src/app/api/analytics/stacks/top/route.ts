@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { getTopStacks } from "@/lib/analytics-service";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const n = parseInt(searchParams.get("n") || "3", 10);
+    // Use default value since static export doesn't support request.url
+    const n = 6;
     const data = await getTopStacks(n);
     return NextResponse.json(data, {
       headers: {

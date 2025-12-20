@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { StackState } from "./use-stack-state";
+import type { UseCaseRecommendation } from "@/lib/recommendations";
 import { ActionButtons } from "./action-buttons";
 import { PresetDropdown } from "./preset-dropdown";
 import { ShareButton } from "./share-button";
@@ -41,8 +42,24 @@ interface SidebarContentProps {
   stackUrl: string;
   showRecommendations?: boolean;
   onToggleRecommendations?: () => void;
-  recommendations?: any;
-  matchingUseCase?: any;
+  recommendations?: {
+    warnings?: Array<{
+      type: string;
+      message: string;
+      severity: "high" | "medium" | "low";
+      fix?: string;
+    }>;
+    alternatives?: Array<{
+      category: string;
+      id: string;
+      reason: string;
+    }>;
+    orm?: { id: string; reason: string; strength: string };
+    auth?: { id: string; reason: string; strength: string };
+    backend?: { id: string; reason: string; strength: string };
+    compatibilityScore?: number;
+  };
+  matchingUseCase?: UseCaseRecommendation | null;
   showUseCasePresets?: boolean;
   onToggleUseCasePresets?: () => void;
 }
@@ -101,8 +118,12 @@ export function SidebarContent({
       setTimeout(() => setCopied(false), 2000);
 
       // Track command copy
-      if (typeof window !== "undefined" && (window as any).posthog) {
-        (window as any).posthog.capture("command_copied", {
+      if (
+        typeof window !== "undefined" &&
+        "posthog" in window &&
+        window.posthog
+      ) {
+        window.posthog.capture("command_copied", {
           command_length: command.length,
           has_comments: command.includes("#"),
           stack: {
@@ -149,16 +170,18 @@ export function SidebarContent({
   const projectNameError = validateProjectName(localProjectName);
 
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex h-full flex-col gap-2 sm:gap-3">
       {/* Header */}
-      <div className="pb-2 border-b border-border">
-        <h2 className="text-lg font-bold font-mono">Configuration</h2>
-        <p className="text-xs text-muted-foreground mt-1">
+      <div className="pb-1.5 border-b border-border">
+        <h2 className="text-sm sm:text-base font-bold font-mono">
+          Configuration
+        </h2>
+        <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
           Customize your project
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2 sm:space-y-3">
         {/* Project Name */}
         <div className="space-y-2">
           <Label htmlFor="project-name" className="text-xs font-medium">
@@ -346,7 +369,15 @@ export function SidebarContent({
                 recommendations.warnings.length > 0 && (
                   <div className="space-y-1.5">
                     {recommendations.warnings.map(
-                      (warning: any, idx: number) => (
+                      (
+                        warning: {
+                          type: string;
+                          message: string;
+                          severity: "high" | "medium" | "low";
+                          fix?: string;
+                        },
+                        idx: number,
+                      ) => (
                         <div
                           key={idx}
                           className={`rounded border p-2 text-[10px] ${

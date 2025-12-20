@@ -1,5 +1,4 @@
 import { MetadataRoute } from "next";
-import { source } from "@/app/source";
 
 export const dynamic = "force-static";
 export const revalidate = false;
@@ -11,56 +10,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
   const now = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
 
-  // Get all docs pages from Fumadocs source
-  const docsPages: MetadataRoute.Sitemap = [];
-  try {
-    const pages = source.getPages();
-    if (pages && pages.length > 0) {
-      pages.forEach((page: { url: string }) => {
-        const url = page.url || "";
-        if (url) {
-          docsPages.push({
-            url: `${baseUrl}${url}`,
-            lastModified: now,
-            changeFrequency: "weekly",
-            priority: 0.8,
-          });
-        }
-      });
-    } else {
-      // Fallback docs pages if source is empty
-      const fallbackDocs = [
-        "/docs/getting-started",
-        "/docs/technologies",
-        "/docs/commands",
-        "/docs/examples",
-      ];
-      fallbackDocs.forEach((path) => {
-        docsPages.push({
-          url: `${baseUrl}${path}`,
-          lastModified: now,
-          changeFrequency: "weekly",
-          priority: 0.8,
-        });
-      });
-    }
-  } catch (error) {
-    console.warn("Failed to get docs pages for sitemap:", error);
-    // Add fallback docs pages
-    [
-      "/docs/getting-started",
-      "/docs/technologies",
-      "/docs/commands",
-      "/docs/examples",
-    ].forEach((path) => {
-      docsPages.push({
-        url: `${baseUrl}${path}`,
-        lastModified: now,
-        changeFrequency: "weekly",
-        priority: 0.8,
-      });
-    });
-  }
+  // Static docs pages
+  const docsPages: MetadataRoute.Sitemap = [
+    "/docs/getting-started",
+    "/docs/technologies",
+    "/docs/commands",
+    "/docs/examples",
+  ].map((path) => ({
+    url: `${baseUrl}${path}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
 
   return [
     {

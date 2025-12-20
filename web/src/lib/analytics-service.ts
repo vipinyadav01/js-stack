@@ -59,20 +59,6 @@ export type PerformanceMetrics = {
   bandwidthGB: number;
 };
 
-const now = new Date();
-const days = (n: number) => {
-  const out: TrendPoint[] = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    out.push({
-      t: d.toISOString().slice(0, 10),
-      value: Math.round(50 + Math.random() * 50),
-    });
-  }
-  return out;
-};
-
 export async function getKPIs(): Promise<KPI[]> {
   const adoptionRate = await getStackAdoptionRate();
   return [

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getPerformanceMetrics } from "@/lib/analytics-service";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 600;
 
 export async function GET() {
