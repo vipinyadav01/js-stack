@@ -4,9 +4,8 @@ import { createMDX } from "fumadocs-mdx/next";
 const withMDX = createMDX();
 
 const nextConfig: NextConfig = {
+  output: "export", // Required for Cloudflare Pages deployment - generates 'out' directory
   trailingSlash: true,
-  // Cloudflare Pages supports Next.js natively via @cloudflare/next-on-pages
-  // No need for static export
   images: {
     unoptimized: true,
     formats: ["image/webp", "image/avif"],

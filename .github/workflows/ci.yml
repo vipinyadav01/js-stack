@@ -171,3 +171,4 @@ jobs:
           projectName: js-stack
           directory: web/out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
