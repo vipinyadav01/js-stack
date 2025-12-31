@@ -1,290 +1,200 @@
 import React from "react";
 import {
   Github,
-  ExternalLink,
-  Heart,
   Terminal,
-  Code,
-  Package,
-  Users,
-  Star,
+  Twitter,
+  Globe,
+  Mail,
+  ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
+import NpmVersion from "./NpmVersion";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const footerSections = [
-    {
-      title: "PROJECT_INFO",
-      icon: Terminal,
-      items: [
-        {
-          label: "REPOSITORY",
-          value: "vipinyadav01/js-stack",
-          link: "https://github.com/vipinyadav01/js-stack",
-        },
-        {
-          label: "NPM_PACKAGE",
-          value: "create-js-stack",
-          link: "https://www.npmjs.com/package/create-js-stack",
-        },
-        { label: "VERSION", value: "1.0.10", status: "LATEST" },
-        { label: "LICENSE", value: "MIT", status: "OPEN" },
-      ],
-    },
-    {
-      title: "QUICK_LINKS",
-      icon: Code,
-      items: [
-        {
-          label: "DOCUMENTATION",
-          value: "View docs",
-          link: "https://js-stack.pages.dev/docs",
-          status: "GUIDE",
-        },
-        {
-          label: "EXAMPLES",
-          value: "Code samples",
-          link: "https://github.com/js-stack/examples",
-          status: "DEMO",
-        },
-        {
-          label: "COMMUNITY",
-          value: "Join Discord",
-          link: "https://discord.gg/js-stack",
-          status: "CHAT",
-        },
-        {
-          label: "ISSUES",
-          value: "Report bugs",
-          link: "https://github.com/vipinyadav01/js-stack/issues",
-          status: "BUG",
-        },
-      ],
-    },
-    {
-      title: "STATS",
-      icon: Package,
-      items: [
-        { label: "DOWNLOADS", value: "1.2K+", status: "WEEKLY" },
-        { label: "STARS", value: "150+", status: "GITHUB" },
-        { label: "CONTRIBUTORS", value: "5+", status: "ACTIVE" },
-        { label: "RELEASES", value: "10+", status: "STABLE" },
-      ],
-    },
-  ];
-
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="w-full max-w-full overflow-hidden px-4">
-        <div className="mx-auto max-w-[1280px] py-12">
-          {/* Terminal Header */}
-          <div className="mb-8">
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-              <div className="flex items-center gap-2">
+    <footer className="w-full border-t border-border bg-background/50 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {/* Brand Column */}
+          <div className="space-y-4">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                 <Terminal className="h-5 w-5 text-primary" />
-                <span className="font-bold text-lg sm:text-xl">
-                  FOOTER_INFO.TXT
-                </span>
               </div>
-              <div className="hidden h-px flex-1 bg-border sm:block" />
-              <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-                [PROJECT DETAILS]
-              </span>
-            </div>
-          </div>
-
-          {/* Footer Sections */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 mb-8">
-            {footerSections.map((section, index) => (
-              <div key={index} className="rounded border border-border p-4">
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <section.icon className="h-4 w-4 text-primary" />
-                    <span className="font-semibold text-sm">
-                      {section.title}
-                    </span>
-                  </div>
-                  <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                    {section.items.length}
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  {section.items.map((item, itemIndex) => (
-                    <div
-                      key={itemIndex}
-                      className="rounded border border-border p-3"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-sm">
-                          {item.link ? (
-                            <a
-                              href={item.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group flex items-center gap-2 hover:text-primary transition-colors"
-                            >
-                              <span className="text-foreground font-mono">
-                                {item.value}
-                              </span>
-                              <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
-                            </a>
-                          ) : (
-                            <span className="text-foreground font-mono">
-                              {item.value}
-                            </span>
-                          )}
-                        </div>
-                        <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                          {item.status}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Bottom Section */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {/* Author Info */}
-            <div className="rounded border border-border p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-sm">AUTHOR_INFO</span>
-                </div>
-                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                  CREATOR
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Users className="h-4 w-4 text-primary" />
-                      <span className="text-foreground font-mono">
-                        Vipin Yadav
-                      </span>
-                    </div>
-                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                      DEV
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded border border-border p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Github className="h-4 w-4 text-primary" />
-                      <a
-                        href="https://github.com/vipinyadav01"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-2 hover:text-primary transition-colors"
-                      >
-                        <span className="text-foreground font-mono">
-                          @vipinyadav01
-                        </span>
-                        <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </a>
-                    </div>
-                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                      GITHUB
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded border border-border p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <ExternalLink className="h-4 w-4 text-primary" />
-                      <a
-                        href="https://vipinyadav01.vercel.app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-2 hover:text-primary transition-colors"
-                      >
-                        <span className="text-foreground font-mono">
-                          Portfolio
-                        </span>
-                        <ExternalLink className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </a>
-                    </div>
-                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                      WEBSITE
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Copyright & Credits */}
-            <div className="rounded border border-border p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Star className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-sm">CREDITS</span>
-                </div>
-                <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                  {currentYear}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="rounded border border-border p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-foreground font-mono">
-                        Built with ❤️ by Vipin Yadav
-                      </span>
-                    </div>
-                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                      LOVE
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded border border-border p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-foreground font-mono">
-                        © {currentYear} All rights reserved
-                      </span>
-                    </div>
-                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                      LEGAL
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded border border-border p-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="text-foreground font-mono">
-                        MIT License
-                      </span>
-                    </div>
-                    <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-                      OPEN
-                    </div>
-                  </div>
-                </div>
+              <span className="text-xl font-bold tracking-tight">JS-Stack</span>
+            </Link>
+            <p className="max-w-xs text-sm text-muted-foreground leading-relaxed">
+              The ultimate CLI for scaffolding production-ready full-stack
+              JavaScript applications. Built for speed, performance, and
+              scalability.
+            </p>
+            <div className="flex items-center gap-2 pt-2">
+              <div className="flex items-center gap-1 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-medium">
+                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+                <NpmVersion />
               </div>
             </div>
           </div>
 
-          {/* Final Terminal Line */}
-          <div className="mt-8 flex items-center justify-center">
-            <div className="flex items-center gap-2 text-muted-foreground text-sm font-mono">
-              <Terminal className="h-5 w-5" />
-              <span>END_OF_FILE</span>
-              <div className="h-px w-8 bg-border" />
-              <span>EOF</span>
-            </div>
+          {/* Product Links */}
+          <div>
+            <h3 className="mb-6 text-sm font-semibold tracking-wider text-foreground">
+              PRODUCT
+            </h3>
+            <ul className="space-y-4 text-sm text-muted-foreground">
+              <li>
+                <Link
+                  href="/new"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  Stack Builder
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/docs"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  Documentation
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/features"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  Features
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://www.npmjs.com/package/create-js-stack"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  NPM Package
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Resources Links */}
+          <div>
+            <h3 className="mb-6 text-sm font-semibold tracking-wider text-foreground">
+              RESOURCES
+            </h3>
+            <ul className="space-y-4 text-sm text-muted-foreground">
+              <li>
+                <a
+                  href="https://github.com/vipinyadav01/js-stack"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  GitHub Repository
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/vipinyadav01/js-stack/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  Report an Issue
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/js-stack/examples"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  Examples
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/sponsors"
+                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                >
+                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                  Sponsors
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Community / Newsletter (Mock) */}
+          <div className="space-y-4">
+            <h3 className="mb-6 text-sm font-semibold tracking-wider text-foreground">
+              STAY UPDATED
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Latest updates, templates, and features sent to your inbox mostly
+              every month.
+            </p>
+            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                className="rounded-md bg-primary px-3 py-2 text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <Mail className="h-4 w-4" />
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-border pt-8 sm:flex-row">
+          <p className="text-sm text-muted-foreground">
+            © {currentYear} Vipin Yadav. Open Source (MIT).
+          </p>
+
+          <div className="flex gap-4 text-muted-foreground">
+            <a
+              href="https://github.com/vipinyadav01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              <span className="sr-only">GitHub</span>
+              <Github className="h-5 w-5" />
+            </a>
+            <a
+              href="https://twitter.com/vipinyadav01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              <span className="sr-only">Twitter</span>
+              <Twitter className="h-5 w-5" />
+            </a>
+            <a
+              href="https://vipinyadav01.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              <span className="sr-only">Website</span>
+              <Globe className="h-5 w-5" />
+            </a>
           </div>
         </div>
       </div>

@@ -5,21 +5,6 @@ export default function Hero() {
   return (
     <div className="w-full max-w-full overflow-hidden px-4">
       <main className="mx-auto max-w-[1280px]">
-        {/* Terminal Header */}
-        <div className="mb-8">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-            <div className="flex items-center gap-2">
-              <Terminal className="h-5 w-5 text-primary" />
-              <span className="font-bold text-lg sm:text-xl">WELCOME.TXT</span>
-            </div>
-            <div className="hidden h-px flex-1 bg-border sm:block" />
-            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-              [CLI TOOL INITIALIZATION]
-            </span>
-          </div>
-        </div>
-
-        {/* ASCII Art Section */}
         <div className="mb-8">
           <div className="overflow-hidden rounded-lg border border-border bg-card/60 shadow-sm">
             <div className="flex items-center justify-between border-b border-border px-3 py-2">

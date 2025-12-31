@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
 
 export default function Features() {
   // State management
@@ -416,900 +417,443 @@ export default function Features() {
     },
   ];
 
-  return (
-    <div className="flex h-screen w-full overflow-hidden border-border text-foreground lg:grid lg:grid-cols-[30%_1fr]">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-full flex-col border-border border-r sm:max-w-3xs md:max-w-xs lg:max-w-sm">
-        <ScrollArea className="flex-1">
-          <div className="flex h-full flex-col gap-3 p-3 sm:p-4 md:h-[calc(100vh-64px)]">
-            {/* Features Sidebar Content */}
-            <div className="space-y-6">
-              {/* Header */}
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                  <Star className="h-5 w-5 text-primary" />
+  const FeatureCard = ({
+    data,
+  }: {
+    data: {
+      name: string;
+      available: boolean;
+      description: string;
+      version?: string;
+    };
+  }) => (
+    <div className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/40 backdrop-blur-sm p-6 transition-all duration-300 hover:border-primary/50 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+      <div className="relative z-10">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-base font-mono tracking-tight text-foreground/90 group-hover:text-primary transition-colors">
+              {data.name}
+            </span>
+          </div>
+          <Badge
+            variant={data.available ? "default" : "secondary"}
+            className={cn(
+              "text-[10px] font-medium border-0 px-2 py-0.5",
+              data.available
+                ? "bg-primary/15 text-primary hover:bg-primary/20"
+                : "bg-muted/50 text-muted-foreground hover:bg-muted/60",
+            )}
+          >
+            {data.available ? "Available" : "Coming Soon"}
+          </Badge>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+            {data.description}
+          </p>
+          {data.version && (
+            <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground/60">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />v
+              {data.version}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const SidebarContent = () => (
+    <div className="space-y-8 p-4">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-2">
+        <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 shadow-inner">
+          <Star className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h1 className="text-lg font-bold font-mono tracking-tight text-foreground">
+            Features
+          </h1>
+          <p className="text-xs text-muted-foreground font-medium">
+            Tech Stack Explorer
+          </p>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+          Overview
+        </h3>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            {
+              label: "Frontend",
+              count: frontendFrameworks.filter((f) => f.available).length,
+            },
+            {
+              label: "Backend",
+              count: backendFrameworks.filter((f) => f.available).length,
+            },
+            {
+              label: "Database",
+              count: databases.filter((f) => f.available).length,
+            },
+            {
+              label: "Auth",
+              count: authMethods.filter((f) => f.available).length,
+            },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-2.5 p-2.5 rounded-lg bg-card/40 border border-border/40 backdrop-blur-sm"
+            >
+              <CheckCircle className="h-3.5 w-3.5 text-primary" />
+              <div>
+                <div className="text-sm font-bold text-foreground">
+                  {stat.count}
                 </div>
-                <div>
-                  <h1 className="text-lg font-bold font-mono text-foreground">
-                    Features
-                  </h1>
-                  <p className="text-xs text-muted-foreground">
-                    Comprehensive tech stack
-                  </p>
-                </div>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Quick Stats
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                    <CheckCircle className="h-3 w-3 text-green-600" />
-                    <div>
-                      <div className="text-xs font-semibold">
-                        {frontendFrameworks.filter((f) => f.available).length}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Frontend
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                    <CheckCircle className="h-3 w-3 text-green-600" />
-                    <div>
-                      <div className="text-xs font-semibold">
-                        {backendFrameworks.filter((f) => f.available).length}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Backend
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                    <CheckCircle className="h-3 w-3 text-green-600" />
-                    <div>
-                      <div className="text-xs font-semibold">
-                        {databases.filter((f) => f.available).length}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Database
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                    <CheckCircle className="h-3 w-3 text-green-600" />
-                    <div>
-                      <div className="text-xs font-semibold">
-                        {authMethods.filter((f) => f.available).length}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Auth</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section Filters */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Sections
-                </h3>
-                <div className="space-y-2">
-                  {filterCategories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => toggleSection(category.id)}
-                      className={cn(
-                        "w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
-                        visibleSections.has(category.id)
-                          ? "border-primary bg-primary/10 text-primary shadow-sm"
-                          : "border-border text-muted-foreground hover:border-primary/50 hover:bg-muted/50 hover:text-foreground",
-                      )}
-                    >
-                      <category.icon className="h-3 w-3" />
-                      <span>{category.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Controls */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Controls
-                </h3>
-
-                {/* View Mode Toggle */}
-                <div className="flex items-center gap-1 p-1 rounded-lg border border-border bg-background/50">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={cn(
-                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
-                      viewMode === "grid"
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                    )}
-                  >
-                    <Grid3X3 className="h-3 w-3" />
-                    Grid
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={cn(
-                      "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
-                      viewMode === "list"
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                    )}
-                  >
-                    <List className="h-3 w-3" />
-                    List
-                  </button>
-                </div>
-
-                {/* Quick Start */}
-                <div className="rounded-lg border border-border bg-background/50 p-3">
-                  <div className="text-xs font-semibold text-foreground mb-2">
-                    Quick Start
-                  </div>
-                  <div className="text-xs text-muted-foreground font-mono bg-muted/50 p-2 rounded border">
-                    npx create-js-stack init my-app
-                  </div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                  {stat.label}
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+          Categories
+        </h3>
+        <div className="space-y-1">
+          {filterCategories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => toggleSection(category.id)}
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden",
+                visibleSections.has(category.id)
+                  ? "text-primary bg-primary/10 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
+              )}
+            >
+              {visibleSections.has(category.id) && (
+                <motion.div
+                  layoutId="active-nav"
+                  className="absolute left-0 w-1 h-full bg-primary"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                />
+              )}
+              <category.icon
+                className={cn(
+                  "h-4 w-4 transition-colors",
+                  visibleSections.has(category.id)
+                    ? "text-primary"
+                    : "text-muted-foreground group-hover:text-foreground",
+                )}
+              />
+              <span>{category.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="space-y-4 pt-4 border-t border-border/40">
+        {/* View Mode */}
+        <div className="flex bg-muted/30 p-1 rounded-lg border border-border/40">
+          <button
+            onClick={() => setViewMode("grid")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-xs font-medium transition-all",
+              viewMode === "grid"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Grid3X3 className="h-3.5 w-3.5" />
+            Grid
+          </button>
+          <button
+            onClick={() => setViewMode("list")}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-xs font-medium transition-all",
+              viewMode === "list"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <List className="h-3.5 w-3.5" />
+            List
+          </button>
+        </div>
+
+        {/* Quick Start Code */}
+        <div className="rounded-lg border border-border/50 bg-zinc-950/50 p-3 shadow-inner">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase">
+              Quick Start
+            </span>
           </div>
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 bg-black/40 p-2 rounded border border-white/5">
+            <span className="text-primary">➜</span>
+            <span className="truncate">npx create-js-stack init</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex h-[calc(100vh-6rem)] w-full overflow-hidden bg-background text-foreground lg:grid lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+      <div className="fixed left-0 top-0 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[100px] opacity-20 pointer-events-none" />
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-full flex-col border-r border-border/40 bg-background/30 backdrop-blur-xl h-full">
+        <ScrollArea className="flex-1">
+          <SidebarContent />
         </ScrollArea>
       </aside>
 
-      {/* Mobile Sheet */}
+      {/* Mobile Toggle */}
       <Sheet>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="fixed top-4 left-4 z-50 lg:hidden h-9 w-9"
+            className="fixed top-24 left-4 z-40 lg:hidden h-10 w-10 rounded-full border border-border/50 bg-background/80 backdrop-blur-md shadow-lg"
           >
             <Menu className="h-5 w-5" />
             <span className="sr-only">Open menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-[320px] sm:w-[400px] p-0">
-          <ScrollArea className="flex-1">
-            <div className="flex h-full flex-col gap-3 p-3 sm:p-4 md:h-[calc(100vh-64px)]">
-              {/* Mobile Sidebar Content - Same as desktop */}
-              <div className="space-y-6">
-                {/* Header */}
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                    <Star className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h1 className="text-lg font-bold font-mono text-foreground">
-                      Features
-                    </h1>
-                    <p className="text-xs text-muted-foreground">
-                      Comprehensive tech stack
-                    </p>
-                  </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Quick Stats
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                      <CheckCircle className="h-3 w-3 text-green-600" />
-                      <div>
-                        <div className="text-xs font-semibold">
-                          {frontendFrameworks.filter((f) => f.available).length}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Frontend
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                      <CheckCircle className="h-3 w-3 text-green-600" />
-                      <div>
-                        <div className="text-xs font-semibold">
-                          {backendFrameworks.filter((f) => f.available).length}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Backend
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                      <CheckCircle className="h-3 w-3 text-green-600" />
-                      <div>
-                        <div className="text-xs font-semibold">
-                          {databases.filter((f) => f.available).length}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Database
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border">
-                      <CheckCircle className="h-3 w-3 text-green-600" />
-                      <div>
-                        <div className="text-xs font-semibold">
-                          {authMethods.filter((f) => f.available).length}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Auth
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Section Filters */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Sections
-                  </h3>
-                  <div className="space-y-2">
-                    {filterCategories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => toggleSection(category.id)}
-                        className={cn(
-                          "w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all",
-                          visibleSections.has(category.id)
-                            ? "border-primary bg-primary/10 text-primary shadow-sm"
-                            : "border-border text-muted-foreground hover:border-primary/50 hover:bg-muted/50 hover:text-foreground",
-                        )}
-                      >
-                        <category.icon className="h-3 w-3" />
-                        <span>{category.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Controls */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Controls
-                  </h3>
-
-                  {/* View Mode Toggle */}
-                  <div className="flex items-center gap-1 p-1 rounded-lg border border-border bg-background/50">
-                    <button
-                      onClick={() => setViewMode("grid")}
-                      className={cn(
-                        "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
-                        viewMode === "grid"
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                      )}
-                    >
-                      <Grid3X3 className="h-3 w-3" />
-                      Grid
-                    </button>
-                    <button
-                      onClick={() => setViewMode("list")}
-                      className={cn(
-                        "flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all",
-                        viewMode === "list"
-                          ? "bg-primary text-primary-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                      )}
-                    >
-                      <List className="h-3 w-3" />
-                      List
-                    </button>
-                  </div>
-
-                  {/* Quick Start */}
-                  <div className="rounded-lg border border-border bg-background/50 p-3">
-                    <div className="text-xs font-semibold text-foreground mb-2">
-                      Quick Start
-                    </div>
-                    <div className="text-xs text-muted-foreground font-mono bg-muted/50 p-2 rounded border">
-                      npx create-js-stack init my-app
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <SheetContent
+          side="left"
+          className="w-[85%] sm:w-[350px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-2xl"
+        >
+          <ScrollArea className="h-full">
+            <SidebarContent />
           </ScrollArea>
         </SheetContent>
       </Sheet>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden relative">
         <ScrollArea className="h-full">
-          <div className="p-3 sm:p-4 lg:p-6">
+          <div className="p-4 sm:p-8 lg:p-12 max-w-7xl mx-auto pt-8">
             <motion.div
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="space-y-6 sm:space-y-8"
+              className="space-y-12 pb-24"
             >
-              {/* Overview Section */}
+              {/* Overview Section - Special Handled */}
               <AnimatePresence>
                 {visibleSections.has("overview") && (
                   <motion.section
+                    id="overview"
                     variants={itemVariants}
                     initial="hidden"
                     animate="visible"
                     exit="hidden"
-                    className="space-y-6"
+                    className="space-y-6 scroll-mt-24"
                   >
-                    <div className="flex items-center gap-3">
-                      <Star className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">Overview</h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Quick feature overview
-                      </span>
+                    <div className="flex items-center gap-4 pb-4 border-b border-border/40">
+                      <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                        <Star className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-bold tracking-tight">
+                          Overview
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                          Technology stack snapshot
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* Frontend Frameworks */}
-                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                        <div className="mb-4 flex items-center gap-2">
-                          <Monitor className="h-5 w-5 text-primary" />
-                          <span className="font-semibold text-sm">
-                            Frontend
-                          </span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="col-span-full md:col-span-1 rounded-2xl border border-border/50 bg-gradient-to-br from-primary/10 to-transparent p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-20">
+                          <Monitor className="h-24 w-24" />
                         </div>
-                        <div className="space-y-2 text-xs text-muted-foreground">
-                          <div>• React with Vite</div>
-                          <div>• Vue.js 3</div>
-                          <div>• Angular</div>
-                          <div>• SvelteKit</div>
-                          <div>• Next.js</div>
-                          <div>• Nuxt</div>
+                        <h3 className="text-xl font-bold mb-2">
+                          Frontend First
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Support for React, Vue, Svelte, and more with modern
+                          tooling built-in.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {frontendFrameworks.slice(0, 3).map((f) => (
+                            <Badge
+                              key={f.name}
+                              variant="secondary"
+                              className="bg-background/80 backdrop-blur"
+                            >
+                              {f.name}
+                            </Badge>
+                          ))}
+                          <Badge variant="outline">+4 more</Badge>
+                        </div>
+                      </div>
+                      <div className="col-span-full md:col-span-1 rounded-2xl border border-border/50 bg-gradient-to-br from-purple-500/10 to-transparent p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-20">
+                          <Cpu className="h-24 w-24" />
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">
+                          Robust Backend
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Scalable server-side solutions with Express, NestJS,
+                          and Fastify.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {backendFrameworks.slice(0, 3).map((f) => (
+                            <Badge
+                              key={f.name}
+                              variant="secondary"
+                              className="bg-background/80 backdrop-blur"
+                            >
+                              {f.name}
+                            </Badge>
+                          ))}
+                          <Badge variant="outline">+2 more</Badge>
+                        </div>
+                      </div>
+                      <div className="col-span-full md:col-span-1 rounded-2xl border border-border/50 bg-gradient-to-br from-blue-500/10 to-transparent p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-20">
+                          <Database className="h-24 w-24" />
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">Data Layer</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Seamless database integration with Prisma, Mongoose,
+                          and more.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {databases.slice(0, 3).map((f) => (
+                            <Badge
+                              key={f.name}
+                              variant="secondary"
+                              className="bg-background/80 backdrop-blur"
+                            >
+                              {f.name}
+                            </Badge>
+                          ))}
+                          <Badge variant="outline">+3 more</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.section>
+                )}
+              </AnimatePresence>
+
+              {/* Other Sections Mapping */}
+              {[
+                {
+                  id: "frontend",
+                  icon: Monitor,
+                  title: "Frontend Frameworks",
+                  desc: "UI libraries & frameworks",
+                  data: frontendFrameworks,
+                },
+                {
+                  id: "backend",
+                  icon: Cpu,
+                  title: "Backend Frameworks",
+                  desc: "Server-side runtimes",
+                  data: backendFrameworks,
+                },
+                {
+                  id: "database",
+                  icon: Database,
+                  title: "Database & Storage",
+                  desc: "Data persistence layers",
+                  data: databases,
+                },
+                {
+                  id: "orm",
+                  icon: Layers,
+                  title: "ORM & ODM",
+                  desc: "Type-safe database clients",
+                  data: orms,
+                },
+                {
+                  id: "auth",
+                  icon: Lock,
+                  title: "Authentication",
+                  desc: "Security & identity",
+                  data: authMethods,
+                },
+                {
+                  id: "devtools",
+                  icon: Wrench,
+                  title: "Developer Tools",
+                  desc: "DX & CI/CD",
+                  data: devTools,
+                },
+                {
+                  id: "packages",
+                  icon: Package,
+                  title: "Package Managers",
+                  desc: "Dependency handling",
+                  data: packageManagers,
+                },
+                {
+                  id: "additional",
+                  icon: Rocket,
+                  title: "Extras",
+                  desc: "Additional capabilities",
+                  data: additionalFeatures,
+                },
+              ].map((section) => (
+                <AnimatePresence key={section.id}>
+                  {visibleSections.has(section.id) && (
+                    <motion.section
+                      id={section.id}
+                      variants={itemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="hidden"
+                      className="space-y-6 scroll-mt-24"
+                    >
+                      <div className="flex items-center gap-4 pb-4 border-b border-border/40">
+                        <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                          <section.icon className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <h2 className="text-2xl font-bold tracking-tight">
+                            {section.title}
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            {section.desc}
+                          </p>
                         </div>
                       </div>
 
-                      {/* Backend Frameworks */}
-                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                        <div className="mb-4 flex items-center gap-2">
-                          <Cpu className="h-5 w-5 text-primary" />
-                          <span className="font-semibold text-sm">Backend</span>
-                        </div>
-                        <div className="space-y-2 text-xs text-muted-foreground">
-                          <div>• Express.js</div>
-                          <div>• Fastify</div>
-                          <div>• Koa.js</div>
-                          <div>• Hapi.js</div>
-                          <div>• NestJS</div>
-                          <div>• Custom APIs</div>
-                        </div>
+                      <div
+                        className={cn(
+                          "grid gap-4",
+                          viewMode === "grid"
+                            ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                            : "grid-cols-1",
+                        )}
+                      >
+                        {section.data?.map((item, idx) => (
+                          <FeatureCard key={idx} data={item} />
+                        ))}
                       </div>
-
-                      {/* Database & ORM */}
-                      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-                        <div className="mb-4 flex items-center gap-2">
-                          <Database className="h-5 w-5 text-primary" />
-                          <span className="font-semibold text-sm">
-                            Database
-                          </span>
-                        </div>
-                        <div className="space-y-2 text-xs text-muted-foreground">
-                          <div>• PostgreSQL</div>
-                          <div>• MongoDB</div>
-                          <div>• SQLite</div>
-                          <div>• MySQL</div>
-                          <div>• Prisma ORM</div>
-                          <div>• Mongoose</div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Frontend Frameworks Section */}
-              <AnimatePresence>
-                {visibleSections.has("frontend") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Monitor className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        Frontend Frameworks
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        UI libraries & frameworks
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-3"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {frontendFrameworks.map((framework, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {framework.name}
-                              </span>
-                            </div>
-                            <div
-                              className={cn(
-                                "rounded border border-border px-2 py-1 text-xs",
-                                framework.available
-                                  ? "bg-green-500/20 text-green-600"
-                                  : "bg-yellow-500/20 text-yellow-600",
-                              )}
-                            >
-                              {framework.available
-                                ? "✅ Available"
-                                : "🚧 Coming Soon"}
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <div className="text-sm text-foreground">
-                              {framework.description}
-                            </div>
-                            {framework.version && (
-                              <div className="text-xs text-muted-foreground">
-                                Version: {framework.version}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Backend Frameworks Section */}
-              <AnimatePresence>
-                {visibleSections.has("backend") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Cpu className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        Backend Frameworks
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Server-side frameworks
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-3"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {backendFrameworks.map((framework, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {framework.name}
-                              </span>
-                            </div>
-                            <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
-                              ✅ Available
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <div className="text-sm text-foreground">
-                              {framework.description}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              Version: {framework.version}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Database Section */}
-              <AnimatePresence>
-                {visibleSections.has("database") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Database className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        Database & Storage
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Data persistence layers
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-3"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {databases.map((database, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {database.name}
-                              </span>
-                            </div>
-                            <div
-                              className={cn(
-                                "rounded border border-border px-2 py-1 text-xs",
-                                database.available
-                                  ? "bg-green-500/20 text-green-600"
-                                  : "bg-yellow-500/20 text-yellow-600",
-                              )}
-                            >
-                              {database.available
-                                ? "✅ Available"
-                                : "🚧 Coming Soon"}
-                            </div>
-                          </div>
-
-                          <div className="text-sm text-foreground">
-                            {database.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* ORM/ODM Section */}
-              <AnimatePresence>
-                {visibleSections.has("orm") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Layers className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        ORM/ODM Integration
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Object relational mapping
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-4"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {orms.map((orm, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {orm.name}
-                              </span>
-                            </div>
-                            <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
-                              ✅ Available
-                            </div>
-                          </div>
-
-                          <div className="text-sm text-foreground">
-                            {orm.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Authentication Section */}
-              <AnimatePresence>
-                {visibleSections.has("auth") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Lock className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        Authentication & Security
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Identity & access management
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-4"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {authMethods.map((auth, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {auth.name}
-                              </span>
-                            </div>
-                            <div
-                              className={cn(
-                                "rounded border border-border px-2 py-1 text-xs",
-                                auth.available
-                                  ? "bg-green-500/20 text-green-600"
-                                  : "bg-yellow-500/20 text-yellow-600",
-                              )}
-                            >
-                              {auth.available
-                                ? "✅ Available"
-                                : "🚧 Coming Soon"}
-                            </div>
-                          </div>
-
-                          <div className="text-sm text-foreground">
-                            {auth.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Development Tools Section */}
-              <AnimatePresence>
-                {visibleSections.has("devtools") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Wrench className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        Development & DevOps
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Development tools & workflows
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-3"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {devTools.map((tool, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {tool.name}
-                              </span>
-                            </div>
-                            <div
-                              className={cn(
-                                "rounded border border-border px-2 py-1 text-xs",
-                                tool.available
-                                  ? "bg-green-500/20 text-green-600"
-                                  : "bg-yellow-500/20 text-yellow-600",
-                              )}
-                            >
-                              {tool.available
-                                ? "✅ Available"
-                                : "🚧 Coming Soon"}
-                            </div>
-                          </div>
-
-                          <div className="text-sm text-foreground">
-                            {tool.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Package Managers Section */}
-              <AnimatePresence>
-                {visibleSections.has("packages") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Package className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        Package Managers
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Dependency management
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-4"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {packageManagers.map((pm, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {pm.name}
-                              </span>
-                            </div>
-                            <div className="rounded border border-border bg-green-500/20 px-2 py-1 text-xs text-green-600">
-                              ✅ Available
-                            </div>
-                          </div>
-
-                          <div className="text-sm text-foreground">
-                            {pm.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Additional Features Section */}
-              <AnimatePresence>
-                {visibleSections.has("additional") && (
-                  <motion.section
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Rocket className="h-6 w-6 text-primary" />
-                      <h2 className="text-2xl font-bold font-mono">
-                        Additional Features
-                      </h2>
-                      <div className="flex-1 h-px bg-border" />
-                      <span className="text-xs text-muted-foreground">
-                        Extra capabilities & tools
-                      </span>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "grid gap-4",
-                        viewMode === "grid"
-                          ? "md:grid-cols-2 lg:grid-cols-4"
-                          : "grid-cols-1",
-                      )}
-                    >
-                      {additionalFeatures.map((feature, index) => (
-                        <div
-                          key={index}
-                          className="rounded-xl border border-border bg-card p-6 shadow-sm"
-                        >
-                          <div className="mb-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-sm font-mono">
-                                {feature.name}
-                              </span>
-                            </div>
-                            <div
-                              className={cn(
-                                "rounded border border-border px-2 py-1 text-xs",
-                                feature.available
-                                  ? "bg-green-500/20 text-green-600"
-                                  : "bg-yellow-500/20 text-yellow-600",
-                              )}
-                            >
-                              {feature.available
-                                ? "✅ Available"
-                                : "🚧 Coming Soon"}
-                            </div>
-                          </div>
-
-                          <div className="text-sm text-foreground">
-                            {feature.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
+                    </motion.section>
+                  )}
+                </AnimatePresence>
+              ))}
             </motion.div>
           </div>
         </ScrollArea>

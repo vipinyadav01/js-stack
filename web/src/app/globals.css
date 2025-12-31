@@ -6,8 +6,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo,
+    monospace;
 
   /* Sidebar colors */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -65,63 +67,46 @@
 
 :root {
   --radius: 0.75rem;
-  /* larger, friendlier corners */
 
   /* LIGHT THEME */
   --background: oklch(0.98 0.01 270);
-  /* neutral slightly cool off-white */
   --foreground: oklch(0.16 0.02 255);
-  /* deep navy for main text */
   --card: oklch(0.99 0.006 280);
-  /* glowing white for card UI */
-  --card-foreground: oklch(0.20 0.01 255);
-  /* slightly lighter than main fg */
+  --card-foreground: oklch(0.2 0.01 255);
   --popover: oklch(1 0 0);
-  /* pure white for overlays */
   --popover-foreground: oklch(0.16 0.02 255);
 
   --primary: oklch(0.52 0.18 265);
-  /* punchy blue with slight purple */
   --primary-foreground: oklch(0.99 0 0);
 
   --secondary: oklch(0.95 0.008 85);
-  /* soft sand/tan for backgrounds */
   --secondary-foreground: oklch(0.22 0.01 255);
 
   --accent: oklch(0.98 0.06 300);
-  /* modern magenta/violet accent */
-  --accent-foreground: oklch(0.20 0.01 255);
+  --accent-foreground: oklch(0.2 0.01 255);
 
   --muted: oklch(0.91 0.007 265);
-  /* subtle-muted backgrounds */
   --muted-foreground: oklch(0.36 0.01 265);
 
-  /* Status/Feedback */
   --success: oklch(0.68 0.17 140);
-  /* lively green */
   --success-foreground: oklch(0.12 0.02 140);
 
   --warning: oklch(0.92 0.14 75);
-  /* gold/amber */
   --warning-foreground: oklch(0.17 0.02 90);
 
   --info: oklch(0.78 0.18 255);
-  /* strong blue */
   --info-foreground: oklch(0.16 0.02 255);
 
   --destructive: oklch(0.73 0.19 25);
-  /* vibrant, elegant red */
   --destructive-foreground: oklch(0.99 0 0);
 
-  /* UI elements */
   --border: oklch(0.88 0.01 265);
   --input: oklch(0.98 0.01 270);
   --ring: oklch(0.56 0.17 265);
 
-  /* Chart/Sidebar: Brighter for modern dashboard feel */
   --chart-1: oklch(0.68 0.19 259);
-  --chart-2: oklch(0.70 0.18 165);
-  --chart-3: oklch(0.90 0.15 85);
+  --chart-2: oklch(0.7 0.18 165);
+  --chart-3: oklch(0.9 0.15 85);
   --chart-4: oklch(0.77 0.18 25);
   --chart-5: oklch(0.75 0.17 308);
 
@@ -138,28 +123,21 @@
 }
 
 .dark {
-  /* DARK THEME */
   --background: oklch(0.13 0.016 285.8);
-  /* deep but not pure black */
   --foreground: oklch(0.95 0.012 270);
-  /* white with blue cast */
   --card: oklch(0.17 0.015 265);
-  /* add depth to modals, sidecards */
   --card-foreground: oklch(0.93 0.016 260);
 
   --popover: oklch(0.18 0.015 265);
   --popover-foreground: oklch(0.96 0.01 265);
 
   --primary: oklch(0.78 0.14 268);
-  /* bright but soft blue */
   --primary-foreground: oklch(0.15 0.01 255);
 
   --secondary: oklch(0.23 0.02 90);
-  /* slate-sand brown */
   --secondary-foreground: oklch(0.97 0.011 275);
 
   --accent: oklch(0.41 0.16 300);
-  /* elegant, glowy magenta */
   --accent-foreground: oklch(0.97 0.012 275);
 
   --muted: oklch(0.21 0.02 265);
@@ -184,7 +162,7 @@
   --chart-1: oklch(0.78 0.13 259);
   --chart-2: oklch(0.79 0.13 165);
   --chart-3: oklch(0.83 0.14 85);
-  --chart-4: oklch(0.80 0.15 25);
+  --chart-4: oklch(0.8 0.15 25);
   --chart-5: oklch(0.78 0.13 308);
 
   --sidebar: oklch(0.17 0.015 260);
@@ -207,12 +185,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Enhanced focus styles */
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
   }
 
-  /* Better selection colors */
   ::selection {
     @apply bg-primary/20 text-foreground;
   }
@@ -222,165 +198,128 @@
   }
 }
 
-/* Custom utility classes for enhanced color usage */
 @layer utilities {
-
-  /* Status backgrounds */
   .bg-success {
     background-color: var(--success);
     color: var(--success-foreground);
   }
-
   .bg-warning {
     background-color: var(--warning);
     color: var(--warning-foreground);
   }
-
   .bg-info {
     background-color: var(--info);
     color: var(--info-foreground);
   }
 
-  /* Status text colors */
   .text-success {
     color: var(--success);
   }
-
   .text-warning {
     color: var(--warning);
   }
-
   .text-info {
     color: var(--info);
   }
 
-  /* Enhanced border utilities */
   .border-success {
     border-color: var(--success);
   }
-
   .border-warning {
     border-color: var(--warning);
   }
-
   .border-info {
     border-color: var(--info);
   }
 
-  /* Gradient utilities */
   .bg-gradient-primary {
     background: linear-gradient(135deg, var(--primary), var(--chart-1));
   }
-
   .bg-gradient-success {
     background: linear-gradient(135deg, var(--success), var(--chart-2));
   }
-
   .bg-gradient-warning {
     background: linear-gradient(135deg, var(--warning), var(--chart-3));
   }
 
-  /* Enhanced shadow utilities */
   .shadow-colored {
     box-shadow: 0 4px 6px -1px var(--primary), 0 2px 4px -1px var(--primary);
   }
-
   .shadow-success {
     box-shadow: 0 4px 6px -1px var(--success), 0 2px 4px -1px var(--success);
   }
-
   .shadow-warning {
     box-shadow: 0 4px 6px -1px var(--warning), 0 2px 4px -1px var(--warning);
   }
 
-  /* Glass morphism effect */
   .glass {
     background: oklch(from var(--card) l c h / 0.8);
     backdrop-filter: blur(10px);
     border: 1px solid oklch(from var(--border) l c h / 0.2);
   }
 
-  /* Enhanced hover states */
   .hover-lift {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
-
   .hover-lift:hover {
     transform: translateY(-1px);
     box-shadow: 0 8px 25px -4px oklch(from var(--primary) l c h / 0.15);
   }
 
-  /* Technology-specific color classes */
   .tech-frontend {
     @apply bg-blue-500/10 text-blue-600 border-blue-500/30;
   }
-
   .tech-backend {
     @apply bg-purple-500/10 text-purple-600 border-purple-500/30;
   }
-
   .tech-database {
     @apply bg-emerald-500/10 text-emerald-600 border-emerald-500/30;
   }
-
   .tech-orm {
     @apply bg-amber-500/10 text-amber-600 border-amber-500/30;
   }
-
   .tech-auth {
     @apply bg-rose-500/10 text-rose-600 border-rose-500/30;
   }
-
   .tech-addon {
     @apply bg-slate-500/10 text-slate-600 border-slate-500/30;
   }
 
-  /* Dark mode variants */
   .dark .tech-frontend {
     @apply bg-blue-400/20 text-blue-400 border-blue-400/40;
   }
-
   .dark .tech-backend {
     @apply bg-purple-400/20 text-purple-400 border-purple-400/40;
   }
-
   .dark .tech-database {
     @apply bg-emerald-400/20 text-emerald-400 border-emerald-400/40;
   }
-
   .dark .tech-orm {
     @apply bg-amber-400/20 text-amber-400 border-amber-400/40;
   }
-
   .dark .tech-auth {
     @apply bg-rose-400/20 text-rose-400 border-rose-400/40;
   }
-
   .dark .tech-addon {
     @apply bg-slate-400/20 text-slate-400 border-slate-400/40;
   }
 }
 
-/* Enhanced animations */
 @keyframes pulse-success {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 oklch(from var(--success) l c h / 0.7);
   }
-
   70% {
     box-shadow: 0 0 0 10px oklch(from var(--success) l c h / 0);
   }
 }
 
 @keyframes pulse-warning {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 oklch(from var(--warning) l c h / 0.7);
   }
-
   70% {
     box-shadow: 0 0 0 10px oklch(from var(--warning) l c h / 0);
   }
@@ -389,13 +328,10 @@
 .animate-pulse-success {
   animation: pulse-success 2s infinite;
 }
-
 .animate-pulse-warning {
   animation: pulse-warning 2s infinite;
 }
 
-
 ::-webkit-scrollbar {
   display: none;
-
 }

@@ -1,128 +1,72 @@
-# Source files (only include compiled dist/)
-cli/**/*.js
-!cli/templates/**
-!cli/templates/**/*
+# Source files
+# (Implicitly excluded by package.json "files", but good to keep clean here too.
+# Uncomment !src/ if you modify package.json to include source files.)
 src/
+web/
+scripts/
+
+# Test & Coverage
 __tests__/
 test/
 tests/
 *.test.js
-*.spec.js
 *.test.ts
+*.spec.js
 *.spec.ts
-
-# Development files
-.vscode/
-.idea/
-scripts/
-web/
-.cursor/
-.cursorrules
-
-# Config files (development only)
-.eslintrc*
-.prettierrc*
-jest.config.*
-tsconfig.json
-tsconfig.*.json
-.babelrc*
-rollup.config.*
-webpack.config.*
-vite.config.*
-vitest.config*
-playwright.config*
-.editorconfig
-.gitattributes
-turbo.json
-
-# Build files and logs
-*.log
-*.pid
-*.seed
-.DS_Store
-Thumbs.db
-.env*
-!.env.example
 coverage/
 .nyc_output/
-.turbo/
-.next/
-.nuxt/
-.cache/
-.parcel-cache/
-.vercel/
-.changeset/
-!.changeset/config.json
+test-results/
 
-# CI/CD (keep GitHub Actions for reference)
-.gitlab-ci.yml
-.travis.yml
-.circleci/
-azure-pipelines.yml
-Jenkinsfile
-
-# Development dependencies files
-.husky/
-.lintstagedrc*
-commitlint.config.*
-
-# Test fixtures and mocks
-fixtures/
-mocks/
-__mocks__/
-
-# Storybook
-.storybook/
-storybook-static/
-*.stories.js
-*.stories.jsx
-*.stories.ts
-*.stories.tsx
-
-# Docker files (for development)
-Dockerfile.dev
-docker-compose.dev.yml
-.dockerignore
-
-# IDE
-*.sublime-*
-*.code-workspace
-*.iml
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
-*.orig
-*.rej
-
-# Monorepo specific (exclude web workspace)
+# Config Files (Dev tools)
+.env
+.env.*
+.eslintrc*
+.prettierrc*
+.babelrc*
+jest.config.*
+tsconfig.*
+vite.config.*
+rollup.config.*
+webpack.config.*
+playwright.config.*
+turbo.json
+pnpm-workspace.yaml
 lerna.json
 nx.json
-rush.json
-pnpm-workspace.yaml
-turbo.json
-web/
 
-# Build artifacts that shouldn't be published
+# Tooling & Editor
+.git/
+.gitignore
+.github/
+.gitlab-ci.yml
+.circleci/
+.husky/
+.changeset/
+.vscode/
+.idea/
+.cursor/
+.cursorrules
+.DS_Store
+Thumbs.db
+
+# Logs & Temp
+logs/
+*.log
+tmp/
+temp/
+.cache/
+.agent/
+
+# Build artifacts (intermediate)
 *.tsbuildinfo
-dist/**/*.map
-dist/**/*.d.ts.map
+*.map
+.agent/
+# Examples
+demo-*/
+examples/
 
-# Test files
-test-filename.js
-test-fs-dir/
-
-# IMPORTANT: Keep these files for open source (they are included by default)
-# README.md - Included in package.json "files"
-# LICENSE - Should be included (add if missing)
-# CONTRIBUTING.md - Important for open source
-# CODE_OF_CONDUCT.md - Important for open source
-# CHANGELOG.md - Important for version tracking
-# SECURITY.md - Important for security reporting
-
-# The npm package includes (via package.json "files" field):
-# - dist/ (compiled CLI code)
-# - cli/templates/ (template files for project generation)
-# - README.md (documentation)
+# OPEN SOURCE FILES (Always include)
+!LICENSE
+!README.md
+!CONTRIBUTING.md
+!CODE_OF_CONDUCT.md

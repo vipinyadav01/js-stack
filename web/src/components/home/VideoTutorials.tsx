@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -184,15 +185,15 @@ export default function VideoTutorials({ limit = 4 }: VideoTutorialsProps) {
                     </div>
                   ) : (
                     <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={
                           video.youtubeData?.thumbnail ||
                           "https://via.placeholder.com/400x225"
                         }
                         alt={video.youtubeData?.title || "Video thumbnail"}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover/video:scale-105"
-                        loading="lazy"
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover/video:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/video:opacity-100 transition-opacity duration-300">
                         <div className="rounded-full bg-red-600 p-3 shadow-lg">
@@ -200,7 +201,7 @@ export default function VideoTutorials({ limit = 4 }: VideoTutorialsProps) {
                         </div>
                       </div>
                       {video.youtubeData?.duration && (
-                        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+                        <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded z-10">
                           {video.youtubeData.duration}
                         </div>
                       )}

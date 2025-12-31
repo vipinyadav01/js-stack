@@ -1,11 +1,8 @@
-import { loader } from "fumadocs-core/source";
+import { docs, meta } from "../../.source";
 import { createMDXSource } from "fumadocs-mdx";
+import { loader } from "fumadocs-core/source";
 
-// Create a simple empty source for now to unblock the build
-// The docs pages will still work with the static file structure
 export const source = loader({
   baseUrl: "/docs",
-  source: createMDXSource([], []),
+  source: createMDXSource(docs, meta),
 });
-
-export const pageTree = source.pageTree;

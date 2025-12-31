@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
-import { Menu, Search, ExternalLink, Sparkles, Command } from "lucide-react";
+import { Menu, Search, Sparkles, Github } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { SearchDialog, SearchTrigger } from "@/components/search-dialog";
+import { SearchDialog } from "@/components/search-dialog";
+import logo from "../Images/logo.png";
+import { motion } from "framer-motion";
 
 interface NavLink {
   text: string;
@@ -18,34 +20,12 @@ interface NavLink {
   isNew?: boolean;
 }
 
-interface ExternalLinkType {
-  icon: React.ComponentType<{ className?: string }>;
-  url: string;
-  label: string;
-}
-import logo from "../Images/logo.png";
-import { NpmIcon } from "@/components/icons/npm-icon";
-import { GithubIcon } from "@/components/icons/github-icon";
-
 const NAV_LINKS: NavLink[] = [
-  { text: "Docs", url: "/docs" },
+  // { text: "Docs", url: "/docs" },
   { text: "Builder", url: "/new", isNew: true },
   { text: "Analytics", url: "/analytics" },
   { text: "Features", url: "/features" },
   { text: "Sponsors", url: "/sponsors" },
-];
-
-const EXTERNAL_LINKS: ExternalLinkType[] = [
-  {
-    icon: NpmIcon,
-    url: "https://www.npmjs.com/package/create-js-stack",
-    label: "NPM",
-  },
-  {
-    icon: GithubIcon,
-    url: "https://github.com/vipinyadav01/js-stack",
-    label: "GitHub",
-  },
 ];
 
 export function Navigation() {
@@ -55,19 +35,13 @@ export function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
-  // Ensure consistent hydration
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    // Check initial scroll position
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [mounted]);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -75,18 +49,10 @@ export function Navigation() {
         e.preventDefault();
         setSearchOpen(true);
       }
-      if (e.key === "/" && !searchOpen) {
-        const target = e.target as HTMLElement;
-        if (target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
-          e.preventDefault();
-          setSearchOpen(true);
-        }
-      }
     };
-
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [searchOpen]);
+  }, []);
 
   const NavLinkItem = ({
     link,
@@ -101,204 +67,143 @@ export function Navigation() {
         href={link.url}
         onClick={() => mobile && setMobileOpen(false)}
         className={cn(
-          "relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
-          mobile ? "flex items-center justify-between w-full" : "group",
-          isActive
-            ? "text-foreground bg-primary/10 shadow-sm"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
+          "relative flex items-center gap-2 px-3 py-1.5 text-sm font-medium transition-colors",
+          mobile
+            ? "w-full rounded-lg p-3 hover:bg-muted"
+            : "rounded-full hover:text-primary",
+          isActive ? "text-primary" : "text-muted-foreground",
         )}
       >
-        <span className="flex items-center gap-2">
-          {link.text}
-          {link.isNew && (
-            <span className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-gradient-to-r from-violet-500/15 via-purple-500/15 to-fuchsia-500/15 text-violet-600 dark:text-violet-400 rounded-md border border-violet-500/20 animate-pulse">
-              <Sparkles className="h-2.5 w-2.5" />
-              New
-            </span>
-          )}
-          {link.badge && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold bg-primary/15 text-primary rounded-md border border-primary/20">
-              {link.badge}
-            </span>
-          )}
-        </span>
-        {!mobile && isActive && (
-          <span className="absolute inset-0 rounded-lg ring-2 ring-primary/20 pointer-events-none" />
+        {link.text}
+        {link.isNew && (
+          <span className="flex items-center gap-0.5 rounded-full bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-violet-500 ring-1 ring-violet-500/20">
+            <Sparkles className="h-2 w-2" />
+            <span className="hidden sm:inline">New</span>
+          </span>
         )}
-        {mobile && <ExternalLink className="h-4 w-4 opacity-40" />}
+        {!mobile && isActive && (
+          <motion.div
+            layoutId="navbar-active"
+            className="absolute inset-0 -z-10 rounded-full bg-primary/10"
+            initial={false}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+          />
+        )}
       </Link>
     );
   };
 
+  if (!mounted) return null;
+
   return (
-    <header
-      suppressHydrationWarning
-      className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
-        isScrolled
-          ? "bg-background/95 backdrop-blur-2xl border-b border-border/60 shadow-lg shadow-black/5"
-          : "bg-background/80 backdrop-blur-xl border-b border-border/40",
-      )}
-      role="banner"
-    >
-      <div className="container mx-auto px-4 lg:px-6">
-        <div className="h-16 flex items-center justify-between gap-4">
+    <>
+      <div
+        className={cn(
+          "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-5xl px-4 transition-all duration-300",
+          isScrolled ? "top-4" : "top-6",
+        )}
+      >
+        <nav
+          className={cn(
+            "flex items-center justify-between p-2 rounded-full border border-border/40 bg-background/60 shadow-lg shadow-black/5 backdrop-blur-xl transition-all",
+            isScrolled && "bg-background/80 shadow-xl border-border/60",
+          )}
+        >
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center gap-3 font-bold text-lg group shrink-0"
-            aria-label="JS Stack - Home"
+            className="flex items-center gap-2 px-2 pl-3 group shrink-0"
           >
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-lg blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative h-8 w-8 overflow-hidden rounded-lg">
               <Image
                 src={logo}
-                alt="JS Stack Logo"
-                width={32}
-                height={32}
-                priority
-                className="relative transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                alt="JS Stack"
+                fill
+                className="object-cover transition-transform group-hover:scale-110"
               />
             </div>
-            <span className="hidden sm:inline bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text transition-all duration-300 group-hover:tracking-wide">
+            <span className="font-bold hidden sm:inline-block bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
               JS Stack
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav
-            className="hidden md:flex items-center gap-1.5 flex-1 justify-center max-w-2xl mx-auto"
-            aria-label="Main navigation"
-          >
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-1 mx-4">
             {NAV_LINKS.map((link) => (
               <NavLinkItem key={link.url} link={link} />
             ))}
-          </nav>
+          </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Search - Desktop */}
-            <div className="hidden md:block">
-              <Button
-                variant="outline"
-                onClick={() => setSearchOpen(true)}
-                className="h-9 px-3 text-xs gap-2 bg-muted/40 hover:bg-muted border-border/60 text-muted-foreground hover:text-foreground shadow-sm transition-all duration-200 hover:shadow-md"
-              >
-                <Search className="h-3.5 w-3.5" />
-                <span className="hidden lg:inline">Search</span>
-                <kbd className="hidden lg:inline-flex h-5 select-none items-center gap-1 rounded border border-border/60 bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground ml-auto">
-                  <Command className="h-3 w-3" />K
-                </kbd>
-              </Button>
-            </div>
-
-            {/* Search - Mobile */}
+          {/* Right Actions */}
+          <div className="flex items-center gap-2 pr-1">
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden h-9 w-9 hover:bg-muted/60"
               onClick={() => setSearchOpen(true)}
-              aria-label="Open search"
+              className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 hidden sm:flex"
             >
               <Search className="h-4 w-4" />
             </Button>
 
-            {/* Divider */}
-            <div className="hidden md:block w-px h-6 bg-border/60" />
+            <Link
+              href="https://github.com/vipinyadav01/js-stack"
+              target="_blank"
+              className="hidden sm:block"
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              >
+                <Github className="h-4 w-4" />
+              </Button>
+            </Link>
 
-            {/* External Links */}
-            <div className="hidden md:flex items-center gap-1">
-              {EXTERNAL_LINKS.map(({ icon: Icon, url, label }) => (
-                <Button
-                  key={url}
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200"
-                  asChild
-                >
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener"
-                    aria-label={label}
-                  >
-                    <Icon className="h-4 w-4" />
-                  </a>
-                </Button>
-              ))}
-            </div>
+            <div className="hidden sm:block w-px h-4 bg-border/50 mx-1" />
 
-            {/* Theme Toggle */}
-            <ThemeToggle />
+            <ThemeToggle className="rounded-full" />
 
-            {/* Mobile Menu */}
+            {/* Mobile Toggle */}
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-              <SheetTrigger asChild className="md:hidden">
+              <SheetTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 hover:bg-muted/60"
-                  aria-label="Open mobile menu"
+                  className="md:hidden h-9 w-9 rounded-full"
                 >
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="w-80 pt-12 px-6">
-                <div className="flex flex-col gap-8">
-                  {/* Mobile Logo */}
-                  <Link
-                    href="/"
-                    className="flex items-center gap-3 font-bold text-xl pb-4 border-b"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <Image
-                      src={logo}
-                      alt="JS Stack Logo"
-                      width={32}
-                      height={32}
-                    />
-                    <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                      JS Stack
-                    </span>
-                  </Link>
-
-                  {/* Mobile Nav Links */}
-                  <nav
-                    className="flex flex-col gap-2"
-                    aria-label="Mobile navigation"
-                  >
-                    {NAV_LINKS.map((link) => (
-                      <NavLinkItem key={link.url} link={link} mobile />
-                    ))}
-                  </nav>
-
-                  {/* Mobile External Links */}
-                  <div className="border-t pt-6 flex flex-col gap-2">
-                    <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Resources
-                    </p>
-                    {EXTERNAL_LINKS.map(({ icon: Icon, url, label }) => (
-                      <a
-                        key={url}
-                        href={url}
-                        target="_blank"
-                        rel="noopener"
-                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg hover:bg-muted/60 transition-all duration-200 text-muted-foreground hover:text-foreground group"
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span>{label}</span>
-                        <ExternalLink className="h-3.5 w-3.5 ml-auto opacity-40 group-hover:opacity-100 transition-opacity" />
-                      </a>
-                    ))}
+              <SheetContent side="top" className="w-full pt-16 px-6 pb-6">
+                <div className="flex flex-col gap-2">
+                  {NAV_LINKS.map((link) => (
+                    <NavLinkItem key={link.url} link={link} mobile />
+                  ))}
+                  <div className="h-px bg-border my-2" />
+                  <div className="flex items-center gap-2 px-3">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start gap-2 h-10"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setSearchOpen(true);
+                      }}
+                    >
+                      <Search className="h-4 w-4" />
+                      Search...
+                      <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
+                        <span className="text-xs">⌘</span>K
+                      </kbd>
+                    </Button>
                   </div>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
-        </div>
+        </nav>
       </div>
 
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
-    </header>
+    </>
   );
 }

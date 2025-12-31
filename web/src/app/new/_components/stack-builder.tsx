@@ -8,6 +8,10 @@ import {
   Menu,
   Settings,
   Terminal,
+  Shuffle,
+  Save,
+  Download,
+  RotateCcw,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import type React from "react";
@@ -416,125 +420,119 @@ export function StackBuilder() {
     <TooltipProvider>
       <div className="flex h-full w-full overflow-hidden border-border text-foreground">
         {/* Sidebar - Fixed position */}
-        <div className="hidden sm:flex w-[280px] md:w-[320px] lg:w-[360px] flex-shrink-0 flex-col border-border border-r bg-gradient-to-b from-background to-muted/20 h-[calc(100vh-64px)]">
+        <div className="hidden lg:flex w-[280px] xl:w-[320px] flex-shrink-0 flex-col border-r border-border bg-background/50 backdrop-blur-xl h-[calc(100vh-64px)]">
           {/* Scrollable Content Area */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             {/* Header Section */}
-            <div className="p-4 border-b border-border/50 bg-background/50 backdrop-blur-sm sticky top-0 z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                  <Terminal className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <h2 className="font-semibold text-sm text-foreground">
-                    Stack Configuration
-                  </h2>
-                  <p className="text-[10px] text-muted-foreground">
-                    Build your perfect project
-                  </p>
-                </div>
-              </div>
-
+            <div className="p-4 border-b border-border/50 sticky top-0 z-10 bg-background/80 backdrop-blur-md">
               {/* Project Name Input */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">
                   Project Name
                 </label>
-                <input
-                  type="text"
-                  value={stack.projectName || ""}
-                  onChange={(e) => setStack({ projectName: e.target.value })}
-                  className={cn(
-                    "w-full rounded-lg border px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background transition-all",
-                    projectNameError
-                      ? "border-destructive bg-destructive/5 text-destructive focus:ring-destructive/20"
-                      : "border-border hover:border-muted-foreground/30 focus:border-primary",
-                  )}
-                  placeholder="my-app"
-                />
-                {projectNameError && (
-                  <p className="text-destructive text-[10px] flex items-center gap-1">
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-muted-foreground text-xs font-mono">
+                      /
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={stack.projectName || ""}
+                    onChange={(e) => setStack({ projectName: e.target.value })}
+                    className={cn(
+                      "w-full rounded-lg border bg-secondary/30 pl-7 pr-3 py-2.5 text-sm font-medium transition-all outline-none",
+                      "focus:bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary/50",
+                      projectNameError
+                        ? "border-destructive/50 bg-destructive/5 text-destructive focus:ring-destructive/20"
+                        : "border-border hover:border-border/80",
+                    )}
+                    placeholder="my-app"
+                  />
+                </div>
+                {projectNameError ? (
+                  <p className="text-destructive text-[10px] flex items-center gap-1.5 font-medium animate-in slide-in-from-left-1">
                     <InfoIcon className="h-3 w-3" />
                     {projectNameError}
                   </p>
-                )}
-                {(stack.projectName || "my-app").includes(" ") &&
-                  !projectNameError && (
-                    <p className="text-muted-foreground text-[10px]">
-                      Saved as:{" "}
-                      <code className="rounded bg-muted px-1 py-0.5 font-mono">
+                ) : (
+                  (stack.projectName || "my-app").includes(" ") && (
+                    <p className="text-muted-foreground text-[10px] flex items-center gap-1.5">
+                      <span className="opacity-70">Saved as:</span>
+                      <code className="rounded bg-secondary px-1.5 py-0.5 font-mono text-foreground font-medium">
                         {(stack.projectName || "my-app").replace(/\s+/g, "-")}
                       </code>
                     </p>
-                  )}
+                  )
+                )}
               </div>
             </div>
 
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-6">
               {/* Command Display - Terminal Style */}
-              <div className="rounded-xl border border-border bg-zinc-950 dark:bg-zinc-900 overflow-hidden shadow-lg">
-                <div className="flex items-center gap-1.5 px-3 py-2 bg-zinc-900 dark:bg-zinc-800 border-b border-zinc-800">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                  <span className="ml-2 text-[10px] text-zinc-500 font-medium">
-                    terminal
+              <div className="rounded-xl border border-border bg-zinc-950 shadow-xl overflow-hidden group">
+                <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] shadow-sm" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] shadow-sm" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F] shadow-sm" />
+                  </div>
+                  <span className="text-[10px] font-mono text-zinc-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    bash
                   </span>
                 </div>
-                <div className="p-3">
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-400 font-mono text-xs select-none">
-                      $
-                    </span>
-                    <code className="text-zinc-300 text-xs font-mono break-all leading-relaxed">
-                      {command}
-                    </code>
+
+                <div className="p-4 relative">
+                  <div className="flex items-start gap-3 text-sm font-mono leading-relaxed">
+                    <span className="text-primary select-none mt-0.5">❯</span>
+                    <code className="text-zinc-300 break-all">{command}</code>
                   </div>
-                </div>
-                <div className="px-3 py-2 bg-zinc-900/50 dark:bg-zinc-800/50 border-t border-zinc-800 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={copyToClipboard}
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[10px] font-medium transition-all",
-                      copied
-                        ? "bg-green-500/20 text-green-400"
-                        : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200",
-                    )}
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="h-3 w-3" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <ClipboardCopy className="h-3 w-3" />
-                        Copy
-                      </>
-                    )}
-                  </button>
+
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <button
+                      type="button"
+                      onClick={copyToClipboard}
+                      className={cn(
+                        "p-2 rounded-lg backdrop-blur-md transition-all",
+                        copied
+                          ? "bg-green-500/10 text-green-400 hover:bg-green-500/20"
+                          : "bg-white/10 text-zinc-400 hover:bg-white/20 hover:text-white",
+                      )}
+                      aria-label={copied ? "Copied" : "Copy command"}
+                    >
+                      {copied ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <ClipboardCopy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Selected Stack */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-foreground">
+                  <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider">
                     Selected Stack
                   </h3>
-                  <span className="text-[10px] text-muted-foreground px-1.5 py-0.5 rounded bg-muted">
+                  <span className="text-[10px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full border border-border/50">
                     {selectedBadges.length} items
                   </span>
                 </div>
-                <div className="rounded-lg border border-border bg-background/50 p-3 min-h-[60px]">
+                <div className="min-h-[100px] rounded-xl border border-dashed border-border/60 bg-secondary/10 p-4 transition-colors hover:border-border/80 hover:bg-secondary/20">
                   {selectedBadges.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5">
-                      {selectedBadges}
-                    </div>
+                    <div className="flex flex-wrap gap-2">{selectedBadges}</div>
                   ) : (
-                    <div className="flex items-center justify-center h-full text-xs text-muted-foreground italic">
-                      Select options from the categories →
+                    <div className="flex flex-col items-center justify-center h-full text-center py-4">
+                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center mb-2">
+                        <Terminal className="h-4 w-4 text-muted-foreground/50" />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Your stack is empty.
+                        <br />
+                        Select options to begin.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -542,74 +540,131 @@ export function StackBuilder() {
 
               {/* Compatibility Info */}
               {compatibilityAnalysis.changes.length > 0 && (
-                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <InfoIcon className="h-3.5 w-3.5 text-amber-500" />
-                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                      Compatibility Notes
-                    </span>
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">
+                  <div className="flex items-start gap-3">
+                    <InfoIcon className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                    <div className="space-y-2">
+                      <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 block">
+                        Compatibility Adjustments
+                      </span>
+                      <ul className="space-y-1.5">
+                        {compatibilityAnalysis.changes
+                          .slice(0, 3)
+                          .map((change, i) => (
+                            <li
+                              key={i}
+                              className="text-[11px] text-muted-foreground leading-snug flex items-start gap-1.5"
+                            >
+                              <span className="mt-1 h-1 w-1 rounded-full bg-amber-500/50 flex-shrink-0" />
+                              {change.message}
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
                   </div>
-                  <ul className="space-y-1">
-                    {compatibilityAnalysis.changes
-                      .slice(0, 3)
-                      .map(
-                        (
-                          change: { category: string; message: string },
-                          i: number,
-                        ) => (
-                          <li
-                            key={i}
-                            className="text-[10px] text-amber-600/80 dark:text-amber-400/80 leading-relaxed"
-                          >
-                            • {change.message}
-                          </li>
-                        ),
-                      )}
-                  </ul>
                 </div>
               )}
             </div>
           </div>
 
           {/* Fixed Bottom Action Buttons */}
-          <div className="flex-shrink-0 border-t border-border p-4 bg-background/80 backdrop-blur-sm">
-            <div className="space-y-2">
-              {/* Primary Actions */}
-              <ActionButtons
-                onReset={resetStack}
-                onRandom={getRandomStack}
-                onSave={saveCurrentStack}
-                onLoad={loadSavedStack}
-                hasSavedStack={!!lastSavedStack}
-              />
-
-              {/* Secondary Actions */}
-              <div className="flex gap-1.5">
-                <ShareButton stackUrl={getStackUrl()} stackState={stack} />
+          <div className="flex-shrink-0 border-t border-border p-4 bg-background/80 backdrop-blur-lg">
+            <div className="space-y-3">
+              {/* Row 1: Random & Presets */}
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={getRandomStack}
+                  className="h-9 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                >
+                  <Shuffle className="mr-2 h-3.5 w-3.5 text-primary" />
+                  Random
+                </Button>
                 <PresetDropdown onApplyPreset={applyPreset} />
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      type="button"
-                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-muted-foreground/30 hover:bg-muted hover:text-foreground"
+              </div>
+
+              {/* Row 2: Persistence Actions */}
+              <div className="grid grid-cols-4 gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={saveCurrentStack}
+                      className="h-9 w-full px-0 hover:border-blue-500/50 hover:bg-blue-500/5 hover:text-blue-500 transition-colors"
                     >
-                      <Settings className="h-3.5 w-3.5" />
-                      Settings
-                      <ChevronDown className="ml-auto h-3 w-3 opacity-50" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="w-72 bg-background"
-                  >
-                    <YoloToggle
-                      stack={stack}
-                      onToggle={(yolo) =>
-                        setStack({ yolo: yolo ? "true" : "false" })
-                      }
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <Save className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Save Configuration</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={loadSavedStack}
+                      disabled={!lastSavedStack}
+                      className="h-9 w-full px-0 hover:border-orange-500/50 hover:bg-orange-500/5 hover:text-orange-500 transition-colors disabled:opacity-50"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Load Saved</TooltipContent>
+                </Tooltip>
+
+                <div className="col-span-2">
+                  <ShareButton
+                    stackUrl={getStackUrl()}
+                    stackState={stack}
+                    className="h-9 w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Settings & Reset */}
+              <div className="pt-2 border-t border-border/50">
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 flex-1 justify-between px-2 text-muted-foreground hover:text-foreground hover:bg-secondary/50 font-normal"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Settings className="h-3.5 w-3.5" />
+                          <span>Settings</span>
+                        </span>
+                        <ChevronDown className="h-3 w-3 opacity-50" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-[240px]">
+                      <YoloToggle
+                        stack={stack}
+                        onToggle={(yolo) =>
+                          setStack({ yolo: yolo ? "true" : "false" })
+                        }
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={resetStack}
+                        className="h-8 w-8 px-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Reset All</TooltipContent>
+                  </Tooltip>
+                </div>
               </div>
             </div>
           </div>
@@ -621,7 +676,7 @@ export function StackBuilder() {
             <Button
               variant="outline"
               size="icon"
-              className="sm:hidden fixed top-20 left-4 z-50 h-10 w-10 rounded-full shadow-lg bg-background"
+              className="lg:hidden fixed top-20 left-4 z-50 h-10 w-10 rounded-full shadow-lg bg-background border-primary/20 hover:bg-primary/10"
             >
               <Menu className="h-5 w-5" />
               <span className="sr-only">Open menu</span>

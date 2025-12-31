@@ -113,9 +113,10 @@ export const metadata: Metadata = {
     template: "%s | JS-Stack CLI",
   },
   description:
-    "Stop configuring, start building. JS-Stack CLI (create-js-stack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.",
+    "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, and Docker.",
   keywords: [
     "js-stack",
+    "createjsstack",
     "create-js-stack",
     "javascript project generator",
     "typescript cli",
@@ -176,7 +177,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "JS-Stack CLI - The Ultimate JavaScript Project Generator",
     description:
-      "Stop configuring, start building. Scaffold production-ready full-stack apps with Next.js, React, Node.js, and TypeScript + CI/CD, Docker, and more.",
+      "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack apps with Next.js, React, Node.js, and TypeScript.",
     url: siteUrl,
     siteName: "JS-Stack CLI",
     type: "website",
@@ -197,7 +198,7 @@ export const metadata: Metadata = {
     creator: "@vipinyadav",
     title: "JS-Stack CLI - The Ultimate JavaScript Project Generator",
     description:
-      "Stop configuring, start building. Scaffold production-ready full-stack apps with Next.js, React, Node.js, and TypeScript in seconds.",
+      "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack apps with Next.js, React, Node.js, and TypeScript in seconds.",
     images: {
       url: "/opengraph-image",
       alt: "JS-Stack CLI - Modern Full-Stack Development",
@@ -278,7 +279,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             >
               <div className="relative flex min-h-screen flex-col">
                 <Navigation />
-                <main className="flex-1">{children}</main>
+                <main className="flex-1 pt-24">{children}</main>
                 <ConditionalFooter />
               </div>
             </ThemeProvider>

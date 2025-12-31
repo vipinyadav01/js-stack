@@ -4,182 +4,82 @@ node_modules/
 .pnp.js
 .yarn/install-state.gz
 
-# Testing
-coverage/
-.nyc_output
-*.lcov
-
-# Production builds (keep dist/ for CLI package)
+# Build outputs
+dist/
 build/
 out/
 .next/
 .nuxt/
-.vuepress/dist
-.serverless/
-.fusebox/
-.dynamodb/
-.tern-port
-.vscode-test
-
-# Cache directories
-.cache/
-.parcel-cache/
 .turbo/
 .vercel/
-.sst/
-.build/
 
-# Environment files (keep .env.example for reference)
+# Monorepo artifacts
+**/node_modules/
+**/dist/
+**/build/
+**/out/
+**/.next/
+**/.turbo/
+**/.vercel/
+
+# Environment variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env*.local
+.env.*
 !.env.example
 !.env.local.example
 
-# Debug logs
+# Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-# OS files
-.DS_Store
-Thumbs.db
-desktop.ini
+# Testing
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+*.lcov
+*.pid
+*.pid.lock
+*.seed
+
+# IDE and Editor settings
+.idea/
+.vscode/
 *.swp
 *.swo
-*~
-
-# IDE (keep essential configs for contributors)
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.idea/
-*.iml
-*.ipr
-*.iws
-.project
-.classpath
-.c9/
-*.launch
-.settings/
+*.swn
+.DS_Store
+Thumbs.db
 *.sublime-workspace
 *.sublime-project
-*.code-workspace
+.cursor/
+.cursorrules
 
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
-# Package managers
-.npm
-.yarn-integrity
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
-# Testing
-*.pid
-*.seed
-*.pid.lock
-
-# Temporary files
+# Temporary / Generated files
 tmp/
 temp/
-*.tmp
-*.temp
-
-# Build tools
-.grunt
-bower_components
-jspm_packages/
-web_modules/
-
-# Output
-*.log
-logs/
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-pids/
-
-# Runtime data
-lib-cov/
-*.info
-
-# Optional npm cache directory
-.npm/
-
-# Optional eslint cache
-.eslintcache
-
-# Optional stylelint cache
-.stylelintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Storybook
-storybook-static/
-
-# rollup.js
-.rollup.cache/
-
-# Docusaurus
-.docusaurus/
-
-# Husky
-.husky/_
-
-# Changeset (keep config, ignore generated files)
-.changeset/*.md
-!.changeset/config.json
-
-# Playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-
-# Monorepo build artifacts
-**/build/
-**/out/
-**/.next/
-**/.turbo/
-**/node_modules/
-
-# Web app specific
-web/.next/
-web/out/
-web/.vercel/
-
-# Local development and testing
-test-filename.js
+.cache/
+.agent/
 test-fs-dir/
-*.test.js
-*.spec.js
-
-# Generated project directories (for testing)
+test-filename.js
 demo-*/
 test-*/
 my-app/
 my-awesome-app/
 
-# Keep dist/ for CLI package distribution
-!dist/
+# Web App specific
+web/.next/
+web/out/
+
+# Agent / AI
+.agent/

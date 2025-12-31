@@ -122,7 +122,13 @@ export function StructuredData({
         mainEntity: {
           "@type": "SoftwareApplication",
           name: "create-js-stack",
-          alternateName: ["js-stack", "jsstack", "createjs", "create jsstack"],
+          alternateName: [
+            "js-stack",
+            "jsstack",
+            "createjs",
+            "create jsstack",
+            "createjsstack",
+          ],
           applicationCategory: "DeveloperApplication",
           operatingSystem: ["Windows", "macOS", "Linux"],
           downloadUrl: "https://www.npmjs.com/package/create-js-stack",
