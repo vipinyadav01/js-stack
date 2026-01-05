@@ -88,7 +88,7 @@ export async function createProject(
     // Gather configuration
     let config: Partial<ProjectConfig>;
 
-    if (options.yes) {
+    if (options.yes || options.yolo) {
       // Use defaults but merge with CLI options
       config = {
         ...DEFAULT_CONFIG,
@@ -117,7 +117,9 @@ export async function createProject(
         install:
           options.install !== undefined
             ? options.install
-            : DEFAULT_CONFIG.install,
+            : options.yolo
+              ? true
+              : DEFAULT_CONFIG.install,
       };
     } else {
       // Interactive prompts or parse from options
@@ -126,7 +128,7 @@ export async function createProject(
 
       // If no options provided (or only project name via argument which isn't in options object here), show prompts
       // The options object only contains flags passed to the command
-      if (options.yolo || hasOptions) {
+      if (hasOptions) {
         // Parse from CLI options
         config = {
           projectName: finalProjectName,

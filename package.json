@@ -1,9 +1,9 @@
 {
   "name": "create-js-stack",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
   "type": "module",
-  "packageManager": "npm@10.0.0",
+  "packageManager": "npm@11.7.0",
   "workspaces": [
     "web"
   ],

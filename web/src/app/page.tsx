@@ -34,7 +34,7 @@ export default function Home() {
     {
       question: "How do I install JS-Stack CLI?",
       answer:
-        "You can install JS-Stack CLI using npm with the command: npx create-js-stack@latest my-app. No global installation required. You can also use 'npx create-js-stack@latest init my-app' for the same result.",
+        "You can install JS-Stack CLI using npm with the command: npx create-js-stack@latest my-app. For a fully automated setup with defaults, try: npx create-js-stack@latest my-app --yolo",
     },
     {
       question: "What technologies does JS-Stack support?",

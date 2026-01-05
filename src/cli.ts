@@ -70,6 +70,7 @@ program
     "Server deployment (cloudflare-workers, alchemy)",
   )
   .option("-y, --yes", "Skip prompts and use defaults")
+  .option("--yolo", "Skip prompts and validation (risky!)")
   .option("--dry-run", "Preview files without creating them")
   .action(createProject);
 
