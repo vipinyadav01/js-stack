@@ -16,7 +16,6 @@ import {
   GitFork,
   Eye,
   TrendingUp,
-  ArrowUpRight,
   Terminal,
   Sparkles,
 } from "lucide-react";

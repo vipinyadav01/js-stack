@@ -53,8 +53,16 @@ program
     "Frontend framework (react, vue, nextjs, etc.)",
   )
   .option("--backend <framework>", "Backend framework")
+  .option(
+    "--runtime <runtime>",
+    "Runtime environment (node, bun, deno, workers)",
+  )
   .option("--api <api>", "API style (trpc, orpc, graphql, rest)")
   .option("--addons <addons>", "Addons (pwa, tauri, docker, etc.)")
+  .option(
+    "--examples <examples>",
+    "Example code to include (todo, ai, dashboard, auth, api)",
+  )
   .option("--docker", "Include Docker configuration")
   .option("--cicd <cicd>", "CI/CD configuration (github-actions, gitlab-ci)")
   .option(
@@ -69,6 +77,16 @@ program
     "--server-deploy <serverDeploy>",
     "Server deployment (cloudflare-workers, alchemy)",
   )
+  .option("--package-manager <pm>", "Package manager to use (npm, pnpm, bun)")
+  .option("--install", "Install dependencies after creation", true)
+  .option("--no-install", "Skip dependency installation")
+  .option("--git", "Initialize Git repository", true)
+  .option("--no-git", "Skip Git initialization")
+  .option(
+    "--directory-conflict <strategy>",
+    "How to handle existing directory (merge, overwrite, increment, error)",
+  )
+  .option("-v, --verbose", "Enable verbose logging")
   .option("-y, --yes", "Skip prompts and use defaults")
   .option("--yolo", "Skip prompts and validation (risky!)")
   .option("--dry-run", "Preview files without creating them")

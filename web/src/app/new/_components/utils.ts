@@ -4,6 +4,9 @@ import {
   applyCompatibility,
   validateConfiguration,
   BuilderState,
+  isCompatible as isBaseCompatible,
+  getCompatibleOptions as getBaseCompatibleOptions,
+  CompatibilityType,
 } from "../../../components/builder/config";
 
 export interface CompatibilityResult {
@@ -25,17 +28,9 @@ export function analyzeStackCompatibility(
   }
 
   // Convert StackState to BuilderState format
-  // Frontend is now a single string value
-  const frontend =
-    typeof stack.frontend === "string"
-      ? stack.frontend
-      : Array.isArray(stack.frontend) && (stack.frontend as string[]).length > 0
-        ? (stack.frontend as string[])[0] // Backward compatibility: if array, use first value
-        : "none";
-
   const builderState: BuilderState = {
     projectName: stack.projectName || "my-app",
-    frontend: frontend as BuilderState["frontend"],
+    frontend: (stack.frontend || "none") as BuilderState["frontend"],
     backend: (stack.backend || "none") as BuilderState["backend"],
     database: (stack.database || "none") as BuilderState["database"],
     orm: (stack.orm || "none") as BuilderState["orm"],
@@ -56,29 +51,43 @@ export function analyzeStackCompatibility(
   // Apply compatibility rules
   const adjustedBuilderState = applyCompatibility(builderState);
 
+  // Detect changes
+  const changes: Array<{ category: string; message: string }> = [];
+  const categories: (keyof BuilderState)[] = [
+    "frontend",
+    "backend",
+    "database",
+    "orm",
+    "auth",
+    "dbSetup",
+    "webDeploy",
+    "serverDeploy",
+  ];
+
+  for (const cat of categories) {
+    if (builderState[cat] !== adjustedBuilderState[cat]) {
+      changes.push({
+        category: cat,
+        message: `Changed ${cat} to ${adjustedBuilderState[cat]} for compatibility.`,
+      });
+    }
+  }
+
   // Validate configuration
   const validation = validateConfiguration(adjustedBuilderState);
 
-  // Convert back to StackState format
-  // Frontend is now a single string value
-  const adjustedFrontend =
-    adjustedBuilderState.frontend !== "none"
-      ? adjustedBuilderState.frontend
-      : "none";
-
   const adjustedStack: Partial<StackState> = {
-    projectName:
-      adjustedBuilderState.projectName || stack.projectName || "my-app",
-    frontend: adjustedFrontend,
-    backend: adjustedBuilderState.backend || "none",
-    database: adjustedBuilderState.database || "none",
-    orm: adjustedBuilderState.orm || "none",
-    auth: adjustedBuilderState.auth || "none",
-    addons: adjustedBuilderState.addons || [],
-    dbSetup: adjustedBuilderState.dbSetup || "none",
-    webDeploy: adjustedBuilderState.webDeploy || "none",
-    serverDeploy: adjustedBuilderState.serverDeploy || "none",
-    packageManager: adjustedBuilderState.packageManager || "npm",
+    projectName: adjustedBuilderState.projectName,
+    frontend: adjustedBuilderState.frontend,
+    backend: adjustedBuilderState.backend,
+    database: adjustedBuilderState.database,
+    orm: adjustedBuilderState.orm,
+    auth: adjustedBuilderState.auth,
+    addons: adjustedBuilderState.addons,
+    dbSetup: adjustedBuilderState.dbSetup,
+    webDeploy: adjustedBuilderState.webDeploy,
+    serverDeploy: adjustedBuilderState.serverDeploy,
+    packageManager: adjustedBuilderState.packageManager,
     git: adjustedBuilderState.initializeGit ? "true" : "false",
     install: adjustedBuilderState.installDependencies ? "true" : "false",
   };
@@ -101,9 +110,9 @@ export function analyzeStackCompatibility(
   }
 
   return {
-    adjustedStack,
+    adjustedStack: changes.length > 0 ? adjustedStack : null,
     notes,
-    changes: [],
+    changes,
   };
 }
 
@@ -112,18 +121,18 @@ export function analyzeStackCompatibility(
  */
 export function getCategoryDisplayName(category: string): string {
   const displayNames: Record<string, string> = {
-    frontend: "Frontend Framework",
-    backend: "Backend Framework",
+    frontend: "Frontend",
+    backend: "Backend",
     database: "Database",
-    orm: "ORM / Database Client",
-    auth: "Authentication",
-    addons: "Add-ons & Tools",
-    dbSetup: "Database Setup",
-    webDeploy: "Web Deployment",
-    serverDeploy: "Server Deployment",
+    orm: "ORM",
+    auth: "Auth",
+    addons: "Add-ons",
+    dbSetup: "DB Setup",
+    webDeploy: "Web Deploy",
+    serverDeploy: "Server Deploy",
     packageManager: "Package Manager",
-    git: "Git Repository",
-    install: "Install Dependencies",
+    git: "Git",
+    install: "Install",
   };
 
   return (
@@ -140,57 +149,66 @@ export function isOptionCompatible(
   category: keyof typeof TECH_OPTIONS,
   optionId: string,
 ): boolean {
-  // In YOLO mode, everything is compatible
-  if (stack.yolo === "true") {
-    return true;
+  if (stack.yolo === "true") return true;
+
+  // Addons check
+  if (category === "addons") {
+    return isBaseCompatible(
+      "frontendAddons",
+      stack.frontend || "none",
+      optionId,
+    );
   }
 
-  // Check database-ORM compatibility
+  // Database check (must work with both ORM and Backend)
+  if (category === "database") {
+    const isOrmCompatible = isBaseCompatible(
+      "ormDatabase",
+      stack.orm || "none",
+      optionId,
+    );
+    const isBackendCompatible = isBaseCompatible(
+      "backendDatabase",
+      stack.backend || "none",
+      optionId,
+    );
+    return isOrmCompatible && isBackendCompatible;
+  }
+
+  // ORM check
   if (category === "orm") {
-    const database = stack.database;
-
-    // MongoDB only works with Mongoose
-    if (
-      database === "mongodb" &&
-      optionId !== "mongoose" &&
-      optionId !== "none"
-    ) {
-      return false;
-    }
-
-    // SQL databases don't work with Mongoose
-    if (
-      (database === "postgres" ||
-        database === "mysql" ||
-        database === "sqlite") &&
-      optionId === "mongoose"
-    ) {
-      return false;
-    }
+    return isBaseCompatible("databaseOrm", stack.database || "none", optionId);
   }
 
-  // Check database-dbSetup compatibility
-  if (category === "dbSetup") {
-    const database = stack.database;
+  // Auth check (must work with both Backend and Frontend)
+  if (category === "auth") {
+    const isBackendCompatible = isBaseCompatible(
+      "backendAuth",
+      stack.backend || "none",
+      optionId,
+    );
+    // Frontend-Auth is usually a warning, but for UI disabling we might want to be strict or lenient.
+    // Based on config.ts, backendAuth is a critical error, while frontendAuth is a warning.
+    // We'll stick to backendAuth for disabling to remain flexible.
+    return isBackendCompatible;
+  }
 
-    // Turso only works with SQLite
-    if (optionId === "turso" && database !== "sqlite" && database !== "none") {
-      return false;
-    }
+  // Backend check
+  if (category === "backend") {
+    return isBaseCompatible(
+      "frontendBackend",
+      stack.frontend || "none",
+      optionId,
+    );
+  }
 
-    // Neon only works with PostgreSQL
-    if (optionId === "neon" && database !== "postgres" && database !== "none") {
-      return false;
-    }
-
-    // Supabase works with PostgreSQL
-    if (
-      optionId === "supabase" &&
-      database !== "postgres" &&
-      database !== "none"
-    ) {
-      return false;
-    }
+  // Frontend check
+  if (category === "frontend") {
+    return isBaseCompatible(
+      "backendFrontend",
+      stack.backend || "none",
+      optionId,
+    );
   }
 
   return true;
@@ -204,86 +222,60 @@ export function getDisabledReason(
   category: keyof typeof TECH_OPTIONS,
   optionId: string,
 ): string | null {
-  if (stack.yolo === "true") {
-    return null;
+  if (isOptionCompatible(stack, category, optionId)) return null;
+
+  if (category === "addons") {
+    return `${optionId} is not compatible with the selected Frontend (${stack.frontend}).`;
+  }
+
+  if (category === "database") {
+    const isOrmCompatible = isBaseCompatible(
+      "ormDatabase",
+      stack.orm || "none",
+      optionId,
+    );
+    const isBackendCompatible = isBaseCompatible(
+      "backendDatabase",
+      stack.backend || "none",
+      optionId,
+    );
+
+    if (!isOrmCompatible)
+      return `${optionId} is not compatible with the selected ORM (${stack.orm}).`;
+    if (!isBackendCompatible)
+      return `${optionId} is not compatible with the selected Backend (${stack.backend}).`;
   }
 
   if (category === "orm") {
-    const database = stack.database;
-
-    if (
-      database === "mongodb" &&
-      optionId !== "mongoose" &&
-      optionId !== "none"
-    ) {
-      return "This ORM is not compatible with MongoDB. MongoDB requires Mongoose.";
-    }
-
-    if (
-      (database === "postgres" ||
-        database === "mysql" ||
-        database === "sqlite") &&
-      optionId === "mongoose"
-    ) {
-      return "Mongoose only works with MongoDB databases.";
-    }
+    return `${optionId} is not compatible with the selected Database (${stack.database}).`;
   }
 
-  if (category === "dbSetup") {
-    const database = stack.database;
-
-    if (optionId === "turso" && database !== "sqlite" && database !== "none") {
-      return "Turso only supports SQLite databases.";
-    }
-
-    if (optionId === "neon" && database !== "postgres" && database !== "none") {
-      return "Neon only supports PostgreSQL databases.";
-    }
-
-    if (
-      optionId === "supabase" &&
-      database !== "postgres" &&
-      database !== "none"
-    ) {
-      return "Supabase requires PostgreSQL as the database.";
-    }
+  if (category === "auth") {
+    return `${optionId} is not compatible with the selected Backend (${stack.backend}).`;
   }
 
-  return null;
+  if (category === "backend") {
+    return `${optionId} is not compatible with the selected Frontend (${stack.frontend}).`;
+  }
+
+  if (category === "frontend") {
+    return `${optionId} is not compatible with the selected Backend (${stack.backend}).`;
+  }
+
+  return "This option is not compatible with your current selections.";
 }
 
 /**
  * Validate project name
  */
 export function validateProjectName(name: string): string | null {
-  if (!name || name.trim() === "") {
-    return null; // Empty is allowed, will use default
-  }
-
-  // Check for valid npm package name format
+  if (!name || name.trim() === "") return null;
   const trimmed = name.trim();
-
-  if (trimmed.length > 214) {
-    return "Project name must be less than 214 characters";
-  }
-
-  if (/^[._]/.test(trimmed)) {
-    return "Project name cannot start with a dot or underscore";
-  }
-
-  if (/[A-Z]/.test(trimmed)) {
-    return "Project name must be lowercase";
-  }
-
-  if (/[~'!()*]/.test(trimmed)) {
-    return "Project name contains invalid characters";
-  }
-
-  // Reserved names
-  const reserved = ["node_modules", "favicon.ico"];
-  if (reserved.includes(trimmed.toLowerCase())) {
-    return "This is a reserved name";
-  }
-
+  if (trimmed.length > 214) return "Too long (max 214 chars)";
+  if (/^[._]/.test(trimmed)) return "Cannot start with . or _";
+  if (/[A-Z]/.test(trimmed)) return "Must be lowercase";
+  if (/[~'!()*]/.test(trimmed)) return "Invalid characters";
+  if (["node_modules", "favicon.ico"].includes(trimmed.toLowerCase()))
+    return "Reserved name";
   return null;
 }
