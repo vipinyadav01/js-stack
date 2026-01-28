@@ -61,17 +61,18 @@ export default function TopSponsors({
   }, [repository, limit]);
 
   return (
-    <section className="py-12">
-      <div className="flex flex-col items-center justify-center text-center mb-10">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="rounded-full bg-primary/10 p-2">
-            <Heart className="h-5 w-5 text-primary fill-primary/20" />
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight">sponsors.json</h2>
+    <section>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+        <div className="flex items-center gap-2">
+          <Heart className="h-5 w-5 text-muted-foreground" />
+          <span className="font-bold text-lg sm:text-xl text-muted-foreground">
+            SPONSORS
+          </span>
         </div>
-        <p className="text-muted-foreground max-w-[600px]">
-          Our generous community members who make this project possible.
-        </p>
+        <div className="hidden h-px flex-1 bg-border sm:block" />
+        <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+          [SPONSORS.JSON]
+        </span>
       </div>
 
       {loading ? (
@@ -79,19 +80,18 @@ export default function TopSponsors({
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-32 rounded-lg border border-border bg-muted/20"
+              className="h-28 rounded-lg border border-border bg-muted/20"
             ></div>
           ))}
         </div>
       ) : sponsors.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card/30 p-12 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
+        <div className="rounded-lg border border-border bg-card p-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-3">
             <Heart className="h-6 w-6 text-primary" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">Become a Sponsor</h3>
-          <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-            Your support helps us maintain and improve JS-Stack. Join the list
-            of contributors!
+          <h3 className="text-base font-semibold mb-2">Become a Sponsor</h3>
+          <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+            Your support helps us maintain and improve JS-Stack
           </p>
           <Button asChild>
             <a
@@ -104,7 +104,7 @@ export default function TopSponsors({
           </Button>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {sponsors.map((sponsor, index) => {
               const isTopSponsor = index === 0;
@@ -112,26 +112,26 @@ export default function TopSponsors({
               return (
                 <div
                   key={sponsor.id}
-                  className="group relative overflow-hidden rounded-xl border border-border bg-card hover:shadow-md transition-all duration-300 hover:border-primary/50"
+                  className="relative overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-primary/50"
                 >
                   {isTopSponsor && (
-                    <div className="absolute top-0 right-0 bg-yellow-500/10 text-yellow-600 px-2 py-1 text-[10px] font-bold uppercase rounded-bl-lg border-b border-l border-yellow-500/10">
+                    <div className="absolute top-0 right-0 bg-yellow-500/10 text-yellow-600 px-2 py-0.5 text-[10px] font-bold uppercase rounded-bl-lg border-b border-l border-yellow-500/20">
                       Top Supporter
                     </div>
                   )}
-                  <div className="p-4 flex items-start gap-4">
+                  <div className="p-4 flex items-start gap-3">
                     <div className="flex-shrink-0">
                       <Image
                         src={sponsor.avatar}
                         alt={`${sponsor.name}`}
-                        width={50}
-                        height={50}
+                        width={48}
+                        height={48}
                         className="rounded-full border border-border"
                         unoptimized
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm truncate">
+                      <h3 className="font-medium text-sm truncate">
                         {sponsor.name}
                       </h3>
                       <p className="text-xs text-muted-foreground mb-2">
@@ -166,7 +166,7 @@ export default function TopSponsors({
               );
             })}
           </div>
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center">
             <Button variant="outline" asChild>
               <a
                 href={`https://github.com/sponsors/${repository}`}

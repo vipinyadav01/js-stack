@@ -5,9 +5,7 @@ import {
   ChevronDown,
   ClipboardCopy,
   InfoIcon,
-  Menu,
   Settings,
-  Terminal,
   Shuffle,
   Save,
   Download,
@@ -29,14 +27,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { TECH_OPTIONS, CATEGORY_ORDER, type TechOption } from "./tech-options";
 import { StackState, useStackState } from "./use-stack-state";
 import {
@@ -44,7 +36,6 @@ import {
   generateStackSharingUrl,
 } from "@/lib/stack-utils";
 import { cn } from "@/lib/utils";
-import { ActionButtons } from "./action-buttons";
 import { getBadgeColors } from "./get-badge-color";
 import { PresetDropdown } from "./preset-dropdown";
 import { ShareButton } from "./share-button";
@@ -96,7 +87,6 @@ export function StackBuilder() {
     stack.projectName || "my-app",
   );
 
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const contentRef = useRef<HTMLDivElement>(null);
   const lastAppliedStackString = useRef<string>("");
 
@@ -442,9 +432,10 @@ export function StackBuilder() {
 
   return (
     <TooltipProvider>
-      <div className="flex h-full w-full overflow-hidden border-border text-foreground">
-        {/* Simplified Sidebar */}
-        <aside className="hidden lg:flex w-[260px] xl:w-[300px] flex-shrink-0 flex-col border-r border-border/50 bg-background h-[calc(100vh-64px)] fixed left-0 top-[64px] z-40">
+      {/* Fixed height container accounting for navbar */}
+      <div className="fixed top-16 left-0 right-0 bottom-0 flex overflow-hidden">
+        {/* Sidebar */}
+        <aside className="hidden lg:flex w-[260px] xl:w-[300px] flex-shrink-0 flex-col border-r border-border/50 bg-background overflow-hidden">
           <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
             <div className="p-4 border-b border-border/50">
               <div className="space-y-1.5">
@@ -534,7 +525,9 @@ export function StackBuilder() {
           {/* Sidebar Footer Actions */}
           <div className="flex-shrink-0 border-t border-border/50 p-4 bg-background">
             <div className="space-y-2">
-              <div className="grid grid-cols-2 gap-2">
+              <div
+                className={`grid gap-2 ${PRESET_TEMPLATES.length > 0 ? "grid-cols-2" : "grid-cols-1"}`}
+              >
                 <Button
                   variant="outline"
                   size="sm"
@@ -543,7 +536,9 @@ export function StackBuilder() {
                 >
                   <Shuffle className="mr-2 h-3 w-3" /> Random
                 </Button>
-                <PresetDropdown onApplyPreset={applyPreset} />
+                {PRESET_TEMPLATES.length > 0 && (
+                  <PresetDropdown onApplyPreset={applyPreset} />
+                )}
               </div>
               <div className="grid grid-cols-4 gap-2">
                 <Button
@@ -607,12 +602,10 @@ export function StackBuilder() {
           </div>
         </aside>
 
-        <div className="hidden lg:block w-[260px] xl:w-[300px] flex-shrink-0" />
-
         {/* Main Content */}
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <ScrollArea ref={contentRef} className="h-[calc(100vh-64px)]">
-            <main className="p-4 sm:p-6 lg:p-8">
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea ref={contentRef} className="h-full">
+            <main className="px-4 pb-20">
               {CATEGORY_ORDER.map((categoryKey) => {
                 const categoryOptions =
                   TECH_OPTIONS[categoryKey as keyof typeof TECH_OPTIONS] || [];
@@ -623,7 +616,7 @@ export function StackBuilder() {
                   <section
                     key={categoryKey}
                     id={`section-${categoryKey}`}
-                    className="mb-8 scroll-mt-4"
+                    className="mb-8 scroll-mt-16"
                   >
                     <div className="mb-4 flex items-center justify-between border-b border-border/50 pb-2">
                       <h2 className="font-semibold text-foreground text-sm flex items-center gap-2">
@@ -634,7 +627,7 @@ export function StackBuilder() {
                       </h2>
                     </div>
 
-                    <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
                       {categoryOptions.map((tech: TechOption) => {
                         const category = categoryKey as keyof StackState;
                         const currentValue = stack[category];
@@ -662,7 +655,7 @@ export function StackBuilder() {
                           <div
                             key={tech.id}
                             className={cn(
-                              "group relative cursor-pointer rounded-md border p-2 transition-all duration-150",
+                              "group relative cursor-pointer rounded-md border p-4 transition-all duration-150",
                               isSelected
                                 ? "border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20"
                                 : isDisabled
@@ -677,8 +670,8 @@ export function StackBuilder() {
                               )
                             }
                           >
-                            <div className="flex items-center gap-2">
-                              <div className="flex-shrink-0">
+                            <div className="flex items-start gap-2">
+                              <div className="flex-shrink-0 mt-0.5">
                                 {tech.emoji ? (
                                   <span className="text-base leading-none">
                                     {tech.emoji}
@@ -702,9 +695,14 @@ export function StackBuilder() {
                                 >
                                   {tech.name}
                                 </h3>
+                                {tech.description && (
+                                  <p className="text-[9px] text-muted-foreground mt-0.5 line-clamp-2 leading-tight">
+                                    {tech.description}
+                                  </p>
+                                )}
                               </div>
                               {isSelected && (
-                                <Check className="h-3 w-3 text-primary flex-shrink-0" />
+                                <Check className="h-3 w-3 text-primary flex-shrink-0 mt-0.5" />
                               )}
                             </div>
 
@@ -722,7 +720,6 @@ export function StackBuilder() {
                   </section>
                 );
               })}
-              <div className="h-10" />
             </main>
           </ScrollArea>
         </div>

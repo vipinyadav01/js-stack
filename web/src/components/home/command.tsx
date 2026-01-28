@@ -1,18 +1,7 @@
 "use client";
-import {
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  Terminal,
-  Zap,
-  Package,
-  Play,
-  Sparkles,
-} from "lucide-react";
+import { Check, ChevronDown, Copy, Terminal } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,40 +28,33 @@ export default function Command() {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      {/* Command Section */}
-      <motion.div
-        className="group relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-background to-muted/20 p-6 shadow-lg backdrop-blur-sm"
-        whileHover={{ scale: 1.02, y: -2 }}
-        transition={{ duration: 0.2 }}
-      >
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+    <div>
+      {/* Single Header for entire section */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+        <div className="flex items-center gap-2">
+          <Terminal className="h-5 w-5 text-muted-foreground" />
+          <span className="font-bold text-lg sm:text-xl text-muted-foreground">
+            QUICK_START
+          </span>
+        </div>
+        <div className="hidden h-px flex-1 bg-border sm:block" />
+        <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+          [COMMAND.SH]
+        </span>
+      </div>
 
-        <div className="relative">
-          {/* Header */}
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-primary/10 p-2">
-                <Terminal className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg">Quick Start</h3>
-                <p className="text-sm text-muted-foreground">
-                  Get started in seconds
-                </p>
-              </div>
-            </div>
-
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Command Section */}
+        <div>
+          <div className="mb-4 flex items-center justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-2 bg-background/50 backdrop-blur-sm"
+                  className="flex items-center gap-2"
                 >
-                  <Package className="h-4 w-4" />
-                  <span className="font-medium">{selectedPM}</span>
+                  <span className="font-medium text-sm">{selectedPM}</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
@@ -86,7 +68,6 @@ export default function Command() {
                       selectedPM === pm && "bg-primary/10 text-primary",
                     )}
                   >
-                    <Package className="h-3 w-3" />
                     <span className="font-medium">{pm}</span>
                     {selectedPM === pm && <Check className="ml-auto h-3 w-3" />}
                   </DropdownMenuItem>
@@ -95,18 +76,11 @@ export default function Command() {
             </DropdownMenu>
           </div>
 
-          <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card/60 shadow-sm">
-            <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
-                </div>
-                <div className="ml-2 flex items-center gap-2 text-muted-foreground text-xs">
-                  <Terminal className="h-3.5 w-3.5" />
-                  <span>Command</span>
-                </div>
+          <div className="rounded-md border border-border bg-muted/30">
+            <div className="flex items-center justify-between border-b border-border px-3 py-2">
+              <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                <Terminal className="h-3.5 w-3.5" />
+                <span>Terminal</span>
               </div>
 
               <Button
@@ -115,10 +89,8 @@ export default function Command() {
                 onClick={() => copyCommand(commands[selectedPM], selectedPM)}
                 aria-live="polite"
                 className={cn(
-                  "rounded-md px-2 py-1 text-xs",
-                  copiedCommand === selectedPM
-                    ? "bg-green-500/10 text-green-600"
-                    : "text-muted-foreground hover:bg-primary/10 hover:text-foreground",
+                  "h-7 rounded-md px-2 text-xs",
+                  copiedCommand === selectedPM && "text-green-600",
                 )}
               >
                 {copiedCommand === selectedPM ? (
@@ -139,78 +111,28 @@ export default function Command() {
               <div className="flex items-start gap-2 font-mono text-sm">
                 <span className="select-none text-muted-foreground">$</span>
                 <pre className="m-0 max-w-full overflow-x-auto whitespace-pre-wrap break-words text-foreground">
-                  <code className="font-medium">{commands[selectedPM]}</code>
+                  <code>{commands[selectedPM]}</code>
                 </pre>
               </div>
             </div>
           </div>
         </div>
-      </motion.div>
 
-      {/* Stack Builder Section */}
-      <Link href="/new">
-        <motion.div
-          className="group relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-primary/5 to-blue-500/5 p-6 shadow-lg backdrop-blur-sm"
-          whileHover={{ scale: 1.02, y: -2 }}
-          transition={{ duration: 0.2 }}
-        >
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-
-          <div className="relative">
-            {/* Header */}
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg">Stack Builder</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Interactive configuration
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5">
-                <Play className="h-3 w-3 text-primary" />
-                <span className="text-xs font-medium text-primary">
-                  Interactive
-                </span>
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="space-y-4">
-              <div className="rounded-xl bg-background/50 p-4 backdrop-blur-sm">
-                <div className="flex items-center gap-3">
-                  <Zap className="h-5 w-5 text-primary" />
-                  <div>
-                    <p className="font-medium text-foreground">
-                      Build your custom JavaScript stack
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Choose frameworks, databases, and tools
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  <span>Start building your stack</span>
-                </div>
-                <div className="rounded-full bg-primary/10 px-3 py-1">
-                  <span className="text-xs font-medium text-primary">
-                    Get Started
-                  </span>
-                </div>
-              </div>
+        {/* Stack Builder Section */}
+        <Link href="/new">
+          <div className="h-full rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary/50">
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Build your custom JavaScript stack with our interactive
+                configuration tool.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Choose frameworks, databases, and tools that fit your needs.
+              </p>
             </div>
           </div>
-        </motion.div>
-      </Link>
+        </Link>
+      </div>
     </div>
   );
 }

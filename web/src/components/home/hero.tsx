@@ -72,88 +72,54 @@ export default function Hero() {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="group rounded-lg border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-md">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-sm">NPM_PACKAGE</span>
-              </div>
-              <div className="rounded-md border border-border bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                PUBLIC
-              </div>
-            </div>
-            <div className="rounded-md border border-border bg-muted/30 p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-foreground font-mono font-medium">
-                    create-js-stack
-                  </span>
-                </div>
-                <div className="rounded-md border border-border bg-green-500/10 px-2 py-1 text-xs font-medium text-green-600 dark:text-green-400">
-                  LATEST
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="group rounded-lg border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-md">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Github className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-sm">GITHUB_REPO</span>
-              </div>
-              <div className="rounded-md border border-border bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                OPEN
-              </div>
-            </div>
-            <div className="rounded-md border border-border bg-muted/30 p-3">
-              <div className="flex items-center justify-between">
-                <a
-                  href="https://github.com/vipinyadav01/js-stack"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm hover:text-primary transition-colors"
-                >
-                  <span className="text-foreground font-mono font-medium">
-                    vipinyadav01/js-stack
-                  </span>
-                </a>
-                <div className="rounded-md border border-border bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400">
-                  ACTIVE
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="group rounded-lg border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-md">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-sm">VERSION</span>
-              </div>
-              <div className="rounded-md border border-border bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                CURRENT
-              </div>
-            </div>
-            <div className="rounded-md border border-border bg-muted/30 p-3">
-              <NpmVersion />
-            </div>
-          </div>
-        </div>
-
-        {/* End of File */}
-        <div className="mb-4 mt-8">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-            <div className="flex items-center gap-2">
-              <Terminal className="h-5 w-5 text-muted-foreground" />
-              <span className="font-bold text-lg sm:text-xl text-muted-foreground">
-                END_OF_FILE
+          <div className="rounded-lg border border-border bg-card/50 p-4 transition-colors hover:border-primary/50">
+            <div className="mb-3 flex items-center gap-2">
+              <Package className="h-4 w-4 text-muted-foreground" />
+              <span className="font-semibold text-sm text-muted-foreground">
+                NPM_PACKAGE
               </span>
             </div>
-            <div className="hidden h-px flex-1 bg-border sm:block" />
-            <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-              [HERO.LOG]
-            </span>
+            <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+              <a
+                href="https://www.npmjs.com/package/create-js-stack"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground font-mono font-medium text-sm hover:text-primary transition-colors cursor-pointer"
+              >
+                create-js-stack
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-border bg-card/50 p-4 transition-colors hover:border-primary/50">
+            <div className="mb-3 flex items-center gap-2">
+              <Github className="h-4 w-4 text-muted-foreground" />
+              <span className="font-semibold text-sm text-muted-foreground">
+                GITHUB_REPO
+              </span>
+            </div>
+            <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+              <a
+                href="https://github.com/vipinyadav01/js-stack"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground font-mono font-medium text-sm hover:text-primary transition-colors"
+              >
+                vipinyadav01/js-stack
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-border bg-card/50 p-4 transition-colors hover:border-primary/50">
+            <div className="mb-3 flex items-center gap-2">
+              <Terminal className="h-4 w-4 text-muted-foreground" />
+              <span className="font-semibold text-sm text-muted-foreground">
+                VERSION
+              </span>
+            </div>
+            <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
+              <NpmVersion />
+            </div>
           </div>
         </div>
       </main>

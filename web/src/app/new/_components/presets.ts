@@ -5,13 +5,14 @@ export interface PresetTemplate {
   stack: Record<string, string | string[] | boolean>;
 }
 
+// Only include templates that exist in the CLI (templates/examples/)
 export const PRESET_TEMPLATES: PresetTemplate[] = [
   {
-    id: "todo-app",
-    name: "Todo App Example",
-    description: "A simple Todo application to get you started",
+    id: "todo",
+    name: "Todo App",
+    description: "A simple Todo application example",
     stack: {
-      frontend: "react", // Changed from array to single string
+      frontend: "react",
       backend: "express",
       database: "sqlite",
       orm: "prisma",
@@ -22,4 +23,5 @@ export const PRESET_TEMPLATES: PresetTemplate[] = [
       install: "true",
     },
   },
+  // Add more templates here as they become available in templates/examples/
 ];

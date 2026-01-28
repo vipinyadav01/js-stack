@@ -8,7 +8,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { StructuredData } from "@/components/structured-data";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
-import { RootProvider } from "fumadocs-ui/provider";
 import { PostHogProvider, PostHogPageView } from "@/providers/posthog-provider";
 
 const jetbrainsMono = localFont({
@@ -214,6 +213,8 @@ export const metadata: Metadata = {
   classification: "Developer Tools",
   other: {
     "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
   },
 };
 
@@ -270,20 +271,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <Suspense fallback={null}>
             <PostHogPageView />
           </Suspense>
-          <RootProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <div className="relative flex min-h-screen flex-col">
-                <Navigation />
-                <main className="flex-1 pt-24">{children}</main>
-                <ConditionalFooter />
-              </div>
-            </ThemeProvider>
-          </RootProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="relative flex min-h-screen flex-col">
+              <Navigation />
+              <main className="flex-1 pt-24">{children}</main>
+              <ConditionalFooter />
+            </div>
+          </ThemeProvider>
         </PostHogProvider>
       </body>
     </html>

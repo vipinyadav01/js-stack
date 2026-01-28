@@ -10,19 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
   const now = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
 
-  // Static docs pages
-  const docsPages: MetadataRoute.Sitemap = [
-    "/docs/getting-started",
-    "/docs/technologies",
-    "/docs/commands",
-    "/docs/examples",
-  ].map((path) => ({
-    url: `${baseUrl}${path}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
   return [
     {
       url: baseUrl,
@@ -30,13 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1.0,
     },
-    {
-      url: `${baseUrl}/docs`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    ...docsPages,
     {
       url: `${baseUrl}/new`,
       lastModified: now,

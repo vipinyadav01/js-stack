@@ -5,7 +5,6 @@ import { Twitter, MessageCircle } from "lucide-react";
 import { fetchTwitterMentions, type TwitterTweet } from "@/lib/sponsors-api";
 import { isLocalhost, demoTweets } from "@/lib/demo-data";
 import TweetCard from "@/components/sponsors/TweetCard";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface TopCommentsProps {
   repository?: string;
@@ -62,15 +61,18 @@ export default function TopComments({
 
   if (loading) {
     return (
-      <div className="rounded border border-border p-6">
-        <div className="mb-4 flex items-center justify-between">
+      <div>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
           <div className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-sm">TOP_COMMENTS</span>
+            <MessageCircle className="h-5 w-5 text-muted-foreground" />
+            <span className="font-bold text-lg sm:text-xl text-muted-foreground">
+              COMMUNITY_FEEDBACK
+            </span>
           </div>
-          <div className="rounded border border-border bg-muted/30 px-2 py-1 text-xs">
-            LOADING
-          </div>
+          <div className="hidden h-px flex-1 bg-border sm:block" />
+          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+            [FEEDBACK.JSON]
+          </span>
         </div>
         <div className="flex items-center justify-center py-8">
           <div className="text-muted-foreground text-sm">
@@ -81,107 +83,56 @@ export default function TopComments({
     );
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
   return (
-    <motion.div
-      className="group relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-background to-muted/20 p-6 shadow-lg backdrop-blur-sm"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+    <div>
+      {/* Header */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="h-5 w-5 text-muted-foreground" />
+          <span className="font-bold text-lg sm:text-xl text-muted-foreground">
+            COMMUNITY_FEEDBACK
+          </span>
+        </div>
+        <div className="hidden h-px flex-1 bg-border sm:block" />
+        <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
+          [FEEDBACK.JSON]
+        </span>
+      </div>
 
-      <div className="relative">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2">
-              <MessageCircle className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-bold text-lg">Top Comments</h3>
-              <p className="text-sm text-muted-foreground">
-                Community feedback
-              </p>
+      {tweets.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="mb-4 flex items-center justify-center">
+            <div className="rounded-full bg-muted p-3">
+              <MessageCircle className="h-6 w-6 text-muted-foreground" />
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5">
-            <Twitter className="h-3 w-3 text-primary" />
-            <span className="text-xs font-medium text-primary">
-              {tweets.length}
-            </span>
+          <div className="text-sm text-muted-foreground mb-2">
+            No mentions found
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Be the first to share your experience on Twitter!
           </div>
         </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {tweets.map((tweet, index) => (
+            <TweetCard key={tweet.id} tweet={tweet} index={index} />
+          ))}
+        </div>
+      )}
 
-        <AnimatePresence mode="wait">
-          {tweets.length === 0 ? (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="text-center py-12"
-            >
-              <div className="mb-6 flex items-center justify-center">
-                <div className="rounded-full bg-muted/30 p-4">
-                  <MessageCircle className="h-8 w-8 text-muted-foreground/50" />
-                </div>
-              </div>
-              <div className="text-muted-foreground text-sm mb-2 font-medium">
-                No mentions found
-              </div>
-              <div className="text-xs text-muted-foreground mb-4">
-                No recent mentions found for{" "}
-                <span className="font-mono text-primary">{repository}</span>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Be the first to share your experience on Twitter!
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="tweets"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-            >
-              {tweets.map((tweet, index) => (
-                <TweetCard key={tweet.id} tweet={tweet} index={index} />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Footer CTA */}
-        <motion.div
-          className="mt-6 pt-4 border-t border-border/50"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
+      {/* Footer CTA */}
+      <div className="mt-4 pt-4 border-t border-border">
+        <a
+          href={`https://twitter.com/search?q=${repository} OR from:vipinyadav9m`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
         >
-          <a
-            href={`https://twitter.com/search?q=${repository} OR from:vipinyadav9m`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/cta flex items-center justify-center gap-2 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10 px-4 py-3 text-sm font-medium text-primary transition-all duration-300 hover:border-primary/40 hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/20 hover:shadow-lg hover:shadow-primary/20"
-          >
-            <Twitter className="h-4 w-4 transition-transform group-hover/cta:scale-110" />
-            <span>View More on Twitter</span>
-            <MessageCircle className="h-3 w-3 transition-transform group-hover/cta:translate-x-1" />
-          </a>
-        </motion.div>
+          <Twitter className="h-4 w-4" />
+          <span>View More on Twitter</span>
+        </a>
       </div>
-    </motion.div>
+    </div>
   );
 }

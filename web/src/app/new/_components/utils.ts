@@ -5,8 +5,6 @@ import {
   validateConfiguration,
   BuilderState,
   isCompatible as isBaseCompatible,
-  getCompatibleOptions as getBaseCompatibleOptions,
-  CompatibilityType,
 } from "../../../components/builder/config";
 
 export interface CompatibilityResult {

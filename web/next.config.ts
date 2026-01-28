@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-import { createMDX } from "fumadocs-mdx/next";
-
-const withMDX = createMDX();
 
 const nextConfig: NextConfig = {
   output: "export", // Required for Cloudflare Pages deployment - generates 'out' directory
@@ -10,8 +7,6 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     formats: ["image/webp", "image/avif"],
   },
-  // Fumadocs MDX configuration
-  pageExtensions: ["ts", "tsx", "mdx"],
   eslint: {
     ignoreDuringBuilds: false,
   },
@@ -125,4 +120,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withMDX(nextConfig);
+export default nextConfig;
