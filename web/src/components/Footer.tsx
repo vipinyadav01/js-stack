@@ -3,14 +3,11 @@
 import React, { useState } from "react";
 import {
   Github,
-  Terminal,
   Twitter,
   Globe,
   ArrowRight,
-  Check,
   Copy,
-  Zap,
-  Sparkles,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,73 +15,72 @@ import logo from "../Images/logo.png";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [copied, setCopied] = useState(false);
-  const command = "npx @vipinyadav02/createjsstack@latest";
+  const [copiedCommand, setCopiedCommand] = useState(false);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(command);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyCommand = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        "npx @vipinyadav02/createjsstack@latest my-app",
+      );
+      setCopiedCommand(true);
+      setTimeout(() => setCopiedCommand(false), 2000);
+    } catch {
+      // Fallback
+    }
   };
 
   return (
-    <footer className="w-full border-t border-border/60 bg-card/60 backdrop-blur-xl dark:bg-[#090a0f]">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
+    <footer className="w-full border-t border-border/60 bg-background dark:bg-[#07080c] relative overflow-hidden font-sans text-foreground">
+      {/* Background Accent Glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[250px] bg-primary/5 blur-[140px] pointer-events-none rounded-full" />
+
+      {/* Main Container */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 relative z-10 max-w-7xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-border/50">
           
-          {/* Brand Column (2 columns wide on lg) */}
-          <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-3 group shrink-0">
-              <div className="relative h-8 w-8 overflow-hidden rounded-lg border border-primary/30 bg-primary/10 p-0.5 transition-transform group-hover:scale-105">
+          {/* Brand Info (Spans 2 cols on lg) */}
+          <div className="lg:col-span-2 space-y-5">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-primary/40 bg-card p-0.5 shadow-md shadow-primary/20 group-hover:border-primary transition-colors">
                 <Image
                   src={logo}
-                  alt="JS-Stack"
-                  fill
-                  sizes="32px"
-                  className="object-cover rounded-md"
+                  alt="JS-Stack Logo"
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <span className="font-mono font-extrabold text-lg tracking-tight text-foreground">
-                  JS-STACK
-                </span>
-                <span className="inline-flex items-center gap-1 rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-primary">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  v1.2.16
-                </span>
-              </div>
+              <span className="font-mono font-bold text-lg text-foreground tracking-tight group-hover:text-primary transition-colors">
+                JS-STACK CLI
+              </span>
             </Link>
 
-            <p className="max-w-sm text-xs sm:text-sm text-muted-foreground leading-relaxed font-sans">
-              The full-stack scaffolding CLI platform for React 19, Next.js 15, Vue 3, Express, Fastify, Postgres, MongoDB, and Docker.
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-sm font-sans">
+              Scaffold production-ready JavaScript full-stack projects in seconds. Zero configuration needed with Next.js, React, Node, Express, Prisma & Docker.
             </p>
 
-            {/* Quick Copy Terminal Pill */}
-            <div className="pt-2">
-              <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mb-2">
-                Quick Execution Command
-              </p>
-              <button
-                onClick={handleCopy}
-                className="flex items-center justify-between gap-3 w-full max-w-sm px-3.5 py-2.5 rounded-md bg-secondary/80 border border-border/80 text-foreground font-mono text-xs hover:border-primary/50 transition-all group shadow-sm"
-              >
-                <div className="flex items-center gap-2 overflow-hidden">
-                  <Terminal className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                  <span className="truncate text-[11px]">{command}</span>
-                </div>
-                {copied ? (
-                  <span className="text-[10px] font-bold text-emerald-400 flex-shrink-0">Copied!</span>
-                ) : (
-                  <Copy className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
-                )}
-              </button>
+            {/* Quick Terminal Copy Box */}
+            <div className="pt-2 max-w-sm">
+              <div className="flex items-center justify-between gap-2 p-2 rounded-lg border border-border/80 bg-card dark:bg-[#0d0e12] font-mono text-xs shadow-inner">
+                <span className="text-primary select-none pl-1">❯</span>
+                <code className="text-foreground text-[11px] truncate flex-1 font-mono">
+                  npx @vipinyadav02/createjsstack
+                </code>
+                <button
+                  onClick={copyCommand}
+                  className="p-1.5 rounded bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all shrink-0"
+                  title="Copy command"
+                >
+                  {copiedCommand ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Product Links */}
           <div>
             <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
-              // PLATFORM
+              {"// PLATFORM"}
             </h3>
             <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
@@ -129,7 +125,7 @@ export default function Footer() {
           {/* Ecosystem Links */}
           <div>
             <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
-              // ECOSYSTEM
+              {"// ECOSYSTEM"}
             </h3>
             <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
@@ -182,7 +178,7 @@ export default function Footer() {
           {/* Author & Support */}
           <div>
             <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
-              // AUTHOR
+              {"// AUTHOR"}
             </h3>
             <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>

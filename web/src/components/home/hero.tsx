@@ -7,10 +7,8 @@ import {
   Check,
   Copy,
   Terminal,
-  Sparkles,
   Globe,
   Zap,
-  Layers,
   ShieldCheck,
   Cpu,
 } from "lucide-react";

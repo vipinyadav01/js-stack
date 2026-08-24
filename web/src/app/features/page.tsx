@@ -17,7 +17,6 @@ import {
   Zap,
   ArrowRight,
   Terminal,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

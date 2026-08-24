@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
-import { Menu, Github, Terminal, Zap, ExternalLink } from "lucide-react";
+import { Menu, Github, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import logo from "../Images/logo.png";

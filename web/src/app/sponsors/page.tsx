@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Terminal, Heart } from "lucide-react";
+import { Terminal } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   fetchTwitterMentionsPreferDemoOnLocal,

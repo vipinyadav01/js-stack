@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Copy, Terminal, Zap, ArrowRight, Layers, Sparkles } from "lucide-react";
+import { Check, Copy, Terminal, Zap, ArrowRight, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Command() {
