@@ -117,7 +117,7 @@ jobs:
             ### 🔗 Links
             - [NPM Package](https://www.npmjs.com/package/create-js-stack)
             - [Documentation](https://github.com/${{ github.repository }})
-            - [Web Dashboard](https://js-stack.pages.dev)
+            - [Web Dashboard](https://createjsstack.dev)
             
             ### 📋 What's New
             - Bug fixes and improvements

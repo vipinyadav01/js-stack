@@ -60,7 +60,7 @@
   "bugs": {
     "url": "https://github.com/vipinyadav01/js-stack/issues"
   },
-  "homepage": "https://js-stack.vercel.app",
+  "homepage": "https://createjsstack.dev",
   "dependencies": {
     "@biomejs/biome": "^1.8.0",
     "@clack/prompts": "^0.7.0",
