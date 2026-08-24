@@ -112,11 +112,11 @@ export const metadata: Metadata = {
     template: "%s | JS-Stack CLI",
   },
   description:
-    "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, and Docker.",
+    "Stop configuring, start building. JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, and Docker.",
   keywords: [
     "js-stack",
-    "createjsstack",
-    "createjsstack",
+    "@vipinyadav02/createjsstack",
+    "@vipinyadav02/createjsstack",
     "javascript project generator",
     "typescript cli",
     "nextjs starter",
@@ -176,7 +176,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "JS-Stack CLI - The Ultimate JavaScript Project Generator",
     description:
-      "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack apps with Next.js, React, Node.js, and TypeScript.",
+      "Stop configuring, start building. JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack apps with Next.js, React, Node.js, and TypeScript.",
     url: siteUrl,
     siteName: "JS-Stack CLI",
     type: "website",
@@ -197,7 +197,7 @@ export const metadata: Metadata = {
     creator: "@vipinyadav",
     title: "JS-Stack CLI - The Ultimate JavaScript Project Generator",
     description:
-      "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack apps with Next.js, React, Node.js, and TypeScript in seconds.",
+      "Stop configuring, start building. JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack apps with Next.js, React, Node.js, and TypeScript in seconds.",
     images: {
       url: "/opengraph-image",
       alt: "JS-Stack CLI - Modern Full-Stack Development",

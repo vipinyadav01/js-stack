@@ -32,7 +32,7 @@ export default function Home() {
     {
       question: "How do I install JS-Stack CLI?",
       answer:
-        "You can install JS-Stack CLI using npm with the command: npx createjsstack@latest my-app. For a fully automated setup with defaults, try: npx createjsstack@latest my-app --yolo",
+        "You can install JS-Stack CLI using npm with the command: npx @vipinyadav02/createjsstack@latest my-app. For a fully automated setup with defaults, try: npx @vipinyadav02/createjsstack@latest my-app --yolo",
     },
     {
       question: "What technologies does JS-Stack support?",

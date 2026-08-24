@@ -602,7 +602,7 @@ export default function Features() {
           </div>
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 bg-black/40 p-2 rounded border border-white/5">
             <span className="text-primary">➜</span>
-            <span className="truncate">npx createjsstack init</span>
+            <span className="truncate">npx @vipinyadav02/createjsstack init</span>
           </div>
         </div>
       </div>

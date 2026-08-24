@@ -116,7 +116,7 @@ class Analytics {
    * Get or create persistent anonymous user ID
    */
   private getOrCreateUserId(): string {
-    const configDir = path.join(os.homedir(), ".createjsstack");
+    const configDir = path.join(os.homedir(), ".@vipinyadav02/createjsstack");
     const idFile = path.join(configDir, "anonymous-id");
 
     try {
@@ -153,7 +153,7 @@ class Analytics {
   private isOptedOut(): boolean {
     const optOutFile = path.join(
       os.homedir(),
-      ".createjsstack",
+      ".@vipinyadav02/createjsstack",
       "no-analytics",
     );
     return fs.existsSync(optOutFile);
@@ -377,7 +377,7 @@ export const analytics = new Analytics();
 
 // Export functions for opting out
 export function optOutOfAnalytics(): void {
-  const configDir = path.join(os.homedir(), ".createjsstack");
+  const configDir = path.join(os.homedir(), ".@vipinyadav02/createjsstack");
   const optOutFile = path.join(configDir, "no-analytics");
 
   try {
@@ -393,7 +393,7 @@ export function optOutOfAnalytics(): void {
 export function optInToAnalytics(): void {
   const optOutFile = path.join(
     os.homedir(),
-    ".createjsstack",
+    ".@vipinyadav02/createjsstack",
     "no-analytics",
   );
 
@@ -412,7 +412,7 @@ export function optInToAnalytics(): void {
 export function showAnalyticsStatus(): void {
   const optOutFile = path.join(
     os.homedir(),
-    ".createjsstack",
+    ".@vipinyadav02/createjsstack",
     "no-analytics",
   );
   const isOptedOut = fs.existsSync(optOutFile);

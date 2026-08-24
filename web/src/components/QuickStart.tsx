@@ -19,7 +19,7 @@ export default function QuickStart() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="bg-muted p-3 rounded font-mono text-sm">
-                npx createjsstack init my-app
+                npx @vipinyadav02/createjsstack init my-app
               </div>
               <p className="text-sm text-muted-foreground">
                 Create a new full-stack JavaScript project
@@ -33,7 +33,7 @@ export default function QuickStart() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="bg-muted p-3 rounded font-mono text-sm">
-                npx createjsstack init my-app --yes
+                npx @vipinyadav02/createjsstack init my-app --yes
               </div>
               <p className="text-sm text-muted-foreground">
                 Use default configuration for quick setup
@@ -47,7 +47,7 @@ export default function QuickStart() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="bg-muted p-3 rounded font-mono text-sm">
-                npx createjsstack list
+                npx @vipinyadav02/createjsstack list
               </div>
               <p className="text-sm text-muted-foreground">
                 View available frameworks and tools

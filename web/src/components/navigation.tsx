@@ -101,7 +101,7 @@ export function Navigation() {
             {/* Right Actions */}
             <div className="flex items-center gap-2">
               <Link
-                href="https://www.npmjs.com/package/createjsstack"
+                href="https://www.npmjs.com/package/@vipinyadav02/createjsstack"
                 target="_blank"
                 className="hidden sm:block"
               >

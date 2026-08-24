@@ -264,7 +264,7 @@ export default function AnalyticsPage() {
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // Configuration
-  const npmPackage = process.env.NPM_PACKAGE_NAME || "createjsstack";
+  const npmPackage = process.env.NPM_PACKAGE_NAME || "@vipinyadav02/createjsstack";
   const githubRepo = process.env.GITHUB_REPO || "vipinyadav01/js-stack";
 
   // Fetch NPM data

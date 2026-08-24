@@ -13,7 +13,7 @@ const NpmVersion = () => {
 
         // First try NPM registry (more reliable, shows latest published)
         const npmRes = await fetch(
-          "https://registry.npmjs.org/createjsstack",
+          "https://registry.npmjs.org/@vipinyadav02/createjsstack",
         );
         if (npmRes.ok) {
           const npmData = await npmRes.json();

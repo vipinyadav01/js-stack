@@ -1,8 +1,8 @@
 # Create JS Stack CLI
 
-[![npm version](https://img.shields.io/npm/v/createjsstack.svg)](https://www.npmjs.com/package/createjsstack)
-[![npm downloads](https://img.shields.io/npm/dm/createjsstack.svg)](https://www.npmjs.com/package/createjsstack)
-[![License](https://img.shields.io/npm/l/createjsstack.svg)](https://github.com/vipinyadav01/js-stack/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/@vipinyadav02/createjsstack.svg)](https://www.npmjs.com/package/@vipinyadav02/createjsstack)
+[![npm downloads](https://img.shields.io/npm/dm/@vipinyadav02/createjsstack.svg)](https://www.npmjs.com/package/@vipinyadav02/createjsstack)
+[![License](https://img.shields.io/npm/l/@vipinyadav02/createjsstack.svg)](https://github.com/vipinyadav01/js-stack/blob/main/LICENSE)
 
 > A powerful CLI tool for scaffolding production-ready JavaScript full-stack projects with best practices built-in.
 
@@ -10,13 +10,13 @@
 
 ```bash
 # Interactive setup (recommended)
-npx createjsstack@latest my-app
+npx @vipinyadav02/createjsstack@latest my-app
 
 # Quick start with defaults
-npx createjsstack@latest my-app --yes
+npx @vipinyadav02/createjsstack@latest my-app --yes
 
 # Custom stack
-npx createjsstack@latest my-app \
+npx @vipinyadav02/createjsstack@latest my-app \
   --frontend react \
   --backend express \
   --database postgresql \
@@ -44,7 +44,7 @@ npx createjsstack@latest my-app \
 ### Full-Stack React App
 
 ```bash
-npx createjsstack@latest my-app \
+npx @vipinyadav02/createjsstack@latest my-app \
   --frontend react \
   --backend express \
   --database postgresql \
@@ -57,7 +57,7 @@ npx createjsstack@latest my-app \
 ### Next.js Full-Stack
 
 ```bash
-npx createjsstack@latest my-app \
+npx @vipinyadav02/createjsstack@latest my-app \
   --frontend nextjs \
   --database postgresql \
   --orm prisma \
@@ -68,7 +68,7 @@ npx createjsstack@latest my-app \
 ### API Backend Only
 
 ```bash
-npx createjsstack@latest my-api \
+npx @vipinyadav02/createjsstack@latest my-api \
   --frontend none \
   --backend nestjs \
   --database postgresql \
@@ -122,7 +122,7 @@ npm run build:cli
 npm link
 
 # Test locally
-createjsstack init test-project
+@vipinyadav02/createjsstack init test-project
 ```
 
 ## 🤝 Contributing
@@ -144,7 +144,7 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 - **Website:** [createjsstack.dev](https://createjsstack.dev)
 - **Documentation:** [createjsstack.dev/docs](https://createjsstack.dev/docs)
 - **GitHub:** [github.com/vipinyadav01/js-stack](https://github.com/vipinyadav01/js-stack)
-- **NPM:** [npmjs.com/package/createjsstack](https://www.npmjs.com/package/createjsstack)
+- **NPM:** [npmjs.com/package/@vipinyadav02/createjsstack](https://www.npmjs.com/package/@vipinyadav02/createjsstack)
 
 ---
 

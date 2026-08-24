@@ -1,5 +1,5 @@
 # Wrangler configuration for Cloudflare Pages
-name = "createjsstack"
+name = "@vipinyadav02/createjsstack"
 compatibility_date = "2024-01-01"
 
 # Pages configuration
@@ -10,5 +10,5 @@ pages_build_output_dir = "out"
 
 # Environment variables (set in Cloudflare dashboard)
 # [vars]
-# NPM_PACKAGE_NAME = "createjsstack"
+# NPM_PACKAGE_NAME = "@vipinyadav02/createjsstack"
 # GITHUB_REPO = "vipinyadav01/js-stack"

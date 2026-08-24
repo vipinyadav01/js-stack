@@ -99,7 +99,7 @@ Full-stack JavaScript scaffolding CLI tool with marketing website and interactiv
 ## CLI Testing
 
 - `node cli/cli.js init my-app --dry-run --verbose` - Test CLI without creating files
-- `npx createjsstack@latest my-app --frontend react --backend express` - Real usage
+- `npx @vipinyadav02/createjsstack@latest my-app --frontend react --backend express` - Real usage
 
 ## CLI Options
 
@@ -173,7 +173,7 @@ User selections:
 
 Generated command:
 ```
-npx createjsstack@latest my-app --frontend react --backend express --database mongodb --orm mongoose --auth jwt --package-manager npm --addons docker,testing --git --install
+npx @vipinyadav02/createjsstack@latest my-app --frontend react --backend express --database mongodb --orm mongoose --auth jwt --package-manager npm --addons docker,testing --git --install
 ```
 
 ## Handlebars Syntax (CLI templates)

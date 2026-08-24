@@ -59,7 +59,7 @@ export function generateStackSharingUrl(stack: StackState): string {
  * Generate the CLI command for the current stack configuration
  */
 export function generateStackCommand(stack: StackState): string {
-  const parts: string[] = ["npx createjsstack@latest"];
+  const parts: string[] = ["npx @vipinyadav02/createjsstack@latest"];
 
   // Project name
   const projectName = stack.projectName || "my-app";
