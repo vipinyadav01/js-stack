@@ -1,863 +1,324 @@
 "use client";
 
-import {
-  Rocket,
-  Package,
-  CheckCircle,
-  Star,
-  Layers,
-  Monitor,
-  Wrench,
-  Database,
-  Lock,
-  Cpu,
-  Menu,
-  Grid3X3,
-  List,
-} from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import {
+  Monitor,
+  Cpu,
+  Database,
+  Layers,
+  Lock,
+  Wrench,
+  Package,
+  Globe,
+  CheckCircle2,
+  LayoutGrid,
+  List,
+  Zap,
+  ArrowRight,
+  Terminal,
+  Sparkles,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 
-export default function Features() {
-  // State management
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [visibleSections, setVisibleSections] = useState<Set<string>>(
-    new Set([
-      "overview",
-      "frontend",
-      "backend",
-      "database",
-      "orm",
-      "auth",
-      "devtools",
-      "packages",
-      "additional",
-    ]),
-  );
+interface TechItem {
+  name: string;
+  category: string;
+  version?: string;
+  description: string;
+  icon?: string;
+  badge?: string;
+}
 
-  // Filter categories
-  const filterCategories = [
-    {
-      id: "overview",
-      label: "Overview",
-      icon: Star,
-      description: "Quick feature overview",
-    },
-    {
-      id: "frontend",
-      label: "Frontend",
-      icon: Monitor,
-      description: "UI frameworks and libraries",
-    },
-    {
-      id: "backend",
-      label: "Backend",
-      icon: Cpu,
-      description: "Server-side frameworks",
-    },
-    {
-      id: "database",
-      label: "Database",
-      icon: Database,
-      description: "Data storage solutions",
-    },
-    {
-      id: "orm",
-      label: "ORM/ODM",
-      icon: Layers,
-      description: "Object mapping tools",
-    },
-    {
-      id: "auth",
-      label: "Authentication",
-      icon: Lock,
-      description: "Identity and security",
-    },
-    {
-      id: "devtools",
-      label: "Dev Tools",
-      icon: Wrench,
-      description: "Development utilities",
-    },
-    {
-      id: "packages",
-      label: "Package Managers",
-      icon: Package,
-      description: "Dependency management",
-    },
-    {
-      id: "additional",
-      label: "Additional",
-      icon: Rocket,
-      description: "Extra features and tools",
-    },
-  ];
+const CATEGORIES = [
+  { id: "all", label: "All Stacks", icon: LayoutGrid },
+  { id: "frontend", label: "Frontend", icon: Monitor },
+  { id: "backend", label: "Backend", icon: Cpu },
+  { id: "database", label: "Database", icon: Database },
+  { id: "orm", label: "ORM / ODM", icon: Layers },
+  { id: "auth", label: "Authentication", icon: Lock },
+  { id: "addons", label: "Tooling & Addons", icon: Wrench },
+  { id: "deploy", label: "Deployment", icon: Globe },
+];
 
-  const toggleSection = (sectionId: string) => {
-    setVisibleSections((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(sectionId)) {
-        newSet.delete(sectionId);
-      } else {
-        newSet.add(sectionId);
-      }
-      return newSet;
-    });
-  };
+const TECH_STACK: TechItem[] = [
+  // Frontends
+  { name: "Next.js 15", category: "frontend", version: "15+", description: "Full-stack React framework with App Router, SSR & Server Actions", icon: "▲", badge: "Recommended" },
+  { name: "React 19", category: "frontend", version: "19+", description: "Modern React with Vite, TypeScript & Concurrent Features", icon: "⚛️", badge: "Popular" },
+  { name: "Vue 3", category: "frontend", version: "3+", description: "Vue 3 with Composition API, Script Setup & Vite tooling", icon: "💚" },
+  { name: "Angular", category: "frontend", version: "18+", description: "Enterprise-grade TypeScript framework with modern signals", icon: "🅰️" },
+  { name: "Svelte 5", category: "frontend", version: "5+", description: "Cybernetically enhanced web apps with reactive runes", icon: "🔥" },
+  { name: "Nuxt 3", category: "frontend", version: "3+", description: "Intuitive Vue full-stack framework with auto-imports", icon: "💚" },
+  { name: "Remix", category: "frontend", version: "2+", description: "Full-stack web framework focused on web standards & UX", icon: "💿" },
+  { name: "Astro", category: "frontend", version: "4+", description: "Content-driven web framework with island architecture", icon: "🚀" },
+  { name: "Solid.js", category: "frontend", version: "1.8+", description: "Declarative, efficient and flexible JS library for UI", icon: "🔵" },
+  { name: "React Native", category: "frontend", version: "0.74+", description: "Cross-platform mobile apps with NativeWind styling", icon: "📱" },
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5 },
-    },
-  };
-
-  // Frontend Frameworks
-  const frontendFrameworks = [
-    {
-      name: "React",
-      available: true,
-      version: "18+",
-      description: "With Vite, TypeScript, and modern tooling",
-    },
-    {
-      name: "Vue.js",
-      available: true,
-      version: "3+",
-      description: "Vue 3 with Composition API and Vite",
-    },
-    {
-      name: "Angular",
-      available: true,
-      version: "16+",
-      description: "Latest Angular with CLI integration",
-    },
-    {
-      name: "Svelte",
-      available: true,
-      version: "4+",
-      description: "SvelteKit with optimized builds",
-    },
-    {
-      name: "Next.js",
-      available: true,
-      version: "14+",
-      description: "Full-stack React framework",
-    },
-    {
-      name: "Nuxt",
-      available: true,
-      version: "3+",
-      description: "Vue.js full-stack framework",
-    },
-    {
-      name: "React Native",
-      available: true,
-      version: "0.72+",
-      description: "Mobile app development",
-    },
-  ];
-
-  // Backend Frameworks
-  const backendFrameworks = [
-    {
-      name: "Express.js",
-      available: true,
-      version: "4+",
-      description: "Fast, minimalist web framework",
-    },
-    {
-      name: "Fastify",
-      available: true,
-      version: "4+",
-      description: "High-performance, low-overhead framework",
-    },
-    {
-      name: "Koa.js",
-      available: true,
-      version: "2+",
-      description: "Lightweight, expressive middleware framework",
-    },
-    {
-      name: "Hapi.js",
-      available: true,
-      version: "21+",
-      description: "Rich ecosystem with built-in validation",
-    },
-    {
-      name: "NestJS",
-      available: true,
-      version: "10+",
-      description: "Scalable Node.js framework with TypeScript",
-    },
-  ];
+  // Backends
+  { name: "Express.js", category: "backend", version: "4+", description: "Fast, unopinionated, minimalist web framework for Node.js", icon: "🚂", badge: "Recommended" },
+  { name: "Fastify", category: "backend", version: "4+", description: "High-performance Node.js framework focused on low overhead", icon: "⚡", badge: "High Speed" },
+  { name: "NestJS", category: "backend", version: "10+", description: "Progressive Node.js framework for enterprise architectures", icon: "🪶" },
+  { name: "Koa.js", category: "backend", version: "2+", description: "Next generation web framework designed by Express team", icon: "🌿" },
+  { name: "Hono", category: "backend", version: "4+", description: "Ultrafast web framework for Cloudflare Workers & Node.js", icon: "🔥" },
+  { name: "Elysia.js", category: "backend", version: "1+", description: "Ergonomic Bun web framework with End-to-End type safety", icon: "🦊" },
 
   // Databases
-  const databases = [
-    {
-      name: "SQLite",
-      available: true,
-      description: "Lightweight, serverless database",
-    },
-    {
-      name: "PostgreSQL",
-      available: true,
-      description: "Advanced open-source database",
-    },
-    {
-      name: "MySQL",
-      available: true,
-      description: "Popular relational database",
-    },
-    {
-      name: "MongoDB",
-      available: true,
-      description: "NoSQL document database",
-    },
-    {
-      name: "Supabase",
-      available: false,
-      description: "Open source Firebase alternative",
-    },
-    {
-      name: "PlanetScale",
-      available: false,
-      description: "Serverless MySQL platform",
-    },
-  ];
+  { name: "PostgreSQL", category: "database", description: "World's most advanced open-source relational SQL database", icon: "🐘", badge: "Recommended" },
+  { name: "MongoDB", category: "database", description: "Scalable NoSQL document database for modern cloud applications", icon: "🍃", badge: "Popular" },
+  { name: "SQLite", category: "database", description: "Lightweight, zero-config embedded SQL database engine", icon: "📦" },
+  { name: "MySQL", category: "database", description: "Proven, enterprise relational database management system", icon: "🐬" },
 
-  // ORMs/ODMs
-  const orms = [
-    {
-      name: "Prisma",
-      available: true,
-      description: "Next-generation ORM with type safety",
-    },
-    {
-      name: "Sequelize",
-      available: true,
-      description: "Feature-rich ORM for SQL databases",
-    },
-    {
-      name: "Mongoose",
-      available: true,
-      description: "Elegant MongoDB object modeling",
-    },
-    {
-      name: "TypeORM",
-      available: true,
-      description: "Advanced ORM with decorator support",
-    },
-  ];
+  // ORMs
+  { name: "Prisma", category: "orm", description: "Next-generation ORM with automated migrations & end-to-end types", icon: "⚡", badge: "Recommended" },
+  { name: "Mongoose", category: "orm", description: "Elegant MongoDB object modeling for Node.js with strict schemas", icon: "🍃" },
+  { name: "Drizzle ORM", category: "orm", description: "Headless TypeScript ORM with maximum performance & zero overhead", icon: "🌧️", badge: "Modern" },
+  { name: "TypeORM", category: "orm", description: "Decorator-based ORM supporting Data Mapper & Active Record patterns", icon: "🔷" },
+  { name: "Sequelize", category: "orm", description: "Promise-based Node.js ORM for Postgres, MySQL, SQLite", icon: "🔵" },
 
-  // Authentication
-  const authMethods = [
-    {
-      name: "JWT",
-      available: true,
-      description: "JSON Web Token implementation",
-    },
-    {
-      name: "Passport",
-      available: true,
-      description: "Flexible authentication middleware",
-    },
-    {
-      name: "Auth0",
-      available: true,
-      description: "Identity platform integration",
-    },
-    {
-      name: "Firebase Auth",
-      available: false,
-      description: "Google's authentication service",
-    },
-    {
-      name: "Clerk",
-      available: false,
-      description: "Modern authentication platform",
-    },
-    {
-      name: "Lucia",
-      available: false,
-      description: "Lightweight authentication library",
-    },
-    {
-      name: "Supabase Auth",
-      available: false,
-      description: "Open source auth solution",
-    },
-    {
-      name: "Security Middleware",
-      available: true,
-      description: "Helmet, CORS, Rate limiting",
-    },
-  ];
+  // Auth
+  { name: "Better Auth", category: "auth", description: "Comprehensive TypeScript-first auth framework with multi-tenant sessions", icon: "🛡️", badge: "Recommended" },
+  { name: "Clerk", category: "auth", description: "Complete user management & authentication platform with UI components", icon: "🔐" },
+  { name: "Lucia Auth", category: "auth", description: "Flexible session management library that connects directly to your DB", icon: "🔑" },
+  { name: "NextAuth / Auth.js", category: "auth", description: "Flexible authentication library for Next.js and full-stack apps", icon: "🔒" },
+  { name: "JWT + OAuth", category: "auth", description: "Custom JSON Web Token authentication with Google & GitHub OAuth", icon: "🔑" },
 
-  // Development & DevOps
-  const devTools = [
-    {
-      name: "TypeScript",
-      available: true,
-      description: "Full TypeScript support across all templates",
-    },
-    {
-      name: "Docker",
-      available: true,
-      description: "Complete containerization with Docker Compose",
-    },
-    {
-      name: "Jest",
-      available: true,
-      description: "JavaScript testing framework",
-    },
-    { name: "Vitest", available: true, description: "Fast unit testing" },
-    { name: "Cypress", available: false, description: "E2E testing framework" },
-    {
-      name: "ESLint",
-      available: true,
-      description: "ESLint with framework-specific rules",
-    },
-    {
-      name: "Prettier",
-      available: true,
-      description: "Prettier with consistent configurations",
-    },
-    {
-      name: "Husky",
-      available: true,
-      description: "Husky for pre-commit validation",
-    },
-    { name: "GitHub Actions", available: true, description: "CI/CD workflows" },
-  ];
+  // Addons
+  { name: "Docker Compose", category: "addons", description: "Containerized development & production environment configurations", icon: "🐳", badge: "Recommended" },
+  { name: "Biome", category: "addons", description: "Ultra-fast linter & formatter replacing ESLint and Prettier", icon: "⚡" },
+  { name: "Turborepo", category: "addons", description: "High-performance build system for JavaScript & TypeScript monorepos", icon: "🏎️" },
+  { name: "Vitest", category: "addons", description: "Blazing fast unit & integration testing framework powered by Vite", icon: "🧪" },
+  { name: "Playwright", category: "addons", description: "Reliable end-to-end browser testing for modern web applications", icon: "🎭" },
+  { name: "Cypress", category: "addons", description: "Fast, easy and reliable testing for anything that runs in a browser", icon: "🌲" },
 
-  // Package Managers
-  const packageManagers = [
-    {
-      name: "npm",
-      available: true,
-      description: "Node.js default package manager",
-    },
-    {
-      name: "yarn",
-      available: true,
-      description: "Fast, reliable dependency management",
-    },
-    {
-      name: "pnpm",
-      available: true,
-      description: "Efficient disk space usage",
-    },
-    {
-      name: "bun",
-      available: true,
-      description: "All-in-one JavaScript runtime",
-    },
-  ];
+  // Deployment
+  { name: "Vercel", category: "deploy", description: "Zero-config deployment platform optimized for Next.js & static sites", icon: "▲", badge: "1-Click" },
+  { name: "Cloudflare Workers", category: "deploy", description: "Serverless execution environment deployed across global edge locations", icon: "☁️" },
+  { name: "Cloudflare Pages", category: "deploy", description: "JAMstack platform for frontend developers with instant deployments", icon: "⚡" },
+  { name: "Docker Container", category: "deploy", description: "Standardized container builds ready for AWS, GCP, or self-hosted VPS", icon: "🐳" },
+];
 
-  // Additional Features
-  const additionalFeatures = [
-    {
-      name: "Redis",
-      available: true,
-      description: "Caching and session storage",
-    },
-    {
-      name: "Socket.IO",
-      available: true,
-      description: "Real-time communication",
-    },
-    {
-      name: "Tailwind CSS",
-      available: true,
-      description: "Utility-first CSS framework",
-    },
-    {
-      name: "Material UI",
-      available: false,
-      description: "React component library",
-    },
-    {
-      name: "Bootstrap",
-      available: false,
-      description: "Popular CSS framework",
-    },
-    {
-      name: "Environment Management",
-      available: true,
-      description: "Complete .env configuration",
-    },
-    {
-      name: "API Documentation",
-      available: false,
-      description: "Auto-generated Swagger/OpenAPI docs",
-    },
-    {
-      name: "Hot Reload",
-      available: true,
-      description: "Development with instant updates",
-    },
-  ];
+export default function FeaturesPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const FeatureCard = ({
-    data,
-  }: {
-    data: {
-      name: string;
-      available: boolean;
-      description: string;
-      version?: string;
-    };
-  }) => (
-    <div className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/40 backdrop-blur-sm p-6 transition-all duration-300 hover:border-primary/50 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
-      <div className="relative z-10">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-base font-mono tracking-tight text-foreground/90 group-hover:text-primary transition-colors">
-              {data.name}
-            </span>
-          </div>
-          <Badge
-            variant={data.available ? "default" : "secondary"}
-            className={cn(
-              "text-[10px] font-medium border-0 px-2 py-0.5",
-              data.available
-                ? "bg-primary/15 text-primary hover:bg-primary/20"
-                : "bg-muted/50 text-muted-foreground hover:bg-muted/60",
-            )}
-          >
-            {data.available ? "Available" : "Coming Soon"}
-          </Badge>
-        </div>
-
-        <div className="space-y-3">
-          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-            {data.description}
-          </p>
-          {data.version && (
-            <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground/60">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />v
-              {data.version}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  const SidebarContent = () => (
-    <div className="space-y-8 p-4">
-      {/* Header */}
-      <div className="flex items-center gap-3 px-2">
-        <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 shadow-inner">
-          <Star className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h1 className="text-lg font-bold font-mono tracking-tight text-foreground">
-            Features
-          </h1>
-          <p className="text-xs text-muted-foreground font-medium">
-            Tech Stack Explorer
-          </p>
-        </div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
-          Overview
-        </h3>
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            {
-              label: "Frontend",
-              count: frontendFrameworks.filter((f) => f.available).length,
-            },
-            {
-              label: "Backend",
-              count: backendFrameworks.filter((f) => f.available).length,
-            },
-            {
-              label: "Database",
-              count: databases.filter((f) => f.available).length,
-            },
-            {
-              label: "Auth",
-              count: authMethods.filter((f) => f.available).length,
-            },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-2.5 p-2.5 rounded-lg bg-card/40 border border-border/40 backdrop-blur-sm"
-            >
-              <CheckCircle className="h-3.5 w-3.5 text-primary" />
-              <div>
-                <div className="text-sm font-bold text-foreground">
-                  {stat.count}
-                </div>
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                  {stat.label}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="space-y-3">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
-          Categories
-        </h3>
-        <div className="space-y-1">
-          {filterCategories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => toggleSection(category.id)}
-              className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden",
-                visibleSections.has(category.id)
-                  ? "text-primary bg-primary/10 shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
-              )}
-            >
-              {visibleSections.has(category.id) && (
-                <motion.div
-                  layoutId="active-nav"
-                  className="absolute left-0 w-1 h-full bg-primary"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                />
-              )}
-              <category.icon
-                className={cn(
-                  "h-4 w-4 transition-colors",
-                  visibleSections.has(category.id)
-                    ? "text-primary"
-                    : "text-muted-foreground group-hover:text-foreground",
-                )}
-              />
-              <span>{category.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="space-y-4 pt-4 border-t border-border/40">
-        {/* View Mode */}
-        <div className="flex bg-muted/30 p-1 rounded-lg border border-border/40">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-xs font-medium transition-all",
-              viewMode === "grid"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <Grid3X3 className="h-3.5 w-3.5" />
-            Grid
-          </button>
-          <button
-            onClick={() => setViewMode("list")}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-md text-xs font-medium transition-all",
-              viewMode === "list"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <List className="h-3.5 w-3.5" />
-            List
-          </button>
-        </div>
-
-        {/* Quick Start Code */}
-        <div className="rounded-lg border border-border/50 bg-zinc-950/50 p-3 shadow-inner">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-semibold text-muted-foreground uppercase">
-              Quick Start
-            </span>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 bg-black/40 p-2 rounded border border-white/5">
-            <span className="text-primary">➜</span>
-            <span className="truncate">npx @vipinyadav02/createjsstack init</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const filteredTech = TECH_STACK.filter((item) => {
+    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesSearch =
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] w-full overflow-hidden bg-background text-foreground lg:grid lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr]">
-      {/* Background Ambience */}
-      <div className="fixed inset-0 -z-10 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-      <div className="fixed left-0 top-0 -z-10 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[100px] opacity-20 pointer-events-none" />
-
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-full flex-col border-r border-border/40 bg-background/30 backdrop-blur-xl h-full">
-        <ScrollArea className="flex-1">
-          <SidebarContent />
-        </ScrollArea>
-      </aside>
-
-      {/* Mobile Toggle */}
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="fixed top-24 left-4 z-40 lg:hidden h-10 w-10 rounded-full border border-border/50 bg-background/80 backdrop-blur-md shadow-lg"
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent
-          side="left"
-          className="w-[85%] sm:w-[350px] p-0 border-r border-border/40 bg-background/95 backdrop-blur-2xl"
-        >
-          <ScrollArea className="h-full">
-            <SidebarContent />
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-hidden relative">
-        <ScrollArea className="h-full">
-          <div className="p-4 sm:p-8 lg:p-12 max-w-7xl mx-auto pt-8">
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="space-y-12 pb-24"
-            >
-              {/* Overview Section - Special Handled */}
-              <AnimatePresence>
-                {visibleSections.has("overview") && (
-                  <motion.section
-                    id="overview"
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="space-y-6 scroll-mt-24"
-                  >
-                    <div className="flex items-center gap-4 pb-4 border-b border-border/40">
-                      <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
-                        <Star className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h2 className="text-2xl font-bold tracking-tight">
-                          Overview
-                        </h2>
-                        <p className="text-sm text-muted-foreground">
-                          Technology stack snapshot
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="col-span-full md:col-span-1 rounded-2xl border border-border/50 bg-gradient-to-br from-primary/10 to-transparent p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-20">
-                          <Monitor className="h-24 w-24" />
-                        </div>
-                        <h3 className="text-xl font-bold mb-2">
-                          Frontend First
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Support for React, Vue, Svelte, and more with modern
-                          tooling built-in.
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {frontendFrameworks.slice(0, 3).map((f) => (
-                            <Badge
-                              key={f.name}
-                              variant="secondary"
-                              className="bg-background/80 backdrop-blur"
-                            >
-                              {f.name}
-                            </Badge>
-                          ))}
-                          <Badge variant="outline">+4 more</Badge>
-                        </div>
-                      </div>
-                      <div className="col-span-full md:col-span-1 rounded-2xl border border-border/50 bg-gradient-to-br from-purple-500/10 to-transparent p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-20">
-                          <Cpu className="h-24 w-24" />
-                        </div>
-                        <h3 className="text-xl font-bold mb-2">
-                          Robust Backend
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Scalable server-side solutions with Express, NestJS,
-                          and Fastify.
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {backendFrameworks.slice(0, 3).map((f) => (
-                            <Badge
-                              key={f.name}
-                              variant="secondary"
-                              className="bg-background/80 backdrop-blur"
-                            >
-                              {f.name}
-                            </Badge>
-                          ))}
-                          <Badge variant="outline">+2 more</Badge>
-                        </div>
-                      </div>
-                      <div className="col-span-full md:col-span-1 rounded-2xl border border-border/50 bg-gradient-to-br from-blue-500/10 to-transparent p-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-20">
-                          <Database className="h-24 w-24" />
-                        </div>
-                        <h3 className="text-xl font-bold mb-2">Data Layer</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Seamless database integration with Prisma, Mongoose,
-                          and more.
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {databases.slice(0, 3).map((f) => (
-                            <Badge
-                              key={f.name}
-                              variant="secondary"
-                              className="bg-background/80 backdrop-blur"
-                            >
-                              {f.name}
-                            </Badge>
-                          ))}
-                          <Badge variant="outline">+3 more</Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Other Sections Mapping */}
-              {[
-                {
-                  id: "frontend",
-                  icon: Monitor,
-                  title: "Frontend Frameworks",
-                  desc: "UI libraries & frameworks",
-                  data: frontendFrameworks,
-                },
-                {
-                  id: "backend",
-                  icon: Cpu,
-                  title: "Backend Frameworks",
-                  desc: "Server-side runtimes",
-                  data: backendFrameworks,
-                },
-                {
-                  id: "database",
-                  icon: Database,
-                  title: "Database & Storage",
-                  desc: "Data persistence layers",
-                  data: databases,
-                },
-                {
-                  id: "orm",
-                  icon: Layers,
-                  title: "ORM & ODM",
-                  desc: "Type-safe database clients",
-                  data: orms,
-                },
-                {
-                  id: "auth",
-                  icon: Lock,
-                  title: "Authentication",
-                  desc: "Security & identity",
-                  data: authMethods,
-                },
-                {
-                  id: "devtools",
-                  icon: Wrench,
-                  title: "Developer Tools",
-                  desc: "DX & CI/CD",
-                  data: devTools,
-                },
-                {
-                  id: "packages",
-                  icon: Package,
-                  title: "Package Managers",
-                  desc: "Dependency handling",
-                  data: packageManagers,
-                },
-                {
-                  id: "additional",
-                  icon: Rocket,
-                  title: "Extras",
-                  desc: "Additional capabilities",
-                  data: additionalFeatures,
-                },
-              ].map((section) => (
-                <AnimatePresence key={section.id}>
-                  {visibleSections.has(section.id) && (
-                    <motion.section
-                      id={section.id}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="hidden"
-                      className="space-y-6 scroll-mt-24"
-                    >
-                      <div className="flex items-center gap-4 pb-4 border-b border-border/40">
-                        <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
-                          <section.icon className="h-6 w-6" />
-                        </div>
-                        <div>
-                          <h2 className="text-2xl font-bold tracking-tight">
-                            {section.title}
-                          </h2>
-                          <p className="text-sm text-muted-foreground">
-                            {section.desc}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div
-                        className={cn(
-                          "grid gap-4",
-                          viewMode === "grid"
-                            ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
-                            : "grid-cols-1",
-                        )}
-                      >
-                        {section.data?.map((item, idx) => (
-                          <FeatureCard key={idx} data={item} />
-                        ))}
-                      </div>
-                    </motion.section>
-                  )}
-                </AnimatePresence>
-              ))}
-            </motion.div>
+    <div className="min-h-screen bg-background text-foreground font-sans">
+      {/* Hero Header Section */}
+      <div className="border-b border-border/50 bg-background dark:bg-[#090a0f] relative overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/10 blur-[130px] rounded-full pointer-events-none" />
+        <div className="container mx-auto px-4 lg:px-6 py-10 lg:py-16 relative z-10 text-center max-w-4xl space-y-6">
+          
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-mono backdrop-blur-md">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>JS-STACK V1.2.16 // FEATURES & TECH STACK</span>
           </div>
-        </ScrollArea>
-      </main>
+
+          <h1 className="text-4xl sm:text-6xl font-mono font-extrabold text-foreground tracking-tight leading-[1.08]">
+            Features & <span className="text-primary underline decoration-primary/30 underline-offset-8">Tech Stack</span> Explorer
+          </h1>
+
+          <p className="text-base sm:text-xl text-muted-foreground font-sans max-w-2xl mx-auto leading-relaxed">
+            Explore all supported CLI features, frontend frameworks, backend servers, databases, ORMs, and deployment tooling.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <Link
+              href="/new"
+              className="flex items-center gap-2 px-8 py-3.5 rounded-md bg-primary text-primary-foreground font-mono text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:scale-[1.01]"
+            >
+              <Zap className="h-4 w-4" />
+              <span>Interactive Stack Builder</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <a
+              href="https://github.com/vipinyadav01/js-stack"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-6 py-3.5 rounded-md border border-border bg-card font-mono text-sm font-medium hover:border-primary/60 transition-all"
+            >
+              <Terminal className="h-4 w-4 text-primary" />
+              <span>CLI Commands</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="container mx-auto px-4 lg:px-6 pt-10 pb-32 lg:pt-14 lg:pb-44 max-w-7xl">
+
+        {/* Category Controls & Search Bar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-border/60 pb-6 mb-8">
+
+          {/* Category Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-none">
+            {CATEGORIES.map((cat) => {
+              const Icon = cat.icon;
+              const isActive = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-md font-mono text-xs transition-all whitespace-nowrap",
+                    isActive
+                      ? "bg-primary text-primary-foreground font-bold shadow-md shadow-primary/20"
+                      : "bg-card border border-border/60 text-muted-foreground hover:text-foreground hover:border-primary/40"
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Search & Grid/List View Controls */}
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <input
+              type="text"
+              placeholder="Search frameworks, ORMs, auth..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full md:w-64 px-3.5 py-2 rounded-md border border-border/80 bg-card font-mono text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition-all"
+            />
+
+            <div className="flex items-center gap-1 border border-border/80 rounded-md p-1 bg-card shrink-0">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "p-1.5 rounded text-xs transition-colors",
+                  viewMode === "grid" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="Grid View"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "p-1.5 rounded text-xs transition-colors",
+                  viewMode === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                )}
+                title="List View"
+              >
+                <List className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Tech Stack Cards Display */}
+        {filteredTech.length === 0 ? (
+          <div className="text-center py-16 border border-border/60 rounded-xl bg-card/40 font-mono">
+            <Package className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
+            <p className="text-sm text-foreground font-bold">No tech stack matches your query</p>
+            <p className="text-xs text-muted-foreground mt-1">Try resetting search filter or choosing another category.</p>
+            <button
+              onClick={() => {
+                setSelectedCategory("all");
+                setSearchQuery("");
+              }}
+              className="mt-4 px-4 py-2 rounded bg-primary/10 border border-primary/30 text-primary text-xs font-mono hover:bg-primary/20 transition-all"
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : viewMode === "grid" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTech.map((item) => (
+              <div
+                key={item.name}
+                className="relative group rounded-xl border border-border/70 bg-card dark:bg-[#0d0d0d] p-6 shadow-xl hover:border-primary/60 transition-all hover:shadow-primary/5 flex flex-col justify-between"
+              >
+                {/* Cloudflare Corner Crosshairs */}
+                <div className="pointer-events-none absolute -left-1 -top-1 h-2.5 w-2.5 rounded-sm border border-primary/50 bg-background" />
+                <div className="pointer-events-none absolute -right-1 -top-1 h-2.5 w-2.5 rounded-sm border border-primary/50 bg-background" />
+                <div className="pointer-events-none absolute -left-1 -bottom-1 h-2.5 w-2.5 rounded-sm border border-primary/50 bg-background" />
+                <div className="pointer-events-none absolute -right-1 -bottom-1 h-2.5 w-2.5 rounded-sm border border-primary/50 bg-background" />
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-2xl">{item.icon}</span>
+                      <h3 className="font-mono font-bold text-lg text-foreground tracking-tight">
+                        {item.name}
+                      </h3>
+                    </div>
+
+                    {item.badge && (
+                      <span className="rounded-full bg-primary/15 border border-primary/30 px-2 py-0.5 text-[10px] font-mono font-semibold text-primary">
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed font-sans">
+                    {item.description}
+                  </p>
+                </div>
+
+                <div className="pt-5 mt-4 border-t border-border/40 flex items-center justify-between text-xs font-mono">
+                  <div className="flex items-center gap-1.5 text-emerald-400">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <span>CLI Supported</span>
+                  </div>
+                  {item.version && (
+                    <span className="text-muted-foreground">ver {item.version}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredTech.map((item) => (
+              <div
+                key={item.name}
+                className="flex items-center justify-between p-4 rounded-xl border border-border/70 bg-card dark:bg-[#0d0d0d] hover:border-primary/60 transition-all font-mono"
+              >
+                <div className="flex items-center gap-4">
+                  <span className="text-2xl">{item.icon}</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-sm text-foreground">{item.name}</h3>
+                      {item.badge && (
+                        <span className="rounded bg-primary/15 border border-primary/30 px-1.5 py-0.5 text-[9px] text-primary font-semibold">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground font-sans mt-0.5">{item.description}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Ready
+                  </span>
+                  <Link
+                    href="/new"
+                    className="px-3 py-1.5 rounded bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-colors"
+                  >
+                    Select
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }

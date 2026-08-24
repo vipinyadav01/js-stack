@@ -8,16 +8,32 @@ import { addPreset } from "./commands/add-preset.js";
 import { analyticsCommand } from "./commands/analytics.js";
 import { version } from "./utils/version.js";
 
-const program = new Command();
+import boxen from "boxen";
+import gradient from "gradient-string";
+
+const orangeGradient = gradient(["#f6821f", "#fa551f"]);
+
+const logo = orangeGradient.multiline(`
+     _ ____ ____ _____  _    ____ _  __
+    | / ___/ ___|_   _|/ \\  / ___| |/ /
+ _  | \\___ \\___ \\ | | / _ \\| |   | ' / 
+| |_| |___) |__) || |/ ___ \\ |___| . \\ 
+ \\___/|____/____/ |_/_/   \\_\\____|_|\\_\\
+`);
 
 console.log(
-  chalk.cyan(`
-     ╦╔═╗╔═╗╔╦╗╔═╗╔═╗╦╔═
-     ║╚═╗╚═╗ ║ ╠═╣║  ╠╩╗
-    ╚╝╚═╝╚═╝ ╩ ╩ ╩╚═╝╩ ╩
-    Modern Web Project Generator
-`),
+  boxen(
+    `${logo}\n${chalk.dim("  The Production-Ready Full-Stack Generator")}\n${chalk.hex("#f6821f")(`  v${version}`)}`,
+    {
+      padding: { top: 0, bottom: 0, left: 2, right: 2 },
+      margin: { top: 1, bottom: 1, left: 0, right: 0 },
+      borderStyle: "round",
+      borderColor: "#f6821f",
+    },
+  ),
 );
+
+const program = new Command();
 
 program
   .name("jsstack")
@@ -27,7 +43,7 @@ program
   .version(version);
 
 program
-  .command("create [project-name]")
+  .command("create [project-name]", { isDefault: true })
   .description("Create a new project with selected preset")
   .option(
     "-p, --preset <preset>",

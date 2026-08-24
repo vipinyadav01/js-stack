@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, Download, Calendar, BarChart3 } from "lucide-react";
+import { TrendingUp, Download, Calendar, BarChart } from "lucide-react";
 import { NpmPackageData } from "@/lib/api";
 import {
   AreaChart,
@@ -66,7 +66,7 @@ export default function DownloadTrendsSection({
 
         <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-blue-600" />
+            <BarChart className="h-4 w-4 text-blue-600" />
             <span className="text-sm font-medium">Avg Daily</span>
           </div>
           <div className="text-xl font-bold mt-1">{formatNumber(avgDaily)}</div>

@@ -75,7 +75,7 @@ export function analyzeStackCompatibility(
   const validation = validateConfiguration(adjustedBuilderState);
 
   const adjustedStack: Partial<StackState> = {
-    projectName: adjustedBuilderState.projectName,
+    projectName: stack.projectName,
     frontend: adjustedBuilderState.frontend,
     backend: adjustedBuilderState.backend,
     database: adjustedBuilderState.database,

@@ -94,6 +94,7 @@ export default function ContributorsSection({
                     width={32}
                     height={32}
                     className="rounded-full border border-border"
+                    unoptimized
                   />
                   <div className="flex flex-col">
                     <span className="font-medium text-sm">

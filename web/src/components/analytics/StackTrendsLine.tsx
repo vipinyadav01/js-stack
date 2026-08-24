@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { TrendingUp, Calendar, BarChart3, Activity } from "lucide-react";
+import { TrendingUp, Calendar, BarChart, Activity } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -111,7 +111,7 @@ export default function StackTrendsLine({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="rounded-lg border border-border bg-card p-4">
           <div className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-blue-600" />
+            <BarChart className="h-4 w-4 text-blue-600" />
             <span className="text-sm font-medium text-muted-foreground">
               Peak Usage
             </span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart3 } from "lucide-react";
+import { BarChart } from "lucide-react";
 
 type Item = { stack: string; percentage: number; users: number };
 
@@ -30,7 +30,7 @@ export default function TopStacksBar() {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-4">
         <div className="flex items-center gap-2 text-red-800">
-          <BarChart3 className="h-4 w-4" />
+          <BarChart className="h-4 w-4" />
           <span className="text-sm font-medium">Error loading top stacks</span>
         </div>
         <p className="text-sm text-red-600 mt-1">{error}</p>
@@ -42,7 +42,7 @@ export default function TopStacksBar() {
     return (
       <div className="rounded-lg border border-border bg-card p-6">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <BarChart3 className="h-4 w-4" />
+          <BarChart className="h-4 w-4" />
           <span className="text-sm">Loading top stacks...</span>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function TopStacksBar() {
       <div className="mb-6 flex items-center justify-between flex-wrap gap-3 sm:gap-6">
         <div className="flex items-center gap-3">
           <div className="rounded-lg bg-primary/10 border border-primary/30 p-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
+            <BarChart className="h-5 w-5 text-primary" />
           </div>
           <div>
             <span className="font-bold text-xl sm:text-2xl text-foreground leading-tight">

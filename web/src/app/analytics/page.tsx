@@ -7,7 +7,6 @@ import {
   RefreshCw,
   Clock,
   Zap,
-  BarChart3,
   Package,
   Globe,
   Users,
@@ -17,7 +16,6 @@ import {
   Eye,
   TrendingUp,
   Terminal,
-  Sparkles,
 } from "lucide-react";
 import { format } from "date-fns";
 import {
@@ -27,7 +25,6 @@ import {
   GitHubRepoData,
 } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 const KPICards = dynamic(() => import("@/components/analytics/KPICards"), {
   ssr: false,
@@ -160,45 +157,33 @@ function StatCard({
   label,
   value,
   trend,
-  color,
-  gradient,
 }: {
   icon: React.ElementType;
   label: string;
   value: string | number;
   trend?: number;
-  color: string;
-  gradient: string;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 hover:-translate-y-0.5">
-      {/* Background Gradient */}
-      <div
-        className={cn(
-          "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-          gradient,
-        )}
-      />
-
-      <div className="relative flex items-start justify-between">
+    <div className="relative overflow-hidden rounded-xl border border-border/70 bg-card dark:bg-[#0d0d0d] p-5 transition-all hover:border-primary/60 hover:shadow-lg hover:shadow-primary/5 group">
+      <div className="flex items-start justify-between">
         <div className="space-y-3">
-          <div className={cn("inline-flex p-2.5 rounded-xl", color)}>
-            <Icon className="h-5 w-5" />
+          <div className="inline-flex text-primary group-hover:scale-110 transition-transform">
+            <Icon className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest">
               {label}
             </p>
-            <p className="text-2xl font-bold mt-1 tracking-tight">{value}</p>
+            <p className="text-2xl font-mono font-bold mt-1 tracking-tight text-foreground">{value}</p>
           </div>
         </div>
         {trend !== undefined && (
           <div
             className={cn(
-              "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full",
+              "flex items-center gap-1 text-[11px] font-mono px-2 py-1 rounded-md border",
               trend >= 0
-                ? "text-emerald-600 bg-emerald-500/10"
-                : "text-red-600 bg-red-500/10",
+                ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/10"
+                : "text-rose-400 border-rose-500/20 bg-rose-500/10",
             )}
           >
             <TrendingUp className={cn("h-3 w-3", trend < 0 && "rotate-180")} />
@@ -215,22 +200,30 @@ function SectionHeader({
   icon: Icon,
   title,
   description,
+  fileTag,
 }: {
   icon: React.ElementType;
   title: string;
   description?: string;
+  fileTag?: string;
 }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/10">
-        <Icon className="h-6 w-6 text-primary" />
-      </div>
-      <div>
-        <h2 className="text-xl font-bold tracking-tight">{title}</h2>
+    <div className="flex items-center justify-between border-b border-border/60 pb-3">
+      <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+        <Icon className="h-4 w-4 text-primary" />
+        <span className="font-bold text-primary">{title.toUpperCase().replace(/\s+/g, "_")}</span>
         {description && (
-          <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
+          <>
+            <span className="text-muted-foreground">/</span>
+            <span className="text-xs text-muted-foreground font-normal">{description}</span>
+          </>
         )}
       </div>
+      {fileTag && (
+        <span className="font-mono text-muted-foreground text-xs uppercase">
+          [{fileTag}]
+        </span>
+      )}
     </div>
   );
 }
@@ -246,7 +239,7 @@ function ChartCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5",
+        "rounded-xl border border-border/70 bg-card dark:bg-[#0d0d0d] shadow-xl overflow-hidden p-6 hover:border-primary/40 transition-colors",
         className,
       )}
     >
@@ -332,61 +325,48 @@ export default function AnalyticsPage() {
   const isLoading = loading.npm || loading.github;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
+    <div className="min-h-screen bg-background text-foreground font-sans">
       {/* Hero Header */}
-      <div className="relative overflow-hidden border-b border-border/50">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background" />
-
-        <div className="relative container mx-auto px-4 lg:px-6 py-8 lg:py-12">
+      <div className="border-b border-border/50 bg-background dark:bg-[#090a0f] relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-96 h-48 bg-primary/10 blur-[100px] pointer-events-none rounded-full" />
+        <div className="container mx-auto px-4 lg:px-6 py-6 lg:py-10 relative z-10">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             {/* Title Section */}
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-2xl bg-gradient-to-br from-primary via-primary to-purple-600 shadow-lg shadow-primary/25">
-                <BarChart3 className="h-8 w-8 text-white" />
+            <div className="flex flex-col gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-mono w-fit mb-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>ANALYTICAL_ENGINE // V1.2.16</span>
               </div>
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
-                    Analytics
-                  </h1>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-gradient-to-r from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400 rounded-full border border-emerald-500/20">
-                    <Sparkles className="h-3 w-3" />
-                    Live
-                  </span>
-                </div>
-                <p className="text-muted-foreground mt-1.5 text-sm lg:text-base">
-                  Real-time insights and metrics for JS-Stack CLI
-                </p>
-              </div>
+              <h1 className="text-3xl lg:text-5xl font-mono tracking-tight text-foreground font-bold">
+                Analytics<span className="text-primary">.sh</span>
+              </h1>
+              <p className="text-muted-foreground font-sans text-sm lg:text-base max-w-xl">
+                Real-time performance telemetry, package downloads, and repository statistics for JS-Stack CLI.
+              </p>
             </div>
 
             {/* Actions */}
             <div className="flex items-center gap-3">
               {/* Last Updated */}
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/50 border border-border/50">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  {format(lastUpdated, "h:mm a")}
-                </span>
+              <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-secondary/80 border border-border text-xs font-mono text-muted-foreground">
+                <Clock className="h-3.5 w-3.5 text-primary" />
+                <span>Updated {format(lastUpdated, "h:mm a")}</span>
               </div>
 
               {/* Refresh Button */}
-              <Button
+              <button
                 onClick={() => {
                   fetchNpmData();
                   fetchGitHubData();
                 }}
                 disabled={isLoading}
-                variant="outline"
-                className="gap-2 rounded-xl h-10 px-4 border-border/50 hover:bg-muted/50"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-mono text-xs font-semibold shadow-md shadow-primary/20 hover:bg-primary/90 transition-all disabled:opacity-50"
               >
                 <RefreshCw
-                  className={cn("h-4 w-4", isLoading && "animate-spin")}
+                  className={cn("h-3.5 w-3.5", isLoading && "animate-spin")}
                 />
-                <span className="hidden sm:inline">Refresh</span>
-              </Button>
+                <span>Refresh Data</span>
+              </button>
             </div>
           </div>
 
@@ -417,7 +397,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 lg:px-6 py-8 lg:py-12">
+      <div className="container mx-auto px-4 lg:px-6 pt-8 pb-28 lg:pt-12 lg:pb-36">
         <div className="space-y-12">
           {/* Key Stats Overview */}
           <section>
@@ -427,30 +407,26 @@ export default function AnalyticsPage() {
                 label="GitHub Stars"
                 value={formatNumber(githubData?.info?.stargazersCount || 0)}
                 trend={12}
-                color="bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                gradient="bg-gradient-to-br from-amber-500/5 to-orange-500/5"
+                
               />
               <StatCard
                 icon={Download}
                 label="Weekly Downloads"
                 value={formatNumber(npmData?.totalLast7Days || 0)}
                 trend={8}
-                color="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                gradient="bg-gradient-to-br from-emerald-500/5 to-teal-500/5"
+                
               />
               <StatCard
                 icon={GitFork}
                 label="Forks"
                 value={formatNumber(githubData?.info?.forksCount || 0)}
-                color="bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                gradient="bg-gradient-to-br from-blue-500/5 to-indigo-500/5"
+                
               />
               <StatCard
                 icon={Eye}
                 label="Watchers"
                 value={formatNumber(githubData?.info?.watchersCount || 0)}
-                color="bg-purple-500/10 text-purple-600 dark:text-purple-400"
-                gradient="bg-gradient-to-br from-purple-500/5 to-fuchsia-500/5"
+                
               />
             </div>
           </section>
@@ -460,7 +436,8 @@ export default function AnalyticsPage() {
             <SectionHeader
               icon={Activity}
               title="Overview"
-              description="Key performance indicators and metrics"
+              description="overview.log"
+              fileTag="KPIs & Metrics"
             />
             <ChartCard className="p-6">
               <KPICards
@@ -476,7 +453,8 @@ export default function AnalyticsPage() {
             <SectionHeader
               icon={Terminal}
               title="Technology Stacks"
-              description="Popular technology combinations and usage trends"
+              description="stacks.json"
+              fileTag="Usage & Trends"
             />
 
             <div className="grid gap-6 xl:grid-cols-2">
@@ -498,7 +476,8 @@ export default function AnalyticsPage() {
             <SectionHeader
               icon={Package}
               title="Systems & Tools"
-              description="Package managers and system configurations"
+              description="systems.conf"
+              fileTag="Environments"
             />
 
             <div className="grid gap-6 lg:grid-cols-2">
@@ -516,7 +495,8 @@ export default function AnalyticsPage() {
             <SectionHeader
               icon={Zap}
               title="Deployment & Performance"
-              description="Platform usage and performance insights"
+              description="deployments.yml"
+              fileTag="Infrastructure"
             />
 
             <div className="grid gap-6 lg:grid-cols-2">
@@ -534,7 +514,8 @@ export default function AnalyticsPage() {
             <SectionHeader
               icon={Globe}
               title="Repository & Downloads"
-              description="GitHub metrics and NPM download statistics"
+              description="repository.json"
+              fileTag="Telemetry"
             />
 
             {githubData && (
@@ -573,7 +554,8 @@ export default function AnalyticsPage() {
             <SectionHeader
               icon={Users}
               title="Community"
-              description="Contributors and community engagement"
+              description="contributors.md"
+              fileTag="Engagement"
             />
 
             {githubData && (

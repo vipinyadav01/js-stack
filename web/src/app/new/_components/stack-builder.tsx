@@ -10,6 +10,7 @@ import {
   Save,
   Download,
   RotateCcw,
+  TerminalSquare,
 } from "lucide-react";
 import type React from "react";
 import {
@@ -29,6 +30,12 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { TECH_OPTIONS, CATEGORY_ORDER, type TechOption } from "./tech-options";
 import { StackState, useStackState } from "./use-stack-state";
 import {
@@ -77,6 +84,7 @@ export function StackBuilder() {
 
   const [command, setCommand] = useState("");
   const [copied, setCopied] = useState(false);
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
   const [lastSavedStack, setLastSavedStack] = useState<StackState | null>(null);
   const [, setLastChanges] = useState<
     Array<{ category: string; message: string }>
@@ -94,23 +102,18 @@ export function StackBuilder() {
 
   const projectNameError = validateProjectName(localProjectName);
 
-  // Sync local project name with stack when stack changes from external sources
+  const lastSyncedProjectName = useRef(stack.projectName);
+
+  // Sync local project name when stack.projectName is changed externally (presets, resets, etc.)
   useEffect(() => {
-    if (stack.projectName && stack.projectName !== localProjectName) {
+    if (
+      stack.projectName &&
+      stack.projectName !== lastSyncedProjectName.current
+    ) {
+      lastSyncedProjectName.current = stack.projectName;
       setLocalProjectName(stack.projectName);
     }
-  }, [stack.projectName, localProjectName]);
-
-  // Update stack when local project name changes (debounced)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (localProjectName !== stack.projectName) {
-        setStack({ projectName: localProjectName });
-      }
-    }, 300); // 300ms debounce
-
-    return () => clearTimeout(timer);
-  }, [localProjectName, stack.projectName, setStack]);
+  }, [stack.projectName]);
 
   const getStackUrl = useCallback((): string => {
     const stackToUse = compatibilityAnalysis.adjustedStack || stack;
@@ -430,13 +433,9 @@ export function StackBuilder() {
     }
   };
 
-  return (
-    <TooltipProvider>
-      {/* Fixed height container accounting for navbar */}
-      <div className="fixed top-16 left-0 right-0 bottom-0 flex overflow-hidden">
-        {/* Sidebar */}
-        <aside className="hidden lg:flex w-[260px] xl:w-[300px] flex-shrink-0 flex-col border-r border-border/50 bg-background overflow-hidden">
-          <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
+  const panelBody = (
+    <>
+      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
             <div className="p-4 border-b border-border/50">
               <div className="space-y-1.5">
                 <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5">
@@ -445,7 +444,12 @@ export function StackBuilder() {
                 <input
                   type="text"
                   value={localProjectName}
-                  onChange={(e) => setLocalProjectName(e.target.value)}
+                  onChange={(e) => {
+                    const newName = e.target.value;
+                    setLocalProjectName(newName);
+                    lastSyncedProjectName.current = newName;
+                    setStack({ projectName: newName });
+                  }}
                   className={cn(
                     "w-full rounded-md border bg-secondary/20 px-3 py-2 text-sm font-medium transition-all outline-none",
                     "focus:ring-1 focus:ring-primary/30 focus:border-primary/50",
@@ -600,12 +604,53 @@ export function StackBuilder() {
               </div>
             </div>
           </div>
+    </>
+  );
+
+  return (
+    <TooltipProvider>
+      {/* Fixed height container accounting for navbar */}
+      <div className="fixed top-16 left-0 right-0 bottom-0 flex overflow-hidden">
+        {/* Sidebar (desktop / lg+) */}
+        <aside className="hidden lg:flex w-[260px] xl:w-[300px] flex-shrink-0 flex-col border-r border-border/50 bg-background overflow-hidden">
+          {panelBody}
         </aside>
 
+        {/* Mobile / tablet: floating trigger + bottom sheet with the same controls */}
+        <button
+          type="button"
+          onClick={() => setMobilePanelOpen(true)}
+          className="lg:hidden fixed bottom-4 left-4 right-4 z-40 flex items-center justify-between gap-3 rounded-full border border-border bg-background/95 backdrop-blur-lg px-4 py-3 shadow-lg active:scale-[0.99] transition-transform"
+        >
+          <span className="flex min-w-0 items-center gap-2">
+            <TerminalSquare className="h-4 w-4 flex-shrink-0 text-primary" />
+            <code className="truncate text-left text-xs font-mono text-muted-foreground">
+              {command}
+            </code>
+          </span>
+          <span className="flex-shrink-0 rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
+            {selectedBadges.length}
+          </span>
+        </button>
+
+        <Sheet open={mobilePanelOpen} onOpenChange={setMobilePanelOpen}>
+          <SheetContent
+            side="bottom"
+            className="lg:hidden flex h-[85vh] flex-col gap-0 p-0"
+          >
+            <SheetHeader className="flex-shrink-0 border-b border-border/50 p-4 pb-3">
+              <SheetTitle className="text-sm">Stack Configuration</SheetTitle>
+            </SheetHeader>
+            {panelBody}
+          </SheetContent>
+        </Sheet>
+
         {/* Main Content */}
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea ref={contentRef} className="h-full">
-            <main className="px-4 pb-20">
+        <div
+          ref={contentRef}
+          className="flex-1 overflow-y-auto custom-scrollbar h-full p-4 lg:p-6 pb-32 lg:pb-28"
+        >
+          <main className="max-w-7xl mx-auto space-y-8">
               {CATEGORY_ORDER.map((categoryKey) => {
                 const categoryOptions =
                   TECH_OPTIONS[categoryKey as keyof typeof TECH_OPTIONS] || [];
@@ -721,7 +766,6 @@ export function StackBuilder() {
                 );
               })}
             </main>
-          </ScrollArea>
         </div>
       </div>
     </TooltipProvider>

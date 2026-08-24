@@ -12,30 +12,31 @@ import { TEMPLATE_PATHS } from "../../constants.js";
 import type { ProjectConfig } from "../../types.js";
 
 /**
- * Get template directory path
+ * Get template directory path cleanly or return null if not found
  */
-function getTemplatePath(relativePath: string): string {
-  // In development, templates are in project root
-  // In production, they're in the package
+function tryGetTemplatePath(relativePath: string): string | null {
+  const normalizedPath = relativePath
+    .replace(/\/nextjs(?=\/|$)/, "/next")
+    .replace(/\/postgresql(?=\/|$)/, "/postgres");
+
   const __filename = new URL(import.meta.url).pathname;
-  // Handle Windows paths
   const normalizedFilename =
     process.platform === "win32"
       ? __filename.replace(/^\//, "").replace(/\//g, "\\")
       : __filename;
 
   const possiblePaths = [
-    path.join(process.cwd(), "templates", relativePath),
-    path.join(process.cwd(), relativePath),
+    path.join(process.cwd(), "templates", normalizedPath),
+    path.join(process.cwd(), normalizedPath),
     path.join(
       path.dirname(normalizedFilename),
       "..",
       "..",
       "..",
       "templates",
-      relativePath,
+      normalizedPath,
     ),
-    path.join(path.dirname(normalizedFilename), "..", "..", "..", relativePath),
+    path.join(path.dirname(normalizedFilename), "..", "..", "..", normalizedPath),
   ];
 
   for (const templatePath of possiblePaths) {
@@ -44,9 +45,13 @@ function getTemplatePath(relativePath: string): string {
     }
   }
 
-  throw new Error(
-    `Template path not found: ${relativePath}. Tried: ${possiblePaths.join(", ")}`,
-  );
+  return null;
+}
+
+function getTemplatePath(relativePath: string): string {
+  const found = tryGetTemplatePath(relativePath);
+  if (found) return found;
+  throw new Error(`Template path not found: ${relativePath}`);
 }
 
 /**
@@ -71,16 +76,14 @@ export async function setupFrontendTemplates(
   destDir: string,
   context: ProjectConfig,
 ): Promise<void> {
-  // Frontend is now a single value, not an array
   const frontendFramework =
     context.frontend && context.frontend !== "none" ? context.frontend : null;
 
   if (frontendFramework) {
-    const framework = frontendFramework;
-    const srcDir = getTemplatePath(
-      path.join(TEMPLATE_PATHS.frontend, framework),
+    const srcDir = tryGetTemplatePath(
+      path.join(TEMPLATE_PATHS.frontend, frontendFramework),
     );
-    if (await fs.pathExists(srcDir)) {
+    if (srcDir && (await fs.pathExists(srcDir))) {
       await processAndCopyFiles(
         srcDir,
         destDir,
@@ -101,10 +104,10 @@ export async function setupBackendFramework(
     return;
   }
 
-  const srcDir = getTemplatePath(
+  const srcDir = tryGetTemplatePath(
     path.join(TEMPLATE_PATHS.backend, context.backend),
   );
-  if (await fs.pathExists(srcDir)) {
+  if (srcDir && (await fs.pathExists(srcDir))) {
     await processAndCopyFiles(
       srcDir,
       destDir,
@@ -121,10 +124,10 @@ export async function setupDbOrmTemplates(
   context: ProjectConfig,
 ): Promise<void> {
   if (context.database !== "none") {
-    const dbDir = getTemplatePath(
+    const dbDir = tryGetTemplatePath(
       path.join(TEMPLATE_PATHS.db, context.database),
     );
-    if (await fs.pathExists(dbDir)) {
+    if (dbDir && (await fs.pathExists(dbDir))) {
       await processAndCopyFiles(
         dbDir,
         destDir,
@@ -134,8 +137,10 @@ export async function setupDbOrmTemplates(
   }
 
   if (context.orm !== "none") {
-    const ormDir = getTemplatePath(path.join(TEMPLATE_PATHS.db, context.orm));
-    if (await fs.pathExists(ormDir)) {
+    const ormDir = tryGetTemplatePath(
+      path.join(TEMPLATE_PATHS.db, context.orm),
+    );
+    if (ormDir && (await fs.pathExists(ormDir))) {
       await processAndCopyFiles(
         ormDir,
         destDir,
@@ -156,8 +161,10 @@ export async function setupAuthTemplate(
     return;
   }
 
-  const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.auth, context.auth));
-  if (await fs.pathExists(srcDir)) {
+  const srcDir = tryGetTemplatePath(
+    path.join(TEMPLATE_PATHS.auth, context.auth),
+  );
+  if (srcDir && (await fs.pathExists(srcDir))) {
     await processAndCopyFiles(
       srcDir,
       destDir,
@@ -177,8 +184,8 @@ export async function setupAPITemplates(
     return;
   }
 
-  const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.api, context.api));
-  if (await fs.pathExists(srcDir)) {
+  const srcDir = tryGetTemplatePath(path.join(TEMPLATE_PATHS.api, context.api));
+  if (srcDir && (await fs.pathExists(srcDir))) {
     await processAndCopyFiles(
       srcDir,
       destDir,
@@ -195,8 +202,8 @@ export async function setupAddonsTemplate(
   context: ProjectConfig,
 ): Promise<void> {
   for (const addon of context.addons) {
-    const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.addons, addon));
-    if (await fs.pathExists(srcDir)) {
+    const srcDir = tryGetTemplatePath(path.join(TEMPLATE_PATHS.addons, addon));
+    if (srcDir && (await fs.pathExists(srcDir))) {
       await processAndCopyFiles(
         srcDir,
         destDir,
@@ -216,8 +223,10 @@ export async function setupExamplesTemplate(
   const examples = context.examples.filter((e) => e !== "none");
 
   for (const example of examples) {
-    const srcDir = getTemplatePath(path.join(TEMPLATE_PATHS.examples, example));
-    if (await fs.pathExists(srcDir)) {
+    const srcDir = tryGetTemplatePath(
+      path.join(TEMPLATE_PATHS.examples, example),
+    );
+    if (srcDir && (await fs.pathExists(srcDir))) {
       await processAndCopyFiles(
         srcDir,
         destDir,
@@ -235,10 +244,10 @@ export async function setupDeploymentTemplates(
   context: ProjectConfig,
 ): Promise<void> {
   if (context.webDeploy !== "none") {
-    const srcDir = getTemplatePath(
+    const srcDir = tryGetTemplatePath(
       path.join(TEMPLATE_PATHS.deploy, context.webDeploy),
     );
-    if (await fs.pathExists(srcDir)) {
+    if (srcDir && (await fs.pathExists(srcDir))) {
       await processAndCopyFiles(
         srcDir,
         destDir,
@@ -248,10 +257,10 @@ export async function setupDeploymentTemplates(
   }
 
   if (context.serverDeploy !== "none") {
-    const srcDir = getTemplatePath(
+    const srcDir = tryGetTemplatePath(
       path.join(TEMPLATE_PATHS.deploy, context.serverDeploy),
     );
-    if (await fs.pathExists(srcDir)) {
+    if (srcDir && (await fs.pathExists(srcDir))) {
       await processAndCopyFiles(
         srcDir,
         destDir,
@@ -269,10 +278,10 @@ export async function setupDbSetupTemplate(
   context: ProjectConfig,
 ): Promise<void> {
   if (context.dbSetup !== "none") {
-    const srcDir = getTemplatePath(
+    const srcDir = tryGetTemplatePath(
       path.join(TEMPLATE_PATHS.dbSetup, context.dbSetup),
     );
-    if (await fs.pathExists(srcDir)) {
+    if (srcDir && (await fs.pathExists(srcDir))) {
       await processAndCopyFiles(
         srcDir,
         destDir,

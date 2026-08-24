@@ -62,18 +62,18 @@ export default function TopComments({
   if (loading) {
     return (
       <div>
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-muted-foreground" />
-            <span className="font-bold text-lg sm:text-xl text-muted-foreground">
-              COMMUNITY_FEEDBACK
-            </span>
-          </div>
-          <div className="hidden h-px flex-1 bg-border sm:block" />
-          <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-            [FEEDBACK.JSON]
-          </span>
+      {/* Header */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap border-b border-border/60 pb-3">
+        <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+          <MessageCircle className="h-4 w-4 text-primary" />
+          <span className="font-bold text-primary">COMMUNITY_FEEDBACK</span>
+          <span className="text-muted-foreground">/</span>
+          <span className="text-xs text-muted-foreground font-normal">feedback.json</span>
         </div>
+        <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
+          [VERIFIED USERS]
+        </span>
+      </div>
         <div className="flex items-center justify-center py-8">
           <div className="text-muted-foreground text-sm">
             Loading comments...
@@ -86,16 +86,15 @@ export default function TopComments({
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5 text-muted-foreground" />
-          <span className="font-bold text-lg sm:text-xl text-muted-foreground">
-            COMMUNITY_FEEDBACK
-          </span>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap border-b border-border/60 pb-3">
+        <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+          <MessageCircle className="h-4 w-4 text-primary" />
+          <span className="font-bold text-primary">COMMUNITY_FEEDBACK</span>
+          <span className="text-muted-foreground">/</span>
+          <span className="text-xs text-muted-foreground font-normal">feedback.json</span>
         </div>
-        <div className="hidden h-px flex-1 bg-border sm:block" />
-        <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-          [FEEDBACK.JSON]
+        <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
+          [VERIFIED USERS]
         </span>
       </div>
 

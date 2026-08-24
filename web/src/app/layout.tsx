@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import localFont from "next/font/local";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,59 +10,14 @@ import { StructuredData } from "@/components/structured-data";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { PostHogProvider, PostHogPageView } from "@/providers/posthog-provider";
 
-const jetbrainsMono = localFont({
-  src: [
-    {
-      path: "../fonts/webfonts/JetBrainsMono-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/webfonts/JetBrainsMono-Italic.woff2",
-      weight: "400",
-      style: "italic",
-    },
-    {
-      path: "../fonts/webfonts/JetBrainsMono-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/webfonts/JetBrainsMono-MediumItalic.woff2",
-      weight: "500",
-      style: "italic",
-    },
-    {
-      path: "../fonts/webfonts/JetBrainsMono-SemiBold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../fonts/webfonts/JetBrainsMono-SemiBoldItalic.woff2",
-      weight: "600",
-      style: "italic",
-    },
-    {
-      path: "../fonts/webfonts/JetBrainsMono-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../fonts/webfonts/JetBrainsMono-BoldItalic.woff2",
-      weight: "700",
-      style: "italic",
-    },
-  ],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-  preload: true,
-  fallback: [
-    "Monaco",
-    "Consolas",
-    "Liberation Mono",
-    "Courier New",
-    "monospace",
-  ],
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 const resolveMetadataBase = (): URL => {
@@ -102,7 +57,7 @@ if (Object.keys(otherVerification).length > 0) {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#3b82f6",
+  themeColor: "#f6821f",
   colorScheme: "dark light",
 };
 
@@ -247,7 +202,7 @@ export default function RootLayout({
         <link rel="alternate" type="application/ld+json" href="/schema.json" />
       </head>
       <body
-        className={`${jetbrainsMono.variable} font-mono antialiased bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}
         suppressHydrationWarning
       >
         {/* Google Tag Manager - Using next/script component */}
@@ -277,9 +232,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             enableSystem
             disableTransitionOnChange
           >
-            <div className="relative flex min-h-screen flex-col">
+            <div className="relative flex min-h-screen flex-col" suppressHydrationWarning>
               <Navigation />
-              <main className="flex-1 pt-24">{children}</main>
+              <main className="flex-1 pt-16 font-sans" suppressHydrationWarning>{children}</main>
               <ConditionalFooter />
             </div>
           </ThemeProvider>

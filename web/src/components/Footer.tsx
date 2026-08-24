@@ -1,105 +1,199 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import {
   Github,
   Terminal,
   Twitter,
   Globe,
-  Mail,
   ArrowRight,
+  Check,
+  Copy,
+  Zap,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import NpmVersion from "./NpmVersion";
+import Image from "next/image";
+import logo from "../Images/logo.png";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [copied, setCopied] = useState(false);
+  const command = "npx @vipinyadav02/createjsstack@latest";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(command);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <footer className="w-full border-t border-border bg-background/50 backdrop-blur-xl">
+    <footer className="w-full border-t border-border/60 bg-card/60 backdrop-blur-xl dark:bg-[#090a0f]">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {/* Brand Column */}
-          <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                <Terminal className="h-5 w-5 text-primary" />
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-5">
+          
+          {/* Brand Column (2 columns wide on lg) */}
+          <div className="lg:col-span-2 space-y-4">
+            <Link href="/" className="flex items-center gap-3 group shrink-0">
+              <div className="relative h-8 w-8 overflow-hidden rounded-lg border border-primary/30 bg-primary/10 p-0.5 transition-transform group-hover:scale-105">
+                <Image
+                  src={logo}
+                  alt="JS-Stack"
+                  fill
+                  sizes="32px"
+                  className="object-cover rounded-md"
+                />
               </div>
-              <span className="text-xl font-bold tracking-tight">JS-Stack</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-extrabold text-lg tracking-tight text-foreground">
+                  JS-STACK
+                </span>
+                <span className="inline-flex items-center gap-1 rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-primary">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  v1.2.16
+                </span>
+              </div>
             </Link>
-            <p className="max-w-xs text-sm text-muted-foreground leading-relaxed">
-              The ultimate CLI for scaffolding production-ready full-stack
-              JavaScript applications. Built for speed, performance, and
-              scalability.
+
+            <p className="max-w-sm text-xs sm:text-sm text-muted-foreground leading-relaxed font-sans">
+              The full-stack scaffolding CLI platform for React 19, Next.js 15, Vue 3, Express, Fastify, Postgres, MongoDB, and Docker.
             </p>
-            <div className="flex items-center gap-2 pt-2">
-              <div className="flex items-center gap-1 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-medium">
-                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-                <NpmVersion />
-              </div>
+
+            {/* Quick Copy Terminal Pill */}
+            <div className="pt-2">
+              <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mb-2">
+                Quick Execution Command
+              </p>
+              <button
+                onClick={handleCopy}
+                className="flex items-center justify-between gap-3 w-full max-w-sm px-3.5 py-2.5 rounded-md bg-secondary/80 border border-border/80 text-foreground font-mono text-xs hover:border-primary/50 transition-all group shadow-sm"
+              >
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <Terminal className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                  <span className="truncate text-[11px]">{command}</span>
+                </div>
+                {copied ? (
+                  <span className="text-[10px] font-bold text-emerald-400 flex-shrink-0">Copied!</span>
+                ) : (
+                  <Copy className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                )}
+              </button>
             </div>
           </div>
 
           {/* Product Links */}
           <div>
-            <h3 className="mb-6 text-sm font-semibold tracking-wider text-foreground">
-              PRODUCT
+            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
+              // PLATFORM
             </h3>
-            <ul className="space-y-4 text-sm text-muted-foreground">
+            <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
                 <Link
                   href="/new"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  Stack Builder
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/docs"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
-                >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  Documentation
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Stack Builder</span>
                 </Link>
               </li>
               <li>
                 <Link
                   href="/features"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  Features
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>CLI Features</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/analytics"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Telemetry Analytics</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/sponsors"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Sponsors & Backers</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Ecosystem Links */}
+          <div>
+            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
+              // ECOSYSTEM
+            </h3>
+            <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
                 <a
                   href="https://www.npmjs.com/package/@vipinyadav02/createjsstack"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  NPM Package
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>NPM Registry</span>
                 </a>
               </li>
-            </ul>
-          </div>
-
-          {/* Resources Links */}
-          <div>
-            <h3 className="mb-6 text-sm font-semibold tracking-wider text-foreground">
-              RESOURCES
-            </h3>
-            <ul className="space-y-4 text-sm text-muted-foreground">
               <li>
                 <a
                   href="https://github.com/vipinyadav01/js-stack"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  GitHub Repository
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>GitHub Repository</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/vipinyadav01/js-stack/releases"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Release Notes</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/vipinyadav01/js-stack/blob/main/LICENSE"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>MIT License</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Author & Support */}
+          <div>
+            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
+              // AUTHOR
+            </h3>
+            <ul className="space-y-3 font-mono text-xs text-muted-foreground">
+              <li>
+                <a
+                  href="https://vipinyadav01.vercel.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Vipin Yadav</span>
                 </a>
               </li>
               <li>
@@ -107,94 +201,61 @@ export default function Footer() {
                   href="https://github.com/vipinyadav01/js-stack/issues"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  Report an Issue
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Report an Issue</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="https://github.com/js-stack/examples"
+                  href="https://github.com/vipinyadav01/js-stack/discussions"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  Examples
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/sponsors"
-                  className="hover:text-primary transition-colors flex items-center gap-2 group"
-                >
-                  <ArrowRight className="h-3 w-3 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                  Sponsors
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Discussions</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Community / Newsletter (Mock) */}
-          <div className="space-y-4">
-            <h3 className="mb-6 text-sm font-semibold tracking-wider text-foreground">
-              STAY UPDATED
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Latest updates, templates, and features sent to your inbox mostly
-              every month.
-            </p>
-            <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                suppressHydrationWarning
-              />
-              <button
-                type="submit"
-                className="rounded-md bg-primary px-3 py-2 text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <Mail className="h-4 w-4" />
-              </button>
-            </form>
-          </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-6 border-t border-border pt-8 sm:flex-row">
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} Vipin Yadav. Open Source (MIT).
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/60 pt-8 sm:flex-row font-mono text-xs text-muted-foreground">
+          <p>
+            © {currentYear} Vipin Yadav. Built for the modern full-stack web era. Open Source (MIT).
           </p>
 
-          <div className="flex gap-4 text-muted-foreground">
+          <div className="flex items-center gap-4 text-muted-foreground">
             <a
               href="https://github.com/vipinyadav01"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-foreground"
+              className="transition-colors hover:text-primary"
+              title="GitHub Profile"
             >
-              <span className="sr-only">GitHub</span>
-              <Github className="h-5 w-5" />
+              <Github className="h-4 w-4" />
             </a>
             <a
-              href="https://twitter.com/vipinyadav01"
+              href="https://twitter.com/vipinyadav9m"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-foreground"
+              className="transition-colors hover:text-primary"
+              title="Twitter Profile"
             >
-              <span className="sr-only">Twitter</span>
-              <Twitter className="h-5 w-5" />
+              <Twitter className="h-4 w-4" />
             </a>
             <a
               href="https://vipinyadav01.vercel.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-foreground"
+              className="transition-colors hover:text-primary"
+              title="Personal Website"
             >
-              <span className="sr-only">Website</span>
-              <Globe className="h-5 w-5" />
+              <Globe className="h-4 w-4" />
             </a>
           </div>
         </div>

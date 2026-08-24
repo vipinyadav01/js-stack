@@ -8,7 +8,7 @@ import {
   Download,
   Users,
   Code2,
-  BarChart3,
+  BarChart,
   CheckCircle2,
   Zap,
 } from "lucide-react";
@@ -52,7 +52,7 @@ export default function KPICards({
               value: kpi.value,
               help: kpi.help,
               icon: kpi.label.includes("adoption")
-                ? BarChart3
+                ? BarChart
                 : kpi.label.includes("compatibility")
                   ? CheckCircle2
                   : kpi.label.includes("efficiency")
@@ -149,26 +149,24 @@ export default function KPICards({
           return (
             <div
               key={kpi.label}
-              className="group relative overflow-hidden rounded-lg border border-border bg-card/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300"
+              className="relative overflow-hidden rounded-lg border border-border bg-card dark:bg-[#0d0d0d] p-4 transition-colors hover:border-primary/50"
             >
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="p-1.5 rounded-md bg-primary/10">
-                    <IconComponent className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {kpi.label}
-                  </span>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="text-muted-foreground">
+                  <IconComponent className="h-4 w-4" />
                 </div>
-                <div className="text-2xl font-bold text-foreground mb-1">
-                  {kpi.value}
-                </div>
-                {kpi.help && (
-                  <div className="text-xs text-muted-foreground">
-                    {kpi.help}
-                  </div>
-                )}
+                <span className="text-[11px] font-mono font-normal uppercase tracking-widest text-muted-foreground">
+                  {kpi.label}
+                </span>
               </div>
+              <div className="text-2xl font-mono font-normal text-foreground mb-1 tracking-tight">
+                {kpi.value}
+              </div>
+              {kpi.help && (
+                <div className="text-[11px] font-sans text-muted-foreground">
+                  {kpi.help}
+                </div>
+              )}
             </div>
           );
         })}

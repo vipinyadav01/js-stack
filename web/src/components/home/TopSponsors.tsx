@@ -62,16 +62,15 @@ export default function TopSponsors({
 
   return (
     <section>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
-        <div className="flex items-center gap-2">
-          <Heart className="h-5 w-5 text-muted-foreground" />
-          <span className="font-bold text-lg sm:text-xl text-muted-foreground">
-            SPONSORS
-          </span>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap border-b border-border/60 pb-3">
+        <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+          <Heart className="h-4 w-4 text-primary" />
+          <span className="font-bold text-primary">PROJECT_SPONSORS</span>
+          <span className="text-muted-foreground">/</span>
+          <span className="text-xs text-muted-foreground font-normal">sponsors.json</span>
         </div>
-        <div className="hidden h-px flex-1 bg-border sm:block" />
-        <span className="w-full text-right text-muted-foreground text-xs sm:w-auto sm:text-left">
-          [SPONSORS.JSON]
+        <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
+          [COMMUNITY SUPPORT]
         </span>
       </div>
 
