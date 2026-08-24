@@ -2,6 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
+  // Opt out of Next.js 16.3 immutable static asset uploads. Vercel's build
+  // adapter enables these by default (`config.supportsImmutableAssets ?? true`),
+  // but the immutable upload path conflicts with Vercel's preview-comment
+  // patching and fails the deploy ("Cannot patch preview comments when
+  // immutable static file upload is enabled"). Disabling it lets Vercel upload
+  // assets normally and patch comments.
+  supportsImmutableAssets: false,
   // eslint block removed because it's no longer supported in Next.js 15+
   typescript: {
     ignoreBuildErrors: false,
