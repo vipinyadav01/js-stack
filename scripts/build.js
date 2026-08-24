@@ -19,8 +19,8 @@ async function buildCLI() {
 
     // Verify dist files exist
     const distPath = path.join(__dirname, "../dist");
-    const cliFile = path.join(distPath, "cli.js");
-    const indexFile = path.join(distPath, "index.js");
+    const cliFile = path.join(distPath, "cli.mjs");
+    const indexFile = path.join(distPath, "index.mjs");
 
     try {
       await fs.access(cliFile);
@@ -29,7 +29,7 @@ async function buildCLI() {
       console.log("✓ CLI files generated in dist/");
     } catch (error) {
       throw new Error(
-        "Build completed but dist/cli.js or dist/index.js not found",
+        "Build completed but dist/cli.mjs or dist/index.mjs not found",
       );
     }
   } catch (error) {

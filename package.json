@@ -7,9 +7,9 @@
   "workspaces": [
     "web"
   ],
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
   "bin": {
-    "create-js-stack": "dist/cli.js"
+    "create-js-stack": "dist/cli.mjs"
   },
   "files": [
     "dist",
@@ -21,7 +21,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "build:cli": "tsdown src/cli.ts --format esm --clean && tsdown src/index.ts --format esm",
+    "build:cli": "tsdown src/cli.ts src/index.ts --format esm --clean",
     "dev": "turbo run dev",
     "dev:cli": "tsx src/cli.ts",
     "dev:web": "turbo run dev --filter=web",
@@ -82,7 +82,7 @@
     "posthog-node": "^5.17.4",
     "terminal-link": "^2.1.1",
     "tinyglobby": "^0.2.9",
-    "tsdown": "^0.2.2",
+    "tsdown": "^0.22.14",
     "validate-npm-package-name": "^5.0.1",
     "yup": "^1.4.0",
     "zod": "^3.22.4"

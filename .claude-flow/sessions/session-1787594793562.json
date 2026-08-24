@@ -1,0 +1,14 @@
+{
+  "id": "session-1787594793562",
+  "startedAt": "2026-08-24T18:06:33.562Z",
+  "cwd": "/home/vipin-yadav/DEV/Personal Project/js-stack",
+  "context": {},
+  "metrics": {
+    "edits": 0,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-08-24T18:06:34.277Z",
+  "duration": 716
+}
