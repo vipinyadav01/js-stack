@@ -14,7 +14,7 @@ const packageJson = JSON.parse(
   readFileSync(join(__dirname, "../package.json"), "utf-8"),
 );
 
-console.log(chalk.blue.bold("🚀 Publishing create-js-stack to npm"));
+console.log(chalk.blue.bold("🚀 Publishing createjsstack to npm"));
 console.log(chalk.gray(`Version: ${packageJson.version}`));
 console.log();
 
@@ -53,7 +53,7 @@ try {
   console.log(
     chalk.gray("   This will make the package available for installation via:"),
   );
-  console.log(chalk.cyan("   npx create-js-stack@latest"));
+  console.log(chalk.cyan("   npx createjsstack@latest"));
   console.log();
 
   // For now, just show the command to run

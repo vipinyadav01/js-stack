@@ -29,8 +29,8 @@ export default function QuickActionsSection() {
     {
       icon: Code,
       label: "Create New Project",
-      description: "Initialize a new project with create-js-stack",
-      command: "npx create-js-stack init",
+      description: "Initialize a new project with createjsstack",
+      command: "npx createjsstack init",
       href: "/new",
     },
     {

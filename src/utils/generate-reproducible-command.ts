@@ -8,7 +8,7 @@ import type { ProjectConfig } from "../types.js";
  * Generate CLI command that reproduces the exact configuration
  */
 export function generateReproducibleCommand(config: ProjectConfig): string {
-  const parts: string[] = ["create-js-stack", config.projectName];
+  const parts: string[] = ["createjsstack", config.projectName];
 
   // Add flags
   if (config.frontend && config.frontend !== "none") {

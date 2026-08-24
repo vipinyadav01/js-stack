@@ -1236,7 +1236,7 @@ export function buildCliCommand(state: BuilderState): string {
 
   const projectName = state.projectName || "my-app";
   const parts = [
-    `${getCommandPrefix(state.packageManager)} create-js-stack@latest ${projectName}`,
+    `${getCommandPrefix(state.packageManager)} createjsstack@latest ${projectName}`,
   ];
 
   // Frontend - CLI supports multiple frontends
@@ -1340,19 +1340,19 @@ export function generateReproducibleCommand(config: BuilderState): string {
   flags.push(config.installDependencies ? "--install" : "--no-install");
 
   // Build base command based on package manager
-  let baseCommand = "npx create-js-stack@latest";
+  let baseCommand = "npx createjsstack@latest";
   const pkgManager = config.packageManager;
 
   switch (pkgManager) {
     case "bun":
-      baseCommand = "bunx create-js-stack@latest";
+      baseCommand = "bunx createjsstack@latest";
       break;
     case "pnpm":
       baseCommand = "pnpm create js-stack@latest";
       break;
     case "npm":
     default:
-      baseCommand = "npx create-js-stack@latest";
+      baseCommand = "npx createjsstack@latest";
       break;
   }
 
@@ -1369,19 +1369,19 @@ export function generateQuickStartCommand(config: BuilderState): string {
   const projectPathArg = ` ${projectName}`;
 
   // Build base command based on package manager
-  let baseCommand = "npx create-js-stack@latest";
+  let baseCommand = "npx createjsstack@latest";
   const pkgManager = config.packageManager;
 
   switch (pkgManager) {
     case "bun":
-      baseCommand = "bunx create-js-stack@latest";
+      baseCommand = "bunx createjsstack@latest";
       break;
     case "pnpm":
       baseCommand = "pnpm create js-stack@latest";
       break;
     case "npm":
     default:
-      baseCommand = "npx create-js-stack@latest";
+      baseCommand = "npx createjsstack@latest";
       break;
   }
 

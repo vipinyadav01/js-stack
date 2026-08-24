@@ -99,7 +99,7 @@ const searchItems: SearchItem[] = [
     id: "npm",
     title: "NPM Package",
     description: "Install and view package details",
-    url: "https://www.npmjs.com/package/create-js-stack",
+    url: "https://www.npmjs.com/package/createjsstack",
     icon: Hash,
     category: "External",
     keywords: ["npm", "package", "install", "download"],

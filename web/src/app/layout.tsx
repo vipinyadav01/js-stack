@@ -116,7 +116,7 @@ export const metadata: Metadata = {
   keywords: [
     "js-stack",
     "createjsstack",
-    "create-js-stack",
+    "createjsstack",
     "javascript project generator",
     "typescript cli",
     "nextjs starter",

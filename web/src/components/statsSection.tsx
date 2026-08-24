@@ -273,9 +273,9 @@ const useRealPackageStats = (packageName: string, githubRepo: string) => {
 };
 
 const StatsSection = ({
-  packageName = "create-js-stack",
+  packageName = "createjsstack",
   githubRepo = "vipinyadav01/js-stack",
-  npmUrl = "https://www.npmjs.com/package/create-js-stack",
+  npmUrl = "https://www.npmjs.com/package/createjsstack",
 }) => {
   const { stats, refetch } = useRealPackageStats(packageName, githubRepo);
 

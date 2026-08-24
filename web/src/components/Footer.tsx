@@ -73,7 +73,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://www.npmjs.com/package/create-js-stack"
+                  href="https://www.npmjs.com/package/createjsstack"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-primary transition-colors flex items-center gap-2 group"

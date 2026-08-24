@@ -1,8 +1,8 @@
 # Create JS Stack CLI
 
-[![npm version](https://img.shields.io/npm/v/create-js-stack.svg)](https://www.npmjs.com/package/create-js-stack)
-[![npm downloads](https://img.shields.io/npm/dm/create-js-stack.svg)](https://www.npmjs.com/package/create-js-stack)
-[![License](https://img.shields.io/npm/l/create-js-stack.svg)](https://github.com/vipinyadav01/js-stack/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/createjsstack.svg)](https://www.npmjs.com/package/createjsstack)
+[![npm downloads](https://img.shields.io/npm/dm/createjsstack.svg)](https://www.npmjs.com/package/createjsstack)
+[![License](https://img.shields.io/npm/l/createjsstack.svg)](https://github.com/vipinyadav01/js-stack/blob/main/LICENSE)
 
 > A powerful CLI tool for scaffolding production-ready JavaScript full-stack projects with best practices built-in.
 
@@ -10,13 +10,13 @@
 
 ```bash
 # Interactive setup (recommended)
-npx create-js-stack@latest my-app
+npx createjsstack@latest my-app
 
 # Quick start with defaults
-npx create-js-stack@latest my-app --yes
+npx createjsstack@latest my-app --yes
 
 # Custom stack
-npx create-js-stack@latest my-app \
+npx createjsstack@latest my-app \
   --frontend react \
   --backend express \
   --database postgresql \
@@ -44,7 +44,7 @@ npx create-js-stack@latest my-app \
 ### Full-Stack React App
 
 ```bash
-npx create-js-stack@latest my-app \
+npx createjsstack@latest my-app \
   --frontend react \
   --backend express \
   --database postgresql \
@@ -57,7 +57,7 @@ npx create-js-stack@latest my-app \
 ### Next.js Full-Stack
 
 ```bash
-npx create-js-stack@latest my-app \
+npx createjsstack@latest my-app \
   --frontend nextjs \
   --database postgresql \
   --orm prisma \
@@ -68,7 +68,7 @@ npx create-js-stack@latest my-app \
 ### API Backend Only
 
 ```bash
-npx create-js-stack@latest my-api \
+npx createjsstack@latest my-api \
   --frontend none \
   --backend nestjs \
   --database postgresql \
@@ -122,7 +122,7 @@ npm run build:cli
 npm link
 
 # Test locally
-create-js-stack init test-project
+createjsstack init test-project
 ```
 
 ## 🤝 Contributing
@@ -144,7 +144,7 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 - **Website:** [createjsstack.dev](https://createjsstack.dev)
 - **Documentation:** [createjsstack.dev/docs](https://createjsstack.dev/docs)
 - **GitHub:** [github.com/vipinyadav01/js-stack](https://github.com/vipinyadav01/js-stack)
-- **NPM:** [npmjs.com/package/create-js-stack](https://www.npmjs.com/package/create-js-stack)
+- **NPM:** [npmjs.com/package/createjsstack](https://www.npmjs.com/package/createjsstack)
 
 ---
 

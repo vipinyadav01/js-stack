@@ -22,7 +22,7 @@ export async function GET() {
         },
         sameAs: [
           "https://github.com/vipinyadav01/js-stack",
-          "https://www.npmjs.com/package/create-js-stack",
+          "https://www.npmjs.com/package/createjsstack",
         ],
         contactPoint: {
           "@type": "ContactPoint",
@@ -35,7 +35,7 @@ export async function GET() {
         "@id": `${baseUrl}/#software`,
         name: "JS-Stack CLI",
         alternateName: [
-          "create-js-stack",
+          "createjsstack",
           "js-stack",
           "jsstack",
           "createjs",
@@ -44,8 +44,8 @@ export async function GET() {
         applicationCategory: "DeveloperApplication",
         operatingSystem: ["Windows", "macOS", "Linux"],
         softwareVersion: "1.1.17",
-        downloadUrl: "https://www.npmjs.com/package/create-js-stack",
-        installUrl: "https://www.npmjs.com/package/create-js-stack",
+        downloadUrl: "https://www.npmjs.com/package/createjsstack",
+        installUrl: "https://www.npmjs.com/package/createjsstack",
         license: "https://opensource.org/licenses/MIT",
         programmingLanguage: ["JavaScript", "TypeScript"],
         offers: {
@@ -68,9 +68,9 @@ export async function GET() {
         "@id": `${baseUrl}/#website`,
         url: baseUrl,
         name: "JS-Stack CLI",
-        alternateName: ["js-stack", "jsstack", "create-js-stack", "createjs"],
+        alternateName: ["js-stack", "jsstack", "createjsstack", "createjs"],
         description:
-          "JS-Stack CLI (create-js-stack) - A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack applications. Create JS projects instantly.",
+          "JS-Stack CLI (createjsstack) - A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack applications. Create JS projects instantly.",
         publisher: {
           "@id": `${baseUrl}/#organization`,
         },

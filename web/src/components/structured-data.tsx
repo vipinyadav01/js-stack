@@ -54,8 +54,8 @@ export function StructuredData({
         applicationCategory: "DeveloperApplication",
         operatingSystem: ["Windows", "macOS", "Linux"],
         softwareVersion: "1.0.10",
-        downloadUrl: "https://www.npmjs.com/package/create-js-stack",
-        installUrl: "https://www.npmjs.com/package/create-js-stack",
+        downloadUrl: "https://www.npmjs.com/package/createjsstack",
+        installUrl: "https://www.npmjs.com/package/createjsstack",
         license: "https://opensource.org/licenses/MIT",
         programmingLanguage: ["JavaScript", "TypeScript"],
         offers: {
@@ -102,7 +102,7 @@ export function StructuredData({
         },
         sameAs: [
           "https://github.com/vipinyadav01/js-stack",
-          "https://www.npmjs.com/package/create-js-stack",
+          "https://www.npmjs.com/package/createjsstack",
         ],
       };
     }
@@ -121,7 +121,7 @@ export function StructuredData({
         },
         mainEntity: {
           "@type": "SoftwareApplication",
-          name: "create-js-stack",
+          name: "createjsstack",
           alternateName: [
             "js-stack",
             "jsstack",
@@ -131,7 +131,7 @@ export function StructuredData({
           ],
           applicationCategory: "DeveloperApplication",
           operatingSystem: ["Windows", "macOS", "Linux"],
-          downloadUrl: "https://www.npmjs.com/package/create-js-stack",
+          downloadUrl: "https://www.npmjs.com/package/createjsstack",
         },
       };
     }

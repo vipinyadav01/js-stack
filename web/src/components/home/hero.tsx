@@ -81,12 +81,12 @@ export default function Hero() {
             </div>
             <div className="rounded-md border border-border bg-muted/30 px-3 py-2">
               <a
-                href="https://www.npmjs.com/package/create-js-stack"
+                href="https://www.npmjs.com/package/createjsstack"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-foreground font-mono font-medium text-sm hover:text-primary transition-colors cursor-pointer"
               >
-                create-js-stack
+                createjsstack
               </a>
             </div>
           </div>

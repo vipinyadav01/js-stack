@@ -1,5 +1,5 @@
 {
-  "name": "create-js-stack",
+  "name": "createjsstack",
   "version": "1.2.16",
   "description": "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
   "type": "module",
@@ -9,7 +9,7 @@
   ],
   "main": "dist/index.mjs",
   "bin": {
-    "create-js-stack": "dist/cli.mjs"
+    "createjsstack": "dist/cli.mjs"
   },
   "files": [
     "dist",

@@ -37,12 +37,12 @@ export function generateSEOMetadata({
     : "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool";
   const fullDescription =
     description ||
-    "Stop configuring, start building. JS-Stack CLI (create-js-stack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.";
+    "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.";
 
   const allKeywords = [
     ...keywords,
     "js-stack",
-    "create-js-stack",
+    "createjsstack",
     "javascript project generator",
     "typescript cli",
     "nextjs starter",
@@ -122,7 +122,7 @@ export function generateSEOMetadata({
 export const homePageMetadata = generateSEOMetadata({
   title: "The Ultimate JavaScript Project Generator",
   description:
-    "Stop configuring, start building. JS-Stack CLI (create-js-stack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.",
+    "Stop configuring, start building. JS-Stack CLI (createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.",
   keywords: [
     "javascript project generator",
     "typescript boilerplate",

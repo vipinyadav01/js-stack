@@ -16,9 +16,9 @@ export default function Command() {
   const [selectedPM, setSelectedPM] = useState<"npm" | "pnpm" | "bun">("npm");
 
   const commands = {
-    npm: "npx create-js-stack@latest my-app --yolo",
-    pnpm: "pnpm create-js-stack@latest my-app --yolo",
-    bun: "bun create-js-stack@latest my-app --yolo",
+    npm: "npx createjsstack@latest my-app --yolo",
+    pnpm: "pnpm createjsstack@latest my-app --yolo",
+    bun: "bun createjsstack@latest my-app --yolo",
   };
 
   const copyCommand = (command: string, packageManager: string) => {

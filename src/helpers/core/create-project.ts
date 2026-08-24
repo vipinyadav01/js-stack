@@ -116,7 +116,7 @@ export async function initializeGit(projectDir: string): Promise<void> {
     await execa("git", ["add", "."], { cwd: projectDir });
     await execa(
       "git",
-      ["commit", "-m", "Initial commit from create-js-stack"],
+      ["commit", "-m", "Initial commit from createjsstack"],
       { cwd: projectDir },
     );
   } catch (error) {

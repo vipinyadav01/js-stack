@@ -18,13 +18,13 @@ cp ../README.md .
 # Create a basic package.json for GitHub display
 cat > package.json << 'EOF'
 {
-  "name": "create-js-stack",
+  "name": "createjsstack",
   "version": "1.0.11",
   "description": "A modern CLI tool for scaffolding JavaScript full-stack projects",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vipinyadav01/create-js-stack.git"
+    "url": "https://github.com/vipinyadav01/createjsstack.git"
   },
   "keywords": ["cli", "javascript", "fullstack", "scaffold", "generator"],
   "author": "vipinyadav01",
@@ -37,7 +37,7 @@ git add .
 git commit -m "Update documentation"
 
 # Add remote and push (replace with your GitHub repo URL)
-git remote add origin https://github.com/vipinyadav01/create-js-stack.git
+git remote add origin https://github.com/vipinyadav01/createjsstack.git
 git push -u origin main
 
 # Clean up
