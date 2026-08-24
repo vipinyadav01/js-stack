@@ -132,7 +132,7 @@ export default async function Image() {
             fontSize: "16px",
           }}
         >
-          <span>js-stack.pages.dev</span>
+          <span>js-stack.vercel.app</span>
         </div>
       </div>
     ),

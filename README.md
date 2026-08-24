@@ -96,14 +96,14 @@ npx create-js-stack@latest my-api \
 
 ## 🌐 Interactive Builder
 
-Visit [js-stack.pages.dev/new](https://js-stack.pages.dev/new) to use our interactive stack builder and generate commands visually.
+Visit [js-stack.vercel.app/new](https://js-stack.vercel.app/new) to use our interactive stack builder and generate commands visually.
 
 ## 📚 Documentation
 
-- **Getting Started:** [js-stack.pages.dev/docs/getting-started](https://js-stack.pages.dev/docs/getting-started)
-- **Technologies:** [js-stack.pages.dev/docs/technologies](https://js-stack.pages.dev/docs/technologies)
-- **Commands:** [js-stack.pages.dev/docs/commands](https://js-stack.pages.dev/docs/commands)
-- **Examples:** [js-stack.pages.dev/docs/examples](https://js-stack.pages.dev/docs/examples)
+- **Getting Started:** [js-stack.vercel.app/docs/getting-started](https://js-stack.vercel.app/docs/getting-started)
+- **Technologies:** [js-stack.vercel.app/docs/technologies](https://js-stack.vercel.app/docs/technologies)
+- **Commands:** [js-stack.vercel.app/docs/commands](https://js-stack.vercel.app/docs/commands)
+- **Examples:** [js-stack.vercel.app/docs/examples](https://js-stack.vercel.app/docs/examples)
 
 ## 🛠️ Development
 
@@ -141,8 +141,8 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🔗 Links
 
-- **Website:** [js-stack.pages.dev](https://js-stack.pages.dev)
-- **Documentation:** [js-stack.pages.dev/docs](https://js-stack.pages.dev/docs)
+- **Website:** [js-stack.vercel.app](https://js-stack.vercel.app)
+- **Documentation:** [js-stack.vercel.app/docs](https://js-stack.vercel.app/docs)
 - **GitHub:** [github.com/vipinyadav01/js-stack](https://github.com/vipinyadav01/js-stack)
 - **NPM:** [npmjs.com/package/create-js-stack](https://www.npmjs.com/package/create-js-stack)
 
@@ -152,6 +152,6 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 **Built with ❤️ by [Vipin Yadav](https://vipinyadav01.vercel.app)**
 
-[Website](https://js-stack.pages.dev) • [Documentation](https://js-stack.pages.dev/docs) • [GitHub](https://github.com/vipinyadav01/js-stack)
+[Website](https://js-stack.vercel.app) • [Documentation](https://js-stack.vercel.app/docs) • [GitHub](https://github.com/vipinyadav01/js-stack)
 
 </div>

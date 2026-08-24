@@ -1,12 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export", // Required for Cloudflare Pages deployment - generates 'out' directory
   trailingSlash: true,
-  images: {
-    unoptimized: true,
-    formats: ["image/webp", "image/avif"],
-  },
   eslint: {
     ignoreDuringBuilds: false,
   },
