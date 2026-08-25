@@ -6,10 +6,11 @@ import Footer from "./Footer";
 export function ConditionalFooter() {
   const pathname = usePathname();
 
-  // Hide footer on builder page (/new)
-  const isBuilderPage = pathname.startsWith("/new");
+  // Hide footer on builder page (/new) and docs pages (/docs)
+  const isHiddenPage =
+    pathname.startsWith("/new") || pathname.startsWith("/docs");
 
-  if (isBuilderPage) {
+  if (isHiddenPage) {
     return null;
   }
 

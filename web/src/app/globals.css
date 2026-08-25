@@ -7,6 +7,16 @@
 @import "fumadocs-ui/css/preset.css";
 @source "../../node_modules/fumadocs-ui/dist/**/*.js";
 
+/* The docs layout is nested under this app's fixed 64px navbar. Tell Fumadocs
+   the header height so its sticky sidebar/TOC sit *below* the navbar instead of
+   behind it, and cap the layout height so it doesn't overflow the viewport.
+   The #id selector outranks Fumadocs' own arbitrary-property utility classes. */
+#nd-docs-layout {
+  --fd-header-height: 0px;
+  --fd-docs-height: calc(100dvh - 4rem);
+  --fd-layout-width: 100%;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
