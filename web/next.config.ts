@@ -44,6 +44,17 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
+  // Serve the Markdown representation of a docs page when `.md` is appended,
+  // for AI agents (maps /docs/<path>.md -> the llms.mdx route handler).
+  async rewrites() {
+    return [
+      {
+        source: "/docs/:path*.md",
+        destination: "/llms.mdx/docs/:path*",
+      },
+    ];
+  },
+
   // Caching & security headers
   async headers() {
     return [
