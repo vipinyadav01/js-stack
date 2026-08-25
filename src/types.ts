@@ -45,6 +45,7 @@ export type Runtime = z.infer<typeof RuntimeSchema>;
 
 // Frontend types (single selection)
 export const FrontendSchema = z.enum([
+  "react",
   "tanstack-router",
   "react-router",
   "tanstack-start",
@@ -171,6 +172,7 @@ export const CLIOptionsSchema = z.object({
   verbose: z.boolean().default(false),
   dryRun: z.boolean().default(false),
   projectName: z.string().optional(),
+  preset: z.string().optional(),
   database: DatabaseSchema.optional(),
   orm: ORMSchema.optional(),
   backend: BackendSchema.optional(),

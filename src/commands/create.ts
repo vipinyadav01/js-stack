@@ -6,6 +6,7 @@ import path from "path";
 import * as p from "@clack/prompts";
 import type { CLIOptions, ProjectConfig } from "../types.js";
 import { DEFAULT_CONFIG } from "../constants.js";
+import { resolvePreset, PRESET_NAMES } from "../presets.js";
 import {
   promptProjectName,
   promptConfiguration,
@@ -85,34 +86,43 @@ export async function createProject(
       conflictStrategy,
     );
 
+    // Resolve preset (if any) into a base configuration. Explicit CLI flags
+    // always override the preset values below.
+    const preset = resolvePreset(options.preset);
+    if (options.preset && !preset) {
+      p.log.error(
+        `Unknown preset "${options.preset}". Available presets: ${PRESET_NAMES.join(", ")}`,
+      );
+      process.exit(1);
+    }
+    const base = { ...DEFAULT_CONFIG, ...(preset || {}) };
+
     // Gather configuration
     let config: Partial<ProjectConfig>;
 
     if (options.yes || options.yolo) {
       // Use defaults but merge with CLI options
       config = {
-        ...DEFAULT_CONFIG,
+        ...base,
         projectName: finalProjectName,
         projectDir: finalProjectDir,
         relativePath,
         // Override with CLI options if provided
-        frontend: options.frontend
-          ? (options.frontend as any)
-          : DEFAULT_CONFIG.frontend,
-        backend: options.backend || DEFAULT_CONFIG.backend,
-        runtime: options.runtime || DEFAULT_CONFIG.runtime,
-        database: options.database || DEFAULT_CONFIG.database,
-        orm: options.orm || DEFAULT_CONFIG.orm,
-        api: options.api || DEFAULT_CONFIG.api,
-        auth: options.auth || DEFAULT_CONFIG.auth,
+        frontend: options.frontend ? (options.frontend as any) : base.frontend,
+        backend: options.backend || base.backend,
+        runtime: options.runtime || base.runtime,
+        database: options.database || base.database,
+        orm: options.orm || base.orm,
+        api: options.api || base.api,
+        auth: options.auth || base.auth,
         addons: options.addons
           ? (parseArray(options.addons) as any)
-          : DEFAULT_CONFIG.addons,
+          : base.addons,
         examples: options.examples ? (parseArray(options.examples) as any) : [],
-        dbSetup: options.dbSetup || DEFAULT_CONFIG.dbSetup,
-        webDeploy: options.webDeploy || DEFAULT_CONFIG.webDeploy,
-        serverDeploy: options.serverDeploy || DEFAULT_CONFIG.serverDeploy,
-        packageManager: options.packageManager || DEFAULT_CONFIG.packageManager,
+        dbSetup: options.dbSetup || base.dbSetup,
+        webDeploy: options.webDeploy || base.webDeploy,
+        serverDeploy: options.serverDeploy || base.serverDeploy,
+        packageManager: options.packageManager || base.packageManager,
         git: options.git !== undefined ? options.git : DEFAULT_CONFIG.git,
         install:
           options.install !== undefined
@@ -134,25 +144,26 @@ export async function createProject(
           projectName: finalProjectName,
           projectDir: finalProjectDir,
           relativePath,
-          frontend: (options.frontend || DEFAULT_CONFIG.frontend) as any,
-          backend: options.backend || DEFAULT_CONFIG.backend,
-          runtime: options.runtime || DEFAULT_CONFIG.runtime,
-          database: options.database || DEFAULT_CONFIG.database,
-          orm: options.orm || DEFAULT_CONFIG.orm,
-          api: options.api || DEFAULT_CONFIG.api,
-          auth: options.auth || DEFAULT_CONFIG.auth,
-          addons: parseArray(options.addons) as any,
+          frontend: (options.frontend || base.frontend) as any,
+          backend: options.backend || base.backend,
+          runtime: options.runtime || base.runtime,
+          database: options.database || base.database,
+          orm: options.orm || base.orm,
+          api: options.api || base.api,
+          auth: options.auth || base.auth,
+          addons: options.addons
+            ? (parseArray(options.addons) as any)
+            : base.addons,
           examples: parseArray(options.examples) as any,
-          dbSetup: options.dbSetup || DEFAULT_CONFIG.dbSetup,
-          webDeploy: options.webDeploy || DEFAULT_CONFIG.webDeploy,
-          serverDeploy: options.serverDeploy || DEFAULT_CONFIG.serverDeploy,
-          packageManager:
-            options.packageManager || DEFAULT_CONFIG.packageManager,
-          git: options.git !== undefined ? options.git : DEFAULT_CONFIG.git,
+          dbSetup: options.dbSetup || base.dbSetup,
+          webDeploy: options.webDeploy || base.webDeploy,
+          serverDeploy: options.serverDeploy || base.serverDeploy,
+          packageManager: options.packageManager || base.packageManager,
+          git: options.git !== undefined ? options.git : base.git,
           install:
             options.install !== undefined
               ? options.install
-              : DEFAULT_CONFIG.install,
+              : base.install,
         };
       } else {
         // Interactive prompts

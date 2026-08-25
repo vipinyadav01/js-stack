@@ -15,51 +15,87 @@ npx @vipinyadav02/createjsstack@latest my-app
 # Quick start with defaults
 npx @vipinyadav02/createjsstack@latest my-app --yes
 
+# Start from a preset
+npx @vipinyadav02/createjsstack@latest my-app --preset mern --yes
+
 # Custom stack
 npx @vipinyadav02/createjsstack@latest my-app \
   --frontend react \
   --backend express \
-  --database postgresql \
-  --orm prisma \
-  --auth jwt \
+  --database mongodb \
+  --orm mongoose \
   --package-manager pnpm \
   --git \
   --install
+```
+
+## 🧠 How It Works
+
+`createjsstack` builds your project by **layering templates** on top of each other,
+one per choice you make:
+
+```
+base  →  frontend  →  backend  →  database/orm  →  auth  →  api  →  addons  →  examples
+```
+
+Each layer contributes its own files. For `package.json`, the layers are **deep-merged**
+(not overwritten), so the dependencies and scripts from every layer are combined into a
+single coherent file. Your project always gets a base (`package.json`, `README.md`,
+`.gitignore`, `LICENSE`) plus everything your selected stack needs.
+
+You can configure the stack in three ways, and they compose left-to-right (later wins):
+
+1. **Presets** — a named bundle of choices (`--preset mern`)
+2. **Individual flags** — override any single choice (`--database postgres`)
+3. **Interactive prompts** — run with no flags for a guided setup
+
+```bash
+# Preset as a base, then override just the database + orm
+npx @vipinyadav02/createjsstack@latest my-app --preset mern --database postgres --orm prisma --yes
+```
+
+## 📦 Presets
+
+| Preset           | Frontend | Backend | Database | ORM      |
+| ---------------- | -------- | ------- | -------- | -------- |
+| `mern`           | react    | express | mongodb  | mongoose |
+| `next-fullstack` | next     | next    | postgres | prisma   |
+| `react-vite`     | react    | —       | —        | —        |
+| `express-api`    | —        | express | postgres | prisma   |
+
+```bash
+# List all presets
+npx @vipinyadav02/createjsstack@latest list
 ```
 
 ## ✨ Features
 
 ### Supported Technologies
 
-**Frontend:** React, Vue, Angular, Svelte, Next.js, Nuxt, React Native  
-**Backend:** Express, Fastify, Koa, Hapi, NestJS  
-**Databases:** PostgreSQL, MySQL, SQLite, MongoDB  
-**ORMs:** Prisma, Sequelize, TypeORM, Mongoose  
-**Auth:** JWT, Passport, Auth0, OAuth, Better Auth  
-**Addons:** Docker, Testing, Biome, Turborepo  
-**Package Managers:** npm, yarn, pnpm, bun
+**Frontend:** react, next, vue, nuxt, svelte, sveltekit, solid, qwik, astro, angular, remix, react-router, tanstack-router, tanstack-start, native-nativewind, native-unistyles  
+**Backend:** express, hono, fastify, nest, koa, elysia, next, convex  
+**Databases:** mongodb, postgres, mysql, sqlite  
+**ORMs:** prisma, drizzle, mongoose, typeorm, mikro-orm  
+**Auth:** better-auth, clerk, next-auth, lucia  
+**API:** trpc, orpc, graphql, rest  
+**Addons:** docker, biome, turborepo, pwa, tauri, vitest, playwright, cypress  
+**Package Managers:** npm, pnpm, bun
 
 ## 📖 Usage Examples
 
-### Full-Stack React App
+### MERN (MongoDB + Express + React)
 
 ```bash
-npx @vipinyadav02/createjsstack@latest my-app \
-  --frontend react \
-  --backend express \
-  --database postgresql \
-  --orm prisma \
-  --auth jwt \
-  --addons docker,testing \
-  --package-manager pnpm
+npx @vipinyadav02/createjsstack@latest my-app --preset mern --yes
 ```
 
 ### Next.js Full-Stack
 
 ```bash
 npx @vipinyadav02/createjsstack@latest my-app \
-  --frontend nextjs \
-  --database postgresql \
+  --frontend next \
+  --backend next \
+  --database postgres \
   --orm prisma \
   --auth better-auth \
   --package-manager pnpm
@@ -70,29 +106,32 @@ npx @vipinyadav02/createjsstack@latest my-app \
 ```bash
 npx @vipinyadav02/createjsstack@latest my-api \
   --frontend none \
-  --backend nestjs \
-  --database postgresql \
+  --backend nest \
+  --database postgres \
   --orm typeorm \
-  --auth jwt \
-  --addons docker,testing
+  --addons docker
 ```
 
 ## 📋 CLI Options
 
-| Option              | Description                | Values                                                                |
-| ------------------- | -------------------------- | --------------------------------------------------------------------- |
-| `--frontend`        | Frontend framework(s)      | `react`, `vue`, `angular`, `svelte`, `nextjs`, `nuxt`, `react-native` |
-| `--backend`         | Backend framework          | `express`, `fastify`, `koa`, `hapi`, `nestjs`, `none`                 |
-| `--database`        | Database system            | `postgresql`, `mysql`, `sqlite`, `mongodb`, `none`                    |
-| `--orm`             | ORM/ODM                    | `prisma`, `sequelize`, `typeorm`, `mongoose`, `none`                  |
-| `--auth`            | Authentication             | `jwt`, `passport`, `auth0`, `oauth`, `better-auth`, `none`            |
-| `--addons`          | Additional tools           | `docker`, `testing`, `biome`, `turborepo`                             |
-| `--package-manager` | Package manager            | `npm`, `yarn`, `pnpm`, `bun`                                          |
-| `--git`             | Initialize git repository  | Flag                                                                  |
-| `--install`         | Install dependencies       | Flag                                                                  |
-| `--yes`             | Use defaults (quick start) | Flag                                                                  |
+| Option              | Description                | Values                                                                          |
+| ------------------- | -------------------------- | ------------------------------------------------------------------------------- |
+| `--preset`          | Start from a preset        | `mern`, `next-fullstack`, `react-vite`, `express-api`                            |
+| `--frontend`        | Frontend framework         | `react`, `next`, `vue`, `nuxt`, `svelte`, `angular`, `solid`, `astro`, … `none` |
+| `--backend`         | Backend framework          | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `none`  |
+| `--database`        | Database system            | `mongodb`, `postgres`, `mysql`, `sqlite`, `none`                                 |
+| `--orm`             | ORM/ODM                    | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `none`                  |
+| `--auth`            | Authentication             | `better-auth`, `clerk`, `next-auth`, `lucia`, `none`                             |
+| `--api`             | API style                  | `trpc`, `orpc`, `graphql`, `rest`, `none`                                        |
+| `--runtime`         | Runtime environment        | `node`, `bun`, `deno`, `workers`                                                 |
+| `--addons`          | Additional tools (CSV)     | `docker`, `biome`, `turborepo`, `pwa`, `tauri`, `vitest`, `playwright`           |
+| `--package-manager` | Package manager            | `npm`, `pnpm`, `bun`                                                             |
+| `--git` / `--no-git`         | Initialize git repository  | Flag                                                                   |
+| `--install` / `--no-install` | Install dependencies       | Flag                                                                   |
+| `--yes`             | Use defaults (skip prompts) | Flag                                                                            |
 
 > **Note:** Project name is always customizable, even with `--yes` flag.
+> Run `npx @vipinyadav02/createjsstack@latest create --help` for the full option list.
 
 ## 🌐 Interactive Builder
 
@@ -122,7 +161,7 @@ npm run build:cli
 npm link
 
 # Test locally
-@vipinyadav02/createjsstack init test-project
+createjsstack create test-project --preset mern --yes
 ```
 
 ## 🤝 Contributing

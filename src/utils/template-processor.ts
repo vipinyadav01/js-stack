@@ -29,10 +29,13 @@ function registerHelpers() {
     return a || b;
   });
 
-  // Array includes
-  Handlebars.registerHelper("includes", function (array, value) {
-    if (!Array.isArray(array)) return false;
-    return array.includes(value);
+  // Membership check that works for both arrays (e.g. addons) and single-select
+  // string fields (e.g. frontend/backend), where substring matching lets a base
+  // template treat "react" as present for "react", "react-router", etc.
+  Handlebars.registerHelper("includes", function (collection, value) {
+    if (Array.isArray(collection)) return collection.includes(value);
+    if (typeof collection === "string") return collection.includes(value);
+    return false;
   });
 
   // String concatenation
@@ -45,10 +48,27 @@ function registerHelpers() {
   Handlebars.registerHelper("default", function (value, defaultValue) {
     return value != null ? value : defaultValue;
   });
+
+  // Current year (used by scaffolded LICENSE files, etc.)
+  Handlebars.registerHelper("currentYear", function () {
+    return new Date().getFullYear();
+  });
 }
 
 // Initialize helpers on module load
 registerHelpers();
+
+/**
+ * Render a Handlebars template file to a string.
+ */
+async function renderTemplateToString(
+  srcPath: string,
+  context: Record<string, unknown>,
+): Promise<string> {
+  const templateContent = await fs.readFile(srcPath, "utf-8");
+  const template = Handlebars.compile(templateContent);
+  return template(context);
+}
 
 /**
  * Process a single template file with Handlebars
@@ -61,14 +81,8 @@ export function processTemplate(
 ): Promise<void> {
   return new Promise(async (resolve, reject) => {
     try {
-      // Read template content
-      const templateContent = await fs.readFile(srcPath, "utf-8");
-
-      // Compile template
-      const template = Handlebars.compile(templateContent);
-
-      // Render with context
-      const rendered = template(context);
+      // Render template with context
+      const rendered = await renderTemplateToString(srcPath, context);
 
       // Ensure destination directory exists
       await fs.ensureDir(path.dirname(destPath));
@@ -85,6 +99,114 @@ export function processTemplate(
       );
     }
   });
+}
+
+/**
+ * Parse JSON that may contain trailing commas (Handlebars conditional blocks in
+ * the template package.json commonly leave a dangling comma before a closing
+ * brace/bracket, which is invalid strict JSON).
+ */
+function parseLooseJson(content: string): Record<string, unknown> {
+  const cleaned = content.replace(/,(\s*[}\]])/g, "$1");
+  return JSON.parse(cleaned) as Record<string, unknown>;
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value)
+  );
+}
+
+function sortObjectKeys(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
+  return Object.keys(obj)
+    .sort()
+    .reduce<Record<string, unknown>>((acc, key) => {
+      acc[key] = obj[key];
+      return acc;
+    }, {});
+}
+
+/**
+ * Deep-merge two package.json objects. `incoming` (a later template layer) wins
+ * on scalar conflicts, but `name`/`version` from the base layer are preserved,
+ * and object maps (dependencies, devDependencies, scripts, …) are merged rather
+ * than replaced. Dependency maps are alphabetically sorted for stable output.
+ */
+export function mergePackageJson(
+  base: Record<string, unknown>,
+  incoming: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...base };
+  const depKeys = new Set([
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+  ]);
+
+  for (const [key, value] of Object.entries(incoming)) {
+    // Preserve the project's identity from the base layer.
+    if (
+      (key === "name" || key === "version") &&
+      out[key] != null &&
+      out[key] !== ""
+    ) {
+      continue;
+    }
+
+    const current = out[key];
+    if (isPlainObject(value) && isPlainObject(current)) {
+      const merged = { ...current, ...value };
+      out[key] = depKeys.has(key) ? sortObjectKeys(merged) : merged;
+    } else if (Array.isArray(value) && Array.isArray(current)) {
+      out[key] = Array.from(new Set([...current, ...value]));
+    } else {
+      out[key] = value;
+    }
+  }
+
+  return out;
+}
+
+/**
+ * Write a package.json to `destPath`, deep-merging with any existing file so
+ * that dependencies from every template layer (base + frontend + backend + db …)
+ * are combined instead of the last layer overwriting the rest.
+ * Falls back to writing the raw content if it can't be parsed as JSON.
+ */
+async function writePackageJson(
+  destPath: string,
+  incomingContent: string,
+): Promise<void> {
+  await fs.ensureDir(path.dirname(destPath));
+
+  let incoming: Record<string, unknown>;
+  try {
+    incoming = parseLooseJson(incomingContent);
+  } catch {
+    // Not parseable — preserve previous behaviour (write raw).
+    await fs.writeFile(destPath, incomingContent, "utf-8");
+    return;
+  }
+
+  if (await fs.pathExists(destPath)) {
+    try {
+      const existing = parseLooseJson(await fs.readFile(destPath, "utf-8"));
+      incoming = mergePackageJson(existing, incoming);
+    } catch {
+      // Existing file unparseable — fall through and write the incoming one.
+    }
+  }
+
+  await fs.writeFile(
+    destPath,
+    `${JSON.stringify(incoming, null, 2)}\n`,
+    "utf-8",
+  );
 }
 
 /**
@@ -198,6 +320,16 @@ export async function processAndCopyFiles(
 
       // Ensure destination directory exists
       await fs.ensureDir(path.dirname(destPath));
+
+      // package.json is merged across template layers instead of overwritten,
+      // so dependencies/scripts from base + frontend + backend + db all combine.
+      if (outputFilename === "package.json") {
+        const incomingContent = isTemplate(srcPath)
+          ? await renderTemplateToString(srcPath, context)
+          : await fs.readFile(srcPath, "utf-8");
+        await writePackageJson(destPath, incomingContent);
+        continue;
+      }
 
       // Handle binary files
       if (isBinary(srcPath)) {

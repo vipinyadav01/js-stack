@@ -3,6 +3,7 @@
  */
 
 import path from "path";
+import { fileURLToPath } from "url";
 import fs from "fs-extra";
 import {
   processAndCopyFiles,
@@ -17,31 +18,37 @@ import type { ProjectConfig } from "../../types.js";
 function tryGetTemplatePath(relativePath: string): string | null {
   const normalizedPath = relativePath
     .replace(/\/nextjs(?=\/|$)/, "/next")
+    .replace(/\/nestjs(?=\/|$)/, "/nest")
     .replace(/\/postgresql(?=\/|$)/, "/postgres");
 
-  const __filename = new URL(import.meta.url).pathname;
-  const normalizedFilename =
-    process.platform === "win32"
-      ? __filename.replace(/^\//, "").replace(/\//g, "\\")
-      : __filename;
+  // Strip a leading "templates/" so the path can be re-rooted consistently,
+  // whether callers pass "templates/base" or just "base".
+  const rel = normalizedPath.replace(/^templates[\\/]/, "");
 
-  const possiblePaths = [
-    path.join(process.cwd(), "templates", normalizedPath),
-    path.join(process.cwd(), normalizedPath),
-    path.join(
-      path.dirname(normalizedFilename),
-      "..",
-      "..",
-      "..",
-      "templates",
-      normalizedPath,
-    ),
-    path.join(path.dirname(normalizedFilename), "..", "..", "..", normalizedPath),
+  // fileURLToPath decodes URL-encoding (e.g. %20 for spaces in the path) and
+  // handles Windows drive paths correctly, unlike new URL(...).pathname.
+  const dir = path.dirname(fileURLToPath(import.meta.url));
+
+  // Candidate roots that may contain a "templates" directory:
+  // - the user's current working directory (running from the repo)
+  // - one level up from a bundled dist/ file (published package layout)
+  // - two/three levels up (running from src/ during development)
+  const roots = [
+    process.cwd(),
+    path.join(dir, ".."),
+    path.join(dir, "..", ".."),
+    path.join(dir, "..", "..", ".."),
   ];
 
-  for (const templatePath of possiblePaths) {
-    if (fs.existsSync(templatePath)) {
-      return templatePath;
+  for (const root of roots) {
+    const candidates = [
+      path.join(root, "templates", rel),
+      path.join(root, rel),
+    ];
+    for (const templatePath of candidates) {
+      if (fs.existsSync(templatePath)) {
+        return templatePath;
+      }
     }
   }
 

@@ -56,6 +56,21 @@ export function generateStackSharingUrl(stack: StackState): string {
 }
 
 /**
+ * Map the builder's internal option keys to the exact values the CLI accepts.
+ * The builder uses some marketing-friendly keys (e.g. "nextjs", "nestjs") that
+ * differ from the CLI's canonical enum values ("next", "nest"), which would make
+ * the generated command fail or silently skip a template.
+ */
+const CLI_VALUE_MAP: Record<string, Record<string, string>> = {
+  frontend: { nextjs: "next" },
+  backend: { nestjs: "nest" },
+};
+
+function toCliValue(category: string, value: string): string {
+  return CLI_VALUE_MAP[category]?.[value] ?? value;
+}
+
+/**
  * Generate the CLI command for the current stack configuration
  */
 export function generateStackCommand(stack: StackState): string {
@@ -67,12 +82,12 @@ export function generateStackCommand(stack: StackState): string {
 
   // Frontend
   if (stack.frontend && stack.frontend !== "none") {
-    parts.push(`--frontend=${stack.frontend}`);
+    parts.push(`--frontend=${toCliValue("frontend", stack.frontend)}`);
   }
 
   // Backend
   if (stack.backend && stack.backend !== "none") {
-    parts.push(`--backend=${stack.backend}`);
+    parts.push(`--backend=${toCliValue("backend", stack.backend)}`);
   }
 
   // Database
