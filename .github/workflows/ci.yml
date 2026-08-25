@@ -121,10 +121,6 @@ jobs:
             - [Documentation](https://github.com/${{ github.repository }})
             - [Web Dashboard](https://createjsstack.dev)
             
-            ### 📋 What's New
-            - Bug fixes and improvements
-            - Updated dependencies
-            - Enhanced CLI experience
           draft: false
           prerelease: false
           generate_release_notes: true
