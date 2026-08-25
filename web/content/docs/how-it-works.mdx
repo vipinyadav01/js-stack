@@ -1,0 +1,60 @@
+---
+title: How It Works
+description: The template-layering model behind every generated project.
+---
+
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+import { Callout } from "fumadocs-ui/components/callout";
+
+createjsstack builds a project by **layering templates**, one per choice you
+make. Each layer contributes its own files:
+
+```
+base → frontend → backend → database/orm → auth → api → addons → examples
+```
+
+## package.json is merged, not overwritten
+
+Every layer can ship a `package.json`. Instead of the last layer winning, the
+files are **deep-merged** — dependencies, devDependencies, and scripts from all
+layers combine into one file, while your project's `name` and `version` are
+preserved.
+
+<Callout title="Example">
+  A <code>mern</code> project ends up with <code>react</code> +{" "}
+  <code>react-dom</code> (frontend), <code>express</code> +{" "}
+  <code>cors</code> + <code>helmet</code> (backend), and{" "}
+  <code>mongoose</code> (ORM) — all in a single, valid{" "}
+  <code>package.json</code>.
+</Callout>
+
+## What a project looks like
+
+<Files>
+  <Folder name="my-app" defaultOpen>
+    <Folder name="src">
+      <File name="index.js" />
+    </Folder>
+    <File name="package.json" />
+    <File name="README.md" />
+    <File name="LICENSE" />
+    <File name=".gitignore" />
+  </Folder>
+</Files>
+
+Every generated project also gets an **MIT `LICENSE`** and a `"license": "MIT"`
+field out of the box.
+
+## Three ways to configure
+
+They compose left to right — later wins:
+
+1. **Presets** — a named bundle (`--preset mern`)
+2. **Flags** — override any single choice (`--database postgres`)
+3. **Prompts** — run with no flags for a guided setup
+
+## Template resolution
+
+Templates are resolved relative to the installed package, so generation works
+from **any directory** — not just the repository root — and paths containing
+spaces are handled correctly.

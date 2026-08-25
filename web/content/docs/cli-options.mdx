@@ -1,0 +1,51 @@
+---
+title: CLI Options
+description: Every flag accepted by the create command.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Run `create --help` for the authoritative list:
+
+```bash
+npx @vipinyadav02/createjsstack@latest create --help
+```
+
+## Options
+
+| Option              | Description          | Values                                                                          |
+| ------------------- | -------------------- | ------------------------------------------------------------------------------- |
+| `--preset`          | Start from a preset  | `mern`, `next-fullstack`, `react-vite`, `express-api`                            |
+| `--frontend`        | Frontend framework   | `react`, `next`, `vue`, `nuxt`, `svelte`, `sveltekit`, `solid`, `qwik`, `astro`, `angular`, `remix`, `react-router`, `tanstack-router`, `tanstack-start`, `none` |
+| `--backend`         | Backend framework    | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `none`  |
+| `--database`        | Database             | `mongodb`, `postgres`, `mysql`, `sqlite`, `none`                                 |
+| `--orm`             | ORM / ODM            | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `none`                  |
+| `--auth`            | Authentication       | `better-auth`, `clerk`, `next-auth`, `lucia`, `none`                             |
+| `--api`             | API style            | `trpc`, `orpc`, `graphql`, `rest`, `none`                                        |
+| `--runtime`         | Runtime              | `node`, `bun`, `deno`, `workers`                                                 |
+| `--addons`          | Extra tools (CSV)    | `docker`, `biome`, `turborepo`, `pwa`, `tauri`, `vitest`, `playwright`, `cypress`|
+| `--package-manager` | Package manager      | `npm`, `pnpm`, `bun`                                                             |
+
+## Flags
+
+| Flag                          | Description                             |
+| ----------------------------- | --------------------------------------- |
+| `--yes`                       | Skip all prompts, use defaults          |
+| `--git` / `--no-git`          | Initialize a git repository             |
+| `--install` / `--no-install`  | Install dependencies after creation     |
+| `--dry-run`                   | Preview files without writing them      |
+| `--verbose`                   | Print the resolved configuration        |
+
+<Callout type="warn" title="Compatibility is checked">
+  Some combinations are validated and auto-fixed (for example, Next.js as a
+  frontend with a conflicting backend). The CLI warns you when it adjusts a
+  choice.
+</Callout>
+
+## Other commands
+
+| Command            | Description                        |
+| ------------------ | ---------------------------------- |
+| `list`             | List all available presets         |
+| `add-preset <name>`| Register a custom preset           |
+| `info`             | Print environment info             |

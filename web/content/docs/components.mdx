@@ -1,0 +1,89 @@
+---
+title: Components
+description: A showcase of the Fumadocs UI components used across these docs.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+import { File, Folder, Files } from "fumadocs-ui/components/files";
+
+These docs are built with **Fumadocs**. This page shows the building blocks you
+can use in any `.mdx` file under `content/docs`.
+
+## Callouts
+
+<Callout title="Info">This is an informational callout.</Callout>
+<Callout type="warn" title="Warning">Careful — this needs attention.</Callout>
+<Callout type="error" title="Error">Something went wrong.</Callout>
+
+## Cards
+
+<Cards>
+  <Card title="Getting Started" href="/docs/getting-started">
+    Create your first project.
+  </Card>
+  <Card title="CLI Options" href="/docs/cli-options">
+    Every available flag.
+  </Card>
+</Cards>
+
+## Tabs
+
+<Tabs items={["npm", "pnpm", "bun"]}>
+  <Tab value="npm">
+    ```bash
+    npm install
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm install
+    ```
+  </Tab>
+  <Tab value="bun">
+    ```bash
+    bun install
+    ```
+  </Tab>
+</Tabs>
+
+## Steps
+
+<Steps>
+<Step>Pick a stack.</Step>
+<Step>Generate the project.</Step>
+<Step>Install and run.</Step>
+</Steps>
+
+## Accordions
+
+<Accordions>
+  <Accordion title="Is TypeScript supported?">
+    Yes — TypeScript is the default. Use `--no-typescript` for JavaScript.
+  </Accordion>
+  <Accordion title="Can I use my own package manager?">
+    Yes — pass `--package-manager npm | pnpm | bun`.
+  </Accordion>
+</Accordions>
+
+## File tree
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <File name="index.ts" />
+  </Folder>
+  <File name="package.json" />
+</Files>
+
+## Code blocks
+
+Syntax highlighting is powered by Shiki:
+
+```ts title="example.ts"
+export function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+```

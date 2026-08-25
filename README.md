@@ -140,9 +140,9 @@ Visit [createjsstack.dev/new](https://createjsstack.dev/new) to use our interact
 ## 📚 Documentation
 
 - **Getting Started:** [createjsstack.dev/docs/getting-started](https://createjsstack.dev/docs/getting-started)
-- **Technologies:** [createjsstack.dev/docs/technologies](https://createjsstack.dev/docs/technologies)
-- **Commands:** [createjsstack.dev/docs/commands](https://createjsstack.dev/docs/commands)
-- **Examples:** [createjsstack.dev/docs/examples](https://createjsstack.dev/docs/examples)
+- **Presets:** [createjsstack.dev/docs/presets](https://createjsstack.dev/docs/presets)
+- **CLI Options:** [createjsstack.dev/docs/cli-options](https://createjsstack.dev/docs/cli-options)
+- **How It Works:** [createjsstack.dev/docs/how-it-works](https://createjsstack.dev/docs/how-it-works)
 
 ## 🛠️ Development
 

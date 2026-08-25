@@ -1,0 +1,82 @@
+---
+title: Getting Started
+description: Install and scaffold your first project in under a minute.
+---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+## Requirements
+
+- **Node.js 18+** (Node 20 or 22 recommended)
+- One of **npm**, **pnpm**, or **bun**
+
+## Create a project
+
+<Steps>
+<Step>
+
+### Run the CLI
+
+No install needed — run it directly with your package manager.
+
+<Tabs items={["npm", "pnpm", "bun"]}>
+  <Tab value="npm">
+    ```bash
+    npx @vipinyadav02/createjsstack@latest my-app
+    ```
+  </Tab>
+  <Tab value="pnpm">
+    ```bash
+    pnpm dlx @vipinyadav02/createjsstack@latest my-app
+    ```
+  </Tab>
+  <Tab value="bun">
+    ```bash
+    bunx @vipinyadav02/createjsstack@latest my-app
+    ```
+  </Tab>
+</Tabs>
+
+</Step>
+<Step>
+
+### Pick your stack
+
+Answer the prompts, or skip them entirely with a preset and `--yes`:
+
+```bash
+npx @vipinyadav02/createjsstack@latest my-app --preset mern --yes
+```
+
+</Step>
+<Step>
+
+### Install & run
+
+```bash
+cd my-app
+npm install
+npm run dev
+```
+
+</Step>
+</Steps>
+
+<Callout type="info" title="Non-interactive mode">
+  Pass any combination of flags with `--yes` to skip all prompts — perfect for
+  CI or scripts. See [CLI Options](/docs/cli-options).
+</Callout>
+
+## Custom stack example
+
+```bash
+npx @vipinyadav02/createjsstack@latest my-app \
+  --frontend next \
+  --backend hono \
+  --database postgres \
+  --orm drizzle \
+  --package-manager pnpm \
+  --yes
+```

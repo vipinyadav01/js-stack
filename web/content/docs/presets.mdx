@@ -1,0 +1,45 @@
+---
+title: Presets
+description: Named stack bundles you can start from and override.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+A **preset** is a named bundle of choices applied as a base layer. Explicit
+flags always override preset values, so you can start from a preset and tweak.
+
+```bash
+npx @vipinyadav02/createjsstack@latest my-app --preset mern --yes
+```
+
+## Available presets
+
+| Preset           | Frontend | Backend | Database | ORM      |
+| ---------------- | -------- | ------- | -------- | -------- |
+| `mern`           | react    | express | mongodb  | mongoose |
+| `next-fullstack` | next     | next    | postgres | prisma   |
+| `react-vite`     | react    | —       | —        | —        |
+| `express-api`    | —        | express | postgres | prisma   |
+
+<Callout title="List them from the CLI">
+  Run <code>npx @vipinyadav02/createjsstack@latest list</code> to print every
+  preset.
+</Callout>
+
+## Override a preset
+
+The preset sets the base; flags win on top:
+
+```bash
+# MERN, but swap MongoDB for Postgres + Prisma
+npx @vipinyadav02/createjsstack@latest my-app \
+  --preset mern \
+  --database postgres \
+  --orm prisma \
+  --yes
+```
+
+## Unknown presets
+
+If you pass a name that isn't a preset, the CLI stops and lists the valid ones
+instead of generating a broken project.
