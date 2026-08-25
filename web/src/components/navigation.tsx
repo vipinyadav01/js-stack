@@ -18,6 +18,7 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
+  { text: "Docs", url: "/docs" },
   { text: "Features", url: "/features" },
   { text: "Stack Builder", url: "/new", badge: "Interactive" },
   { text: "Analytics", url: "/analytics" },
