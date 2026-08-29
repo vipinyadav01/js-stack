@@ -38,14 +38,17 @@ export async function GET() {
           "@vipinyadav02/createjsstack",
           "js-stack",
           "jsstack",
-          "createjs",
           "create jsstack",
         ],
+        description:
+          "A powerful CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications. Supports React, Next.js, Vue, Svelte, Express, Hono, Nest, Prisma, Drizzle, and more.",
         applicationCategory: "DeveloperApplication",
         operatingSystem: ["Windows", "macOS", "Linux"],
-        softwareVersion: "1.1.17",
-        downloadUrl: "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
-        installUrl: "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
+        softwareVersion: "1.2.17",
+        downloadUrl:
+          "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
+        installUrl:
+          "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
         license: "https://opensource.org/licenses/MIT",
         programmingLanguage: ["JavaScript", "TypeScript"],
         offers: {
@@ -68,20 +71,18 @@ export async function GET() {
         "@id": `${baseUrl}/#website`,
         url: baseUrl,
         name: "JS-Stack CLI",
-        alternateName: ["js-stack", "jsstack", "@vipinyadav02/createjsstack", "createjs"],
+        alternateName: [
+          "js-stack",
+          "jsstack",
+          "@vipinyadav02/createjsstack",
+          "create jsstack",
+        ],
         description:
-          "JS-Stack CLI (@vipinyadav02/createjsstack) - A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack applications. Create JS projects instantly.",
+          "JS-Stack CLI (@vipinyadav02/createjsstack) — scaffold production-ready JavaScript full-stack applications instantly with presets, composable templates, and deep-merge layering.",
         publisher: {
           "@id": `${baseUrl}/#organization`,
         },
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${baseUrl}/search?q={search_term_string}`,
-          },
-          "query-input": "required name=search_term_string",
-        },
+        inLanguage: "en-US",
       },
     ],
   };

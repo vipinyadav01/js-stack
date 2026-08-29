@@ -1,16 +1,14 @@
-"use client";
-
 interface StructuredDataProps {
   type?: "website" | "software" | "article" | "organization";
   data?: Record<string, unknown>;
 }
 
+const baseUrl = "https://createjsstack.dev";
+
 export function StructuredData({
   type = "website",
   data = {},
 }: StructuredDataProps) {
-  const baseUrl = "https://createjsstack.dev";
-
   const getStructuredData = () => {
     const baseData = {
       "@context": "https://schema.org",
@@ -32,7 +30,6 @@ export function StructuredData({
         url: "https://github.com/vipinyadav01",
         sameAs: [
           "https://github.com/vipinyadav01",
-          "https://vipinyadav01.vercel.app",
         ],
       },
       publisher: {
@@ -53,9 +50,11 @@ export function StructuredData({
         "@type": "SoftwareApplication",
         applicationCategory: "DeveloperApplication",
         operatingSystem: ["Windows", "macOS", "Linux"],
-        softwareVersion: "1.0.10",
-        downloadUrl: "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
-        installUrl: "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
+        softwareVersion: "1.2.17",
+        downloadUrl:
+          "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
+        installUrl:
+          "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
         license: "https://opensource.org/licenses/MIT",
         programmingLanguage: ["JavaScript", "TypeScript"],
         offers: {
@@ -64,29 +63,6 @@ export function StructuredData({
           priceCurrency: "USD",
           availability: "https://schema.org/InStock",
         },
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: "4.8",
-          ratingCount: "150",
-          bestRating: "5",
-          worstRating: "1",
-        },
-        review: [
-          {
-            "@type": "Review",
-            author: {
-              "@type": "Person",
-              name: "Developer",
-            },
-            reviewRating: {
-              "@type": "Rating",
-              ratingValue: "5",
-              bestRating: "5",
-            },
-            reviewBody:
-              "Excellent CLI tool for modern JavaScript development. Saves hours of setup time.",
-          },
-        ],
       };
     }
 
@@ -111,27 +87,18 @@ export function StructuredData({
       return {
         ...baseData,
         "@type": "WebSite",
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${baseUrl}/search?q={search_term_string}`,
-          },
-          "query-input": "required name=search_term_string",
-        },
         mainEntity: {
           "@type": "SoftwareApplication",
           name: "@vipinyadav02/createjsstack",
           alternateName: [
             "js-stack",
             "jsstack",
-            "createjs",
             "create jsstack",
-            "@vipinyadav02/createjsstack",
           ],
           applicationCategory: "DeveloperApplication",
           operatingSystem: ["Windows", "macOS", "Linux"],
-          downloadUrl: "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
+          downloadUrl:
+            "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
         },
       };
     }
@@ -145,13 +112,12 @@ export function StructuredData({
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(structuredData, null, 2),
+        __html: JSON.stringify(structuredData),
       }}
     />
   );
 }
 
-// Breadcrumb structured data
 export function BreadcrumbStructuredData({
   items,
 }: {
@@ -172,13 +138,12 @@ export function BreadcrumbStructuredData({
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(breadcrumbData, null, 2),
+        __html: JSON.stringify(breadcrumbData),
       }}
     />
   );
 }
 
-// FAQ structured data
 export function FAQStructuredData({
   faqs,
 }: {
@@ -201,7 +166,7 @@ export function FAQStructuredData({
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(faqData, null, 2),
+        __html: JSON.stringify(faqData),
       }}
     />
   );

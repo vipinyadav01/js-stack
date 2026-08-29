@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
   ).trim();
   const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
-  const now = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+  const now = new Date().toISOString().split("T")[0];
 
   return [
     {
@@ -30,6 +30,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/docs`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/docs/getting-started`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/docs/presets`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/docs/cli-options`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/docs/how-it-works`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/docs/components`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
       url: `${baseUrl}/analytics`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -40,6 +76,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/llms.txt`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.3,
     },
   ];
 }

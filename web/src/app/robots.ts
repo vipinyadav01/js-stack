@@ -19,7 +19,32 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "Googlebot",
         allow: "/",
-        disallow: ["/api/", "/_next/", "/out/"],
+        disallow: ["/api/", "/_next/"],
+      },
+      {
+        userAgent: "GPTBot",
+        allow: ["/", "/docs/", "/llms.txt", "/llms-full.txt"],
+        disallow: ["/api/", "/_next/"],
+      },
+      {
+        userAgent: "ChatGPT-User",
+        allow: ["/", "/docs/", "/llms.txt", "/llms-full.txt"],
+        disallow: ["/api/", "/_next/"],
+      },
+      {
+        userAgent: "anthropic-ai",
+        allow: ["/", "/docs/", "/llms.txt", "/llms-full.txt"],
+        disallow: ["/api/", "/_next/"],
+      },
+      {
+        userAgent: "ClaudeBot",
+        allow: ["/", "/docs/", "/llms.txt", "/llms-full.txt"],
+        disallow: ["/api/", "/_next/"],
+      },
+      {
+        userAgent: "PerplexityBot",
+        allow: ["/", "/docs/", "/llms.txt", "/llms-full.txt"],
+        disallow: ["/api/", "/_next/"],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
