@@ -12,8 +12,9 @@
    behind it, and cap the layout height so it doesn't overflow the viewport.
    The #id selector outranks Fumadocs' own arbitrary-property utility classes. */
 #nd-docs-layout {
+  --fd-banner-height: 4rem;
   --fd-header-height: 0px;
-  --fd-docs-height: calc(100dvh - 4rem);
+  --fd-docs-height: 100dvh;
   --fd-layout-width: 100%;
 }
 

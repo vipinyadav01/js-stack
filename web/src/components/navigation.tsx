@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
-import { Menu, Github, Zap } from "lucide-react";
+import { Menu, Github, Zap, ChevronDown, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import logo from "../Images/logo.png";
@@ -17,8 +17,22 @@ interface NavLink {
   badge?: string;
 }
 
+interface DocRoute {
+  title: string;
+  href: string;
+  description: string;
+}
+
+const DOC_ROUTES: DocRoute[] = [
+  { title: "Introduction", href: "/docs", description: "Overview of JS-Stack CLI" },
+  { title: "Getting Started", href: "/docs/getting-started", description: "Install and scaffold your first project" },
+  { title: "Presets", href: "/docs/presets", description: "Named stack bundles to start from" },
+  { title: "CLI Options", href: "/docs/cli-options", description: "Every flag the create command accepts" },
+  { title: "How It Works", href: "/docs/how-it-works", description: "Template-layering model explained" },
+  { title: "Components", href: "/docs/components", description: "Fumadocs UI component showcase" },
+];
+
 const NAV_LINKS: NavLink[] = [
-  { text: "Docs", url: "/docs" },
   { text: "Features", url: "/features" },
   { text: "Stack Builder", url: "/new", badge: "Interactive" },
   { text: "Analytics", url: "/analytics" },
@@ -29,6 +43,8 @@ export function Navigation() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
+  const [mobileDocsOpen, setMobileDocsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 15);
@@ -97,13 +113,52 @@ export function Navigation() {
               </span>
               <span className="inline-flex items-center gap-1 rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-primary hidden sm:inline-flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                v1.2.16
+                v1.2.17
               </span>
             </div>
           </Link>
 
           {/* Desktop Center Nav */}
           <div className="hidden md:flex items-center gap-1.5 border border-border/50 rounded-full bg-card/40 px-2 py-1 backdrop-blur-sm">
+            {/* Docs Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setDocsOpen(true)}
+              onMouseLeave={() => setDocsOpen(false)}
+            >
+              <Link
+                href="/docs"
+                className={cn(
+                  "relative flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-medium transition-all duration-200 rounded-md hover:text-foreground hover:bg-muted/40",
+                  pathname?.startsWith("/docs")
+                    ? "text-primary font-bold bg-primary/10 border border-primary/20"
+                    : "text-muted-foreground",
+                )}
+              >
+                <BookOpen className="h-3 w-3" />
+                <span>Docs</span>
+                <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", docsOpen && "rotate-180")} />
+              </Link>
+              {docsOpen && (
+                <div className="absolute top-full left-0 mt-1 w-64 rounded-lg border border-border/60 bg-background/95 backdrop-blur-xl shadow-xl shadow-black/10 p-1.5 z-50">
+                  {DOC_ROUTES.map((route) => (
+                    <Link
+                      key={route.href}
+                      href={route.href}
+                      className={cn(
+                        "block rounded-md px-3 py-2 transition-colors hover:bg-muted/60",
+                        pathname === route.href
+                          ? "bg-primary/10 text-primary"
+                          : "text-foreground",
+                      )}
+                    >
+                      <div className="text-xs font-mono font-semibold">{route.title}</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">{route.description}</div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             {NAV_LINKS.map((link) => (
               <NavLinkItem key={link.url} link={link} />
             ))}
@@ -186,6 +241,41 @@ export function Navigation() {
               </SheetTrigger>
               <SheetContent side="top" className="w-full pt-16 px-6 pb-6 bg-background">
                 <div className="flex flex-col gap-2">
+                  {/* Mobile Docs Section */}
+                  <button
+                    onClick={() => setMobileDocsOpen(!mobileDocsOpen)}
+                    className={cn(
+                      "w-full flex items-center justify-between rounded-lg p-3 text-sm font-mono font-medium transition-all duration-200 hover:bg-muted",
+                      pathname?.startsWith("/docs")
+                        ? "text-primary font-bold bg-primary/10 border border-primary/20"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    <span className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" />
+                      Docs
+                    </span>
+                    <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", mobileDocsOpen && "rotate-180")} />
+                  </button>
+                  {mobileDocsOpen && (
+                    <div className="ml-4 flex flex-col gap-1 border-l-2 border-border pl-3">
+                      {DOC_ROUTES.map((route) => (
+                        <Link
+                          key={route.href}
+                          href={route.href}
+                          onClick={() => setMobileOpen(false)}
+                          className={cn(
+                            "rounded-md px-3 py-2 text-sm transition-colors hover:bg-muted/60",
+                            pathname === route.href
+                              ? "text-primary font-semibold"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {route.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                   {NAV_LINKS.map((link) => (
                     <NavLinkItem key={link.url} link={link} mobile />
                   ))}

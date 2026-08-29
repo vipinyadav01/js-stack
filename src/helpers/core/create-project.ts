@@ -2,6 +2,7 @@
  * Project creation orchestration
  */
 
+import path from "path";
 import * as p from "@clack/prompts";
 import fs from "fs-extra";
 import { execa } from "execa";
@@ -19,6 +20,7 @@ import {
   setupDeploymentTemplates,
   setupDbSetupTemplate,
   handleExtras,
+  needsSeparateLayout,
 } from "./template-manager.js";
 import {
   formatWithBiome,
@@ -41,6 +43,47 @@ export async function createProjectStructure(
     // Copy base templates
     spinner.message("Copying base templates...");
     await copyBaseTemplate(config.projectDir, config);
+
+    // When frontend and backend are different frameworks, create a workspace
+    // root so each lives in its own directory with its own package.json.
+    const separate = needsSeparateLayout(config);
+    if (separate) {
+      spinner.message("Setting up workspace layout...");
+      const rootPkgPath = path.join(config.projectDir, "package.json");
+      const rootPkg = (await fs.pathExists(rootPkgPath))
+        ? JSON.parse(await fs.readFile(rootPkgPath, "utf-8"))
+        : {};
+      rootPkg.private = true;
+      rootPkg.workspaces = ["frontend", "backend"];
+
+      // Keep only workspace-level tooling deps at root; framework deps belong
+      // in each workspace's own package.json.
+      const toolingPkgs = new Set([
+        "@biomejs/biome", "husky", "turbo", "vitest",
+        "@playwright/test", "cypress", "workbox-precaching",
+        "@tauri-apps/api", "wrangler",
+      ]);
+      for (const field of ["dependencies", "devDependencies"] as const) {
+        const deps = rootPkg[field] as Record<string, string> | undefined;
+        if (!deps) continue;
+        for (const key of Object.keys(deps)) {
+          if (!toolingPkgs.has(key)) delete deps[key];
+        }
+        if (Object.keys(deps).length === 0) delete rootPkg[field];
+      }
+
+      rootPkg.scripts = {
+        dev: "npm run dev --workspaces --if-present",
+        build: "npm run build --workspaces --if-present",
+        "dev:frontend": "npm run dev -w frontend",
+        "dev:backend": "npm run dev -w backend",
+      };
+      await fs.writeFile(
+        rootPkgPath,
+        `${JSON.stringify(rootPkg, null, 2)}\n`,
+        "utf-8",
+      );
+    }
 
     // Setup frontend
     if (config.frontend && config.frontend !== "none") {

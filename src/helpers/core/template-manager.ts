@@ -62,6 +62,32 @@ function getTemplatePath(relativePath: string): string {
 }
 
 /**
+ * Full-stack frameworks that serve as both frontend and backend in a single
+ * project — no directory separation needed when the user picks one of these
+ * for both roles.
+ */
+const FULLSTACK_FRAMEWORKS = new Set(["next", "nuxt", "remix", "sveltekit"]);
+
+/**
+ * Returns true when the project uses separate frontend and backend frameworks,
+ * which means files should be output into `frontend/` and `backend/` sub-dirs
+ * with a workspace root at the project level.
+ */
+export function needsSeparateLayout(config: ProjectConfig): boolean {
+  const hasFrontend = !!config.frontend && config.frontend !== "none";
+  const hasBackend = !!config.backend && config.backend !== "none";
+  if (!hasFrontend || !hasBackend) return false;
+  if (config.frontend === config.backend) return false;
+  if (
+    FULLSTACK_FRAMEWORKS.has(config.frontend) &&
+    FULLSTACK_FRAMEWORKS.has(config.backend)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+/**
  * Copy base templates
  */
 export async function copyBaseTemplate(
@@ -91,9 +117,12 @@ export async function setupFrontendTemplates(
       path.join(TEMPLATE_PATHS.frontend, frontendFramework),
     );
     if (srcDir && (await fs.pathExists(srcDir))) {
+      const outDir = needsSeparateLayout(context)
+        ? path.join(destDir, "frontend")
+        : destDir;
       await processAndCopyFiles(
         srcDir,
-        destDir,
+        outDir,
         context as Record<string, unknown>,
       );
     }
@@ -115,9 +144,12 @@ export async function setupBackendFramework(
     path.join(TEMPLATE_PATHS.backend, context.backend),
   );
   if (srcDir && (await fs.pathExists(srcDir))) {
+    const outDir = needsSeparateLayout(context)
+      ? path.join(destDir, "backend")
+      : destDir;
     await processAndCopyFiles(
       srcDir,
-      destDir,
+      outDir,
       context as Record<string, unknown>,
     );
   }
@@ -130,6 +162,10 @@ export async function setupDbOrmTemplates(
   destDir: string,
   context: ProjectConfig,
 ): Promise<void> {
+  const outDir = needsSeparateLayout(context)
+    ? path.join(destDir, "backend")
+    : destDir;
+
   if (context.database !== "none") {
     const dbDir = tryGetTemplatePath(
       path.join(TEMPLATE_PATHS.db, context.database),
@@ -137,7 +173,7 @@ export async function setupDbOrmTemplates(
     if (dbDir && (await fs.pathExists(dbDir))) {
       await processAndCopyFiles(
         dbDir,
-        destDir,
+        outDir,
         context as Record<string, unknown>,
       );
     }
@@ -150,7 +186,7 @@ export async function setupDbOrmTemplates(
     if (ormDir && (await fs.pathExists(ormDir))) {
       await processAndCopyFiles(
         ormDir,
-        destDir,
+        outDir,
         context as Record<string, unknown>,
       );
     }
@@ -172,9 +208,12 @@ export async function setupAuthTemplate(
     path.join(TEMPLATE_PATHS.auth, context.auth),
   );
   if (srcDir && (await fs.pathExists(srcDir))) {
+    const outDir = needsSeparateLayout(context)
+      ? path.join(destDir, "backend")
+      : destDir;
     await processAndCopyFiles(
       srcDir,
-      destDir,
+      outDir,
       context as Record<string, unknown>,
     );
   }
@@ -193,9 +232,12 @@ export async function setupAPITemplates(
 
   const srcDir = tryGetTemplatePath(path.join(TEMPLATE_PATHS.api, context.api));
   if (srcDir && (await fs.pathExists(srcDir))) {
+    const outDir = needsSeparateLayout(context)
+      ? path.join(destDir, "backend")
+      : destDir;
     await processAndCopyFiles(
       srcDir,
-      destDir,
+      outDir,
       context as Record<string, unknown>,
     );
   }
