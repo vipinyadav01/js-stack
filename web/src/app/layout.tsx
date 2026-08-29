@@ -6,7 +6,6 @@ import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
-import { StructuredData } from "@/components/structured-data";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { PostHogProvider, PostHogPageView } from "@/providers/posthog-provider";
 
@@ -22,7 +21,7 @@ const geistMono = Geist_Mono({
 
 const resolveMetadataBase = (): URL => {
   const candidate = (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.createjsstack.dev"
   ).trim();
   try {
     // Ensure we have an absolute URL with protocol
@@ -32,11 +31,11 @@ const resolveMetadataBase = (): URL => {
         : `https://${candidate}`;
     return new URL(normalized);
   } catch {
-    return new URL("https://createjsstack.dev");
+    return new URL("https://www.createjsstack.dev");
   }
 };
 const siteUrl = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.createjsstack.dev"
 ).trim();
 const metadataBase = resolveMetadataBase();
 
@@ -110,9 +109,6 @@ export const metadata: Metadata = {
   metadataBase,
   alternates: {
     canonical: "/",
-    languages: {
-      "en-US": "/",
-    },
   },
   robots: {
     index: true,
@@ -187,7 +183,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en-US" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -203,10 +199,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
 
-        {/* Structured Data */}
-        <StructuredData type="website" />
-        <StructuredData type="software" />
-        <StructuredData type="organization" />
+        {/* Structured Data — single source via /schema.json @graph */}
         <link rel="alternate" type="application/ld+json" href="/schema.json" />
       </head>
       <body

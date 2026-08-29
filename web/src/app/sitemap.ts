@@ -1,78 +1,43 @@
 import { MetadataRoute } from "next";
+import { source } from "@/lib/source";
 
 export const dynamic = "force-static";
 export const revalidate = false;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.createjsstack.dev"
   ).trim();
   const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
   const now = new Date().toISOString().split("T")[0];
 
-  return [
+  const staticPages: MetadataRoute.Sitemap = [
     {
-      url: baseUrl,
+      url: `${baseUrl}/`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/new`,
+      url: `${baseUrl}/new/`,
       lastModified: now,
-      changeFrequency: "daily",
+      changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/features`,
+      url: `${baseUrl}/features/`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/docs`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/docs/getting-started`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/docs/presets`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/docs/cli-options`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/docs/how-it-works`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/docs/components`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/analytics`,
+      url: `${baseUrl}/analytics/`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.6,
     },
     {
-      url: `${baseUrl}/sponsors`,
+      url: `${baseUrl}/sponsors/`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
@@ -83,5 +48,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.3,
     },
+    {
+      url: `${baseUrl}/llms-full.txt`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.3,
+    },
   ];
+
+  const docsPages: MetadataRoute.Sitemap = source.getPages().map((page) => {
+    const slug = page.slugs.join("/");
+    const url = slug ? `${baseUrl}/docs/${slug}/` : `${baseUrl}/docs/`;
+    return {
+      url,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: slug ? 0.7 : 0.8,
+    };
+  });
+
+  return [...staticPages, ...docsPages];
 }

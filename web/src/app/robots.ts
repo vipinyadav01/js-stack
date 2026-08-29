@@ -5,7 +5,7 @@ export const revalidate = false;
 
 export default function robots(): MetadataRoute.Robots {
   const siteUrl = (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.createjsstack.dev"
   ).trim();
   const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
 
@@ -14,7 +14,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/_next/", "/out/"],
+        disallow: ["/api/", "/_next/"],
       },
       {
         userAgent: "Googlebot",

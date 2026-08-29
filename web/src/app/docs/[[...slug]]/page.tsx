@@ -8,6 +8,7 @@ import {
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { source } from "@/lib/source";
+import { generateSEOMetadata } from "@/components/seo";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -40,8 +41,16 @@ export async function generateMetadata(props: {
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
-  return {
+  const slugPath = (params.slug ?? []).join("/");
+  const url = slugPath ? `/docs/${slugPath}` : "/docs";
+
+  return generateSEOMetadata({
     title: page.data.title,
     description: page.data.description,
-  };
+    url,
+    keywords: [
+      "js-stack docs",
+      page.data.title.toLowerCase(),
+    ],
+  });
 }

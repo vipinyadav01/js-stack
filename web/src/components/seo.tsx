@@ -28,7 +28,7 @@ export function generateSEOMetadata({
   tags = [],
 }: SEOProps): Metadata {
   const siteUrl = (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://createjsstack.dev"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.createjsstack.dev"
   ).trim();
   const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
   const fullUrl = url ? `${baseUrl}${url}` : baseUrl;
@@ -117,40 +117,6 @@ export function generateSEOMetadata({
     },
   };
 }
-
-// Pre-configured metadata for common pages
-export const homePageMetadata = generateSEOMetadata({
-  title: "The Ultimate JavaScript Project Generator",
-  description:
-    "Stop configuring, start building. JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.",
-  keywords: [
-    "javascript project generator",
-    "typescript boilerplate",
-    "react starter template",
-    "nextjs project setup",
-    "nodejs express generator",
-    "full-stack cli tool",
-    "web development automation",
-    "modern development stack",
-    "project scaffolding",
-    "development productivity",
-  ],
-});
-
-export const docsPageMetadata = generateSEOMetadata({
-  title: "Documentation - Complete Guide",
-  description:
-    "Complete documentation for JS-Stack CLI. Learn how to create, customize, and deploy modern JavaScript and TypeScript full-stack applications.",
-  keywords: [
-    "js-stack documentation",
-    "cli documentation",
-    "javascript tutorial",
-    "typescript guide",
-    "full-stack development guide",
-    "project setup tutorial",
-  ],
-  url: "/docs",
-});
 
 export const featuresPageMetadata = generateSEOMetadata({
   title: "Features - Everything You Need",

@@ -3,7 +3,7 @@ interface StructuredDataProps {
   data?: Record<string, unknown>;
 }
 
-const baseUrl = "https://createjsstack.dev";
+const baseUrl = "https://www.createjsstack.dev";
 
 export function StructuredData({
   type = "website",
