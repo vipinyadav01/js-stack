@@ -68,8 +68,12 @@ export async function createProject(
       finalProjectName = await promptProjectName();
     }
 
-    // Validate project name
-    const nameValidation = validateProjectName(finalProjectName);
+    // If a path was provided, extract the basename for validation/display
+    // but keep the full path for directory resolution
+    const projectBaseName = path.basename(finalProjectName);
+
+    // Validate project name (use basename so paths like /tmp/myapp work)
+    const nameValidation = validateProjectName(projectBaseName);
     if (!nameValidation.valid) {
       p.log.error(nameValidation.error || "Invalid project name");
       process.exit(1);
@@ -104,7 +108,7 @@ export async function createProject(
       // Use defaults but merge with CLI options
       config = {
         ...base,
-        projectName: finalProjectName,
+        projectName: projectBaseName,
         projectDir: finalProjectDir,
         relativePath,
         // Override with CLI options if provided
@@ -141,7 +145,7 @@ export async function createProject(
       if (hasOptions) {
         // Parse from CLI options
         config = {
-          projectName: finalProjectName,
+          projectName: projectBaseName,
           projectDir: finalProjectDir,
           relativePath,
           frontend: (options.frontend || base.frontend) as any,
@@ -173,7 +177,7 @@ export async function createProject(
         });
 
         config = {
-          projectName: finalProjectName,
+          projectName: projectBaseName,
           projectDir: finalProjectDir,
           relativePath,
           ...promptConfig,
@@ -256,7 +260,7 @@ export async function createProject(
     // Track success
     analytics.track("cli_command_completed", {
       command: "create",
-      project_name: finalProjectName,
+      project_name: projectBaseName,
       duration_ms: duration,
       duration_seconds: Math.round(duration / 1000),
       success: true,
@@ -269,9 +273,9 @@ export async function createProject(
 
     // Display success message
     if (options.dryRun) {
-      p.log.success(`Dry run complete for project ${finalProjectName}!`);
+      p.log.success(`Dry run complete for project ${projectBaseName}!`);
     } else {
-      p.log.success(`Project ${finalProjectName} created successfully!`);
+      p.log.success(`Project ${projectBaseName} created successfully!`);
     }
     console.log();
     p.log.info("Next steps:");

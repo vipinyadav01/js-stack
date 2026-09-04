@@ -97,18 +97,19 @@ export const compatibilityRules = {
   // Database-ORM compatibility (strictly enforced)
   databaseOrm: {
     mongodb: ["mongoose", "none"],
-    postgres: ["prisma", "sequelize", "typeorm", "none"],
-    mysql: ["prisma", "sequelize", "typeorm", "none"],
-    sqlite: ["prisma", "sequelize", "typeorm", "none"],
+    postgres: ["prisma", "drizzle", "typeorm", "mikro-orm", "none"],
+    mysql: ["prisma", "drizzle", "typeorm", "mikro-orm", "none"],
+    sqlite: ["prisma", "drizzle", "typeorm", "mikro-orm", "none"],
     none: ["none"],
   },
 
   // ORM-Database compatibility (reverse lookup)
   ormDatabase: {
     prisma: ["postgres", "mysql", "sqlite"],
+    drizzle: ["postgres", "mysql", "sqlite"],
     mongoose: ["mongodb"],
-    sequelize: ["postgres", "mysql", "sqlite"],
     typeorm: ["postgres", "mysql", "sqlite"],
+    "mikro-orm": ["postgres", "mysql", "sqlite"],
     none: ["none", "postgres", "mysql", "sqlite", "mongodb"],
   },
 
@@ -929,16 +930,25 @@ export function applyCompatibility(state: BuilderState): BuilderState {
   // Frontend-Backend Compatibility Rules
   // ============================================
 
-  // Rule 1: Next.js/Nuxt must use backend: "none" (they have built-in API routes)
-  if (state.frontend === "nextjs" || state.frontend === "nuxt") {
+  // Rule 1: Next.js should use its built-in API routes ("next" backend)
+  // Nuxt uses "none" since it has its own server routes
+  if (state.frontend === "nextjs") {
+    if (state.backend !== "none" && state.backend !== "next") {
+      adjusted.backend = "next";
+    } else if (state.backend === "none") {
+      adjusted.backend = "next";
+    }
+  } else if (state.frontend === "nuxt") {
     if (state.backend !== "none") {
       adjusted.backend = "none";
     }
   }
 
-  // Rule 2: If backend is selected with Next.js/Nuxt, switch frontend to React
+  // Rule 2: If a separate backend is selected with Next.js/Nuxt, switch frontend to React
+  // ("next" backend is Next.js's own API routes, not a separate backend)
   if (
     state.backend !== "none" &&
+    state.backend !== "next" &&
     (state.frontend === "nextjs" || state.frontend === "nuxt")
   ) {
     adjusted.frontend = "react";

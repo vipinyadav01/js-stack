@@ -142,12 +142,26 @@ export function getCategoryDisplayName(category: string): string {
 /**
  * Check if an option is compatible with the current stack
  */
+/**
+ * Derive the effective backend for compatibility checks.
+ * Next.js implicitly uses "next" (its built-in API routes) even when
+ * stack.backend is "none", so database/auth checks should use "next".
+ */
+function getEffectiveBackend(stack: StackState): string {
+  if (stack.frontend === "nextjs" && (!stack.backend || stack.backend === "none")) {
+    return "next";
+  }
+  return stack.backend || "none";
+}
+
 export function isOptionCompatible(
   stack: StackState,
   category: keyof typeof TECH_OPTIONS,
   optionId: string,
 ): boolean {
   if (stack.yolo === "true") return true;
+
+  const effectiveBackend = getEffectiveBackend(stack);
 
   // Addons check
   if (category === "addons") {
@@ -167,7 +181,7 @@ export function isOptionCompatible(
     );
     const isBackendCompatible = isBaseCompatible(
       "backendDatabase",
-      stack.backend || "none",
+      effectiveBackend,
       optionId,
     );
     return isOrmCompatible && isBackendCompatible;
@@ -182,12 +196,9 @@ export function isOptionCompatible(
   if (category === "auth") {
     const isBackendCompatible = isBaseCompatible(
       "backendAuth",
-      stack.backend || "none",
+      effectiveBackend,
       optionId,
     );
-    // Frontend-Auth is usually a warning, but for UI disabling we might want to be strict or lenient.
-    // Based on config.ts, backendAuth is a critical error, while frontendAuth is a warning.
-    // We'll stick to backendAuth for disabling to remain flexible.
     return isBackendCompatible;
   }
 
@@ -227,6 +238,7 @@ export function getDisabledReason(
   }
 
   if (category === "database") {
+    const effectiveBackend = getEffectiveBackend(stack);
     const isOrmCompatible = isBaseCompatible(
       "ormDatabase",
       stack.orm || "none",
@@ -234,14 +246,14 @@ export function getDisabledReason(
     );
     const isBackendCompatible = isBaseCompatible(
       "backendDatabase",
-      stack.backend || "none",
+      effectiveBackend,
       optionId,
     );
 
     if (!isOrmCompatible)
       return `${optionId} is not compatible with the selected ORM (${stack.orm}).`;
     if (!isBackendCompatible)
-      return `${optionId} is not compatible with the selected Backend (${stack.backend}).`;
+      return `${optionId} is not compatible with the selected Backend (${effectiveBackend}).`;
   }
 
   if (category === "orm") {
@@ -249,7 +261,8 @@ export function getDisabledReason(
   }
 
   if (category === "auth") {
-    return `${optionId} is not compatible with the selected Backend (${stack.backend}).`;
+    const effectiveBackend = getEffectiveBackend(stack);
+    return `${optionId} is not compatible with the selected Backend (${effectiveBackend}).`;
   }
 
   if (category === "backend") {
