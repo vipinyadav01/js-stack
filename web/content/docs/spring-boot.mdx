@@ -1,0 +1,152 @@
+---
+title: Spring Boot (Java)
+description: "Generate a Spring Boot 3 backend on Java 21 alongside a React, Next.js or Vue frontend — with Spring Data JPA, MongoDB, Spring Security, REST or GraphQL."
+seoTitle: "Spring Boot + React Full-Stack Starter"
+keywords: "spring boot react starter, react spring boot template, spring boot project generator, java full-stack generator, next.js spring boot, spring boot jpa template, spring security starter, spring boot maven template"
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+JS-Stack generates a **Spring Boot backend in Java** next to a JavaScript
+frontend, so you get a React, Next.js or Vue app talking to a real JVM API from
+one command. The backend is a standard **Maven project** — not an npm package —
+so it builds and runs with the Java tooling you already use.
+
+## Create a React + Spring Boot app
+
+<Steps>
+<Step>
+
+### Generate the project
+
+The `react-springboot` preset gives you React, Spring Boot, PostgreSQL, Spring
+Data JPA and Spring Security in one go:
+
+```bash
+npx @vipinyadav02/createjsstack@latest my-app --preset react-springboot --yes
+```
+
+</Step>
+<Step>
+
+### Start the frontend
+
+```bash
+cd my-app
+npm install
+npm run dev:frontend
+```
+
+</Step>
+<Step>
+
+### Start the Spring Boot API
+
+In a second terminal (needs **JDK 21** and **Maven**):
+
+```bash
+npm run dev:backend
+```
+
+The API runs on `http://localhost:8080`. Check it with
+`curl http://localhost:8080/api/health`.
+
+</Step>
+</Steps>
+
+## Build your own Java stack
+
+Pick each piece with flags instead of the preset:
+
+```bash
+npx @vipinyadav02/createjsstack@latest my-app \
+  --frontend next \
+  --backend springboot \
+  --database mysql \
+  --orm jpa \
+  --auth spring-security \
+  --api rest \
+  --yes
+```
+
+| Option       | Values with `springboot`                                          |
+| ------------ | ----------------------------------------------------------------- |
+| `--frontend` | `react`, `next`, `vue`, `angular`, `svelte`, React Native, `none` |
+| `--database` | `postgres`, `mysql`, `sqlite`, `mongodb`, `none`                  |
+| `--orm`      | `jpa` for relational databases, or `none`                         |
+| `--auth`     | `spring-security` or `none`                                       |
+| `--api`      | `rest` or `graphql`                                               |
+| `--addons`   | `docker` adds a multi-stage JVM `Dockerfile`                      |
+
+tRPC and oRPC are TypeScript-only transports, so they are not offered with a
+Java backend. If you pass a JavaScript-only option, the CLI swaps it for the
+closest Java equivalent and tells you what it changed.
+
+## What gets generated
+
+With a frontend selected, the project is split into an npm workspace and a
+Maven module:
+
+```text
+my-app/
+├── package.json          # npm workspace + dev:backend / build:backend scripts
+├── frontend/             # React, Next.js or Vue
+└── backend/              # Spring Boot (Maven)
+    ├── pom.xml
+    └── src/
+        ├── main/java/com/example/app/
+        │   ├── Application.java
+        │   ├── config/        # CORS, and SecurityConfig with Spring Security
+        │   ├── controller/    # HealthController → /api/health
+        │   ├── todo/          # JPA entity, repository and REST controller
+        │   └── graphql/       # resolvers, when --api graphql
+        ├── main/resources/application.yml
+        └── test/              # context-load test on in-memory H2
+```
+
+Without a frontend, the Spring Boot project sits at the root and no
+`package.json` is written.
+
+- **Spring Boot 3.3** on **Java 21**, with `spring-boot-starter-web` and validation
+- **Spring Data JPA** with a sample `Todo` REST resource at `/api/todos`
+- **Spring Data MongoDB**, wired automatically when you choose `--database mongodb`
+- **Spring Security** — stateless HTTP Basic with no hard-coded credentials
+- **GraphQL** with the GraphiQL explorer at `/graphiql`
+- **CORS** preconfigured for the usual frontend dev ports, overridable with `CORS_ALLOWED_ORIGINS`
+- A test that runs `mvn test` against in-memory H2, so no database is needed to build
+
+## Configure the database
+
+Connection settings come from environment variables with local defaults:
+
+| Variable            | Used for                                 |
+| ------------------- | ---------------------------------------- |
+| `DATABASE_URL`      | JDBC URL for PostgreSQL, MySQL or SQLite |
+| `DATABASE_USERNAME` | Database user (PostgreSQL and MySQL)     |
+| `DATABASE_PASSWORD` | Database password (PostgreSQL and MySQL) |
+| `MONGODB_URI`       | Connection string for MongoDB            |
+| `PORT`              | API port, default `8080`                 |
+
+<Callout type="warn" title="Before you ship">
+  The generated JPA config uses `ddl-auto: update` for fast local development.
+  Switch to Flyway or Liquibase migrations before production, and replace the
+  default Spring Security setup with a real `UserDetailsService`, a JWT decoder
+  or an OAuth2 resource server.
+</Callout>
+
+## Requirements
+
+- **Node.js 18+** for the CLI and the frontend
+- **JDK 21** and **Maven 3.9+** to build and run the Spring Boot backend
+
+With `--install`, the CLI pre-fetches Maven dependencies when `mvn` is on your
+PATH, and tells you what to run when it is not.
+
+<Callout title="Rename the Java package">
+  Generated sources use the `com.example.app` package and `com.example` group
+  ID. Rename both to your own namespace when you start building on them.
+</Callout>
+
+See [CLI Options](/docs/cli-options/) for every flag, and
+[Presets](/docs/presets/) to combine `react-springboot` with your own overrides.

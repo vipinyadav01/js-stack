@@ -77,14 +77,14 @@ export default function VideoTutorials({ limit = 4 }: VideoTutorialsProps) {
       <div>
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap border-b border-border/60 pb-3">
-          <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+          <h2 className="flex flex-wrap items-center gap-2 font-mono text-sm tracking-tight text-foreground">
             <Youtube className="h-4 w-4 text-primary" />
             <span className="font-bold text-primary">VIDEO_TUTORIALS</span>
             <span className="text-muted-foreground">/</span>
             <span className="text-xs text-muted-foreground font-normal">
-              tutorials.mp4
+              Full-stack project setup tutorials
             </span>
-          </div>
+          </h2>
           <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
             [3 LESSONS]
           </span>

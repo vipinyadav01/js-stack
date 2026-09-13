@@ -25,16 +25,16 @@ export default function FAQ({ faqs }: FAQProps) {
       <div>
         {/* Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap border-b border-border/60 pb-3">
-          <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+          <h2 className="flex flex-wrap items-center gap-2 font-mono text-sm tracking-tight text-foreground">
             <HelpCircle className="h-4 w-4 text-primary" />
             <span className="font-bold text-primary">
               FREQUENTLY_ASKED_QUESTIONS
             </span>
             <span className="text-muted-foreground">/</span>
             <span className="text-xs text-muted-foreground font-normal">
-              faq.md
+              JS-Stack CLI questions &amp; answers
             </span>
-          </div>
+          </h2>
           <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
             [HELP & GUIDANCE]
           </span>

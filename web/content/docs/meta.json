@@ -1,11 +1,15 @@
 {
   "title": "Documentation",
+  "description": "Documentation for the js-stack CLI tool. Learn how to create full-stack applications with ease.",
+  "seoTitle": "Full-Stack App CLI Documentation | js-stack",
+  "keywords": "js-stack docs, create-full-stack cli, react nextjs backend, full-stack generator, web development docs",
   "root": true,
   "pages": [
     "index",
     "getting-started",
     "presets",
     "cli-options",
+    "spring-boot",
     "how-it-works",
     "components"
   ]

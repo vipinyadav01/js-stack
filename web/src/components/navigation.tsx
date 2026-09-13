@@ -29,6 +29,7 @@ import {
   Boxes,
   ArrowRight,
   Sparkles,
+  Coffee,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -72,6 +73,12 @@ const DOC_ROUTES: DocRoute[] = [
     href: "/docs/cli-options/",
     description: "Every flag & command parameter",
     icon: Terminal,
+  },
+  {
+    title: "Spring Boot (Java)",
+    href: "/docs/spring-boot/",
+    description: "Java backend with a JS frontend",
+    icon: Coffee,
   },
   {
     title: "How It Works",

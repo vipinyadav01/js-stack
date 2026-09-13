@@ -25,14 +25,14 @@ export default function Command() {
     <div className="w-full space-y-6">
       {/* Section Header */}
       <div className="flex items-center justify-between border-b border-border/60 pb-3">
-        <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+        <h2 className="flex flex-wrap items-center gap-2 font-mono text-sm tracking-tight text-foreground">
           <Terminal className="h-4 w-4 text-primary" />
           <span className="font-bold text-primary">QUICK_START</span>
           <span className="text-muted-foreground">/</span>
           <span className="text-xs text-muted-foreground font-normal">
-            command.sh
+            Create a full-stack app in one command
           </span>
-        </div>
+        </h2>
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="font-mono text-xs text-muted-foreground">

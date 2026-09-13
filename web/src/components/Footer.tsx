@@ -129,7 +129,7 @@ export default function Footer() {
             <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
                 <Link
-                  href="/docs/getting-started"
+                  href="/docs/getting-started/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -138,7 +138,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs/cli-options"
+                  href="/docs/cli-options/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -147,7 +147,16 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs/presets"
+                  href="/docs/spring-boot/"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Spring Boot (Java)</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/docs/presets/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -156,7 +165,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs/how-it-works"
+                  href="/docs/how-it-works/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -165,7 +174,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs/components"
+                  href="/docs/components/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />

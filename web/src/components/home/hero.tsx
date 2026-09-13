@@ -126,12 +126,12 @@ export default function Hero() {
                     <Globe className="h-5 w-5" />
                   </div>
                   <h3 className="font-mono font-bold text-lg text-foreground pt-1">
-                    Run everywhere
+                    React, Next.js &amp; Vue frontends
                   </h3>
                   <p className="text-xs text-muted-foreground leading-relaxed font-sans">
-                    Scaffold frontends across Next.js 15, React 19, Vue 3,
-                    Angular, and Svelte paired with Express, Fastify, Koa, or
-                    NestJS seamlessly.
+                    Scaffold Next.js, React, Vue, Angular, Svelte, Astro or
+                    React Native, paired with Express, Fastify, NestJS, Hono or
+                    Koa.
                   </p>
                 </div>
               </div>
@@ -143,12 +143,12 @@ export default function Hero() {
                     <Cpu className="h-5 w-5" />
                   </div>
                   <h3 className="font-mono font-bold text-lg text-foreground pt-1">
-                    Deploy anywhere
+                    Node.js or Spring Boot backends
                   </h3>
                   <p className="text-xs text-muted-foreground leading-relaxed font-sans">
-                    Pre-configured deployment scripts for Vercel, Cloudflare
-                    Workers, AWS, Docker containers, or self-hosted servers with
-                    zero setup overhead.
+                    Choose a JavaScript backend, or a Java 21 Spring Boot API
+                    generated as a Maven project, serving REST or GraphQL to
+                    your frontend.
                   </p>
                 </div>
               </div>
@@ -160,12 +160,12 @@ export default function Hero() {
                     <ShieldCheck className="h-5 w-5" />
                   </div>
                   <h3 className="font-mono font-bold text-lg text-foreground pt-1">
-                    Run at massive scale
+                    Databases, auth &amp; Docker built in
                   </h3>
                   <p className="text-xs text-muted-foreground leading-relaxed font-sans">
-                    Built-in Prisma, D1, Mongoose, Better Auth, Vitest testing,
-                    and CI/CD pipelines. No more manual boilerplate planning.
-                    Ever.
+                    PostgreSQL, MySQL, SQLite or MongoDB with Prisma, Drizzle or
+                    JPA, plus Better Auth, Clerk or Spring Security, Docker and
+                    Vitest.
                   </p>
                 </div>
               </div>

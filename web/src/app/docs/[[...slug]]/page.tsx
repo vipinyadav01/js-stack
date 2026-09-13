@@ -62,10 +62,16 @@ export async function generateMetadata(props: {
   const slugPath = (params.slug ?? []).join("/");
   const url = slugPath ? `/docs/${slugPath}` : "/docs";
 
+  // Frontmatter `keywords` is a comma-separated string.
+  const pageKeywords = (page.data.keywords ?? "")
+    .split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+
   return generateSEOMetadata({
-    title: page.data.title,
+    title: page.data.seoTitle ?? page.data.title,
     description: page.data.description,
     url,
-    keywords: ["js-stack docs", page.data.title.toLowerCase()],
+    keywords: [...pageKeywords, "js-stack docs"],
   });
 }
