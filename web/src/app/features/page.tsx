@@ -118,7 +118,7 @@ export default function FeaturesPage() {
           
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-mono backdrop-blur-md">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>JS-STACK V1.2.16 // FEATURES & TECH STACK</span>
+            <span>JS-STACK V1.3.0 // FEATURES & TECH STACK</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-mono font-extrabold text-foreground tracking-tight leading-[1.08]">

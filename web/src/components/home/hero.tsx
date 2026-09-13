@@ -50,7 +50,7 @@ export default function Hero() {
             className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 hover:border-primary/60 text-primary text-xs sm:text-sm font-mono tracking-wide backdrop-blur-md transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-primary/10"
           >
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Connect 2026 · JS-Stack CLI v1.2.16 · The Full-Stack Generator</span>
+            <span>Connect 2026 · JS-Stack CLI v1.3.0 · The Full-Stack Generator</span>
             <span className="text-muted-foreground group-hover:text-primary transition-colors">·</span>
             <span className="font-semibold underline underline-offset-4 group-hover:text-foreground transition-colors flex items-center gap-1">
               Start Building <ArrowRight className="h-3.5 w-3.5 inline-block group-hover:translate-x-0.5 transition-transform" />

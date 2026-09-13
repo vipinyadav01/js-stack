@@ -86,7 +86,7 @@ export async function fetchNpmPackageData(
         info: {
           name: packageName,
           description: "Comprehensive scaffold project generator for modern web development",
-          version: "1.2.16",
+          version: "1.3.0",
           versionsCount: 16,
           homepage: "https://github.com/vipinyadav01/js-stack",
           repository: { type: "git", url: "git+https://github.com/vipinyadav01/js-stack.git" },
@@ -96,7 +96,7 @@ export async function fetchNpmPackageData(
     }
 
     const versions = Object.keys(infoData.versions || {});
-    const latest = infoData["dist-tags"]?.latest || "1.2.16";
+    const latest = infoData["dist-tags"]?.latest || "1.3.0";
 
     return {
       package: packageName,
@@ -124,7 +124,7 @@ export async function fetchNpmPackageData(
       info: {
         name: packageName,
         description: "Comprehensive scaffold project generator for modern web development",
-        version: "1.2.16",
+        version: "1.3.0",
         versionsCount: 16,
         homepage: "https://github.com/vipinyadav01/js-stack",
         repository: null,
@@ -184,8 +184,8 @@ export async function fetchGitHubRepoData(
         },
         releases: [
           {
-            tagName: "v1.2.16",
-            name: "v1.2.16 - Modern Full-Stack CLI",
+            tagName: "v1.3.0",
+            name: "v1.3.0 - Modern Full-Stack CLI",
             publishedAt: new Date().toISOString(),
             htmlUrl: `https://github.com/${repoPath}/releases`,
             draft: false,
@@ -231,8 +231,8 @@ export async function fetchGitHubRepoData(
       releases: (Array.isArray(releasesData) ? releasesData : [])
         .slice(0, 5)
         .map((release: Record<string, unknown>) => ({
-          tagName: (release.tag_name as string) || "v1.2.16",
-          name: (release.name as string) || "v1.2.16",
+          tagName: (release.tag_name as string) || "v1.3.0",
+          name: (release.name as string) || "v1.3.0",
           publishedAt: (release.published_at as string) || new Date().toISOString(),
           htmlUrl: (release.html_url as string) || `https://github.com/${repoPath}`,
           draft: (release.draft as boolean) || false,

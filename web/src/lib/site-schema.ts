@@ -52,7 +52,7 @@ export function buildSiteSchema(baseUrl: string = resolveSiteUrl()) {
           "A powerful CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications. Supports React, Next.js, Vue, Svelte, Express, Hono, Nest, Prisma, Drizzle, and more.",
         applicationCategory: "DeveloperApplication",
         operatingSystem: ["Windows", "macOS", "Linux"],
-        softwareVersion: "1.2.17",
+        softwareVersion: "1.3.0",
         downloadUrl: NPM_URL,
         installUrl: NPM_URL,
         license: "https://opensource.org/licenses/MIT",

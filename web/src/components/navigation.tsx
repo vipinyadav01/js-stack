@@ -113,7 +113,7 @@ export function Navigation() {
               </span>
               <span className="inline-flex items-center gap-1 rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-mono font-medium text-primary hidden sm:inline-flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                v1.2.17
+                v1.3.0
               </span>
             </div>
           </Link>

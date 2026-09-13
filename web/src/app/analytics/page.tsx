@@ -335,7 +335,7 @@ export default function AnalyticsPage() {
             <div className="flex flex-col gap-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-mono w-fit mb-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>ANALYTICAL_ENGINE // V1.2.16</span>
+                <span>ANALYTICAL_ENGINE // V1.3.0</span>
               </div>
               <h1 className="text-3xl lg:text-5xl font-mono tracking-tight text-foreground font-bold">
                 Analytics<span className="text-primary">.sh</span>

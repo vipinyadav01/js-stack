@@ -50,7 +50,7 @@ export function StructuredData({
         "@type": "SoftwareApplication",
         applicationCategory: "DeveloperApplication",
         operatingSystem: ["Windows", "macOS", "Linux"],
-        softwareVersion: "1.2.17",
+        softwareVersion: "1.3.0",
         downloadUrl:
           "https://www.npmjs.com/package/@vipinyadav02/createjsstack",
         installUrl:
