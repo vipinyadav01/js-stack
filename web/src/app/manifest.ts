@@ -5,10 +5,10 @@ export const revalidate = false;
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "JS-Stack CLI - JavaScript Project Generator",
+    name: "JS-Stack CLI – Full-Stack Generator for JavaScript & Java",
     short_name: "JS-Stack",
     description:
-      "A powerful CLI to scaffold production-ready JavaScript/TypeScript full‑stack projects with Next.js, React, Node.js, and modern development best practices.",
+      "Scaffold production-ready full-stack apps in JavaScript, TypeScript and Java: React, Next.js or Vue with Express, NestJS or Spring Boot.",
     start_url: "/",
     display: "standalone",
     background_color: "#0b1220",

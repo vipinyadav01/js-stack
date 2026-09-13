@@ -27,7 +27,7 @@ export default function Home() {
     {
       question: "What is JS-Stack CLI?",
       answer:
-        "JS-Stack CLI is a comprehensive command-line tool for scaffolding production-ready JavaScript and TypeScript full-stack applications. It supports React, Next.js, Node.js, Express, databases, authentication, testing, and deployment configurations.",
+        "JS-Stack CLI is a free, open-source command-line tool that scaffolds production-ready full-stack applications in JavaScript, TypeScript and Java. Pick a frontend, backend, database and auth provider, and it generates a working project with dependencies, configuration and Docker already wired up.",
     },
     {
       question: "How do I install JS-Stack CLI?",
@@ -37,7 +37,12 @@ export default function Home() {
     {
       question: "What technologies does JS-Stack support?",
       answer:
-        "JS-Stack supports modern technologies including React, Next.js, Node.js, Express, TypeScript, various databases (PostgreSQL, MongoDB, etc.), authentication systems, testing frameworks (Jest, Cypress), and deployment platforms.",
+        "Frontends: React, Next.js, Vue, Svelte, Angular, Astro and React Native. Backends: Express, Fastify, NestJS, Hono, Koa, Elysia and Spring Boot (Java). Databases: PostgreSQL, MySQL, SQLite and MongoDB, with Prisma, Drizzle, TypeORM, Mongoose or Spring Data JPA. Auth: Better Auth, Clerk, NextAuth or Spring Security.",
+    },
+    {
+      question: "Can JS-Stack generate a Java Spring Boot backend?",
+      answer:
+        "Yes. Pass --backend springboot (or use the react-springboot preset) and JS-Stack generates a Spring Boot 3 service on Java 21 as a separate Maven project, alongside a React, Next.js or Vue frontend. It supports Spring Data JPA on PostgreSQL, MySQL or SQLite, MongoDB, Spring Security, REST and GraphQL. Building it requires JDK 21 and Maven.",
     },
     {
       question: "Is JS-Stack CLI free to use?",

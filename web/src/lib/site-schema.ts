@@ -49,14 +49,26 @@ export function buildSiteSchema(baseUrl: string = resolveSiteUrl()) {
         name: "JS-Stack CLI",
         alternateName: [CLI_PACKAGE, "js-stack", "jsstack", "create jsstack"],
         description:
-          "A powerful CLI tool for scaffolding production-ready JavaScript and TypeScript full-stack applications. Supports React, Next.js, Vue, Svelte, Express, Hono, Nest, Prisma, Drizzle, and more.",
+          "A CLI that scaffolds production-ready full-stack applications in JavaScript, TypeScript and Java. Pairs React, Next.js, Vue or Svelte frontends with Express, NestJS, Hono or Spring Boot backends, plus Prisma, Drizzle or Spring Data JPA, authentication and Docker.",
+        featureList: [
+          "React, Next.js, Vue, Svelte, Angular and Astro frontends",
+          "Express, Fastify, NestJS, Hono, Koa and Elysia backends",
+          "Spring Boot (Java) backend generated as a Maven project",
+          "Prisma, Drizzle, TypeORM, Mongoose and Spring Data JPA",
+          "Better Auth, Clerk, NextAuth and Spring Security",
+          "PostgreSQL, MySQL, SQLite and MongoDB",
+          "Docker, Turborepo, Biome, Vitest and Playwright addons",
+          "Presets including mern, next-fullstack and react-springboot",
+        ],
+        keywords:
+          "full-stack project generator, javascript, typescript, java, spring boot, react, next.js, express, nestjs, prisma, scaffolding cli",
         applicationCategory: "DeveloperApplication",
         operatingSystem: ["Windows", "macOS", "Linux"],
         softwareVersion: "1.3.0",
         downloadUrl: NPM_URL,
         installUrl: NPM_URL,
         license: "https://opensource.org/licenses/MIT",
-        programmingLanguage: ["JavaScript", "TypeScript"],
+        programmingLanguage: ["JavaScript", "TypeScript", "Java"],
         offers: {
           "@type": "Offer",
           price: "0",
@@ -83,7 +95,7 @@ export function buildSiteSchema(baseUrl: string = resolveSiteUrl()) {
           "create-js-stack",
         ],
         description:
-          "JS-Stack CLI (@vipinyadav02/createjsstack) — scaffold production-ready JavaScript full-stack applications instantly with presets, composable templates, and deep-merge layering.",
+          "JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack apps for JavaScript, TypeScript and Java — React, Next.js and Vue frontends with Express, NestJS or Spring Boot backends.",
         publisher: { "@id": `${baseUrl}/#organization` },
         inLanguage: "en-US",
         potentialAction: {

@@ -161,6 +161,15 @@ const TECH_STACK: TechItem[] = [
     description: "Ergonomic Bun web framework with End-to-End type safety",
     icon: "🦊",
   },
+  {
+    name: "Spring Boot",
+    category: "backend",
+    version: "3.3+",
+    description:
+      "Java 21 REST or GraphQL service, generated as a Maven project",
+    icon: "🍃",
+    badge: "Java",
+  },
 
   // Databases
   {
@@ -229,6 +238,14 @@ const TECH_STACK: TechItem[] = [
     icon: "🔵",
   },
 
+  {
+    name: "Spring Data JPA",
+    category: "orm",
+    description:
+      "Hibernate-backed persistence for Spring Boot on Postgres, MySQL, SQLite",
+    icon: "☕",
+  },
+
   // Auth
   {
     name: "Better Auth",
@@ -265,6 +282,13 @@ const TECH_STACK: TechItem[] = [
     description:
       "Custom JSON Web Token authentication with Google & GitHub OAuth",
     icon: "🔑",
+  },
+
+  {
+    name: "Spring Security",
+    category: "auth",
+    description: "Stateless HTTP Basic security for Spring Boot APIs",
+    icon: "🔒",
   },
 
   // Addons
@@ -377,8 +401,9 @@ export default function FeaturesPage() {
           </h1>
 
           <p className="text-base sm:text-xl text-muted-foreground font-sans max-w-2xl mx-auto leading-relaxed">
-            Explore all supported CLI features, frontend frameworks, backend
-            servers, databases, ORMs, and deployment tooling.
+            Explore every stack the CLI can generate — JavaScript and TypeScript
+            frameworks, Spring Boot for Java, databases, ORMs, auth and
+            deployment tooling.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">

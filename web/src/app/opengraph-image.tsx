@@ -3,7 +3,8 @@ import { ImageResponse } from "next/og";
 export const dynamic = "force-static";
 export const revalidate = false;
 
-export const alt = "JS-Stack CLI - Modern Full-Stack Development Tool";
+export const alt =
+  "JS-Stack CLI – full-stack app generator for JavaScript and Java";
 export const size = {
   width: 1200,
   height: 630,
@@ -77,9 +78,8 @@ export default async function Image() {
             maxWidth: "800px",
           }}
         >
-          A powerful, modern CLI tool for scaffolding production-ready
-          JavaScript full-stack projects with extensive customization options
-          and best practices built-in
+          Scaffold production-ready full-stack apps in JavaScript, TypeScript
+          and Java from one command
         </p>
 
         {/* Tech Stack Badges */}
@@ -98,6 +98,7 @@ export default async function Image() {
             "Node.js",
             "TypeScript",
             "Express",
+            "Spring Boot",
             "Prisma",
           ].map((tech) => (
             <div

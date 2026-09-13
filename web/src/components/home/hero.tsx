@@ -67,17 +67,17 @@ export default function Hero() {
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-mono font-extrabold text-foreground tracking-tight leading-[1.08] max-w-4xl">
             Scaffold production-ready{" "}
             <span className="text-primary underline decoration-primary/30 underline-offset-8">
-              full-stack JavaScript apps
+              full-stack apps
             </span>{" "}
-            in seconds
+            in JavaScript &amp; Java
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-xl text-muted-foreground font-sans max-w-3xl leading-relaxed font-normal">
             Everything we learned from generating 1,000+ apps, yours by default.
-            One CLI for your frontends, backends, databases, and authentication
-            — React, Next.js, Vue, Express, Prisma and Docker, without the
-            boilerplate.
+            One CLI for your frontend, backend, database and auth — React,
+            Next.js or Vue with Express, NestJS or Spring Boot, plus Prisma, JPA
+            and Docker, without the boilerplate.
           </p>
 
           {/* CTA Buttons Group */}

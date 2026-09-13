@@ -54,10 +54,10 @@ export function generateSEOMetadata({
 
   const fullTitle = title
     ? `${title} | JS-Stack CLI`
-    : "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool";
+    : "JS-Stack CLI – Full-Stack Generator for JavaScript & Java";
   const fullDescription =
     description ||
-    "Scaffold production-ready JavaScript full-stack apps in seconds. JS-Stack CLI generates React, Next.js, Express, Prisma and Docker projects from one command.";
+    "Generate production-ready full-stack apps in one command: React, Next.js or Vue with Express, NestJS or Spring Boot (Java), plus Prisma, JPA, auth and Docker.";
 
   // The root layout applies `template: "%s | JS-Stack CLI"`, so the page title
   // is passed bare — appending the suffix here as well is what produced
@@ -69,20 +69,15 @@ export function generateSEOMetadata({
     ...keywords,
     "js-stack",
     "@vipinyadav02/createjsstack",
+    "full-stack project generator",
     "javascript project generator",
-    "typescript cli",
-    "nextjs starter",
-    "react boilerplate",
-    "full-stack scaffolding",
-    "nodejs framework",
-    "production-ready template",
-    "monorepo setup",
-    "turborepo",
-    "docker configuration",
-    "ci/cd pipelines",
-    "prisma orm",
-    "shadcn/ui",
-    "tailwind css components",
+    "spring boot project generator",
+    "react spring boot template",
+    "next.js starter",
+    "express generator",
+    "nestjs starter",
+    "full-stack boilerplate",
+    "scaffolding cli",
   ];
 
   return {
@@ -145,11 +140,12 @@ export function generateSEOMetadata({
 }
 
 export const featuresPageMetadata = generateSEOMetadata({
-  title: "Features - Everything You Need",
+  title: "Features: JavaScript & Java Stack Options",
   description:
-    "Explore all the features of JS-Stack CLI: React, Next.js, Node.js, Express, databases, authentication, testing, deployment, and more.",
+    "Every stack JS-Stack CLI can generate: React, Next.js, Vue and Svelte frontends, Express, NestJS, Hono or Spring Boot backends, ORMs, auth and Docker.",
   keywords: [
     "js-stack features",
+    "spring boot backend",
     "cli features",
     "javascript frameworks",
     "typescript support",

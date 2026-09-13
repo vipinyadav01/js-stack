@@ -1,7 +1,7 @@
 {
   "name": "@vipinyadav02/createjsstack",
   "version": "1.3.0",
-  "description": "A powerful, modern CLI tool for scaffolding production-ready JavaScript full-stack projects with extensive customization options and best practices built-in.",
+  "description": "Scaffold production-ready full-stack apps in JavaScript, TypeScript and Java. React, Next.js or Vue with Express, NestJS or Spring Boot, plus Prisma, JPA, auth and Docker.",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -48,13 +48,29 @@
   "keywords": [
     "cli",
     "scaffolding",
-    "javascript",
-    "fullstack",
-    "boilerplate",
     "generator",
+    "create-app",
+    "boilerplate",
+    "starter",
+    "template",
+    "fullstack",
+    "full-stack",
+    "javascript",
+    "typescript",
+    "java",
+    "spring-boot",
     "react",
+    "nextjs",
+    "vue",
     "express",
-    "nodejs"
+    "nestjs",
+    "hono",
+    "prisma",
+    "drizzle",
+    "jpa",
+    "mern",
+    "monorepo",
+    "docker"
   ],
   "author": "Vipin Yadav",
   "license": "MIT",
