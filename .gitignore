@@ -83,3 +83,6 @@ web/out/
 
 # Agent / AI
 .agent/
+
+# Claude Code / claude-flow session artifacts
+.claude-flow/
