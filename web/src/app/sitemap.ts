@@ -15,13 +15,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/`,
       lastModified: now,
-      changeFrequency: "weekly",
+      changeFrequency: "daily",
       priority: 1.0,
     },
     {
       url: `${baseUrl}/new/`,
       lastModified: now,
-      changeFrequency: "weekly",
+      changeFrequency: "daily",
       priority: 0.9,
     },
     {
@@ -33,8 +33,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/analytics/`,
       lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.6,
+      changeFrequency: "daily",
+      priority: 0.7,
     },
     {
       url: `${baseUrl}/sponsors/`,
@@ -42,28 +42,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.5,
     },
-    {
-      url: `${baseUrl}/llms.txt`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/llms-full.txt`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.3,
-    },
   ];
 
   const docsPages: MetadataRoute.Sitemap = source.getPages().map((page) => {
     const slug = page.slugs.join("/");
     const url = slug ? `${baseUrl}/docs/${slug}/` : `${baseUrl}/docs/`;
+    let priority = 0.7;
+    if (!slug || slug === "getting-started" || slug === "cli-options" || slug === "presets") {
+      priority = 0.85;
+    }
     return {
       url,
       lastModified: now,
       changeFrequency: "weekly" as const,
-      priority: slug ? 0.7 : 0.8,
+      priority,
     };
   });
 

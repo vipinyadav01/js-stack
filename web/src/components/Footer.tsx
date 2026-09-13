@@ -36,7 +36,7 @@ export default function Footer() {
 
       {/* Main Container */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 relative z-10 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-border/50">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 pb-12 border-b border-border/50">
           
           {/* Brand Info (Spans 2 cols on lg) */}
           <div className="lg:col-span-2 space-y-5">
@@ -117,6 +117,61 @@ export default function Footer() {
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
                   <span>Sponsors & Backers</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+          {/* Documentation Links. Every docs page is otherwise only reachable
+              via /docs, leaving it two clicks deep; linking here puts it one
+              click from any page on the site. */}
+          <div>
+            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
+              {"// DOCUMENTATION"}
+            </h3>
+            <ul className="space-y-3 font-mono text-xs text-muted-foreground">
+              <li>
+                <Link
+                  href="/docs/getting-started"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Getting Started</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/docs/cli-options"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>CLI Options</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/docs/presets"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Presets</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/docs/how-it-works"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>How It Works</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/docs/components"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Components</span>
                 </Link>
               </li>
             </ul>
