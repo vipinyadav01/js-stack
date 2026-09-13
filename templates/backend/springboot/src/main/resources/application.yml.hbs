@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: {{projectName}}
+{{#if (eq orm "jpa")}}
+  datasource:
+{{#if (eq database "postgres")}}
+    url: {{{springPlaceholder "DATABASE_URL" (concat "jdbc:postgresql://localhost:5432/" (mavenArtifactId projectName))}}}
+    username: {{{springPlaceholder "DATABASE_USERNAME" "postgres"}}}
+    password: {{{springPlaceholder "DATABASE_PASSWORD" "postgres"}}}
+{{/if}}
+{{#if (eq database "mysql")}}
+    url: {{{springPlaceholder "DATABASE_URL" (concat "jdbc:mysql://localhost:3306/" (mavenArtifactId projectName))}}}
+    username: {{{springPlaceholder "DATABASE_USERNAME" "root"}}}
+    password: {{{springPlaceholder "DATABASE_PASSWORD" "root"}}}
+{{/if}}
+{{#if (eq database "sqlite")}}
+    url: {{{springPlaceholder "DATABASE_URL" (concat "jdbc:sqlite:./data/" (mavenArtifactId projectName) ".db")}}}
+    driver-class-name: org.sqlite.JDBC
+{{/if}}
+  jpa:
+{{#if (eq database "sqlite")}}
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+{{/if}}
+    hibernate:
+      # Convenient for local development. Use Flyway or Liquibase before shipping.
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+{{/if}}
+{{#if (eq database "mongodb")}}
+  data:
+    mongodb:
+      uri: {{{springPlaceholder "MONGODB_URI" (concat "mongodb://localhost:27017/" (mavenArtifactId projectName))}}}
+{{/if}}
+{{#if (eq api "graphql")}}
+  graphql:
+    graphiql:
+      # Interactive query explorer at http://localhost:8080/graphiql
+      enabled: true
+{{/if}}
+
+server:
+  port: {{{springPlaceholder "PORT" "8080"}}}
+
+app:
+  cors:
+    # Comma-separated. Defaults cover the usual frontend dev server ports.
+    allowed-origins: {{{springPlaceholder "CORS_ALLOWED_ORIGINS" "http://localhost:3000,http://localhost:5173,http://localhost:4200"}}}
+
+logging:
+  level:
+    com.example.app: INFO

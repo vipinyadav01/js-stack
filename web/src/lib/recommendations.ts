@@ -214,6 +214,27 @@ export const USE_CASE_RECOMMENDATIONS: Record<string, UseCaseRecommendation> = {
     tags: ["experimental", "performance", "cutting-edge"],
     estimatedTime: "3-4 hours",
   },
+
+  "java-backend": {
+    id: "java-backend",
+    name: "React + Java API",
+    description: "JS frontend against an existing JVM stack",
+    recommended: {
+      frontend: "react",
+      backend: "springboot",
+      database: "postgres",
+      orm: "jpa",
+      auth: "spring-security",
+      addons: ["docker"],
+      packageManager: "npm",
+      installDependencies: true,
+      initializeGit: true,
+    },
+    why: "Keeps the API on the JVM your team already runs, with a modern React frontend talking REST to it",
+    difficulty: "Intermediate",
+    tags: ["java", "enterprise", "rest"],
+    estimatedTime: "2-3 hours",
+  },
 };
 
 export const COMPATIBILITY_MATRIX = {
@@ -337,6 +358,12 @@ export const COMPATIBILITY_MATRIX = {
       overhead: "N/A",
       bestFor: "Real-time apps, rapid development",
       tradeoffs: "Vendor lock-in, less control",
+    },
+    springboot: {
+      speed: "comparable to Express once warm (~30k req/s)",
+      overhead: "high (JVM startup and memory)",
+      bestFor: "Existing Java teams, JVM libraries, long-running services",
+      tradeoffs: "Separate toolchain (JDK + Maven), no shared types with the frontend",
     },
   },
 } as const;
@@ -472,7 +499,9 @@ export function getRecommendations(
   if (
     selections.frontend === "nextjs" &&
     selections.backend &&
-    selections.backend !== "none"
+    selections.backend !== "none" &&
+    // A JVM service is a deliberate second tier, not a redundant JS server.
+    selections.backend !== "springboot"
   ) {
     result.warnings.push({
       type: "warning",
@@ -481,6 +510,15 @@ export function getRecommendations(
       severity: "medium",
     });
     result.compatibilityScore -= 5;
+  }
+
+  if (selections.backend === "springboot") {
+    result.warnings.push({
+      type: "warning",
+      message:
+        "Spring Boot is a separate Maven project. Building it needs JDK 21 and Maven, and types are not shared with the frontend.",
+      severity: "low",
+    });
   }
 
   if (selections.backend === "elysia" && selections.packageManager !== "bun") {

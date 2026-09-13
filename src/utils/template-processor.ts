@@ -49,6 +49,32 @@ function registerHelpers() {
     return value != null ? value : defaultValue;
   });
 
+  // Maven artifactId. npm package names allow characters that are invalid in a
+  // Maven coordinate (scopes, slashes, uppercase), so they are stripped here.
+  Handlebars.registerHelper("mavenArtifactId", function (value) {
+    const sanitized = String(value ?? "")
+      .replace(/^@/, "")
+      .replace(/\//g, "-")
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return sanitized || "app";
+  });
+
+  // Spring property placeholder: ${NAME} or ${NAME:default}. Built by a helper
+  // because writing one inline around a Handlebars expression would end the
+  // line in "}}}", which the parser reads as a triple-stash close tag.
+  Handlebars.registerHelper(
+    "springPlaceholder",
+    function (name, defaultValue) {
+      // Handlebars appends its options object, so a call with no default lands
+      // here with an object in defaultValue.
+      const hasDefault =
+        defaultValue !== undefined && typeof defaultValue !== "object";
+      return hasDefault ? `\${${name}:${defaultValue}}` : `\${${name}}`;
+    },
+  );
+
   // Current year (used by scaffolded LICENSE files, etc.)
   Handlebars.registerHelper("currentYear", function () {
     return new Date().getFullYear();
@@ -73,6 +99,9 @@ async function renderTemplateToString(
 /**
  * Process a single template file with Handlebars
  * Handles JSX/TSX extensions: .jsx.hbs → .jsx, .tsx.hbs → .tsx
+ *
+ * A template whose body is entirely conditional can render to nothing — that is
+ * how a layer opts a file out of the generated project, so no file is written.
  */
 export function processTemplate(
   srcPath: string,
@@ -83,6 +112,11 @@ export function processTemplate(
     try {
       // Render template with context
       const rendered = await renderTemplateToString(srcPath, context);
+
+      if (rendered.trim() === "") {
+        resolve();
+        return;
+      }
 
       // Ensure destination directory exists
       await fs.ensureDir(path.dirname(destPath));
@@ -318,8 +352,8 @@ export async function processAndCopyFiles(
       const outputFilename = getOutputFilename(file);
       const destPath = path.join(destDir, path.dirname(file), outputFilename);
 
-      // Ensure destination directory exists
-      await fs.ensureDir(path.dirname(destPath));
+      // Each write path below creates its own parent directory, so no directory
+      // is made here — a template that renders to nothing leaves no empty dir.
 
       // package.json is merged across template layers instead of overwritten,
       // so dependencies/scripts from base + frontend + backend + db all combine.

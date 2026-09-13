@@ -29,11 +29,18 @@ Full-stack JavaScript scaffolding CLI tool with marketing website and interactiv
 ## Supported Technologies
 
 - Frontend: React, Vue, Angular, Svelte, Next.js, Nuxt, React Native
-- Backend: Express, Fastify, Koa, Hapi, NestJS
+- Backend: Express, Fastify, Koa, Hapi, NestJS, Spring Boot (Java)
 - Databases: PostgreSQL, MySQL, SQLite, MongoDB
-- ORMs: Prisma, Sequelize, TypeORM, Mongoose
-- Auth: JWT, Passport, Auth0, OAuth, Better Auth
+- ORMs: Prisma, Sequelize, TypeORM, Mongoose, Spring Data JPA (Java)
+- Auth: JWT, Passport, Auth0, OAuth, Better Auth, Spring Security (Java)
 - Addons: Docker, Testing, Biome, Turborepo
+
+## Java Backend
+
+`--backend=springboot` generates a Maven project, not an npm package. It is kept
+out of the npm workspace, built with Maven, and skips the JS-only template
+layers (ORM, auth, API). `src/utils/java-backend.ts` holds the checks every
+stage branches on; `templates/backend/springboot/` holds the templates.
 
 ## CLI Architecture
 

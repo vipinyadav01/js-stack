@@ -15,12 +15,12 @@ npx @vipinyadav02/createjsstack@latest create --help
 
 | Option              | Description          | Values                                                                          |
 | ------------------- | -------------------- | ------------------------------------------------------------------------------- |
-| `--preset`          | Start from a preset  | `mern`, `next-fullstack`, `react-vite`, `express-api`                            |
+| `--preset`          | Start from a preset  | `mern`, `next-fullstack`, `react-vite`, `express-api`, `react-springboot`         |
 | `--frontend`        | Frontend framework   | `react`, `next`, `vue`, `nuxt`, `svelte`, `sveltekit`, `solid`, `qwik`, `astro`, `angular`, `remix`, `react-router`, `tanstack-router`, `tanstack-start`, `none` |
-| `--backend`         | Backend framework    | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `none`  |
+| `--backend`         | Backend framework    | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `springboot`, `none` |
 | `--database`        | Database             | `mongodb`, `postgres`, `mysql`, `sqlite`, `none`                                 |
-| `--orm`             | ORM / ODM            | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `none`                  |
-| `--auth`            | Authentication       | `better-auth`, `clerk`, `next-auth`, `lucia`, `none`                             |
+| `--orm`             | ORM / ODM            | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `jpa`, `none`            |
+| `--auth`            | Authentication       | `better-auth`, `clerk`, `next-auth`, `lucia`, `spring-security`, `none`           |
 | `--api`             | API style            | `trpc`, `orpc`, `graphql`, `rest`, `none`                                        |
 | `--runtime`         | Runtime              | `node`, `bun`, `deno`, `workers`                                                 |
 | `--addons`          | Extra tools (CSV)    | `docker`, `biome`, `turborepo`, `pwa`, `tauri`, `vitest`, `playwright`, `cypress`|
@@ -40,6 +40,39 @@ npx @vipinyadav02/createjsstack@latest create --help
   Some combinations are validated and auto-fixed (for example, Next.js as a
   frontend with a conflicting backend). The CLI warns you when it adjusts a
   choice.
+</Callout>
+
+## Java backend
+
+`--backend=springboot` generates a Spring Boot service as a **separate Maven
+project** rather than an npm package. With a frontend selected you get a
+`frontend/` workspace and a `backend/` Maven module; without one, the Java
+project sits at the root and no `package.json` is written at all.
+
+Because it runs on the JVM, the JavaScript-only parts of the stack do not apply,
+and the CLI narrows them for you:
+
+| Option      | With `springboot`                                    |
+| ----------- | ---------------------------------------------------- |
+| `--orm`     | `jpa` (relational databases) or `none`               |
+| `--auth`    | `spring-security` or `none`                          |
+| `--api`     | `rest` or `graphql` — tRPC and oRPC cannot cross the language boundary |
+| `--runtime` | `none`                                               |
+
+MongoDB needs no ORM flag: the template wires up Spring Data MongoDB directly.
+
+Building it needs **JDK 21 and Maven**. `--install` pre-fetches the Maven
+dependencies when `mvn` is on your PATH, and tells you what to run when it is
+not. From a generated workspace root:
+
+```bash
+npm run dev:frontend
+npm run dev:backend
+```
+
+<Callout title="The Java package is a starting point">
+  Generated sources live in `com.example.app` with `groupId` `com.example`.
+  Rename both to your own namespace before you build on them.
 </Callout>
 
 ## Other commands

@@ -59,6 +59,23 @@ export const PRESET_TEMPLATES: PresetTemplate[] = [
     },
   },
   {
+    id: "react-springboot",
+    name: "React + Spring Boot",
+    description: "React + Spring Boot (Java) + PostgreSQL + JPA",
+    stack: {
+      projectName: "react-spring-app",
+      frontend: "react",
+      backend: "springboot",
+      database: "postgres",
+      orm: "jpa",
+      auth: "spring-security",
+      addons: ["docker"],
+      packageManager: "npm",
+      git: "true",
+      install: "true",
+    },
+  },
+  {
     id: "monorepo-turbo",
     name: "Turborepo Monorepo",
     description: "Turborepo workspace with Next.js & Express",

@@ -1,0 +1,27 @@
+{{#if (eq api "graphql")}}
+type Query {
+  health: Health!
+{{#if (eq orm "jpa")}}
+  todos: [Todo!]!
+  todo(id: ID!): Todo
+{{/if}}
+}
+
+type Health {
+  status: String!
+  service: String!
+}
+{{#if (eq orm "jpa")}}
+
+type Mutation {
+  addTodo(title: String!): Todo!
+  toggleTodo(id: ID!): Todo
+}
+
+type Todo {
+  id: ID!
+  title: String!
+  completed: Boolean!
+}
+{{/if}}
+{{/if}}

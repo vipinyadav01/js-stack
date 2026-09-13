@@ -59,16 +59,19 @@ program
     "-d, --database <database>",
     "Database (mongodb, postgresql, mysql, sqlite)",
   )
-  .option("--orm <orm>", "ORM (drizzle, prisma, mongoose, typeorm)")
+  .option("--orm <orm>", "ORM (drizzle, prisma, mongoose, typeorm, jpa)")
   .option(
     "--auth <auth>",
-    "Authentication (better-auth, clerk, next-auth, lucia)",
+    "Authentication (better-auth, clerk, next-auth, lucia, spring-security)",
   )
   .option(
     "--frontend <framework>",
     "Frontend framework (react, vue, nextjs, etc.)",
   )
-  .option("--backend <framework>", "Backend framework")
+  .option(
+    "--backend <framework>",
+    "Backend framework (express, fastify, hono, nest, koa, elysia, convex, next, springboot)",
+  )
   .option(
     "--runtime <runtime>",
     "Runtime environment (node, bun, deno, workers)",

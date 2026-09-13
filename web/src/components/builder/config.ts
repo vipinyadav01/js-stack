@@ -26,7 +26,9 @@ export type Backend =
   | "hono"
   | "elysia"
   | "convex"
-  | "next";
+  | "next"
+  // JVM backend, generated as a Maven project alongside the JS frontend
+  | "springboot";
 
 export type Database = "none" | "sqlite" | "postgres" | "mysql" | "mongodb";
 
@@ -36,9 +38,18 @@ export type ORM =
   | "mongoose"
   | "typeorm"
   | "drizzle"
-  | "mikro-orm";
+  | "mikro-orm"
+  // Java only (Spring Data JPA / Hibernate)
+  | "jpa";
 
-export type Auth = "none" | "better-auth" | "clerk" | "lucia" | "next-auth";
+export type Auth =
+  | "none"
+  | "better-auth"
+  | "clerk"
+  | "lucia"
+  | "next-auth"
+  // Java only
+  | "spring-security";
 
 export type Addon =
   | "docker"
@@ -97,9 +108,9 @@ export const compatibilityRules = {
   // Database-ORM compatibility (strictly enforced)
   databaseOrm: {
     mongodb: ["mongoose", "none"],
-    postgres: ["prisma", "drizzle", "typeorm", "mikro-orm", "none"],
-    mysql: ["prisma", "drizzle", "typeorm", "mikro-orm", "none"],
-    sqlite: ["prisma", "drizzle", "typeorm", "mikro-orm", "none"],
+    postgres: ["prisma", "drizzle", "typeorm", "mikro-orm", "jpa", "none"],
+    mysql: ["prisma", "drizzle", "typeorm", "mikro-orm", "jpa", "none"],
+    sqlite: ["prisma", "drizzle", "typeorm", "mikro-orm", "jpa", "none"],
     none: ["none"],
   },
 
@@ -107,6 +118,7 @@ export const compatibilityRules = {
   ormDatabase: {
     prisma: ["postgres", "mysql", "sqlite"],
     drizzle: ["postgres", "mysql", "sqlite"],
+    jpa: ["postgres", "mysql", "sqlite"],
     mongoose: ["mongodb"],
     typeorm: ["postgres", "mysql", "sqlite"],
     "mikro-orm": ["postgres", "mysql", "sqlite"],
@@ -136,20 +148,59 @@ export const compatibilityRules = {
     nestjs: ["better-auth", "lucia", "clerk", "none"],
     convex: ["clerk", "none"],
     next: ["better-auth", "next-auth", "lucia", "clerk", "none"],
+    // The JS auth libraries run inside a JS server; Spring Boot uses Spring Security.
+    springboot: ["spring-security", "none"],
     none: ["better-auth", "clerk", "lucia", "next-auth", "none"],
   },
 
   // Frontend-Backend compatibility (which backends work with which frontends)
   frontendBackend: {
-    nextjs: ["none", "next"], // Built-in API routes
-    nuxt: ["none"], // Built-in server routes
-    react: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "none"],
-    vue: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "none"],
-    angular: ["express", "fastify", "koa", "nestjs", "hono", "none"],
-    svelte: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "none"],
-    "native-nativewind": ["express", "fastify", "nestjs", "convex"],
-    "native-unistyles": ["express", "fastify", "nestjs", "convex"],
-    none: ["express", "fastify", "koa", "nestjs", "hono", "elysia"],
+    // Spring Boot is a separate service rather than a competing JS server, so
+    // it pairs with the meta-frameworks too.
+    nextjs: ["none", "next", "springboot"], // Built-in API routes
+    nuxt: ["none", "springboot"], // Built-in server routes
+    react: [
+      "express",
+      "fastify",
+      "koa",
+      "nestjs",
+      "hono",
+      "elysia",
+      "springboot",
+      "none",
+    ],
+    vue: [
+      "express",
+      "fastify",
+      "koa",
+      "nestjs",
+      "hono",
+      "elysia",
+      "springboot",
+      "none",
+    ],
+    angular: [
+      "express",
+      "fastify",
+      "koa",
+      "nestjs",
+      "hono",
+      "springboot",
+      "none",
+    ],
+    svelte: [
+      "express",
+      "fastify",
+      "koa",
+      "nestjs",
+      "hono",
+      "elysia",
+      "springboot",
+      "none",
+    ],
+    "native-nativewind": ["express", "fastify", "nestjs", "convex", "springboot"],
+    "native-unistyles": ["express", "fastify", "nestjs", "convex", "springboot"],
+    none: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "springboot"],
   },
 
   // Backend-Frontend compatibility (reverse lookup)
@@ -186,6 +237,17 @@ export const compatibilityRules = {
     ],
     convex: ["react", "native-nativewind", "native-unistyles", "none"],
     next: ["nextjs"],
+    springboot: [
+      "react",
+      "vue",
+      "angular",
+      "svelte",
+      "nextjs",
+      "nuxt",
+      "native-nativewind",
+      "native-unistyles",
+      "none",
+    ],
     none: ["nextjs", "nuxt", "react", "vue", "angular", "svelte"],
   },
 
@@ -199,7 +261,24 @@ export const compatibilityRules = {
     nestjs: ["postgres", "mysql", "sqlite", "mongodb", "none"],
     convex: ["none"], // Convex has built-in database
     next: ["postgres", "mysql", "sqlite", "mongodb", "none"],
+    springboot: ["postgres", "mysql", "sqlite", "mongodb", "none"],
     none: ["none"],
+  },
+
+  // Backend-ORM compatibility. The JS ORMs cannot run on the JVM, and Spring
+  // Data JPA cannot run on Node, so the two sets never overlap.
+  backendOrm: {
+    express: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
+    fastify: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
+    koa: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
+    hono: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
+    elysia: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
+    nestjs: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
+    next: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
+    convex: ["none"],
+    // MongoDB is handled by Spring Data MongoDB without an explicit ORM choice.
+    springboot: ["jpa", "none"],
+    none: ["prisma", "drizzle", "mongoose", "typeorm", "mikro-orm", "none"],
   },
 
   // Frontend-Addon compatibility (framework-specific support)
@@ -251,6 +330,7 @@ export type CompatibilityType =
   | "frontendAuth"
   | "backendAuth"
   | "backendDatabase"
+  | "backendOrm"
   | "frontendBackend"
   | "backendFrontend"
   | "frontendAddons";
@@ -530,6 +610,12 @@ export const techCatalog = {
       desc: "Next.js API Routes",
       badge: "Full-Stack",
     },
+    {
+      key: "springboot",
+      name: "Spring Boot",
+      desc: "Java REST service, built with Maven",
+      badge: "Java",
+    },
     { key: "none", name: "None", desc: "Frontend-only application" },
   ],
   database: [
@@ -597,6 +683,12 @@ export const techCatalog = {
     //   desc: "Feature-rich SQL ORM",
     //   badge: "Mature",
     // },
+    {
+      key: "jpa",
+      name: "Spring Data JPA",
+      desc: "Hibernate persistence for Spring Boot",
+      badge: "Java",
+    },
     { key: "none", name: "None", desc: "Direct database queries" },
   ],
   auth: [
@@ -623,6 +715,12 @@ export const techCatalog = {
       name: "NextAuth",
       desc: "Auth for Next.js",
       badge: "Next.js",
+    },
+    {
+      key: "spring-security",
+      name: "Spring Security",
+      desc: "Stateless HTTP Basic for Spring Boot",
+      badge: "Java",
     },
     // Kinde template exists but is empty
     // {
@@ -932,13 +1030,15 @@ export function applyCompatibility(state: BuilderState): BuilderState {
 
   // Rule 1: Next.js should use its built-in API routes ("next" backend)
   // Nuxt uses "none" since it has its own server routes
-  if (state.frontend === "nextjs") {
+  // Spring Boot is a separate service, so it is left in place next to a
+  // meta-framework instead of being replaced by the built-in API routes.
+  if (state.frontend === "nextjs" && state.backend !== "springboot") {
     if (state.backend !== "none" && state.backend !== "next") {
       adjusted.backend = "next";
     } else if (state.backend === "none") {
       adjusted.backend = "next";
     }
-  } else if (state.frontend === "nuxt") {
+  } else if (state.frontend === "nuxt" && state.backend !== "springboot") {
     if (state.backend !== "none") {
       adjusted.backend = "none";
     }
@@ -949,6 +1049,7 @@ export function applyCompatibility(state: BuilderState): BuilderState {
   if (
     state.backend !== "none" &&
     state.backend !== "next" &&
+    state.backend !== "springboot" &&
     (state.frontend === "nextjs" || state.frontend === "nuxt")
   ) {
     adjusted.frontend = "react";
@@ -1015,6 +1116,18 @@ export function applyCompatibility(state: BuilderState): BuilderState {
   // Rule 9: If database is "none", ORM must be "none"
   if (state.database === "none" && state.orm !== "none") {
     adjusted.orm = "none";
+  }
+
+  // Rule 9b: The ORM has to be able to run on the backend's language. Keeps the
+  // JS ORMs off Spring Boot, and Spring Data JPA off the Node backends.
+  if (!isCompatible("backendOrm", state.backend, state.orm)) {
+    const compatibleORMs = getCompatibleOptions<ORM>(
+      "backendOrm",
+      state.backend,
+    ).filter((orm) => isCompatible("databaseOrm", state.database, orm));
+
+    adjusted.orm =
+      compatibleORMs.find((orm) => orm !== "none") ?? ("none" as ORM);
   }
 
   // Rule 10: Check database-ORM compatibility
@@ -1104,7 +1217,8 @@ export function validateConfiguration(state: BuilderState): {
   // Error 2: Next.js/Nuxt cannot have a separate backend
   if (
     (state.frontend === "nextjs" || state.frontend === "nuxt") &&
-    state.backend !== "none"
+    state.backend !== "none" &&
+    state.backend !== "springboot"
   ) {
     errors.push(
       `${state.frontend === "nextjs" ? "Next.js" : "Nuxt"} has built-in API routes and cannot use a separate backend. Please set backend to "none" or switch to a different frontend framework.`,

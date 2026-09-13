@@ -1,0 +1,39 @@
+# Maven
+target/
+pom.xml.versionsBackup
+.mvn/timing.properties
+
+# Compiled classes
+*.class
+
+# Packaging
+*.jar
+*.war
+*.ear
+!.mvn/wrapper/maven-wrapper.jar
+
+# Local database files
+data/
+*.db
+
+# Local env files
+.env
+.env.local
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

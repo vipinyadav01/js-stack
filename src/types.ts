@@ -22,6 +22,8 @@ export const ORMSchema = z.enum([
   "mongoose",
   "typeorm",
   "mikro-orm",
+  // Java only (Spring Data JPA / Hibernate)
+  "jpa",
 ]);
 export type ORM = z.infer<typeof ORMSchema>;
 
@@ -36,6 +38,8 @@ export const BackendSchema = z.enum([
   "next",
   "elysia",
   "convex",
+  // JVM backend: generated as a Maven project, not an npm package
+  "springboot",
 ]);
 export type Backend = z.infer<typeof BackendSchema>;
 
@@ -98,6 +102,8 @@ export const AuthSchema = z.enum([
   "next-auth",
   "lucia",
   "kinde",
+  // Java only
+  "spring-security",
 ]);
 export type Auth = z.infer<typeof AuthSchema>;
 

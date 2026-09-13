@@ -145,6 +145,7 @@ export async function promptConfiguration(options: {
           { value: "koa", label: "Koa" },
           { value: "elysia", label: "Elysia" },
           { value: "convex", label: "Convex" },
+          { value: "springboot", label: "Spring Boot (Java)" },
         ];
 
         if (frontend === "next") {
@@ -158,8 +159,13 @@ export async function promptConfiguration(options: {
           initialValue: "none",
         });
       },
-      runtime: () =>
-        p.select({
+      runtime: ({ results }: { results: any }) => {
+        // Spring Boot runs on the JVM, so there is no JS runtime to choose.
+        if (results.backend === "springboot") {
+          return Promise.resolve("none");
+        }
+
+        return p.select({
           message: "Select runtime:",
           options: [
             { value: "node", label: "Node.js" },
@@ -169,7 +175,8 @@ export async function promptConfiguration(options: {
             { value: "none", label: "None" },
           ],
           initialValue: "node",
-        }),
+        });
+      },
       database: () =>
         p.select({
           message: "Select database:",
@@ -185,6 +192,21 @@ export async function promptConfiguration(options: {
       orm: ({ results }: { results: any }) => {
         const db = results.database;
         const options = [{ value: "none", label: "None" }];
+
+        // A Java backend uses Spring Data, not the JS ORMs. MongoDB is covered
+        // by Spring Data MongoDB, which the template wires up without an
+        // explicit ORM choice.
+        if (results.backend === "springboot") {
+          if (db === "postgres" || db === "mysql" || db === "sqlite") {
+            options.push({ value: "jpa", label: "Spring Data JPA (Hibernate)" });
+          }
+
+          return p.select({
+            message: "Select persistence:",
+            options,
+            initialValue: "none",
+          });
+        }
 
         if (db === "mongodb") {
           options.push(
@@ -217,21 +239,46 @@ export async function promptConfiguration(options: {
           initialValue: "none",
         });
       },
-      api: () =>
-        p.select({
+      api: ({ results }: { results: any }) => {
+        // tRPC and oRPC are TypeScript-to-TypeScript transports and cannot be
+        // served by a Java backend.
+        const options =
+          results.backend === "springboot"
+            ? [
+                { value: "none", label: "None" },
+                { value: "graphql", label: "GraphQL" },
+                { value: "rest", label: "REST" },
+              ]
+            : [
+                { value: "none", label: "None" },
+                { value: "trpc", label: "tRPC" },
+                { value: "orpc", label: "oRPC" },
+                { value: "graphql", label: "GraphQL" },
+                { value: "rest", label: "REST" },
+              ];
+
+        return p.select({
           message: "Select API style:",
-          options: [
-            { value: "none", label: "None" },
-            { value: "trpc", label: "tRPC" },
-            { value: "orpc", label: "oRPC" },
-            { value: "graphql", label: "GraphQL" },
-            { value: "rest", label: "REST" },
-          ],
+          options,
           initialValue: "none",
-        }),
+        });
+      },
       auth: ({ results }: { results: any }) => {
         const frontend = results.frontend as string;
         const backend = results.backend as string;
+
+        // The JS auth libraries run inside a JS server; a Java backend secures
+        // itself with Spring Security.
+        if (backend === "springboot") {
+          return p.select({
+            message: "Select authentication:",
+            options: [
+              { value: "none", label: "None" },
+              { value: "spring-security", label: "Spring Security" },
+            ],
+            initialValue: "none",
+          });
+        }
 
         const options = [
           { value: "none", label: "None" },

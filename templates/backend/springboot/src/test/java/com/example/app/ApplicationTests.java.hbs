@@ -1,0 +1,19 @@
+package com.example.app;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+{{#if (eq orm "jpa")}}
+import org.springframework.test.context.ActiveProfiles;
+{{/if}}
+
+@SpringBootTest
+{{#if (eq orm "jpa")}}
+@ActiveProfiles("test")
+{{/if}}
+class ApplicationTests {
+
+    @Test
+    void contextLoads() {
+        // Fails the build if any bean, controller or datasource is misconfigured.
+    }
+}

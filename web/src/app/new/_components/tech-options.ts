@@ -74,7 +74,9 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
                     ? "🔮"
                     : opt.key === "next"
                       ? "▲"
-                      : "🚫",
+                      : opt.key === "springboot"
+                        ? "🍃"
+                        : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   database: techCatalog.database.map((opt) => ({
@@ -108,7 +110,9 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
               ? "🌧️"
               : opt.key === "mikro-orm"
                 ? "🐘"
-                : "🚫",
+                : opt.key === "jpa"
+                  ? "☕"
+                  : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   auth: techCatalog.auth.map((opt) => ({
@@ -124,7 +128,9 @@ export const TECH_OPTIONS: Record<string, TechOption[]> = {
             ? "🗝️"
             : opt.key === "next-auth"
               ? "🛡️"
-              : "🚫",
+              : opt.key === "spring-security"
+                ? "🔒"
+                : "🚫",
     badge: "badge" in opt ? opt.badge : undefined,
   })),
   addons: techCatalog.addons.map((opt) => ({

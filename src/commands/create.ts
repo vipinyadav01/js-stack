@@ -22,6 +22,19 @@ import { generateReproducibleCommand } from "../utils/generate-reproducible-comm
 import { saveConfig } from "../utils/js-stack-config.js";
 import { validateConfig, autoFixConfig } from "../validation.js";
 import { analytics } from "../analytics/posthog.js";
+import { isJavaBackend, isJavaOnlyProject } from "../utils/java-backend.js";
+
+/**
+ * The runtime default follows the backend: a JVM backend has no JavaScript
+ * runtime, so defaulting to "node" would only trigger a pointless auto-fix
+ * warning on every run.
+ */
+function defaultRuntimeFor(
+  backend: ProjectConfig["backend"],
+  fallback: ProjectConfig["runtime"],
+): ProjectConfig["runtime"] {
+  return isJavaBackend(backend) ? "none" : fallback;
+}
 
 /**
  * Parse comma-separated string to array
@@ -114,7 +127,7 @@ export async function createProject(
         // Override with CLI options if provided
         frontend: options.frontend ? (options.frontend as any) : base.frontend,
         backend: options.backend || base.backend,
-        runtime: options.runtime || base.runtime,
+        runtime: options.runtime || defaultRuntimeFor(options.backend || base.backend, base.runtime),
         database: options.database || base.database,
         orm: options.orm || base.orm,
         api: options.api || base.api,
@@ -150,7 +163,7 @@ export async function createProject(
           relativePath,
           frontend: (options.frontend || base.frontend) as any,
           backend: options.backend || base.backend,
-          runtime: options.runtime || base.runtime,
+          runtime: options.runtime || defaultRuntimeFor(options.backend || base.backend, base.runtime),
           database: options.database || base.database,
           orm: options.orm || base.orm,
           api: options.api || base.api,
@@ -280,12 +293,24 @@ export async function createProject(
     console.log();
     p.log.info("Next steps:");
     console.log(`  cd ${relativePath}`);
-    if (!config.install) {
-      console.log(`  ${config.packageManager} install`);
+    if (isJavaOnlyProject(config as ProjectConfig)) {
+      // No npm package exists in the tree; Maven drives the whole project.
+      console.log("  mvn spring-boot:run");
+    } else {
+      if (!config.install) {
+        console.log(`  ${config.packageManager} install`);
+      }
+      console.log(
+        `  ${config.packageManager} ${config.packageManager === "npm" ? "run " : ""}dev`,
+      );
+      if (isJavaBackend(config.backend)) {
+        console.log();
+        console.log("  # In a second terminal (needs JDK 21 and Maven):");
+        console.log(
+          `  ${config.packageManager} ${config.packageManager === "npm" ? "run " : ""}dev:backend`,
+        );
+      }
     }
-    console.log(
-      `  ${config.packageManager} ${config.packageManager === "npm" ? "run " : ""}dev`,
-    );
     console.log();
 
     // Show reproducible command

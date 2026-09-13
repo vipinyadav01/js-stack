@@ -27,6 +27,17 @@ bun dev
 ```
 {{/if}}
 
+{{#if (eq backend "springboot")}}
+The Spring Boot service is a separate Maven project and is not part of the npm
+workspace. Start it alongside the frontend (JDK 21 and Maven required):
+
+```bash
+npm run dev:backend
+```
+
+See `backend/README.md` for the API details.
+
+{{/if}}
 ## Project Structure
 
 {{#if (includes frontend "next")}}
@@ -37,7 +48,10 @@ bun dev
 - `src/components/` - React components
 {{/if}}
 
-{{#if (ne backend "none")}}
+{{#if (eq backend "springboot")}}
+- `frontend/` - Frontend application
+- `backend/` - Spring Boot service (Maven)
+{{else if (ne backend "none")}}
 - `server/` - Backend code
 {{/if}}
 
@@ -53,7 +67,9 @@ bun dev
 - **Frontend**: React
 {{/if}}
 
-{{#if (ne backend "none")}}
+{{#if (eq backend "springboot")}}
+- **Backend**: Spring Boot (Java 21)
+{{else if (ne backend "none")}}
 - **Backend**: {{backend}}
 {{/if}}
 

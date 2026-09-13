@@ -26,6 +26,20 @@ import {
   formatWithBiome,
   createBiomeConfig,
 } from "../../utils/biome-formatter.js";
+import {
+  isJavaBackend,
+  isJavaOnlyProject,
+} from "../../utils/java-backend.js";
+
+/**
+ * Directory holding the backend sources, which is a sub-directory only when the
+ * frontend and backend are separate projects.
+ */
+function backendDir(config: ProjectConfig): string {
+  return needsSeparateLayout(config)
+    ? path.join(config.projectDir, "backend")
+    : config.projectDir;
+}
 
 /**
  * Create project structure
@@ -53,8 +67,11 @@ export async function createProjectStructure(
       const rootPkg = (await fs.pathExists(rootPkgPath))
         ? JSON.parse(await fs.readFile(rootPkgPath, "utf-8"))
         : {};
+      // A Maven backend is not an npm package, so it stays out of the
+      // workspace list and is driven through Maven instead.
+      const javaBackend = isJavaBackend(config.backend);
       rootPkg.private = true;
-      rootPkg.workspaces = ["frontend", "backend"];
+      rootPkg.workspaces = javaBackend ? ["frontend"] : ["frontend", "backend"];
 
       // Keep only workspace-level tooling deps at root; framework deps belong
       // in each workspace's own package.json.
@@ -76,7 +93,12 @@ export async function createProjectStructure(
         dev: "npm run dev --workspaces --if-present",
         build: "npm run build --workspaces --if-present",
         "dev:frontend": "npm run dev -w frontend",
-        "dev:backend": "npm run dev -w backend",
+        "dev:backend": javaBackend
+          ? "mvn -f backend/pom.xml spring-boot:run"
+          : "npm run dev -w backend",
+        ...(javaBackend
+          ? { "build:backend": "mvn -f backend/pom.xml package" }
+          : {}),
       };
       await fs.writeFile(
         rootPkgPath,
@@ -143,6 +165,12 @@ export async function createProjectStructure(
     spinner.message("Handling extras...");
     await handleExtras(config.projectDir, config);
 
+    // With a Java backend and no frontend, nothing in the tree is a JavaScript
+    // package — the base package.json would only be misleading.
+    if (isJavaOnlyProject(config)) {
+      await fs.remove(path.join(config.projectDir, "package.json"));
+    }
+
     spinner.stop("Project structure created!");
   } catch (error) {
     spinner.stop("Failed to create project structure");
@@ -177,6 +205,11 @@ export async function installDependencies(
   projectDir: string,
   packageManager: "npm" | "pnpm" | "bun",
 ): Promise<void> {
+  // Nothing to install when the tree holds no npm package (Java-only project).
+  if (!(await fs.pathExists(path.join(projectDir, "package.json")))) {
+    return;
+  }
+
   const spinner = p.spinner();
   spinner.start(`Installing dependencies with ${packageManager}...`);
 
@@ -197,6 +230,43 @@ export async function installDependencies(
   } catch (error) {
     spinner.stop("Failed to install dependencies");
     throw error;
+  }
+}
+
+/**
+ * Pre-fetch the Maven dependencies for a Java backend.
+ *
+ * Maven is not bundled with the CLI the way a package manager is, so a missing
+ * `mvn` is reported as a next step rather than treated as a failure — the
+ * generated project still builds once the user installs it.
+ */
+export async function resolveMavenDependencies(
+  javaDir: string,
+): Promise<void> {
+  try {
+    await execa("mvn", ["-v"]);
+  } catch {
+    p.log.info(
+      "Maven was not found on PATH — run `mvn spring-boot:run` in the backend once it is installed.",
+    );
+    return;
+  }
+
+  const spinner = p.spinner();
+  spinner.start("Resolving Maven dependencies...");
+
+  try {
+    await execa("mvn", ["-B", "-q", "dependency:go-offline"], {
+      cwd: javaDir,
+      stdio: "inherit",
+    });
+    spinner.stop("Maven dependencies resolved!");
+  } catch (error) {
+    // Non-fatal: the project is valid, the user can build it themselves.
+    spinner.stop("Could not resolve Maven dependencies");
+    console.warn(
+      `Warning: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }
 
@@ -267,6 +337,10 @@ export async function createProject(
     // Install dependencies
     if (config.install) {
       await installDependencies(config.projectDir, config.packageManager);
+
+      if (isJavaBackend(config.backend)) {
+        await resolveMavenDependencies(backendDir(config));
+      }
     }
 
     // Post-processing

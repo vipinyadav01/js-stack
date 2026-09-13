@@ -13,6 +13,13 @@ import type {
   API,
 } from "./types.js";
 import { analytics } from "./analytics/posthog.js";
+import {
+  isJavaBackend,
+  JAVA_ORMS,
+  JAVA_AUTH,
+  JAVA_COMPATIBLE_APIS,
+  JPA_DATABASES,
+} from "./utils/java-backend.js";
 
 /**
  * Validate database and ORM compatibility
@@ -100,8 +107,14 @@ export function validateFrontendBackend(
   frontend: Frontend,
   backend: Backend,
 ): { valid: boolean; error?: string } {
-  // Next.js includes its own backend
-  if (frontend === "next" && backend !== "none" && backend !== "next") {
+  // Next.js includes its own backend. A JVM backend is a separate service
+  // rather than a competing JS server, so it is allowed alongside one.
+  if (
+    frontend === "next" &&
+    backend !== "none" &&
+    backend !== "next" &&
+    !isJavaBackend(backend)
+  ) {
     return {
       valid: false,
       error:
@@ -120,7 +133,7 @@ export function validateFrontendBackend(
   ];
   const hasMetaFramework = metaFrameworks.includes(frontend);
 
-  if (hasMetaFramework && backend !== "none") {
+  if (hasMetaFramework && backend !== "none" && !isJavaBackend(backend)) {
     return {
       valid: false,
       error:
@@ -168,6 +181,69 @@ export function validateAPIBackend(
 }
 
 /**
+ * Validate a Java backend against the JavaScript-only parts of the stack.
+ *
+ * Spring Boot is generated as a separate Maven service, so the JS ORMs, JS auth
+ * providers and JS-runtime options do not apply to it, and the RPC API styles
+ * (tRPC/oRPC) cannot cross the language boundary at all.
+ */
+export function validateJavaStack(config: Partial<ProjectConfig>): {
+  valid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+  const java = isJavaBackend(config.backend);
+
+  if (java) {
+    if (config.orm && config.orm !== "none" && !JAVA_ORMS.has(config.orm)) {
+      errors.push(
+        `Spring Boot cannot use the ${config.orm} ORM. Use 'jpa' or 'none'`,
+      );
+    }
+
+    if (config.auth && config.auth !== "none" && !JAVA_AUTH.has(config.auth)) {
+      errors.push(
+        `Spring Boot cannot use ${config.auth}. Use 'spring-security' or 'none'`,
+      );
+    }
+
+    if (config.api && !JAVA_COMPATIBLE_APIS.has(config.api)) {
+      errors.push(
+        `${config.api.toUpperCase()} is a JavaScript-only transport and cannot be served by Spring Boot. Use 'rest' or 'graphql'`,
+      );
+    }
+
+    if (config.runtime && config.runtime !== "none") {
+      errors.push(
+        "Spring Boot runs on the JVM. Set runtime to 'none'",
+      );
+    }
+  } else {
+    if (config.orm && JAVA_ORMS.has(config.orm)) {
+      errors.push(`The ${config.orm} ORM requires a Java backend`);
+    }
+
+    if (config.auth && JAVA_AUTH.has(config.auth)) {
+      errors.push(`${config.auth} requires a Java backend`);
+    }
+  }
+
+  // Spring Data JPA maps to relational databases only; MongoDB uses a
+  // different Spring Data module, which the template wires up automatically.
+  if (
+    config.orm === "jpa" &&
+    config.database &&
+    !JPA_DATABASES.has(config.database)
+  ) {
+    errors.push(
+      "JPA requires a relational database (PostgreSQL, MySQL or SQLite)",
+    );
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+/**
  * Comprehensive configuration validation
  */
 export function validateConfig(config: Partial<ProjectConfig>): {
@@ -211,6 +287,8 @@ export function validateConfig(config: Partial<ProjectConfig>): {
     }
   }
 
+  errors.push(...validateJavaStack(config).errors);
+
   return {
     valid: errors.length === 0,
     errors,
@@ -240,8 +318,13 @@ export function autoFixConfig(
     fixed.orm = "none";
   }
 
-  // Fix Next.js + backend
-  if (fixed.frontend === "next" && fixed.backend && fixed.backend !== "next") {
+  // Fix Next.js + backend (a JVM backend is a separate service, so it stays)
+  if (
+    fixed.frontend === "next" &&
+    fixed.backend &&
+    fixed.backend !== "next" &&
+    !isJavaBackend(fixed.backend)
+  ) {
     fixed.backend = "none";
   }
 
@@ -258,7 +341,8 @@ export function autoFixConfig(
     fixed.frontend &&
     metaFrameworks.includes(fixed.frontend) &&
     fixed.backend &&
-    fixed.backend !== "none"
+    fixed.backend !== "none" &&
+    !isJavaBackend(fixed.backend)
   ) {
     fixed.backend = "none";
   }
@@ -274,6 +358,42 @@ export function autoFixConfig(
     fixed.backend === "none"
   ) {
     fixed.backend = "express"; // Default to express
+  }
+
+  // Fix a Java backend paired with JavaScript-only stack choices
+  if (isJavaBackend(fixed.backend)) {
+    // JS ORMs do not exist on the JVM; keep the intent to use one by mapping
+    // to JPA when the database is relational.
+    if (fixed.orm && fixed.orm !== "none" && !JAVA_ORMS.has(fixed.orm)) {
+      fixed.orm =
+        fixed.database && JPA_DATABASES.has(fixed.database) ? "jpa" : "none";
+    }
+
+    if (fixed.auth && fixed.auth !== "none" && !JAVA_AUTH.has(fixed.auth)) {
+      fixed.auth = "spring-security";
+    }
+
+    // tRPC/oRPC cannot cross the language boundary; REST is the closest match.
+    if (fixed.api && !JAVA_COMPATIBLE_APIS.has(fixed.api)) {
+      fixed.api = "rest";
+    }
+
+    if (fixed.runtime && fixed.runtime !== "none") {
+      fixed.runtime = "none";
+    }
+  } else {
+    // Java-only options selected without a Java backend
+    if (fixed.orm && JAVA_ORMS.has(fixed.orm)) {
+      fixed.orm = "none";
+    }
+    if (fixed.auth && JAVA_AUTH.has(fixed.auth)) {
+      fixed.auth = "none";
+    }
+  }
+
+  // JPA is relational-only; MongoDB is handled by Spring Data MongoDB instead.
+  if (fixed.orm === "jpa" && fixed.database && !JPA_DATABASES.has(fixed.database)) {
+    fixed.orm = "none";
   }
 
   return fixed;

@@ -1,0 +1,73 @@
+# {{projectName}} — Spring Boot API
+
+A Java {{#if (eq api "graphql")}}GraphQL{{else}}REST{{/if}} service generated with [JS Stack](https://createjsstack.dev).
+
+## Requirements
+
+- JDK 21
+- Maven 3.9+
+
+## Run it
+
+```bash
+mvn spring-boot:run
+```
+
+The API starts on `http://localhost:8080`. Health check:
+
+```bash
+curl http://localhost:8080/api/health
+```
+
+{{#if (eq api "graphql")}}
+GraphQL lives at `POST /graphql`, with the GraphiQL explorer at
+`http://localhost:8080/graphiql`.
+
+{{/if}}
+{{#if (eq orm "jpa")}}
+## Database
+
+Spring Data JPA is configured for {{database}}. Point it at your own instance
+with `DATABASE_URL`{{#if (ne database "sqlite")}}, `DATABASE_USERNAME` and `DATABASE_PASSWORD`{{/if}}.
+
+Schema generation is set to `ddl-auto: update` for convenience. Swap it for
+Flyway or Liquibase before you ship.
+
+The sample `Todo` resource is exposed at `/api/todos`.
+
+{{/if}}
+{{#if (eq database "mongodb")}}
+## Database
+
+Spring Data MongoDB connects using `MONGODB_URI`
+(default `mongodb://localhost:27017/{{mavenArtifactId projectName}}`).
+
+{{/if}}
+{{#if (eq auth "spring-security")}}
+## Authentication
+
+Spring Security protects every route except `/api/health`, using stateless HTTP
+Basic. No user is hard-coded — Spring Boot prints a generated password on
+startup. Replace `SecurityConfig` with a real `UserDetailsService`, a JWT
+decoder, or an OAuth2 resource server before production.
+
+{{/if}}
+## Tests
+
+```bash
+mvn test
+```
+
+## Build
+
+```bash
+mvn package
+java -jar target/{{mavenArtifactId projectName}}-0.1.0.jar
+```
+
+## Notes
+
+- The Java package is `com.example.app`. Rename it (and `groupId` in `pom.xml`)
+  to your own namespace when you start building on it.
+- CORS origins come from `CORS_ALLOWED_ORIGINS`, defaulting to the usual
+  frontend dev server ports.

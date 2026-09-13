@@ -11,13 +11,15 @@ export type PresetName =
   | "mern"
   | "next-fullstack"
   | "react-vite"
-  | "express-api";
+  | "express-api"
+  | "react-springboot";
 
 export const PRESET_NAMES: PresetName[] = [
   "mern",
   "next-fullstack",
   "react-vite",
   "express-api",
+  "react-springboot",
 ];
 
 type PresetConfig = Partial<
@@ -61,6 +63,16 @@ export const PRESETS: Record<PresetName, PresetConfig> = {
     orm: "none",
     runtime: "node",
     api: "none",
+  },
+  // React SPA against a Spring Boot REST API (Postgres + JPA)
+  "react-springboot": {
+    frontend: "react",
+    backend: "springboot",
+    database: "postgres",
+    orm: "jpa",
+    runtime: "none",
+    api: "rest",
+    auth: "spring-security",
   },
   // Standalone Express REST API with Postgres + Prisma
   "express-api": {

@@ -10,6 +10,7 @@ import {
   copyFileOrDir,
 } from "../../utils/template-processor.js";
 import { TEMPLATE_PATHS } from "../../constants.js";
+import { isJavaBackend, isJavaOnlyProject } from "../../utils/java-backend.js";
 import type { ProjectConfig } from "../../types.js";
 
 /**
@@ -162,6 +163,12 @@ export async function setupDbOrmTemplates(
   destDir: string,
   context: ProjectConfig,
 ): Promise<void> {
+  // A Java backend gets its datasource and Spring Data starters from its own
+  // template; the JS ORM layers would only drop TypeScript into a Maven project.
+  if (isJavaBackend(context.backend)) {
+    return;
+  }
+
   const outDir = needsSeparateLayout(context)
     ? path.join(destDir, "backend")
     : destDir;
@@ -204,6 +211,11 @@ export async function setupAuthTemplate(
     return;
   }
 
+  // Spring Security is wired up inside the Spring Boot template itself.
+  if (isJavaBackend(context.backend)) {
+    return;
+  }
+
   const srcDir = tryGetTemplatePath(
     path.join(TEMPLATE_PATHS.auth, context.auth),
   );
@@ -230,6 +242,12 @@ export async function setupAPITemplates(
     return;
   }
 
+  // The API layer templates are TypeScript; a Java backend defines its own
+  // controllers (REST) or schema (GraphQL) in the backend template.
+  if (isJavaBackend(context.backend)) {
+    return;
+  }
+
   const srcDir = tryGetTemplatePath(path.join(TEMPLATE_PATHS.api, context.api));
   if (srcDir && (await fs.pathExists(srcDir))) {
     const outDir = needsSeparateLayout(context)
@@ -250,7 +268,15 @@ export async function setupAddonsTemplate(
   destDir: string,
   context: ProjectConfig,
 ): Promise<void> {
+  const javaOnly = isJavaOnlyProject(context);
+
   for (const addon of context.addons) {
+    // The Docker addon builds a Node image. With no JavaScript in the project,
+    // the Spring Boot template supplies a JVM Dockerfile instead.
+    if (javaOnly && addon === "docker") {
+      continue;
+    }
+
     const srcDir = tryGetTemplatePath(path.join(TEMPLATE_PATHS.addons, addon));
     if (srcDir && (await fs.pathExists(srcDir))) {
       await processAndCopyFiles(
@@ -347,6 +373,12 @@ export async function handleExtras(
   destDir: string,
   context: ProjectConfig,
 ): Promise<void> {
+  // The extras are package-manager config files, which mean nothing in a tree
+  // that contains no JavaScript package.
+  if (isJavaOnlyProject(context)) {
+    return;
+  }
+
   const extrasDir = getTemplatePath(TEMPLATE_PATHS.extras);
 
   // pnpm workspace
