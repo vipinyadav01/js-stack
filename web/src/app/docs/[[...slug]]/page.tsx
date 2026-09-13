@@ -9,6 +9,7 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { source } from "@/lib/source";
 import { generateSEOMetadata } from "@/components/seo";
+import { buildDocsSchema, serializeSchema } from "@/lib/site-schema";
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -18,15 +19,32 @@ export default async function Page(props: {
   if (!page) notFound();
 
   const MDX = page.data.body;
+  const slugPath = (params.slug ?? []).join("/");
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
-      <DocsBody>
-        <MDX components={defaultMdxComponents} />
-      </DocsBody>
-    </DocsPage>
+    <>
+      {/* Marks the page as documentation and gives search results a
+          Home > Documentation > Page trail instead of a bare URL. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeSchema(
+            buildDocsSchema({
+              title: page.data.title,
+              description: page.data.description,
+              path: slugPath ? `/docs/${slugPath}` : "/docs",
+            }),
+          ),
+        }}
+      />
+      <DocsPage toc={page.data.toc} full={page.data.full}>
+        <DocsTitle>{page.data.title}</DocsTitle>
+        <DocsDescription>{page.data.description}</DocsDescription>
+        <DocsBody>
+          <MDX components={defaultMdxComponents} />
+        </DocsBody>
+      </DocsPage>
+    </>
   );
 }
 

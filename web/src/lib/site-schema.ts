@@ -86,6 +86,77 @@ export function buildSiteSchema(baseUrl: string = resolveSiteUrl()) {
 }
 
 /**
+ * Per-page schema for a documentation page: the article itself plus the
+ * breadcrumb trail, which is what turns a bare URL into a Home > Docs > Page
+ * path in search results.
+ *
+ * URLs carry a trailing slash to match the canonical exactly — the site runs
+ * with `trailingSlash: true`, and a schema URL that disagrees with the
+ * canonical is a weaker signal than one that matches.
+ */
+export function buildDocsSchema({
+  title,
+  description,
+  path,
+  baseUrl = resolveSiteUrl(),
+}: {
+  title: string;
+  description?: string;
+  path: string;
+  baseUrl?: string;
+}) {
+  const url = `${baseUrl}${path.endsWith("/") ? path : `${path}/`}`;
+  const isIndex = path === "/docs" || path === "/docs/";
+
+  const trail = [
+    { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Documentation",
+      item: `${baseUrl}/docs/`,
+    },
+  ];
+
+  if (!isIndex) {
+    trail.push({
+      "@type": "ListItem",
+      position: 3,
+      name: title,
+      item: url,
+    });
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": `${url}#article`,
+        headline: title,
+        name: title,
+        ...(description ? { description } : {}),
+        url,
+        inLanguage: "en-US",
+        isPartOf: { "@id": `${baseUrl}/#website` },
+        about: { "@id": `${baseUrl}/#software` },
+        publisher: { "@id": `${baseUrl}/#organization` },
+        author: {
+          "@type": "Person",
+          name: "Vipin Yadav",
+          url: "https://github.com/vipinyadav01",
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        itemListElement: trail,
+      },
+    ],
+  };
+}
+
+/**
  * Serialize a schema object for inlining in a <script type="application/ld+json">.
  * "<" is escaped so a value containing "</script>" can never close the tag early.
  */
