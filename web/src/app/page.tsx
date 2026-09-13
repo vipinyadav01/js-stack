@@ -9,7 +9,10 @@ import TopComments from "@/components/home/TopComments";
 import VideoTutorials from "@/components/home/VideoTutorials";
 import FAQ from "@/components/home/FAQ";
 import { FAQStructuredData } from "@/components/structured-data";
-import { Github, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
+import { GithubIcon } from "@/components/icons/github-icon";
+import { NpmIcon } from "@/components/icons/npm-icon";
+import { CTAButton } from "@/components/ui/cta-button";
 
 export default function Home() {
   const posthog = usePostHog();
@@ -112,24 +115,41 @@ export default function Home() {
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 pt-4">
-                <a
-                  href="https://github.com/vipinyadav01/js-stack"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-md bg-primary px-8 py-3.5 font-mono text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all hover:scale-[1.01]"
-                >
-                  <Github className="h-4 w-4" />
-                  Star on GitHub
-                </a>
-                <a
-                  href="https://vipinyadav01.vercel.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-md border border-border bg-card px-8 py-3.5 font-mono text-sm font-medium text-foreground hover:border-primary/50 transition-all"
-                >
-                  <Heart className="h-4 w-4 text-pink-500" />
-                  Meet the Author
-                </a>
+                <CTAButton asChild variant="primary" size="lg">
+                  <a
+                    href="https://github.com/vipinyadav01/js-stack"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <GithubIcon className="size-4" />
+                    <span>Star on GitHub</span>
+                  </a>
+                </CTAButton>
+
+                <CTAButton asChild variant="secondary" size="lg">
+                  <a
+                    href="https://www.npmjs.com/package/@vipinyadav02/createjsstack"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <NpmIcon className="size-4 rounded-xs" />
+                    <span>NPM Registry</span>
+                  </a>
+                </CTAButton>
+
+                <CTAButton asChild variant="outline" size="lg">
+                  <a
+                    href="https://devxvipin.me"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2"
+                  >
+                    <Heart className="size-4 text-pink-500" />
+                    <span>Author</span>
+                  </a>
+                </CTAButton>
               </div>
             </div>
           </section>

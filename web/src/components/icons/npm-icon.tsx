@@ -1,18 +1,56 @@
 import React from "react";
 
-export function NpmIcon({ className = "h-7 w-7" }: { className?: string }) {
+interface NpmIconProps extends React.SVGProps<SVGSVGElement> {
+  className?: string;
+  variant?: "brand" | "monochrome";
+}
+
+/**
+ * Official NPM Logo component.
+ * Supports:
+ * - 'brand': Official NPM red background (#CB3837) with crisp white lettering.
+ * - 'monochrome': Inherits text color (currentColor) with transparent cutout.
+ */
+export function NpmIcon({
+  className = "size-4",
+  variant = "brand",
+  ...props
+}: NpmIconProps) {
+  if (variant === "monochrome") {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        className={className}
+        aria-hidden="true"
+        {...props}
+      >
+        <path
+          fill="currentColor"
+          d="M1.5 6.75h21v10.5h-10.5v1.5h-5.25v-1.5H1.5V6.75zm2.625 2.625v5.25h2.625v-5.25H4.125zm5.25 0v6.75h2.625v-6.75H9.375zm5.25 0v5.25h2.625V12h2.625V9.375h-5.25zm2.625 2.625H16.5v1.313h.75V12z"
+        />
+      </svg>
+    );
+  }
+
+  // Official brand red (#CB3837) badge with white text
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 48 48"
+      viewBox="0 0 24 24"
       className={className}
-      fill="currentColor"
+      aria-hidden="true"
+      {...props}
     >
-      <path fill="#d50000" d="M0,15h48v17H24v3H13v-3H0V15z"></path>
+      {/* Background container */}
+      <rect width="24" height="24" rx="4" fill="#CB3837" />
+      {/* Crisp NPM letter paths */}
       <path
-        fill="#fff"
-        d="M3 29L8 29 8 21 11 21 11 29 13 29 13 18 3 18zM16 18v14h5v-3h5V18H16zM24 26h-3v-5h3V26zM29 18L29 29 34 29 34 21 37 21 37 29 40 29 40 21 43 21 43 29 45 29 45 18z"
-      ></path>
+        fill="#FFFFFF"
+        d="M4 7h16v10H12v1.5H8.5V17H4V7zm2.5 2.5v5h2.5v-5H6.5zm5 0v6.5H14V9.5h-2.5zm5 0v5h2.5V12h2.5V9.5H16.5zm2.5 2.5h-1.25v1.25H19V12z"
+      />
     </svg>
   );
 }

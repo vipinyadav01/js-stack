@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Github, Twitter, Globe, ArrowRight, Copy, Check } from "lucide-react";
+import { Twitter, Globe, ArrowRight, Copy, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../Images/logo.png";
+import { SocialTechLogo } from "@/components/icons/social-tech-logo";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -83,7 +84,7 @@ export default function Footer() {
             <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
                 <Link
-                  href="/new"
+                  href="/new/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -92,7 +93,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/features"
+                  href="/features/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -101,7 +102,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/analytics"
+                  href="/analytics/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -110,7 +111,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/sponsors"
+                  href="/sponsors/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
@@ -119,9 +120,8 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          {/* Documentation Links. Every docs page is otherwise only reachable
-              via /docs, leaving it two clicks deep; linking here puts it one
-              click from any page on the site. */}
+
+          {/* Documentation Links */}
           <div>
             <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
               {"// DOCUMENTATION"}
@@ -138,11 +138,20 @@ export default function Footer() {
               </li>
               <li>
                 <Link
+                  href="/docs/presets/"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Stack Presets</span>
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/docs/cli-options/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                  <span>CLI Options</span>
+                  <span>CLI Flags & Options</span>
                 </Link>
               </li>
               <li>
@@ -156,35 +165,17 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs/presets/"
-                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
-                >
-                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                  <span>Presets</span>
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/docs/how-it-works/"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                  <span>How It Works</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/docs/components/"
-                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
-                >
-                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                  <span>Components</span>
+                  <span>Architecture</span>
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Ecosystem Links */}
+          {/* Technology Integrations */}
           <div>
             <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
               {"// ECOSYSTEM"}
@@ -192,15 +183,68 @@ export default function Footer() {
             <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
                 <a
-                  href="https://www.npmjs.com/package/@vipinyadav02/createjsstack"
+                  href="https://nextjs.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                  <span>NPM Registry</span>
+                  <span>Next.js 15</span>
                 </a>
               </li>
+              <li>
+                <a
+                  href="https://react.dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>React 19</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://spring.io/projects/spring-boot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Spring Boot 3</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://expressjs.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Express & NestJS</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.prisma.io"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
+                >
+                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
+                  <span>Prisma & Drizzle</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Resources & Community */}
+          <div>
+            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
+              {"// RESOURCES"}
+            </h3>
+            <ul className="space-y-3 font-mono text-xs text-muted-foreground">
               <li>
                 <a
                   href="https://github.com/vipinyadav01/js-stack"
@@ -214,38 +258,18 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com/vipinyadav01/js-stack/releases"
+                  href="https://www.npmjs.com/package/@vipinyadav02/createjsstack"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
                 >
                   <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                  <span>Release Notes</span>
+                  <span>NPM Registry</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="https://github.com/vipinyadav01/js-stack/blob/main/LICENSE"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
-                >
-                  <ArrowRight className="h-3 w-3 text-primary opacity-0 -ml-4 group-hover:opacity-100 group-hover:ml-0 transition-all" />
-                  <span>MIT License</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Author & Support */}
-          <div>
-            <h3 className="mb-4 font-mono text-xs font-bold tracking-widest text-primary uppercase">
-              {"// AUTHOR"}
-            </h3>
-            <ul className="space-y-3 font-mono text-xs text-muted-foreground">
-              <li>
-                <a
-                  href="https://vipinyadav01.vercel.app"
+                  href="https://devxvipin.me"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors flex items-center gap-1.5 group"
@@ -287,33 +311,35 @@ export default function Footer() {
             era. Open Source (MIT).
           </p>
 
-          <div className="flex items-center gap-4 text-muted-foreground">
-            <a
-              href="https://github.com/vipinyadav01"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-primary"
-              title="GitHub Profile"
-            >
-              <Github className="h-4 w-4" />
-            </a>
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <SocialTechLogo
+              platform="github"
+              href="https://github.com/vipinyadav01/js-stack"
+              showBorder={false}
+            />
+            <SocialTechLogo
+              platform="npm"
+              href="https://www.npmjs.com/package/@vipinyadav02/createjsstack"
+              showBorder={false}
+              iconClassName="rounded-xs"
+            />
             <a
               href="https://twitter.com/vipinyadav9m"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-primary"
+              className="p-1 rounded-md hover:bg-muted/60 transition-colors hover:text-primary"
               title="Twitter Profile"
             >
-              <Twitter className="h-4 w-4" />
+              <Twitter className="size-4" />
             </a>
             <a
-              href="https://vipinyadav01.vercel.app"
+              href="https://devxvipin.me"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-primary"
+              className="p-1 rounded-md hover:bg-muted/60 transition-colors hover:text-primary"
               title="Personal Website"
             >
-              <Globe className="h-4 w-4" />
+              <Globe className="size-4" />
             </a>
           </div>
         </div>
