@@ -57,19 +57,22 @@ export default function Hero() {
             </span>
           </Link>
 
-          {/* Cloudflare Signature Headline */}
+          {/* Headline. Names the product and its job in the H1 itself — search
+              engines weight it heavily for topical relevance, so the brand
+              story moved down to the subtitle. */}
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-mono font-extrabold text-foreground tracking-tight leading-[1.08] max-w-4xl">
-            Everything we learned from generating{" "}
+            Scaffold production-ready{" "}
             <span className="text-primary underline decoration-primary/30 underline-offset-8">
-              1,000+ apps
-            </span>
-            — yours by default
+              full-stack JavaScript apps
+            </span>{" "}
+            in seconds
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-xl text-muted-foreground font-sans max-w-3xl leading-relaxed font-normal">
-            One CLI platform for your frontends, backends, databases, and authentication.
-            Build, scaffold, and scale production-ready code without managing complex boilerplate.
+            Everything we learned from generating 1,000+ apps, yours by default.
+            One CLI for your frontends, backends, databases, and authentication —
+            React, Next.js, Vue, Express, Prisma and Docker, without the boilerplate.
           </p>
 
           {/* CTA Buttons Group */}

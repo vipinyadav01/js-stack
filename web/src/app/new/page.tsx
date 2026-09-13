@@ -4,9 +4,9 @@ import { Metadata } from "next";
 import { generateSEOMetadata } from "@/components/seo";
 
 export const metadata: Metadata = generateSEOMetadata({
-  title: "Interactive Stack Builder - Build Your Perfect JavaScript Project",
+  title: "Interactive Stack Builder",
   description:
-    "Build your perfect JavaScript full-stack project with our interactive stack builder. Choose from React, Next.js, Node.js, Express, databases, authentication, and more. Generate your project configuration instantly.",
+    "Pick your frontend, backend, database and auth, then get the exact CLI command to scaffold the project. React, Next.js, Express, Prisma and more.",
   url: "/new",
   keywords: [
     "stack builder",

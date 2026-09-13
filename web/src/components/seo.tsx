@@ -37,7 +37,13 @@ export function generateSEOMetadata({
     : "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool";
   const fullDescription =
     description ||
-    "Stop configuring, start building. JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, Docker, and CI/CD best practices out of the box.";
+    "Scaffold production-ready JavaScript full-stack apps in seconds. JS-Stack CLI generates React, Next.js, Express, Prisma and Docker projects from one command.";
+
+  // The root layout applies `template: "%s | JS-Stack CLI"`, so the page title
+  // is passed bare — appending the suffix here as well is what produced
+  // "X | JS-Stack CLI | JS-Stack CLI" on every page but the homepage. The Open
+  // Graph and Twitter titles bypass the template, so they keep the full form.
+  const pageTitle: Metadata["title"] = title ? title : { absolute: fullTitle };
 
   const allKeywords = [
     ...keywords,
@@ -60,7 +66,7 @@ export function generateSEOMetadata({
   ];
 
   return {
-    title: fullTitle,
+    title: pageTitle,
     description: fullDescription,
     keywords: allKeywords,
     authors: [{ name: author, url: "https://github.com/vipinyadav01" }],

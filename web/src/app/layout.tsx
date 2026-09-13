@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { GoogleTagManager } from "@/components/GoogleTagManager";
 import { PostHogProvider, PostHogPageView } from "@/providers/posthog-provider";
+import { buildSiteSchema, serializeSchema } from "@/lib/site-schema";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,11 +67,11 @@ export const metadata: Metadata = {
     template: "%s | JS-Stack CLI",
   },
   description:
-    "Stop configuring, start building. JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack applications in seconds. Features Next.js, React, Node.js, TypeScript, Tailwind CSS, Prisma, and Docker.",
+    "Scaffold production-ready JavaScript full-stack apps in seconds. JS-Stack CLI generates React, Next.js, Express, Prisma and Docker projects from one command.",
   keywords: [
     "js-stack",
     "@vipinyadav02/createjsstack",
-    "@vipinyadav02/createjsstack",
+    "create js stack",
     "javascript project generator",
     "typescript cli",
     "nextjs starter",
@@ -199,8 +200,14 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
 
-        {/* Structured Data — single source via /schema.json @graph */}
-        <link rel="alternate" type="application/ld+json" href="/schema.json" />
+        {/* Structured Data. Google only reads JSON-LD from an inline script —
+            a <link rel="alternate"> to a .json file is never fetched for it. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeSchema(buildSiteSchema()),
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}
