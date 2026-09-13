@@ -6,7 +6,7 @@ export const metadata: Metadata = generateSEOMetadata({
   title: "Sponsors",
   description:
     "Support JS-Stack CLI development. View our sponsors, GitHub sponsors, and community supporters. Help us build better developer tools.",
-  url: "/sponsors",
+  url: "/sponsors/",
   keywords: [
     "sponsors",
     "support",

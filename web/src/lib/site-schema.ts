@@ -73,13 +73,27 @@ export function buildSiteSchema(baseUrl: string = resolveSiteUrl()) {
       {
         "@type": "WebSite",
         "@id": `${baseUrl}/#website`,
-        url: baseUrl,
+        url: `${baseUrl}/`,
         name: "JS-Stack CLI",
-        alternateName: ["js-stack", "jsstack", CLI_PACKAGE, "create jsstack"],
+        alternateName: [
+          "js-stack",
+          "jsstack",
+          CLI_PACKAGE,
+          "create jsstack",
+          "create-js-stack",
+        ],
         description:
           "JS-Stack CLI (@vipinyadav02/createjsstack) — scaffold production-ready JavaScript full-stack applications instantly with presets, composable templates, and deep-merge layering.",
         publisher: { "@id": `${baseUrl}/#organization` },
         inLanguage: "en-US",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${baseUrl}/docs/?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
       },
     ],
   };

@@ -18,7 +18,7 @@ export function generateSEOMetadata({
   title,
   description,
   keywords = [],
-  image = "/opengraph-image",
+  image = "/opengraph-image/",
   url,
   type = "website",
   publishedTime,
@@ -30,8 +30,26 @@ export function generateSEOMetadata({
   const siteUrl = (
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.createjsstack.dev"
   ).trim();
-  const baseUrl = siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`;
-  const fullUrl = url ? `${baseUrl}${url}` : baseUrl;
+  const baseUrl = (siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`).replace(/\/$/, "");
+  
+  // Ensure canonical URL strictly follows Next.js trailingSlash: true configuration
+  let canonicalPath = "/";
+  if (url) {
+    const trimmed = url.trim();
+    if (trimmed !== "/" && trimmed !== "") {
+      canonicalPath = trimmed.endsWith("/") ? trimmed : `${trimmed}/`;
+      if (!canonicalPath.startsWith("/")) {
+        canonicalPath = `/${canonicalPath}`;
+      }
+    }
+  }
+  const fullUrl = `${baseUrl}${canonicalPath}`;
+
+  // Ensure absolute image URL without 308 redirect
+  const fullImageUrl = image.startsWith("http")
+    ? image
+    : `${baseUrl}${image.startsWith("/") ? image : `/${image}`}`;
+
   const fullTitle = title
     ? `${title} | JS-Stack CLI`
     : "JS-Stack CLI - Modern Full-Stack JavaScript Development Tool";
@@ -84,7 +102,7 @@ export function generateSEOMetadata({
       locale: "en_US",
       images: [
         {
-          url: image,
+          url: fullImageUrl,
           width: 1200,
           height: 630,
           alt: fullTitle,
@@ -106,7 +124,7 @@ export function generateSEOMetadata({
       title: fullTitle,
       description: fullDescription,
       images: {
-        url: image,
+        url: fullImageUrl,
         alt: fullTitle,
       },
     },
@@ -138,7 +156,7 @@ export const featuresPageMetadata = generateSEOMetadata({
     "testing frameworks",
     "deployment options",
   ],
-  url: "/features",
+  url: "/features/",
 });
 
 export const analyticsPageMetadata = generateSEOMetadata({
@@ -152,5 +170,5 @@ export const analyticsPageMetadata = generateSEOMetadata({
     "popular frameworks",
     "community metrics",
   ],
-  url: "/analytics",
+  url: "/analytics/",
 });

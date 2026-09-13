@@ -7,7 +7,7 @@ export const metadata: Metadata = generateSEOMetadata({
   title: "Interactive Stack Builder",
   description:
     "Pick your frontend, backend, database and auth, then get the exact CLI command to scaffold the project. React, Next.js, Express, Prisma and more.",
-  url: "/new",
+  url: "/new/",
   keywords: [
     "stack builder",
     "project generator",

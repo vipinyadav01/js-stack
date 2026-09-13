@@ -650,7 +650,22 @@ export function StackBuilder() {
           className="flex-1 overflow-y-auto custom-scrollbar h-full p-4 lg:p-6 pb-32 lg:pb-28"
         >
           <main className="max-w-7xl mx-auto space-y-8">
-              {CATEGORY_ORDER.map((categoryKey) => {
+            {/* Header / Primary Heading for SEO & User Context */}
+            <div className="space-y-1.5 pb-4 border-b border-border/60">
+              <div className="flex items-center gap-2 text-primary font-mono text-xs font-semibold uppercase tracking-wider">
+                <span>CLI Stack Builder</span>
+                <span>·</span>
+                <span>Production Ready</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-mono font-extrabold text-foreground tracking-tight">
+                Interactive Stack Builder
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground font-sans max-w-3xl leading-relaxed">
+                Configure your full-stack JavaScript and TypeScript application. Select your preferred frontend, backend, database, and authentication to generate the exact CLI command.
+              </p>
+            </div>
+
+            {CATEGORY_ORDER.map((categoryKey) => {
                 const categoryOptions =
                   TECH_OPTIONS[categoryKey as keyof typeof TECH_OPTIONS] || [];
                 const categoryDisplayName = getCategoryDisplayName(categoryKey);

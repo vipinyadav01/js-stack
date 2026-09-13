@@ -42,8 +42,11 @@ const metadataBase = resolveMetadataBase();
 
 const verificationMeta: Metadata["verification"] = {};
 const otherVerification: Record<string, string> = {};
-if (process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION) {
-  verificationMeta.google = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION;
+const googleVerification =
+  process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION ||
+  process.env.GOOGLE_SITE_VERIFICATION;
+if (googleVerification) {
+  verificationMeta.google = googleVerification;
 }
 if (process.env.NEXT_PUBLIC_BING_VERIFICATION) {
   otherVerification["msvalidate.01"] =
@@ -143,7 +146,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/opengraph-image/",
         width: 1200,
         height: 630,
         alt: "JS-Stack CLI - Modern Full-Stack Development",
@@ -159,7 +162,7 @@ export const metadata: Metadata = {
     description:
       "Stop configuring, start building. JS-Stack CLI (@vipinyadav02/createjsstack) scaffolds production-ready full-stack apps with Next.js, React, Node.js, and TypeScript in seconds.",
     images: {
-      url: "/opengraph-image",
+      url: "/opengraph-image/",
       alt: "JS-Stack CLI - Modern Full-Stack Development",
     },
   },
