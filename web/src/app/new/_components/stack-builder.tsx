@@ -435,174 +435,170 @@ export function StackBuilder() {
   const panelBody = (
     <>
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
-            <div className="p-4 border-b border-border/50">
-              <div className="space-y-1.5">
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5">
-                  Project Name
-                </label>
-                <input
-                  type="text"
-                  value={localProjectName}
-                  onChange={(e) => {
-                    const newName = e.target.value;
-                    setLocalProjectName(newName);
-                    lastSyncedProjectName.current = newName;
-                    setStack({ projectName: newName });
-                  }}
-                  className={cn(
-                    "w-full rounded-md border bg-secondary/20 px-3 py-2 text-sm font-medium transition-all outline-none",
-                    "focus:ring-1 focus:ring-primary/30 focus:border-primary/50",
-                    projectNameError
-                      ? "border-destructive text-destructive"
-                      : "border-border",
-                  )}
-                  placeholder="my-app"
-                />
-                {projectNameError && (
-                  <p className="text-destructive text-[10px] font-medium">
-                    {projectNameError}
+        <div className="p-4 border-b border-border/50">
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1.5">
+              Project Name
+            </label>
+            <input
+              type="text"
+              value={localProjectName}
+              onChange={(e) => {
+                const newName = e.target.value;
+                setLocalProjectName(newName);
+                lastSyncedProjectName.current = newName;
+                setStack({ projectName: newName });
+              }}
+              className={cn(
+                "w-full rounded-md border bg-secondary/20 px-3 py-2 text-sm font-medium transition-all outline-none",
+                "focus:ring-1 focus:ring-primary/30 focus:border-primary/50",
+                projectNameError
+                  ? "border-destructive text-destructive"
+                  : "border-border",
+              )}
+              placeholder="my-app"
+            />
+            {projectNameError && (
+              <p className="text-destructive text-[10px] font-medium">
+                {projectNameError}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="p-4 space-y-5">
+          {/* Terminal Style Command */}
+          <div className="rounded-md border border-border/50 bg-zinc-950 overflow-hidden group">
+            <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-white/5">
+              <span className="text-[9px] font-mono text-zinc-500">bash</span>
+            </div>
+            <div className="p-3 relative">
+              <div className="flex items-start gap-2 text-[12px] font-mono leading-relaxed">
+                <span className="text-primary select-none opacity-70">❯</span>
+                <code className="text-zinc-300 break-all flex-1">
+                  {command}
+                </code>
+              </div>
+              <button
+                type="button"
+                onClick={copyToClipboard}
+                className={cn(
+                  "absolute top-2 right-2 p-1 rounded-md transition-opacity opacity-0 group-hover:opacity-100 bg-white/5 text-zinc-400 hover:text-white",
+                  copied && "opacity-100 text-green-400",
+                )}
+              >
+                {copied ? (
+                  <Check className="h-3 w-3" />
+                ) : (
+                  <ClipboardCopy className="h-3 w-3" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Stack Preview */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Stack
+              </h3>
+              <span className="text-[9px] font-medium text-muted-foreground">
+                {selectedBadges.length} items
+              </span>
+            </div>
+            <div className="min-h-[60px] rounded-md border border-dashed border-border/60 bg-secondary/5 p-2">
+              <div className="flex flex-wrap gap-1">
+                {selectedBadges.length > 0 ? (
+                  selectedBadges
+                ) : (
+                  <p className="text-[10px] text-muted-foreground opacity-40 text-center w-full py-2">
+                    Empty stack
                   </p>
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="p-4 space-y-5">
-              {/* Terminal Style Command */}
-              <div className="rounded-md border border-border/50 bg-zinc-950 overflow-hidden group">
-                <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-white/5">
-                  <span className="text-[9px] font-mono text-zinc-500">
-                    bash
-                  </span>
-                </div>
-                <div className="p-3 relative">
-                  <div className="flex items-start gap-2 text-[12px] font-mono leading-relaxed">
-                    <span className="text-primary select-none opacity-70">
-                      ❯
-                    </span>
-                    <code className="text-zinc-300 break-all flex-1">
-                      {command}
-                    </code>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={copyToClipboard}
-                    className={cn(
-                      "absolute top-2 right-2 p-1 rounded-md transition-opacity opacity-0 group-hover:opacity-100 bg-white/5 text-zinc-400 hover:text-white",
-                      copied && "opacity-100 text-green-400",
-                    )}
-                  >
-                    {copied ? (
-                      <Check className="h-3 w-3" />
-                    ) : (
-                      <ClipboardCopy className="h-3 w-3" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Stack Preview */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    Stack
-                  </h3>
-                  <span className="text-[9px] font-medium text-muted-foreground">
-                    {selectedBadges.length} items
-                  </span>
-                </div>
-                <div className="min-h-[60px] rounded-md border border-dashed border-border/60 bg-secondary/5 p-2">
-                  <div className="flex flex-wrap gap-1">
-                    {selectedBadges.length > 0 ? (
-                      selectedBadges
-                    ) : (
-                      <p className="text-[10px] text-muted-foreground opacity-40 text-center w-full py-2">
-                        Empty stack
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+      {/* Sidebar Footer Actions */}
+      <div className="flex-shrink-0 border-t border-border/50 p-4 bg-background">
+        <div className="space-y-2">
+          <div
+            className={`grid gap-2 ${PRESET_TEMPLATES.length > 0 ? "grid-cols-2" : "grid-cols-1"}`}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={getRandomStack}
+              className="h-8 text-xs font-normal"
+            >
+              <Shuffle className="mr-2 h-3 w-3" /> Random
+            </Button>
+            {PRESET_TEMPLATES.length > 0 && (
+              <PresetDropdown onApplyPreset={applyPreset} />
+            )}
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={saveCurrentStack}
+              className="h-8 w-full px-0"
+            >
+              <Save className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadSavedStack}
+              disabled={!lastSavedStack}
+              className="h-8 w-full px-0"
+            >
+              <Download className="h-3.5 w-3.5" />
+            </Button>
+            <div className="col-span-2">
+              <ShareButton
+                stackUrl={getStackUrl()}
+                stackState={stack}
+                className="h-8 w-full text-xs font-normal"
+              />
             </div>
           </div>
-
-          {/* Sidebar Footer Actions */}
-          <div className="flex-shrink-0 border-t border-border/50 p-4 bg-background">
-            <div className="space-y-2">
-              <div
-                className={`grid gap-2 ${PRESET_TEMPLATES.length > 0 ? "grid-cols-2" : "grid-cols-1"}`}
-              >
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={getRandomStack}
-                  className="h-8 text-xs font-normal"
-                >
-                  <Shuffle className="mr-2 h-3 w-3" /> Random
-                </Button>
-                {PRESET_TEMPLATES.length > 0 && (
-                  <PresetDropdown onApplyPreset={applyPreset} />
-                )}
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={saveCurrentStack}
-                  className="h-8 w-full px-0"
-                >
-                  <Save className="h-3.5 w-3.5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={loadSavedStack}
-                  disabled={!lastSavedStack}
-                  className="h-8 w-full px-0"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                </Button>
-                <div className="col-span-2">
-                  <ShareButton
-                    stackUrl={getStackUrl()}
-                    stackState={stack}
-                    className="h-8 w-full text-xs font-normal"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center gap-2 pt-1">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 flex-1 justify-between px-2 text-muted-foreground text-[10px] font-normal"
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <Settings className="h-3 w-3" /> Settings
-                      </span>
-                      <ChevronDown className="h-2.5 w-2.5 opacity-50" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[180px]">
-                    <YoloToggle
-                      stack={stack}
-                      onToggle={(yolo) =>
-                        setStack({ yolo: yolo ? "true" : "false" })
-                      }
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          <div className="flex items-center gap-2 pt-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={resetStack}
-                  className="h-7 w-7 px-0 text-muted-foreground hover:text-destructive"
+                  className="h-7 flex-1 justify-between px-2 text-muted-foreground text-[10px] font-normal"
                 >
-                  <RotateCcw className="h-3 w-3" />
+                  <span className="flex items-center gap-1.5">
+                    <Settings className="h-3 w-3" /> Settings
+                  </span>
+                  <ChevronDown className="h-2.5 w-2.5 opacity-50" />
                 </Button>
-              </div>
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[180px]">
+                <YoloToggle
+                  stack={stack}
+                  onToggle={(yolo) =>
+                    setStack({ yolo: yolo ? "true" : "false" })
+                  }
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetStack}
+              className="h-7 w-7 px-0 text-muted-foreground hover:text-destructive"
+            >
+              <RotateCcw className="h-3 w-3" />
+            </Button>
           </div>
+        </div>
+      </div>
     </>
   );
 
@@ -661,125 +657,125 @@ export function StackBuilder() {
                 Interactive Stack Builder
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground font-sans max-w-3xl leading-relaxed">
-                Configure your full-stack JavaScript and TypeScript application. Select your preferred frontend, backend, database, and authentication to generate the exact CLI command.
+                Configure your full-stack JavaScript and TypeScript application.
+                Select your preferred frontend, backend, database, and
+                authentication to generate the exact CLI command.
               </p>
             </div>
 
             {CATEGORY_ORDER.map((categoryKey) => {
-                const categoryOptions =
-                  TECH_OPTIONS[categoryKey as keyof typeof TECH_OPTIONS] || [];
-                const categoryDisplayName = getCategoryDisplayName(categoryKey);
-                if (categoryOptions.length === 0) return null;
+              const categoryOptions =
+                TECH_OPTIONS[categoryKey as keyof typeof TECH_OPTIONS] || [];
+              const categoryDisplayName = getCategoryDisplayName(categoryKey);
+              if (categoryOptions.length === 0) return null;
 
-                return (
-                  <section
-                    key={categoryKey}
-                    id={`section-${categoryKey}`}
-                    className="mb-8 scroll-mt-16"
-                  >
-                    <div className="mb-4 flex items-center justify-between border-b border-border/50 pb-2">
-                      <h2 className="font-semibold text-foreground text-sm flex items-center gap-2">
-                        {categoryDisplayName}
-                        {compatibilityAnalysis.notes[categoryKey]?.hasIssue && (
-                          <InfoIcon className="h-3 w-3 text-amber-500" />
-                        )}
-                      </h2>
-                    </div>
+              return (
+                <section
+                  key={categoryKey}
+                  id={`section-${categoryKey}`}
+                  className="mb-8 scroll-mt-16"
+                >
+                  <div className="mb-4 flex items-center justify-between border-b border-border/50 pb-2">
+                    <h2 className="font-semibold text-foreground text-sm flex items-center gap-2">
+                      {categoryDisplayName}
+                      {compatibilityAnalysis.notes[categoryKey]?.hasIssue && (
+                        <InfoIcon className="h-3 w-3 text-amber-500" />
+                      )}
+                    </h2>
+                  </div>
 
-                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
-                      {categoryOptions.map((tech: TechOption) => {
-                        const category = categoryKey as keyof StackState;
-                        const currentValue = stack[category];
-                        const isSelected =
-                          category === "addons"
-                            ? ((currentValue as string[]) || []).includes(
-                                tech.id,
-                              )
-                            : currentValue === tech.id;
+                  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3">
+                    {categoryOptions.map((tech: TechOption) => {
+                      const category = categoryKey as keyof StackState;
+                      const currentValue = stack[category];
+                      const isSelected =
+                        category === "addons"
+                          ? ((currentValue as string[]) || []).includes(tech.id)
+                          : currentValue === tech.id;
 
-                        const isDisabled = !isOptionCompatible(
-                          stack,
-                          categoryKey as keyof typeof TECH_OPTIONS,
-                          tech.id,
-                        );
-                        const disabledReason = isDisabled
-                          ? getDisabledReason(
-                              stack,
+                      const isDisabled = !isOptionCompatible(
+                        stack,
+                        categoryKey as keyof typeof TECH_OPTIONS,
+                        tech.id,
+                      );
+                      const disabledReason = isDisabled
+                        ? getDisabledReason(
+                            stack,
+                            categoryKey as keyof typeof TECH_OPTIONS,
+                            tech.id,
+                          )
+                        : null;
+
+                      return (
+                        <div
+                          key={tech.id}
+                          className={cn(
+                            "group relative cursor-pointer rounded-md border p-4 transition-all duration-150",
+                            isSelected
+                              ? "border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20"
+                              : isDisabled
+                                ? "opacity-30 cursor-not-allowed grayscale"
+                                : "border-border bg-card hover:border-primary/40 hover:bg-secondary/10",
+                          )}
+                          onClick={() =>
+                            !isDisabled &&
+                            handleTechSelect(
                               categoryKey as keyof typeof TECH_OPTIONS,
                               tech.id,
                             )
-                          : null;
-
-                        return (
-                          <div
-                            key={tech.id}
-                            className={cn(
-                              "group relative cursor-pointer rounded-md border p-4 transition-all duration-150",
-                              isSelected
-                                ? "border-primary bg-primary/5 shadow-sm ring-1 ring-primary/20"
-                                : isDisabled
-                                  ? "opacity-30 cursor-not-allowed grayscale"
-                                  : "border-border bg-card hover:border-primary/40 hover:bg-secondary/10",
-                            )}
-                            onClick={() =>
-                              !isDisabled &&
-                              handleTechSelect(
-                                categoryKey as keyof typeof TECH_OPTIONS,
-                                tech.id,
-                              )
-                            }
-                          >
-                            <div className="flex items-start gap-2">
-                              <div className="flex-shrink-0 mt-0.5">
-                                {tech.emoji ? (
-                                  <span className="text-base leading-none">
-                                    {tech.emoji}
-                                  </span>
-                                ) : tech.icon ? (
-                                  <TechIcon
-                                    icon={tech.icon}
-                                    name={tech.name}
-                                    className="h-4 w-4"
-                                  />
-                                ) : null}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h3
-                                  className={cn(
-                                    "font-medium text-[11px] truncate leading-tight",
-                                    isSelected
-                                      ? "text-primary"
-                                      : "text-foreground",
-                                  )}
-                                >
-                                  {tech.name}
-                                </h3>
-                                {tech.description && (
-                                  <p className="text-[9px] text-muted-foreground mt-0.5 line-clamp-2 leading-tight">
-                                    {tech.description}
-                                  </p>
+                          }
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className="flex-shrink-0 mt-0.5">
+                              {tech.emoji ? (
+                                <span className="text-base leading-none">
+                                  {tech.emoji}
+                                </span>
+                              ) : tech.icon ? (
+                                <TechIcon
+                                  icon={tech.icon}
+                                  name={tech.name}
+                                  className="h-4 w-4"
+                                />
+                              ) : null}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3
+                                className={cn(
+                                  "font-medium text-[11px] truncate leading-tight",
+                                  isSelected
+                                    ? "text-primary"
+                                    : "text-foreground",
                                 )}
-                              </div>
-                              {isSelected && (
-                                <Check className="h-3 w-3 text-primary flex-shrink-0 mt-0.5" />
+                              >
+                                {tech.name}
+                              </h3>
+                              {tech.description && (
+                                <p className="text-[9px] text-muted-foreground mt-0.5 line-clamp-2 leading-tight">
+                                  {tech.description}
+                                </p>
                               )}
                             </div>
-
-                            {isDisabled && disabledReason && (
-                              <div className="absolute inset-x-0 bottom-full z-50 mb-2 hidden group-hover:block">
-                                <div className="mx-auto w-max max-w-[200px] rounded bg-zinc-900 px-2 py-1 text-[10px] text-white shadow-xl">
-                                  {disabledReason}
-                                </div>
-                              </div>
+                            {isSelected && (
+                              <Check className="h-3 w-3 text-primary flex-shrink-0 mt-0.5" />
                             )}
                           </div>
-                        );
-                      })}
-                    </div>
-                  </section>
-                );
-              })}
-            </main>
+
+                          {isDisabled && disabledReason && (
+                            <div className="absolute inset-x-0 bottom-full z-50 mb-2 hidden group-hover:block">
+                              <div className="mx-auto w-max max-w-[200px] rounded bg-zinc-900 px-2 py-1 text-[10px] text-white shadow-xl">
+                                {disabledReason}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </main>
         </div>
       </div>
     </TooltipProvider>

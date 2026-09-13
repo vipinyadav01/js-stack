@@ -8,11 +8,7 @@
 import type { ProjectConfig } from "./types.js";
 
 export type PresetName =
-  | "mern"
-  | "next-fullstack"
-  | "react-vite"
-  | "express-api"
-  | "react-springboot";
+  "mern" | "next-fullstack" | "react-vite" | "express-api" | "react-springboot";
 
 export const PRESET_NAMES: PresetName[] = [
   "mern",

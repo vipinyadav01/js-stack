@@ -174,7 +174,9 @@ function StatCard({
             <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest">
               {label}
             </p>
-            <p className="text-2xl font-mono font-bold mt-1 tracking-tight text-foreground">{value}</p>
+            <p className="text-2xl font-mono font-bold mt-1 tracking-tight text-foreground">
+              {value}
+            </p>
           </div>
         </div>
         {trend !== undefined && (
@@ -211,11 +213,15 @@ function SectionHeader({
     <div className="flex items-center justify-between border-b border-border/60 pb-3">
       <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
         <Icon className="h-4 w-4 text-primary" />
-        <span className="font-bold text-primary">{title.toUpperCase().replace(/\s+/g, "_")}</span>
+        <span className="font-bold text-primary">
+          {title.toUpperCase().replace(/\s+/g, "_")}
+        </span>
         {description && (
           <>
             <span className="text-muted-foreground">/</span>
-            <span className="text-xs text-muted-foreground font-normal">{description}</span>
+            <span className="text-xs text-muted-foreground font-normal">
+              {description}
+            </span>
           </>
         )}
       </div>
@@ -257,7 +263,8 @@ export default function AnalyticsPage() {
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
   // Configuration
-  const npmPackage = process.env.NPM_PACKAGE_NAME || "@vipinyadav02/createjsstack";
+  const npmPackage =
+    process.env.NPM_PACKAGE_NAME || "@vipinyadav02/createjsstack";
   const githubRepo = process.env.GITHUB_REPO || "vipinyadav01/js-stack";
 
   // Fetch NPM data
@@ -341,7 +348,8 @@ export default function AnalyticsPage() {
                 Analytics<span className="text-primary">.sh</span>
               </h1>
               <p className="text-muted-foreground font-sans text-sm lg:text-base max-w-xl">
-                Real-time performance telemetry, package downloads, and repository statistics for JS-Stack CLI.
+                Real-time performance telemetry, package downloads, and
+                repository statistics for JS-Stack CLI.
               </p>
             </div>
 
@@ -407,26 +415,22 @@ export default function AnalyticsPage() {
                 label="GitHub Stars"
                 value={formatNumber(githubData?.info?.stargazersCount || 0)}
                 trend={12}
-                
               />
               <StatCard
                 icon={Download}
                 label="Weekly Downloads"
                 value={formatNumber(npmData?.totalLast7Days || 0)}
                 trend={8}
-                
               />
               <StatCard
                 icon={GitFork}
                 label="Forks"
                 value={formatNumber(githubData?.info?.forksCount || 0)}
-                
               />
               <StatCard
                 icon={Eye}
                 label="Watchers"
                 value={formatNumber(githubData?.info?.watchersCount || 0)}
-                
               />
             </div>
           </section>

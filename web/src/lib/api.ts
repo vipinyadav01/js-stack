@@ -72,7 +72,9 @@ export async function fetchNpmPackageData(
       fetch(pkgInfoUrl).catch(() => null),
     ]);
 
-    const downloadsData = downloadsRes?.ok ? await downloadsRes.json() : { downloads: [] };
+    const downloadsData = downloadsRes?.ok
+      ? await downloadsRes.json()
+      : { downloads: [] };
     const infoData = infoRes?.ok ? await infoRes.json() : null;
 
     if (!infoData) {
@@ -85,11 +87,15 @@ export async function fetchNpmPackageData(
         totalLast7Days: 1250,
         info: {
           name: packageName,
-          description: "Comprehensive scaffold project generator for modern web development",
+          description:
+            "Comprehensive scaffold project generator for modern web development",
           version: "1.3.0",
           versionsCount: 16,
           homepage: "https://github.com/vipinyadav01/js-stack",
-          repository: { type: "git", url: "git+https://github.com/vipinyadav01/js-stack.git" },
+          repository: {
+            type: "git",
+            url: "git+https://github.com/vipinyadav01/js-stack.git",
+          },
           time: {},
         },
       };
@@ -123,7 +129,8 @@ export async function fetchNpmPackageData(
       totalLast7Days: 1250,
       info: {
         name: packageName,
-        description: "Comprehensive scaffold project generator for modern web development",
+        description:
+          "Comprehensive scaffold project generator for modern web development",
         version: "1.3.0",
         versionsCount: 16,
         homepage: "https://github.com/vipinyadav01/js-stack",
@@ -161,13 +168,16 @@ export async function fetchGitHubRepoData(
     ]);
 
     if (!repoRes || !repoRes.ok) {
-      console.warn(`GitHub repo API returned ${repoRes?.status || "network error"}. Using fallback stats.`);
+      console.warn(
+        `GitHub repo API returned ${repoRes?.status || "network error"}. Using fallback stats.`,
+      );
       return {
         repo,
         info: {
           name: "js-stack",
           fullName: repoPath,
-          description: "Comprehensive scaffold project generator for modern web development",
+          description:
+            "Comprehensive scaffold project generator for modern web development",
           htmlUrl: `https://github.com/${repoPath}`,
           stargazersCount: 48,
           watchersCount: 12,
@@ -206,7 +216,9 @@ export async function fetchGitHubRepoData(
 
     const repoData = await repoRes.json();
     const releasesData = releasesRes?.ok ? await releasesRes.json() : [];
-    const contributorsData = contributorsRes?.ok ? await contributorsRes.json() : [];
+    const contributorsData = contributorsRes?.ok
+      ? await contributorsRes.json()
+      : [];
 
     return {
       repo,
@@ -233,8 +245,10 @@ export async function fetchGitHubRepoData(
         .map((release: Record<string, unknown>) => ({
           tagName: (release.tag_name as string) || "v1.3.0",
           name: (release.name as string) || "v1.3.0",
-          publishedAt: (release.published_at as string) || new Date().toISOString(),
-          htmlUrl: (release.html_url as string) || `https://github.com/${repoPath}`,
+          publishedAt:
+            (release.published_at as string) || new Date().toISOString(),
+          htmlUrl:
+            (release.html_url as string) || `https://github.com/${repoPath}`,
           draft: (release.draft as boolean) || false,
           prerelease: (release.prerelease as boolean) || false,
         })),
@@ -242,8 +256,12 @@ export async function fetchGitHubRepoData(
         .slice(0, 10)
         .map((contributor: Record<string, unknown>) => ({
           login: (contributor.login as string) || "contributor",
-          avatarUrl: (contributor.avatar_url as string) || "https://github.com/github.png",
-          htmlUrl: (contributor.html_url as string) || `https://github.com/${repoPath}`,
+          avatarUrl:
+            (contributor.avatar_url as string) ||
+            "https://github.com/github.png",
+          htmlUrl:
+            (contributor.html_url as string) ||
+            `https://github.com/${repoPath}`,
           contributions: (contributor.contributions as number) || 1,
           type: (contributor.type as string) || "User",
         })),
@@ -255,7 +273,8 @@ export async function fetchGitHubRepoData(
       info: {
         name: "js-stack",
         fullName: repoPath,
-        description: "Comprehensive scaffold project generator for modern web development",
+        description:
+          "Comprehensive scaffold project generator for modern web development",
         htmlUrl: `https://github.com/${repoPath}`,
         stargazersCount: 48,
         watchersCount: 12,

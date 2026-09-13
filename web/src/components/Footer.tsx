@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Github,
-  Twitter,
-  Globe,
-  ArrowRight,
-  Copy,
-  Check,
-} from "lucide-react";
+import { Github, Twitter, Globe, ArrowRight, Copy, Check } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../Images/logo.png";
@@ -37,7 +30,6 @@ export default function Footer() {
       {/* Main Container */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 relative z-10 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 pb-12 border-b border-border/50">
-          
           {/* Brand Info (Spans 2 cols on lg) */}
           <div className="lg:col-span-2 space-y-5">
             <Link href="/" className="flex items-center gap-3 group">
@@ -56,7 +48,9 @@ export default function Footer() {
             </Link>
 
             <p className="text-xs text-muted-foreground leading-relaxed max-w-sm font-sans">
-              Scaffold production-ready JavaScript full-stack projects in seconds. Zero configuration needed with Next.js, React, Node, Express, Prisma & Docker.
+              Scaffold production-ready JavaScript full-stack projects in
+              seconds. Zero configuration needed with Next.js, React, Node,
+              Express, Prisma & Docker.
             </p>
 
             {/* Quick Terminal Copy Box */}
@@ -71,7 +65,11 @@ export default function Footer() {
                   className="p-1.5 rounded bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-all shrink-0"
                   title="Copy command"
                 >
-                  {copiedCommand ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                  {copiedCommand ? (
+                    <Check className="h-3 w-3 text-emerald-400" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
                 </button>
               </div>
             </div>
@@ -271,13 +269,13 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/60 pt-8 sm:flex-row font-mono text-xs text-muted-foreground">
           <p>
-            © {currentYear} Vipin Yadav. Built for the modern full-stack web era. Open Source (MIT).
+            © {currentYear} Vipin Yadav. Built for the modern full-stack web
+            era. Open Source (MIT).
           </p>
 
           <div className="flex items-center gap-4 text-muted-foreground">

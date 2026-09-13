@@ -2,67 +2,10 @@
 
 /**
  * Quick Release Script for JS Stack
- * Hand  syncVersions: () => {
-    console.log('� Syncing version references across the project...');
-    
-    try {
-      const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-      const currentVersion = packageJson.version;
-      
-      console.log(`📦 Current version: ${currentVersion}`);
-      
-      // Check if web package.json needs updating
-      const webPackagePath = 'web/package.json';
-      if (fs.existsSync(webPackagePath)) {
-        const webPackage = JSON.parse(fs.readFileSync(webPackagePath, 'utf8'));
-        if (webPackage.version !== currentVersion) {
-          console.log(`🔄 Updating web package version: ${webPackage.version} → ${currentVersion}`);
-          webPackage.version = currentVersion;
-          fs.writeFileSync(webPackagePath, JSON.stringify(webPackage, null, 2) + '\n');
-        }
-      }
-      
-      // Check for any hardcoded version references in key files
-      const filesToCheck = [
-        'README.md',
-        'web/README.md',
-        'SCRIPTS.md'
-      ];
-      
-      console.log('� Checking for outdated version references...');
-      let foundOutdated = false;
-      
-      for (const file of filesToCheck) {
-        if (fs.existsSync(file)) {
-          const content = fs.readFileSync(file, 'utf8');
-          const versionRegex = /\b\d+\.\d+\.\d+\b/g;
-          const matches = content.match(versionRegex);
-          
-          if (matches) {
-            const outdatedVersions = matches.filter(v => v !== currentVersion);
-            if (outdatedVersions.length > 0) {
-              console.log(`⚠️  Found potentially outdated versions in ${file}: ${outdatedVersions.join(', ')}`);
-              foundOutdated = true;
-            }
-          }
-        }
-      }
-      
-      if (!foundOutdated) {
-        console.log('✅ No outdated version references found');
-      }
-      
-      console.log('💡 Version sync complete!');
-      console.log(`💡 Current version: ${currentVersion}`);
-      
-    } catch (error) {
-      console.error('❌ Error syncing versions:', error.message);
-    }
-  },development and release workflows
+ * Handles development and release workflows
  */
 
 import { execSync } from "child_process";
-import { readFileSync } from "fs";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -255,19 +198,6 @@ Examples:
   node scripts/release.js sync-versions
 `);
   process.exit(0);
-}
-
-if (commands[command]) {
-  try {
-    commands[command]();
-  } catch (error) {
-    console.error(`❌ Error: ${error.message}`);
-    process.exit(1);
-  }
-} else {
-  console.error(`❌ Unknown command: ${command}`);
-  console.log("Run without arguments to see available commands");
-  process.exit(1);
 }
 
 if (commands[command]) {

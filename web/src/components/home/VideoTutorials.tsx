@@ -81,7 +81,9 @@ export default function VideoTutorials({ limit = 4 }: VideoTutorialsProps) {
             <Youtube className="h-4 w-4 text-primary" />
             <span className="font-bold text-primary">VIDEO_TUTORIALS</span>
             <span className="text-muted-foreground">/</span>
-            <span className="text-xs text-muted-foreground font-normal">tutorials.mp4</span>
+            <span className="text-xs text-muted-foreground font-normal">
+              tutorials.mp4
+            </span>
           </div>
           <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
             [3 LESSONS]

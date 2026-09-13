@@ -102,7 +102,8 @@ export default function Home() {
               </h2>
 
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed font-sans max-w-xl mx-auto">
-                Join thousands of developers building production-ready JavaScript & TypeScript applications with JS-Stack CLI.
+                Join thousands of developers building production-ready
+                JavaScript & TypeScript applications with JS-Stack CLI.
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 pt-4">

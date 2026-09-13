@@ -30,8 +30,10 @@ export function generateSEOMetadata({
   const siteUrl = (
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.createjsstack.dev"
   ).trim();
-  const baseUrl = (siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`).replace(/\/$/, "");
-  
+  const baseUrl = (
+    siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`
+  ).replace(/\/$/, "");
+
   // Ensure canonical URL strictly follows Next.js trailingSlash: true configuration
   let canonicalPath = "/";
   if (url) {

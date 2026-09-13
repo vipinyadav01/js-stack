@@ -26,10 +26,7 @@ import {
   formatWithBiome,
   createBiomeConfig,
 } from "../../utils/biome-formatter.js";
-import {
-  isJavaBackend,
-  isJavaOnlyProject,
-} from "../../utils/java-backend.js";
+import { isJavaBackend, isJavaOnlyProject } from "../../utils/java-backend.js";
 
 /**
  * Directory holding the backend sources, which is a sub-directory only when the
@@ -76,9 +73,15 @@ export async function createProjectStructure(
       // Keep only workspace-level tooling deps at root; framework deps belong
       // in each workspace's own package.json.
       const toolingPkgs = new Set([
-        "@biomejs/biome", "husky", "turbo", "vitest",
-        "@playwright/test", "cypress", "workbox-precaching",
-        "@tauri-apps/api", "wrangler",
+        "@biomejs/biome",
+        "husky",
+        "turbo",
+        "vitest",
+        "@playwright/test",
+        "cypress",
+        "workbox-precaching",
+        "@tauri-apps/api",
+        "wrangler",
       ]);
       for (const field of ["dependencies", "devDependencies"] as const) {
         const deps = rootPkg[field] as Record<string, string> | undefined;
@@ -240,9 +243,7 @@ export async function installDependencies(
  * `mvn` is reported as a next step rather than treated as a failure — the
  * generated project still builds once the user installs it.
  */
-export async function resolveMavenDependencies(
-  javaDir: string,
-): Promise<void> {
+export async function resolveMavenDependencies(javaDir: string): Promise<void> {
   try {
     await execa("mvn", ["-v"]);
   } catch {

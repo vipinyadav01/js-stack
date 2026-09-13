@@ -23,15 +23,17 @@
     "CODE_OF_CONDUCT.md"
   ],
   "scripts": {
-    "build": "turbo run build",
+    "build": "npm run build:cli && turbo run build",
     "build:cli": "tsdown src/cli.ts src/index.ts --format esm --clean",
+    "build:web": "turbo run build --filter=web",
     "dev": "turbo run dev",
     "dev:cli": "tsx src/cli.ts",
     "dev:web": "turbo run dev --filter=web",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit && npm run type-check --workspace=web",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "clean": "turbo run clean",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -107,10 +109,7 @@
     "typescript": "^5.3.3"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "prettier --write"
-    ],
-    "*.{json,md}": [
+    "*.{js,jsx,ts,tsx,md,mdx,json,css,yml,yaml}": [
       "prettier --write"
     ]
   },

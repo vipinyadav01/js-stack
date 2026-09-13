@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build and dist outputs
+dist/
+build/
+out/
+.next/
+.turbo/
+.vercel/
+web/.next/
+web/out/
+
+# Fumadocs generated files
+web/.source/
+
+# Cache and logs
+.cache/
+logs/
+*.log
+coverage/
+
+# Templates containing Handlebars syntax that break standard JSON/JS parsers
+templates/
+*.hbs
+
+# Lockfiles
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

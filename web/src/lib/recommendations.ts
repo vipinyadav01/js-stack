@@ -363,7 +363,8 @@ export const COMPATIBILITY_MATRIX = {
       speed: "comparable to Express once warm (~30k req/s)",
       overhead: "high (JVM startup and memory)",
       bestFor: "Existing Java teams, JVM libraries, long-running services",
-      tradeoffs: "Separate toolchain (JDK + Maven), no shared types with the frontend",
+      tradeoffs:
+        "Separate toolchain (JDK + Maven), no shared types with the frontend",
     },
   },
 } as const;

@@ -15,8 +15,7 @@ import { cn } from "@/lib/utils";
 import { Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
-interface SwitchButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface SwitchButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "minimal";
   size?: "sm" | "default" | "lg";
   showLabel?: boolean;

@@ -198,9 +198,29 @@ export const compatibilityRules = {
       "springboot",
       "none",
     ],
-    "native-nativewind": ["express", "fastify", "nestjs", "convex", "springboot"],
-    "native-unistyles": ["express", "fastify", "nestjs", "convex", "springboot"],
-    none: ["express", "fastify", "koa", "nestjs", "hono", "elysia", "springboot"],
+    "native-nativewind": [
+      "express",
+      "fastify",
+      "nestjs",
+      "convex",
+      "springboot",
+    ],
+    "native-unistyles": [
+      "express",
+      "fastify",
+      "nestjs",
+      "convex",
+      "springboot",
+    ],
+    none: [
+      "express",
+      "fastify",
+      "koa",
+      "nestjs",
+      "hono",
+      "elysia",
+      "springboot",
+    ],
   },
 
   // Backend-Frontend compatibility (reverse lookup)

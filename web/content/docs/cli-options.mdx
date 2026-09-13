@@ -13,28 +13,28 @@ npx @vipinyadav02/createjsstack@latest create --help
 
 ## Options
 
-| Option              | Description          | Values                                                                          |
-| ------------------- | -------------------- | ------------------------------------------------------------------------------- |
-| `--preset`          | Start from a preset  | `mern`, `next-fullstack`, `react-vite`, `express-api`, `react-springboot`         |
-| `--frontend`        | Frontend framework   | `react`, `next`, `vue`, `nuxt`, `svelte`, `sveltekit`, `solid`, `qwik`, `astro`, `angular`, `remix`, `react-router`, `tanstack-router`, `tanstack-start`, `none` |
-| `--backend`         | Backend framework    | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `springboot`, `none` |
-| `--database`        | Database             | `mongodb`, `postgres`, `mysql`, `sqlite`, `none`                                 |
-| `--orm`             | ORM / ODM            | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `jpa`, `none`            |
-| `--auth`            | Authentication       | `better-auth`, `clerk`, `next-auth`, `lucia`, `spring-security`, `none`           |
-| `--api`             | API style            | `trpc`, `orpc`, `graphql`, `rest`, `none`                                        |
-| `--runtime`         | Runtime              | `node`, `bun`, `deno`, `workers`                                                 |
-| `--addons`          | Extra tools (CSV)    | `docker`, `biome`, `turborepo`, `pwa`, `tauri`, `vitest`, `playwright`, `cypress`|
-| `--package-manager` | Package manager      | `npm`, `pnpm`, `bun`                                                             |
+| Option              | Description         | Values                                                                                                                                                           |
+| ------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--preset`          | Start from a preset | `mern`, `next-fullstack`, `react-vite`, `express-api`, `react-springboot`                                                                                        |
+| `--frontend`        | Frontend framework  | `react`, `next`, `vue`, `nuxt`, `svelte`, `sveltekit`, `solid`, `qwik`, `astro`, `angular`, `remix`, `react-router`, `tanstack-router`, `tanstack-start`, `none` |
+| `--backend`         | Backend framework   | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `springboot`, `none`                                                                    |
+| `--database`        | Database            | `mongodb`, `postgres`, `mysql`, `sqlite`, `none`                                                                                                                 |
+| `--orm`             | ORM / ODM           | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `jpa`, `none`                                                                                           |
+| `--auth`            | Authentication      | `better-auth`, `clerk`, `next-auth`, `lucia`, `spring-security`, `none`                                                                                          |
+| `--api`             | API style           | `trpc`, `orpc`, `graphql`, `rest`, `none`                                                                                                                        |
+| `--runtime`         | Runtime             | `node`, `bun`, `deno`, `workers`                                                                                                                                 |
+| `--addons`          | Extra tools (CSV)   | `docker`, `biome`, `turborepo`, `pwa`, `tauri`, `vitest`, `playwright`, `cypress`                                                                                |
+| `--package-manager` | Package manager     | `npm`, `pnpm`, `bun`                                                                                                                                             |
 
 ## Flags
 
-| Flag                          | Description                             |
-| ----------------------------- | --------------------------------------- |
-| `--yes`                       | Skip all prompts, use defaults          |
-| `--git` / `--no-git`          | Initialize a git repository             |
-| `--install` / `--no-install`  | Install dependencies after creation     |
-| `--dry-run`                   | Preview files without writing them      |
-| `--verbose`                   | Print the resolved configuration        |
+| Flag                         | Description                         |
+| ---------------------------- | ----------------------------------- |
+| `--yes`                      | Skip all prompts, use defaults      |
+| `--git` / `--no-git`         | Initialize a git repository         |
+| `--install` / `--no-install` | Install dependencies after creation |
+| `--dry-run`                  | Preview files without writing them  |
+| `--verbose`                  | Print the resolved configuration    |
 
 <Callout type="warn" title="Compatibility is checked">
   Some combinations are validated and auto-fixed (for example, Next.js as a
@@ -52,12 +52,12 @@ project sits at the root and no `package.json` is written at all.
 Because it runs on the JVM, the JavaScript-only parts of the stack do not apply,
 and the CLI narrows them for you:
 
-| Option      | With `springboot`                                    |
-| ----------- | ---------------------------------------------------- |
-| `--orm`     | `jpa` (relational databases) or `none`               |
-| `--auth`    | `spring-security` or `none`                          |
+| Option      | With `springboot`                                                      |
+| ----------- | ---------------------------------------------------------------------- |
+| `--orm`     | `jpa` (relational databases) or `none`                                 |
+| `--auth`    | `spring-security` or `none`                                            |
 | `--api`     | `rest` or `graphql` — tRPC and oRPC cannot cross the language boundary |
-| `--runtime` | `none`                                               |
+| `--runtime` | `none`                                                                 |
 
 MongoDB needs no ORM flag: the template wires up Spring Data MongoDB directly.
 
@@ -77,8 +77,8 @@ npm run dev:backend
 
 ## Other commands
 
-| Command            | Description                        |
-| ------------------ | ---------------------------------- |
-| `list`             | List all available presets         |
-| `add-preset <name>`| Register a custom preset           |
-| `info`             | Print environment info             |
+| Command             | Description                |
+| ------------------- | -------------------------- |
+| `list`              | List all available presets |
+| `add-preset <name>` | Register a custom preset   |
+| `info`              | Print environment info     |

@@ -16,8 +16,12 @@ can use in any `.mdx` file under `content/docs`.
 ## Callouts
 
 <Callout title="Info">This is an informational callout.</Callout>
-<Callout type="warn" title="Warning">Careful — this needs attention.</Callout>
-<Callout type="error" title="Error">Something went wrong.</Callout>
+<Callout type="warn" title="Warning">
+  Careful — this needs attention.
+</Callout>
+<Callout type="error" title="Error">
+  Something went wrong.
+</Callout>
 
 ## Cards
 
@@ -33,29 +37,17 @@ can use in any `.mdx` file under `content/docs`.
 ## Tabs
 
 <Tabs items={["npm", "pnpm", "bun"]}>
-  <Tab value="npm">
-    ```bash
-    npm install
-    ```
-  </Tab>
-  <Tab value="pnpm">
-    ```bash
-    pnpm install
-    ```
-  </Tab>
-  <Tab value="bun">
-    ```bash
-    bun install
-    ```
-  </Tab>
+  <Tab value="npm">```bash npm install ```</Tab>
+  <Tab value="pnpm">```bash pnpm install ```</Tab>
+  <Tab value="bun">```bash bun install ```</Tab>
 </Tabs>
 
 ## Steps
 
 <Steps>
-<Step>Pick a stack.</Step>
-<Step>Generate the project.</Step>
-<Step>Install and run.</Step>
+  <Step>Pick a stack.</Step>
+  <Step>Generate the project.</Step>
+  <Step>Install and run.</Step>
 </Steps>
 
 ## Accordions

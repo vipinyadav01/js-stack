@@ -293,18 +293,14 @@ function processTwitterData(data: unknown): TwitterTweet[] {
       url: `https://twitter.com/${user.username}/status/${tweet.id}`,
       reply_settings:
         (tweet.reply_settings as
-          | "everyone"
-          | "mentioned_users"
-          | "following") || "everyone",
+          "everyone" | "mentioned_users" | "following") || "everyone",
       is_retweet: false,
       is_reply: Boolean(tweet.in_reply_to_user_id),
       media: tweetMedia.map((m) => ({
         type:
           m.type === "photo" || m.type === "video" || m.type === "animated_gif"
             ? ((m.type === "animated_gif" ? "gif" : m.type) as
-                | "photo"
-                | "video"
-                | "gif")
+                "photo" | "video" | "gif")
             : ("photo" as const),
         url: m.url || "",
         alt_text: m.alt_text || "",

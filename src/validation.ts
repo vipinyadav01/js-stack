@@ -214,9 +214,7 @@ export function validateJavaStack(config: Partial<ProjectConfig>): {
     }
 
     if (config.runtime && config.runtime !== "none") {
-      errors.push(
-        "Spring Boot runs on the JVM. Set runtime to 'none'",
-      );
+      errors.push("Spring Boot runs on the JVM. Set runtime to 'none'");
     }
   } else {
     if (config.orm && JAVA_ORMS.has(config.orm)) {
@@ -392,7 +390,11 @@ export function autoFixConfig(
   }
 
   // JPA is relational-only; MongoDB is handled by Spring Data MongoDB instead.
-  if (fixed.orm === "jpa" && fixed.database && !JPA_DATABASES.has(fixed.database)) {
+  if (
+    fixed.orm === "jpa" &&
+    fixed.database &&
+    !JPA_DATABASES.has(fixed.database)
+  ) {
     fixed.orm = "none";
   }
 

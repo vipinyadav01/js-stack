@@ -62,18 +62,20 @@ export default function TopComments({
   if (loading) {
     return (
       <div>
-      {/* Header */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap border-b border-border/60 pb-3">
-        <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
-          <MessageCircle className="h-4 w-4 text-primary" />
-          <span className="font-bold text-primary">COMMUNITY_FEEDBACK</span>
-          <span className="text-muted-foreground">/</span>
-          <span className="text-xs text-muted-foreground font-normal">feedback.json</span>
+        {/* Header */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap border-b border-border/60 pb-3">
+          <div className="flex items-center gap-2 font-mono text-sm tracking-tight text-foreground">
+            <MessageCircle className="h-4 w-4 text-primary" />
+            <span className="font-bold text-primary">COMMUNITY_FEEDBACK</span>
+            <span className="text-muted-foreground">/</span>
+            <span className="text-xs text-muted-foreground font-normal">
+              feedback.json
+            </span>
+          </div>
+          <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
+            [VERIFIED USERS]
+          </span>
         </div>
-        <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
-          [VERIFIED USERS]
-        </span>
-      </div>
         <div className="flex items-center justify-center py-8">
           <div className="text-muted-foreground text-sm">
             Loading comments...
@@ -91,7 +93,9 @@ export default function TopComments({
           <MessageCircle className="h-4 w-4 text-primary" />
           <span className="font-bold text-primary">COMMUNITY_FEEDBACK</span>
           <span className="text-muted-foreground">/</span>
-          <span className="text-xs text-muted-foreground font-normal">feedback.json</span>
+          <span className="text-xs text-muted-foreground font-normal">
+            feedback.json
+          </span>
         </div>
         <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
           [VERIFIED USERS]

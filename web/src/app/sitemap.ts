@@ -48,7 +48,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const slug = page.slugs.join("/");
     const url = slug ? `${baseUrl}/docs/${slug}/` : `${baseUrl}/docs/`;
     let priority = 0.7;
-    if (!slug || slug === "getting-started" || slug === "cli-options" || slug === "presets") {
+    if (
+      !slug ||
+      slug === "getting-started" ||
+      slug === "cli-options" ||
+      slug === "presets"
+    ) {
       priority = 0.85;
     }
     return {

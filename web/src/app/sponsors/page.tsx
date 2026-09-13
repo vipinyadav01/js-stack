@@ -183,7 +183,8 @@ export default function SponsorsPage() {
                 Sponsor<span className="text-primary">Dashboard</span>
               </h1>
               <p className="text-sm text-muted-foreground max-w-2xl">
-                Community support, GitHub sponsors, and real-time community engagement telemetry.
+                Community support, GitHub sponsors, and real-time community
+                engagement telemetry.
               </p>
             </div>
 

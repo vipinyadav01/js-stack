@@ -198,7 +198,10 @@ export async function promptConfiguration(options: {
         // explicit ORM choice.
         if (results.backend === "springboot") {
           if (db === "postgres" || db === "mysql" || db === "sqlite") {
-            options.push({ value: "jpa", label: "Spring Data JPA (Hibernate)" });
+            options.push({
+              value: "jpa",
+              label: "Spring Data JPA (Hibernate)",
+            });
           }
 
           return p.select({

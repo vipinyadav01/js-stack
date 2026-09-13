@@ -114,21 +114,21 @@ npx @vipinyadav02/createjsstack@latest my-api \
 
 ## 📋 CLI Options
 
-| Option              | Description                | Values                                                                          |
-| ------------------- | -------------------------- | ------------------------------------------------------------------------------- |
-| `--preset`          | Start from a preset        | `mern`, `next-fullstack`, `react-vite`, `express-api`                            |
-| `--frontend`        | Frontend framework         | `react`, `next`, `vue`, `nuxt`, `svelte`, `angular`, `solid`, `astro`, … `none` |
-| `--backend`         | Backend framework          | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `none`  |
-| `--database`        | Database system            | `mongodb`, `postgres`, `mysql`, `sqlite`, `none`                                 |
-| `--orm`             | ORM/ODM                    | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `none`                  |
-| `--auth`            | Authentication             | `better-auth`, `clerk`, `next-auth`, `lucia`, `none`                             |
-| `--api`             | API style                  | `trpc`, `orpc`, `graphql`, `rest`, `none`                                        |
-| `--runtime`         | Runtime environment        | `node`, `bun`, `deno`, `workers`                                                 |
-| `--addons`          | Additional tools (CSV)     | `docker`, `biome`, `turborepo`, `pwa`, `tauri`, `vitest`, `playwright`           |
-| `--package-manager` | Package manager            | `npm`, `pnpm`, `bun`                                                             |
-| `--git` / `--no-git`         | Initialize git repository  | Flag                                                                   |
-| `--install` / `--no-install` | Install dependencies       | Flag                                                                   |
-| `--yes`             | Use defaults (skip prompts) | Flag                                                                            |
+| Option                       | Description                 | Values                                                                          |
+| ---------------------------- | --------------------------- | ------------------------------------------------------------------------------- |
+| `--preset`                   | Start from a preset         | `mern`, `next-fullstack`, `react-vite`, `express-api`                           |
+| `--frontend`                 | Frontend framework          | `react`, `next`, `vue`, `nuxt`, `svelte`, `angular`, `solid`, `astro`, … `none` |
+| `--backend`                  | Backend framework           | `express`, `hono`, `fastify`, `nest`, `koa`, `elysia`, `next`, `convex`, `none` |
+| `--database`                 | Database system             | `mongodb`, `postgres`, `mysql`, `sqlite`, `none`                                |
+| `--orm`                      | ORM/ODM                     | `prisma`, `drizzle`, `mongoose`, `typeorm`, `mikro-orm`, `none`                 |
+| `--auth`                     | Authentication              | `better-auth`, `clerk`, `next-auth`, `lucia`, `none`                            |
+| `--api`                      | API style                   | `trpc`, `orpc`, `graphql`, `rest`, `none`                                       |
+| `--runtime`                  | Runtime environment         | `node`, `bun`, `deno`, `workers`                                                |
+| `--addons`                   | Additional tools (CSV)      | `docker`, `biome`, `turborepo`, `pwa`, `tauri`, `vitest`, `playwright`          |
+| `--package-manager`          | Package manager             | `npm`, `pnpm`, `bun`                                                            |
+| `--git` / `--no-git`         | Initialize git repository   | Flag                                                                            |
+| `--install` / `--no-install` | Install dependencies        | Flag                                                                            |
+| `--yes`                      | Use defaults (skip prompts) | Flag                                                                            |
 
 > **Note:** Project name is always customizable, even with `--yes` flag.
 > Run `npx @vipinyadav02/createjsstack@latest create --help` for the full option list.
@@ -189,7 +189,7 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 <div align="center">
 
-**Built with ❤️ by [Vipin Yadav](https://vipinyadav01.vercel.app)**
+**Built with ❤️ by [Vipin Yadav](https://devxvipin.me)**
 
 [Website](https://createjsstack.dev) • [Documentation](https://createjsstack.dev/docs) • [GitHub](https://github.com/vipinyadav01/js-stack)
 

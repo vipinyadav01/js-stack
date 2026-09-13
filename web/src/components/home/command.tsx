@@ -29,11 +29,15 @@ export default function Command() {
           <Terminal className="h-4 w-4 text-primary" />
           <span className="font-bold text-primary">QUICK_START</span>
           <span className="text-muted-foreground">/</span>
-          <span className="text-xs text-muted-foreground font-normal">command.sh</span>
+          <span className="text-xs text-muted-foreground font-normal">
+            command.sh
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-mono text-xs text-muted-foreground">Production Ready</span>
+          <span className="font-mono text-xs text-muted-foreground">
+            Production Ready
+          </span>
         </div>
       </div>
 
@@ -58,7 +62,7 @@ export default function Command() {
                     "px-3 py-1 rounded-md text-xs font-mono transition-all",
                     selectedPM === pm
                       ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {pm}
@@ -91,22 +95,34 @@ export default function Command() {
               <span className="text-primary font-bold select-none">$</span>
               <code className="text-foreground flex-1 break-all">
                 <span className="text-emerald-400 font-semibold">
-                  {selectedPM === "bun" ? "bunx" : selectedPM === "pnpm" ? "pnpm create" : "npx"}
+                  {selectedPM === "bun"
+                    ? "bunx"
+                    : selectedPM === "pnpm"
+                      ? "pnpm create"
+                      : "npx"}
                 </span>{" "}
-                <span className="text-primary">@vipinyadav02/createjsstack@latest</span>{" "}
+                <span className="text-primary">
+                  @vipinyadav02/createjsstack@latest
+                </span>{" "}
                 <span className="text-yellow-300">my-app</span>{" "}
                 <span className="text-cyan-400">--yolo</span>
               </code>
             </div>
-            
+
             <div className="mt-5 pt-4 border-t border-border/40 text-xs text-muted-foreground space-y-2 font-mono">
               <div className="flex items-center gap-2">
                 <span className="text-primary">ℹ</span>
-                <span>Generates complete repository with default full-stack configuration.</span>
+                <span>
+                  Generates complete repository with default full-stack
+                  configuration.
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-emerald-400">✓</span>
-                <span>Includes auto-dependency install, git init, and dev server script.</span>
+                <span>
+                  Includes auto-dependency install, git init, and dev server
+                  script.
+                </span>
               </div>
             </div>
           </div>
@@ -135,11 +151,19 @@ export default function Command() {
             </h3>
 
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Use our interactive stack builder to visually choose your frontend, backend, database, ORM, auth method, and addons.
+              Use our interactive stack builder to visually choose your
+              frontend, backend, database, ORM, auth method, and addons.
             </p>
 
             <div className="flex flex-wrap gap-1.5 pt-1">
-              {["Next.js 15", "Express", "Postgres", "Prisma", "Better Auth", "Docker"].map((tech) => (
+              {[
+                "Next.js 15",
+                "Express",
+                "Postgres",
+                "Prisma",
+                "Better Auth",
+                "Docker",
+              ].map((tech) => (
                 <span
                   key={tech}
                   className="px-2.5 py-1 rounded-md bg-secondary/80 border border-border text-[11px] font-mono text-foreground/90 shadow-sm"

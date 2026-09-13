@@ -67,7 +67,9 @@ export default function TopSponsors({
           <Heart className="h-4 w-4 text-primary" />
           <span className="font-bold text-primary">PROJECT_SPONSORS</span>
           <span className="text-muted-foreground">/</span>
-          <span className="text-xs text-muted-foreground font-normal">sponsors.json</span>
+          <span className="text-xs text-muted-foreground font-normal">
+            sponsors.json
+          </span>
         </div>
         <span className="w-full text-right font-mono text-muted-foreground text-xs sm:w-auto sm:text-left">
           [COMMUNITY SUPPORT]

@@ -43,17 +43,21 @@ export default function Hero() {
 
       <div className="container mx-auto px-4 lg:px-6 relative z-10">
         <div className="flex flex-col items-center text-center max-w-5xl mx-auto space-y-8">
-
           {/* Cloudflare-Style Announcement Banner */}
           <Link
             href="/new"
             className="group inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/10 hover:border-primary/60 text-primary text-xs sm:text-sm font-mono tracking-wide backdrop-blur-md transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-primary/10"
           >
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Connect 2026 · JS-Stack CLI v1.3.0 · The Full-Stack Generator</span>
-            <span className="text-muted-foreground group-hover:text-primary transition-colors">·</span>
+            <span>
+              Connect 2026 · JS-Stack CLI v1.3.0 · The Full-Stack Generator
+            </span>
+            <span className="text-muted-foreground group-hover:text-primary transition-colors">
+              ·
+            </span>
             <span className="font-semibold underline underline-offset-4 group-hover:text-foreground transition-colors flex items-center gap-1">
-              Start Building <ArrowRight className="h-3.5 w-3.5 inline-block group-hover:translate-x-0.5 transition-transform" />
+              Start Building{" "}
+              <ArrowRight className="h-3.5 w-3.5 inline-block group-hover:translate-x-0.5 transition-transform" />
             </span>
           </Link>
 
@@ -71,8 +75,9 @@ export default function Hero() {
           {/* Subtitle */}
           <p className="text-base sm:text-xl text-muted-foreground font-sans max-w-3xl leading-relaxed font-normal">
             Everything we learned from generating 1,000+ apps, yours by default.
-            One CLI for your frontends, backends, databases, and authentication —
-            React, Next.js, Vue, Express, Prisma and Docker, without the boilerplate.
+            One CLI for your frontends, backends, databases, and authentication
+            — React, Next.js, Vue, Express, Prisma and Docker, without the
+            boilerplate.
           </p>
 
           {/* CTA Buttons Group */}
@@ -93,7 +98,9 @@ export default function Hero() {
             >
               <div className="flex items-center gap-2 overflow-hidden">
                 <Terminal className="h-4 w-4 text-primary flex-shrink-0" />
-                <span className="truncate">npx @vipinyadav02/createjsstack</span>
+                <span className="truncate">
+                  npx @vipinyadav02/createjsstack
+                </span>
               </div>
               {copied ? (
                 <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
@@ -118,9 +125,13 @@ export default function Hero() {
                   <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20 w-fit text-primary">
                     <Globe className="h-5 w-5" />
                   </div>
-                  <h3 className="font-mono font-bold text-lg text-foreground pt-1">Run everywhere</h3>
+                  <h3 className="font-mono font-bold text-lg text-foreground pt-1">
+                    Run everywhere
+                  </h3>
                   <p className="text-xs text-muted-foreground leading-relaxed font-sans">
-                    Scaffold frontends across Next.js 15, React 19, Vue 3, Angular, and Svelte paired with Express, Fastify, Koa, or NestJS seamlessly.
+                    Scaffold frontends across Next.js 15, React 19, Vue 3,
+                    Angular, and Svelte paired with Express, Fastify, Koa, or
+                    NestJS seamlessly.
                   </p>
                 </div>
               </div>
@@ -131,9 +142,13 @@ export default function Hero() {
                   <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20 w-fit text-primary">
                     <Cpu className="h-5 w-5" />
                   </div>
-                  <h3 className="font-mono font-bold text-lg text-foreground pt-1">Deploy anywhere</h3>
+                  <h3 className="font-mono font-bold text-lg text-foreground pt-1">
+                    Deploy anywhere
+                  </h3>
                   <p className="text-xs text-muted-foreground leading-relaxed font-sans">
-                    Pre-configured deployment scripts for Vercel, Cloudflare Workers, AWS, Docker containers, or self-hosted servers with zero setup overhead.
+                    Pre-configured deployment scripts for Vercel, Cloudflare
+                    Workers, AWS, Docker containers, or self-hosted servers with
+                    zero setup overhead.
                   </p>
                 </div>
               </div>
@@ -144,9 +159,13 @@ export default function Hero() {
                   <div className="p-2.5 rounded-lg bg-primary/10 border border-primary/20 w-fit text-primary">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
-                  <h3 className="font-mono font-bold text-lg text-foreground pt-1">Run at massive scale</h3>
+                  <h3 className="font-mono font-bold text-lg text-foreground pt-1">
+                    Run at massive scale
+                  </h3>
                   <p className="text-xs text-muted-foreground leading-relaxed font-sans">
-                    Built-in Prisma, D1, Mongoose, Better Auth, Vitest testing, and CI/CD pipelines. No more manual boilerplate planning. Ever.
+                    Built-in Prisma, D1, Mongoose, Better Auth, Vitest testing,
+                    and CI/CD pipelines. No more manual boilerplate planning.
+                    Ever.
                   </p>
                 </div>
               </div>
@@ -170,25 +189,33 @@ export default function Hero() {
               <div className="p-5 space-y-2 text-foreground/90 font-mono overflow-x-auto">
                 <div className="flex items-center gap-2">
                   <span className="text-primary font-bold">$</span>
-                  <span className="text-foreground">npx @vipinyadav02/createjsstack@latest my-app</span>
+                  <span className="text-foreground">
+                    npx @vipinyadav02/createjsstack@latest my-app
+                  </span>
                 </div>
                 <div className="text-muted-foreground text-xs pt-1">
                   ┌ Scaffolding your full-stack application...
                 </div>
                 <div className="text-emerald-400 text-xs flex items-center gap-2 pl-3">
-                  <span>✔</span> <span>Frontend: Next.js 15 (App Router, Tailwind CSS, TypeScript)</span>
+                  <span>✔</span>{" "}
+                  <span>
+                    Frontend: Next.js 15 (App Router, Tailwind CSS, TypeScript)
+                  </span>
                 </div>
                 <div className="text-emerald-400 text-xs flex items-center gap-2 pl-3">
-                  <span>✔</span> <span>Backend: Express.js (TypeScript Server)</span>
+                  <span>✔</span>{" "}
+                  <span>Backend: Express.js (TypeScript Server)</span>
                 </div>
                 <div className="text-emerald-400 text-xs flex items-center gap-2 pl-3">
                   <span>✔</span> <span>Database: PostgreSQL + Prisma ORM</span>
                 </div>
                 <div className="text-emerald-400 text-xs flex items-center gap-2 pl-3">
-                  <span>✔</span> <span>Auth: Better Auth (JWT + OAuth pre-configured)</span>
+                  <span>✔</span>{" "}
+                  <span>Auth: Better Auth (JWT + OAuth pre-configured)</span>
                 </div>
                 <div className="text-emerald-400 text-xs flex items-center gap-2 pl-3">
-                  <span>✔</span> <span>Addons: Docker Compose, Vitest, Biome</span>
+                  <span>✔</span>{" "}
+                  <span>Addons: Docker Compose, Vitest, Biome</span>
                 </div>
                 <div className="text-primary text-xs pt-2 pl-3 font-semibold">
                   ✨ Project created in ./my-app. Ready for development!
@@ -214,7 +241,6 @@ export default function Hero() {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </section>

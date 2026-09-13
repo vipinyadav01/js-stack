@@ -24,11 +24,11 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans:
-    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-mono:
-    var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono",
-    Consolas, "Liberation Mono", Menlo, monospace;
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Consolas,
+    "Liberation Mono", Menlo, monospace;
 
   /* Sidebar colors */
   --color-sidebar-ring: var(--sidebar-ring);

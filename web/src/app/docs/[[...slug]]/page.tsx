@@ -66,9 +66,6 @@ export async function generateMetadata(props: {
     title: page.data.title,
     description: page.data.description,
     url,
-    keywords: [
-      "js-stack docs",
-      page.data.title.toLowerCase(),
-    ],
+    keywords: ["js-stack docs", page.data.title.toLowerCase()],
   });
 }

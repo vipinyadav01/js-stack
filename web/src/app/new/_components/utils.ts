@@ -148,7 +148,10 @@ export function getCategoryDisplayName(category: string): string {
  * stack.backend is "none", so database/auth checks should use "next".
  */
 function getEffectiveBackend(stack: StackState): string {
-  if (stack.frontend === "nextjs" && (!stack.backend || stack.backend === "none")) {
+  if (
+    stack.frontend === "nextjs" &&
+    (!stack.backend || stack.backend === "none")
+  ) {
     return "next";
   }
   return stack.backend || "none";

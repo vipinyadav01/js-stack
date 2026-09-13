@@ -4,36 +4,44 @@ Full-stack JavaScript scaffolding CLI tool with marketing website and interactiv
 
 ## Project Structure
 
-- `cli/` - The actual CLI tool that generates projects (Commander.js + Handlebars templates)
-- `web/` - Marketing website + interactive builder that shows CLI capabilities and generates commands
+- `src/` - The actual CLI tool source code in TypeScript (`Commander.js`, `@clack/prompts`, `Handlebars`, `Zod`, `PostHog`), built via `tsdown` into `dist/` (`dist/cli.mjs` and `dist/index.mjs`)
+- `templates/` - Layered Handlebars templates (`base/`, `backend/`, `frontend/`, `database/`, `auth/`, `addons/`, `cicd/`, etc.)
+- `web/` - Marketing website, interactive stack builder, and documentation site (Next.js 16 App Router, npm workspace)
+- `scripts/` - Automation scripts (`build.js`, `release.js`, `publish-npm.js`)
+- `.changeset/` - Multi-package versioning and automated changelog configurations
+- `.husky/` - Git hooks (`pre-commit` running `lint-staged`, `pre-push` running tests)
 
 ## Web Purpose
 
-- Marketing site: Showcase CLI features, documentation, examples, use cases
-- Interactive builder: Let users select their stack visually
-- Command generator: Output the exact CLI command users need to run
-- NOT a code generator: Web doesn't generate projects, it shows how to use the CLI
+- Marketing site: Showcase CLI features, documentation, live statistics, and use cases
+- Interactive builder: Visual stack selector with real-time compatibility resolution (`/new`)
+- Command generator: Outputs the exact, reproducible CLI command users run in their terminal
+- NOT a code generator: The web app does not create projects directly in the browser; it directs users to the CLI
 
 ## CLI Purpose
 
-- Project generator: Creates full-stack projects based on user selections
-- Template engine: Uses Handlebars templates in layers
-- Actual tool: Users install via npm and run commands
+- Project generator: Creates full-stack, production-ready projects based on user flags or interactive prompts
+- Layered template engine: Assembles templates using Handlebars across layered configurations
+- Published tool: Users install and run via `npx @vipinyadav02/createjsstack@latest` or `npm i -g @vipinyadav02/createjsstack`
 
 ## Tech Stack
 
-- CLI: Commander.js, @clack/prompts, Handlebars, Yup, Chalk, ESBuild
-- Web: Next.js 15, React 19, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion, Fumadocs
-- Deployment: Vercel (Next.js standard deployment)
+- **CLI:** TypeScript, Commander.js, @clack/prompts, Handlebars, Zod, Yup, Chalk, Ora, Boxen, PostHog, tsdown (rolldown), tsx
+- **Web:** Next.js 16 (App Router + Turbopack), React 19, TypeScript, Tailwind CSS v4, shadcn/ui, Radix UI, Framer Motion, Fumadocs (Core + MDX + UI)
+- **Monorepo & Tooling:** Turborepo 2, Prettier, ESLint 9, Husky v8, lint-staged, Changesets
+- **Deployment:** Vercel (standard Next.js deployment with SSR, SSG, and dynamic API routes)
 
 ## Supported Technologies
 
-- Frontend: React, Vue, Angular, Svelte, Next.js, Nuxt, React Native
-- Backend: Express, Fastify, Koa, Hapi, NestJS, Spring Boot (Java)
-- Databases: PostgreSQL, MySQL, SQLite, MongoDB
-- ORMs: Prisma, Sequelize, TypeORM, Mongoose, Spring Data JPA (Java)
-- Auth: JWT, Passport, Auth0, OAuth, Better Auth, Spring Security (Java)
-- Addons: Docker, Testing, Biome, Turborepo
+- **Frontend:** React, Vue, Angular, Svelte, Next.js, Nuxt, SvelteKit, Remix, Astro, Solid, Qwik, TanStack Start, TanStack Router, React Router, React Native (NativeWind, Unistyles)
+- **Backend:** Express, Fastify, Hono, NestJS, Koa, Elysia, Convex, Next.js API, Spring Boot (Java / Maven)
+- **Databases:** PostgreSQL, MySQL, SQLite, MongoDB
+- **ORMs:** Prisma, Drizzle, Mongoose, TypeORM, Mikro-ORM, Spring Data JPA (Java)
+- **Auth:** Better Auth, Clerk, NextAuth, Lucia, Spring Security (Java)
+- **Styling:** Tailwind CSS, Styled Components, CSS Modules, Sass
+- **Runtimes:** Node.js, Bun, Deno, Cloudflare Workers
+- **API Styles:** REST, tRPC, oRPC, GraphQL
+- **Addons:** Docker, Biome, Turborepo, PWA, Tauri, Vitest, Jest, Playwright, Cypress, Storybook, Redis, Sentry, PostHog, Husky, Prettier, ESLint
 
 ## Java Backend
 
@@ -44,124 +52,144 @@ stage branches on; `templates/backend/springboot/` holds the templates.
 
 ## CLI Architecture
 
-- `cli/commands/` - Command handlers (init, add, list)
-- `cli/generators/` - Project generation logic
-- `cli/templates/templates/` - Layered Handlebars templates (01-base -> 06-deployment)
-- `cli/utils/` - File operations, validation helpers
-- `cli/core/` - CLICore, CompatibilityEngine
-- `cli/config/` - ValidationSchemas.js (Yup validation rules)
-- `cli/cli.js` - Commander.js entry point
+- `src/cli.ts` - Commander entry point, CLI branding banner, options registration, and subcommands
+- `src/commands/create.ts` - Main project scaffolding orchestration (`jsstack create [project-name]` or default)
+- `src/commands/` - Additional subcommands (`list.ts`, `add-preset.ts`, `analytics.ts`, `sponsors.ts`, `builder.ts`, `docs.ts`)
+- `src/helpers/core/create-project.ts` & `template-manager.ts` - Core template processing and file generation
+- `src/validation.ts` - Validation and compatibility engine (Zod schemas and cross-technology compatibility rules)
+- `src/presets.ts` - Predefined stack configurations (`mern`, `react-vite`, `next-fullstack`, `express-api`, `react-springboot`)
+- `src/constants.ts` & `src/types.ts` - Core TypeScript types, options, and defaults
+- `src/utils/` - Template processor (`template-processor.ts`), Java helpers (`java-backend.ts`), Biome formatting, analytics, and URL utilities
+- `templates/` - Handlebars templates organized by layer (`base/`, `backend/`, `frontend/`, `database/`, `auth/`, `addons/`, `cicd/`, etc.)
+- `dist/` - Build output generated by `tsdown` (`cli.mjs`, `index.mjs`)
 
 ## Template Layers (CLI generates in this order)
 
-1. Base - package.json, .gitignore, README
-2. Frameworks - Frontend/backend setup files
-3. Integrations - Database, auth configurations
-4. Features - Business logic, API routes
-5. Tooling - Docker, testing configs
-6. Deployment - CI/CD, deployment configs
+1. Base - `package.json`, `.gitignore`, `README.md`
+2. Frameworks - Frontend and backend configuration and source files
+3. Integrations - Database, ORM, and authentication setups
+4. Features - Business logic, API routes, and example code
+5. Tooling - Docker, testing frameworks, linter/formatter configs
+6. Deployment - CI/CD workflows and deployment configurations
 
 ## Web Architecture
 
-- `src/app/` - Next.js App Router pages (homepage, docs, builder, examples)
-- `src/app/docs/[[...slug]]/` - Fumadocs documentation pages (dynamic routing)
-- `content/docs/` - MDX documentation files (Fumadocs content)
-- `src/components/builder/` - Interactive stack builder interface
-- `src/components/builder/config.ts` - Stack options configuration (MUST match CLI)
-- `src/components/ui/` - shadcn/ui components
-- `src/lib/` - Utilities, helpers
-- `src/hooks/` - Custom React hooks
-- `src/.source.ts` - Fumadocs source loader configuration
-
-## Web User Flow
-
-1. User visits website and learns about CLI features
-2. User goes to interactive builder page
-3. User selects stack options (frontend, backend, database, etc)
-4. Web validates selections and checks compatibility
-5. Web generates and displays CLI command to run
-6. User copies command and runs it in their terminal
-7. CLI tool generates the actual project
+- `web/src/app/` - Next.js App Router pages:
+  - `/` - Homepage (hero, features, commands, sponsors, FAQ)
+  - `/new/` - Interactive stack builder
+  - `/docs/[[...slug]]/` - Fumadocs documentation pages
+  - `/analytics/` - Real-time package downloads and usage analytics
+  - `/features/` - Interactive technology stack explorer
+  - `/sponsors/` - GitHub sponsors showcase and donation tiers
+- `web/content/docs/` - MDX documentation files (`cli-options.mdx`, `getting-started.mdx`, `components.mdx`, `presets.mdx`, `how-it-works.mdx`)
+- `web/src/app/new/_components/stack-builder.tsx` - Interactive stack builder UI
+- `web/src/components/builder/config.ts` - Stack options and compatibility rules (MUST match CLI `src/validation.ts`)
+- `web/src/lib/site-schema.ts` - Structured JSON-LD schemas (`WebSite`, `SearchAction`, `SoftwareApplication`, `TechArticle`, `BreadcrumbList`)
+- `web/src/app/robots.ts` & `web/src/app/sitemap.ts` - SEO crawlers and sitemap configuration
+- `web/src/components/ui/` - shadcn/ui components (Radix primitives)
+- `web/src/lib/` - Utilities and analytics helpers
 
 ## Development Commands
 
-- `npm run dev` - Run both CLI and web concurrently
-- `npm run dev:cli` - CLI development only
-- `npm run dev:web` - Web development only (localhost:3000)
-- `npm run build` - Build everything (web + CLI)
-- `npm run build:cli` - Build CLI for distribution
-- `npm run build:web` - Build web for Cloudflare Pages (static export)
-- `npm run clean` - Clear build artifacts
+- `npm run dev` - Run both CLI and web concurrently (Turborepo)
+- `npm run dev:cli` - Run CLI directly from TypeScript source (`tsx src/cli.ts`)
+- `npm run dev:web` - Run web app only with Next.js Turbopack (`localhost:3000`)
+- `npm run build` - Build everything: CLI (`npm run build:cli`) + Web (`turbo run build`)
+- `npm run build:cli` - Build CLI with `tsdown` (`dist/cli.mjs` and `dist/index.mjs`)
+- `npm run build:web` - Build web for production (`turbo run build --filter=web`)
+- `npm run type-check` - Run TypeScript checks across both CLI root and web workspace (`tsc --noEmit && npm run type-check --workspace=web`)
+- `npm run lint` - Run ESLint across packages (`turbo run lint`)
+- `npm run format` - Format all source files with Prettier (`prettier --write .`)
+- `npm run format:check` - Verify formatting with Prettier without writing (`prettier --check .`)
+- `npm run test` - Run tests across workspace (`turbo run test`)
+- `npm run clean` - Clear build artifacts and caches (`turbo run clean`)
+- `npm run changeset` - Add a new changeset for release notes and semver bumping
+- `npm run version-packages` - Consume changesets and bump package versions
+- `npm run publish:npm` - Build and publish the CLI package to npm
 
-## Vercel Deployment
+## Vercel Deployment & SEO Rules
 
-- Uses standard Next.js deployment (no `output: "export"` needed)
-- Build output: `.next/` directory
-- Build command: `npm run build` (in web/ directory)
-- Node version: 18+
-- Environment variables: Set in Vercel dashboard
-- Supports full Next.js features including SSR, API routes, and Image Optimization
-- Deployment is automatic on push to main via Vercel GitHub integration
+- **Framework:** Next.js App Router on Vercel
+- **Trailing Slashes:** `trailingSlash: true` is enforced in `web/next.config.ts`. All canonical links, sitemaps, and internal navigation MUST include trailing slashes (e.g. `https://www.createjsstack.dev/docs/`) to avoid 308 redirect loops.
+- **Robots Policy:** `web/src/app/robots.ts` allows Googlebot and other crawlers to access `/_next/` static resources (CSS/JS) to prevent indexing warnings.
+- **Headings:** Every page must include an accessible `<h1>` tag with targeted keywords (e.g. `<h1>Interactive Stack Builder</h1>` on `/new`).
+- **Structured Data:** Emit JSON-LD inline inside `<script type="application/ld+json">` from `web/src/lib/site-schema.ts`.
 
 ## CLI Testing
 
-- `node cli/cli.js init my-app --dry-run --verbose` - Test CLI without creating files
-- `npx @vipinyadav02/createjsstack@latest my-app --frontend react --backend express` - Real usage
+- `node dist/cli.mjs my-app --dry-run --verbose` - Test built CLI without creating files
+- `npm run dev:cli -- my-app --dry-run --verbose` - Test CLI directly from TypeScript source
+- `npx @vipinyadav02/createjsstack@latest my-app --frontend react --backend express` - Real production usage
 
-## CLI Options
+## CLI Options Reference
 
-- `--frontend <type>` - Frontend framework
-- `--backend <type>` - Backend framework
-- `--database <type>` - Database system
-- `--orm <type>` - ORM/ODM choice
-- `--auth <type>` - Authentication method
-- `--package-manager <mgr>` - npm, yarn, pnpm, or bun
-- `--addons <list>` - Comma-separated addons (docker,testing,biome)
-- `--git` - Initialize git repository
-- `--install` - Install dependencies automatically
-- `--dry-run` - Preview without creating files
-- `--verbose` - Show detailed output
+- `[project-name]` - Target directory / project name (optional, defaults to prompt)
+- `-p, --preset <preset>` - Use a preset (`mern`, `next-fullstack`, `react-vite`, `express-api`, `react-springboot`)
+- `-t, --typescript` - Use TypeScript (default: true)
+- `--no-typescript` - Use JavaScript instead of TypeScript
+- `-s, --styling <styling>` - Styling solution (`tailwind`, `styled-components`, `css-modules`, `sass`)
+- `-d, --database <database>` - Database system (`mongodb`, `postgresql`, `mysql`, `sqlite`)
+- `--orm <orm>` - ORM/ODM choice (`prisma`, `drizzle`, `mongoose`, `typeorm`, `jpa`)
+- `--auth <auth>` - Authentication method (`better-auth`, `clerk`, `next-auth`, `lucia`, `spring-security`)
+- `--frontend <framework>` - Frontend framework (`react`, `vue`, `nextjs`, etc.)
+- `--backend <framework>` - Backend framework (`express`, `fastify`, `hono`, `nest`, `koa`, `elysia`, `convex`, `next`, `springboot`)
+- `--runtime <runtime>` - Runtime environment (`node`, `bun`, `deno`, `workers`)
+- `--api <api>` - API style (`rest`, `trpc`, `orpc`, `graphql`)
+- `--addons <addons>` - Comma-separated addons (`docker`, `biome`, `pwa`, `tauri`, etc.)
+- `--examples <examples>` - Example code to include (`todo`, `ai`, `dashboard`, `auth`, `api`)
+- `--docker` - Include Docker configuration
+- `--cicd <cicd>` - CI/CD workflow (`github-actions`, `gitlab-ci`)
+- `--db-setup <dbSetup>` - Database host setup (`turso`, `neon`, `docker-compose`, `supabase`)
+- `--package-manager <pm>` - Package manager (`npm`, `pnpm`, `bun`)
+- `--install` / `--no-install` - Install dependencies automatically
+- `--git` / `--no-git` - Initialize git repository
+- `--directory-conflict <strategy>` - How to handle existing directory (`merge`, `overwrite`, `increment`, `error`)
+- `-v, --verbose` - Enable detailed logging
+- `-y, --yes` - Skip interactive prompts and use defaults
+- `--yolo` - Skip prompts and compatibility validation (power user mode)
+- `--dry-run` - Preview file generation without creating files
 
 ## CLI Development Rules
 
 DO:
-- Use Commander.js `.option()` with short and long forms
-- Use @clack/prompts for interactive questions
-- Validate all inputs with Yup schemas from ValidationSchemas.js
+
+- Use Commander.js `.option()` with accurate short and long forms in `src/cli.ts`
+- Use `@clack/prompts` for interactive terminal prompts
+- Validate all user inputs and combinations in `src/validation.ts`
 - Follow template layer order strictly (base -> framework -> integration -> feature -> tooling -> deployment)
-- Test with `--dry-run --verbose` before making real changes
-- Use chalk for colored terminal output
-- Check compatibility rules before generation
+- Test with `--dry-run --verbose` before releasing changes
+- Use chalk for colored terminal output and Boxen for formatted summaries
+- Keep templates in `templates/` clean and test them with Handlebars syntax
 
 DON'T:
-- Create duplicate CLI options (all in cli/cli.js)
+
+- Create duplicate CLI options
 - Skip validation of user inputs
 - Mix template logic between layers
-- Hard-code file paths
+- Hard-code local file paths
+- Format `.hbs` files with Prettier (excluded via `.prettierignore`)
 
 ## Web Development Rules
 
 DO:
+
 - Use TypeScript strict mode for all files
-- Use functional components with arrow functions
-- Use React hooks (useState, useEffect, useCallback, useMemo)
+- Use functional components with arrow functions and React 19 hooks
 - Use Tailwind CSS utilities exclusively
-- Use shadcn/ui components for UI
-- Use Fumadocs for documentation (MDX files in content/docs/)
-- Keep config.ts synchronized with CLI ValidationSchemas.js
+- Use shadcn/ui components for UI primitives
+- Use Fumadocs for documentation (MDX files in `web/content/docs/`)
+- Keep `web/src/components/builder/config.ts` synchronized with CLI `src/validation.ts`
 - Generate exact CLI commands that match actual CLI options
-- Use Next.js App Router patterns (app/ directory)
-- Make the builder interactive and user-friendly
-- Show examples and documentation clearly
-- Ensure all pages are Vercel-compatible
-- Use unoptimized images for static export compatibility
+- Ensure all canonical links and sitemap entries have trailing slashes
+- Keep page titles concise and avoid duplicated suffixes
 
 DON'T:
-- Use Next.js Pages Router
+
+- Use Next.js Pages Router (use App Router `app/` directory)
 - Use TypeScript `any` type
-- Create custom CSS files
-- Generate commands that don't match CLI
-- Try to generate projects in the browser (that's CLI's job)
+- Create custom CSS files (use Tailwind CSS utilities)
+- Generate commands that don't match CLI options
+- Disallow Googlebot from crawling `/_next/` in `robots.ts`
 
 ## Web Builder Flow
 
@@ -170,17 +198,19 @@ User selects frontend -> Update available backend options -> User selects backen
 ## Command Generation Example
 
 User selections:
+
 - Frontend: React
 - Backend: Express
 - Database: MongoDB
 - ORM: Mongoose
-- Auth: JWT
+- Auth: Better Auth
 - Package Manager: npm
-- Addons: Docker, Testing
+- Addons: Docker, Biome
 
 Generated command:
-```
-npx @vipinyadav02/createjsstack@latest my-app --frontend react --backend express --database mongodb --orm mongoose --auth jwt --package-manager npm --addons docker,testing --git --install
+
+```bash
+npx @vipinyadav02/createjsstack@latest my-app --frontend react --backend express --database mongodb --orm mongoose --auth better-auth --package-manager npm --addons docker,biome --git --install
 ```
 
 ## Handlebars Syntax (CLI templates)
@@ -188,213 +218,60 @@ npx @vipinyadav02/createjsstack@latest my-app --frontend react --backend express
 - Variables: `{{projectName}}` `{{packageManager}}` `{{database}}`
 - Conditionals: `{{#if (eq orm "prisma")}}...{{else if (eq orm "mongoose")}}...{{/if}}`
 - Iteration: `{{#each items}}{{this}}{{/each}}`
-- Helpers: eq (equal), ne (not equal), and, or, not, contains
+- Helpers: `eq`, `ne`, `and`, `or`, `not`, `contains`
 
 ## Template Variables
 
 - `projectName` - Project name
-- `packageManager` - npm, yarn, pnpm, bun
+- `packageManager` - npm, pnpm, bun
 - `description` - Project description
 - `frontend` - Frontend framework choice
 - `backend` - Backend framework choice
 - `database` - Database system
 - `orm` - ORM/ODM choice
 - `auth` - Authentication method
+- `runtime` - Runtime environment (node, bun, deno, workers)
+- `styling` - CSS / styling choice
+- `api` - API style (rest, trpc, orpc, graphql)
 - `git` - Boolean for git init
 - `install` - Boolean for auto-install
 - `docker` - Boolean for Docker config
-- `testing` - Boolean for testing setup
 
 ## Compatibility Matrix (enforced by both CLI and web)
 
 - MongoDB -> Mongoose ONLY (no other ORMs work with MongoDB)
-- PostgreSQL/MySQL/SQLite -> Prisma, Sequelize, TypeORM
-- Next.js -> Better Auth, Auth0, JWT, OAuth
-- React/Vue -> Auth0, Better Auth, JWT, OAuth, Passport
-- Angular -> Auth0, JWT, OAuth, Passport
+- PostgreSQL / MySQL / SQLite -> Prisma, Drizzle, TypeORM, Mikro-ORM
+- Next.js -> Better Auth, Clerk, NextAuth, Lucia
+- React / Vue -> Better Auth, Clerk, NextAuth, Lucia
+- Spring Boot (Java) -> Spring Data JPA, Spring Security, REST
 
 ## Compatibility Enforcement
 
-- CLI: `cli/config/ValidationSchemas.js` (Yup validation)
-- CLI: `cli/core/CompatibilityEngine.js` (runtime checks)
+- CLI: `src/validation.ts` (Zod schemas and compatibility functions)
 - Web: `web/src/components/builder/config.ts` (builder validation)
 - Web builder must disable incompatible options in real-time
 
 ## File Conventions
 
-- CLI code: `.js` files (ES modules with import/export)
+- CLI code: `.ts` files (TypeScript with ES module resolution)
 - Web code: `.tsx` for components, `.ts` for utilities
-- Templates: `.hbs` (Handlebars templates)
-- Config: `.json`, `.js`
-- Styling: Tailwind utilities only (no custom CSS)
+- Templates: `.hbs` (Handlebars templates, excluded in `.prettierignore`)
+- Config: `.json`, `.ts`, `.mjs`
+- Styling: Tailwind CSS utilities only
 
 ## Critical Config Sync
 
-- `web/src/components/builder/config.ts` MUST have same options as `cli/config/ValidationSchemas.js`
+- `web/src/components/builder/config.ts` MUST have the exact same options and compatibility rules as `src/validation.ts`
 - Web must validate combinations the same way CLI does
 - Web must generate commands that CLI can actually parse
 - Test web-generated commands by running them with `--dry-run`
 
-## Debugging Web Issues
+## Common Issues & Troubleshooting
 
-1. Check Next.js dev console for build errors
-2. Open browser DevTools (Console and Network tabs)
-3. Verify config.ts matches CLI ValidationSchemas.js
-4. Test generated command manually in terminal with `--dry-run`
-5. Check TypeScript errors in IDE
-6. Verify compatibility logic matches CLI
-
-## Debugging CLI Issues
-
-1. Run with `--verbose --dry-run` flags
-2. Check option parsing in `cli/cli.js`
-3. Verify schema validation in ValidationSchemas.js
-4. Check template exists: `cli/templates/templates/{layer}/{tech}/`
-5. Test compatibility rules in CompatibilityEngine
-6. Check Handlebars syntax in templates
-
-## Common Issues
-
-- Wrong flag: Use `--package-manager` (not `--pm`)
-- Build errors: Run `npm run clean && npm install`
-- Template not found: Check layer directory structure
-- Compatibility error: Verify rules in ValidationSchemas.js
-- Command doesn't work: Test with `--dry-run --verbose`
-- Web/CLI mismatch: Sync config.ts with ValidationSchemas.js
-
-## Adding New Technology
-
-1. Add to `cli/config/ValidationSchemas.js` (validation rules)
-2. Add to `web/src/components/builder/config.ts` (web options)
-3. Add to `cli/cli.js` (Commander options)
-4. Create templates in `cli/templates/templates/{layer}/{tech}/`
-5. Update CompatibilityEngine.js if tech has compatibility rules
-6. Test CLI with `--dry-run`
-7. Test web builder generates correct command
-8. Verify compatibility checks work
-
-## Web Pages Structure
-
-- `/` - Homepage (hero, features, benefits, CTA to builder)
-- `/new` - Interactive stack builder (main feature)
-- `/docs` - Fumadocs documentation (MDX files from content/docs/)
-- `/docs/getting-started` - Getting started guide
-- `/docs/technologies` - Supported technologies
-- `/docs/commands` - CLI commands reference
-- `/docs/examples` - Example projects
-- `/analytics` - Usage analytics dashboard
-- `/features` - Features showcase
-- `/sponsors` - Sponsors page
-
-## Fumadocs Documentation
-
-- Documentation files: `web/content/docs/*.mdx`
-- Source loader: `web/src/.source.ts`
-- Docs pages: `web/src/app/docs/[[...slug]]/`
-- Config: `web/fumadocs.config.ts`
-- Uses MDX for rich content (React components in markdown)
-- Auto-generates table of contents
-- Supports code highlighting
-- Static generation compatible with Cloudflare Pages
-
-## Web Component Pattern
-
-```tsx
-'use client';
-import { useState } from 'react';
-interface Props { title: string; }
-const Component = ({ title }: Props) => {
-  const [value, setValue] = useState<string>('');
-  return <div className="p-4 space-y-2">{title}</div>;
-};
-export default Component;
-```
-
-## CLI Command Pattern
-
-```js
-import { confirm } from '@clack/prompts';
-import chalk from 'chalk';
-export async function command(options) {
-  try {
-    const validated = await validateInput(options);
-    const answer = await confirm({ message: 'Continue?' });
-    console.log(chalk.green('✓ Success'));
-  } catch (error) {
-    console.error(chalk.red('✗ Error:'), error.message);
-    process.exit(1);
-  }
-}
-```
-
-## Template Pattern
-
-```hbs
-{{#if (eq database "mongodb")}}
-import mongoose from 'mongoose';
-{{else if (eq database "postgresql")}}
-import { Pool } from 'pg';
-{{/if}}
-```
-
-## Builder State Management
-
-- Store selections in React state
-- Validate on each selection change
-- Update available options based on compatibility
-- Generate command in real-time
-- Show/hide incompatible options
-- Display helpful error messages
-- Provide reset button
-
-## Command Display
-
-- Show command in copyable code block
-- Provide copy button with feedback
-- Show alternative commands (different package managers)
-- Display step-by-step installation instructions
-- Link to relevant documentation
-- Show expected project structure
-
-## Quality Standards
-
-- TypeScript strict mode (web)
-- ESLint + Prettier formatting
-- Node.js 18+ compatibility
-- ES modules (import/export)
-- WCAG AA accessibility compliance
-- Semantic versioning
-- Responsive design (mobile, tablet, desktop)
-
-## Testing Checklist
-
-- CLI: Test all flag combinations with `--dry-run`
-- CLI: Verify all templates generate correctly
-- CLI: Test compatibility rules enforce properly
-- Web: Test builder with all tech combinations
-- Web: Verify generated commands work in terminal
-- Web: Test responsive design on all screen sizes
-- Web: Test accessibility with keyboard navigation
-- Web: Verify config.ts matches ValidationSchemas.js
-
-## User Experience Priorities
-
-- Make builder intuitive and fast
-- Show clear compatibility hints
-- Provide helpful error messages
-- Display beautiful project examples
-- Make documentation searchable
-- Show realistic use cases
-- Provide quick start guide
-- Include video demos or GIFs
-
-## Always Remember
-
-- Web shows capabilities, CLI does the work
-- Web generates commands, CLI generates projects
-- Keep config synchronized between web and CLI
-- Test generated commands with `--dry-run`
-- Web is marketing + builder, not a code generator
-- Builder must match CLI's actual capabilities
-- Validate compatibility in real-time on web
-- Every web-generated command must work in CLI
+- **Wrong flag:** Use `--package-manager` (not `--pm`)
+- **Build errors:** Run `npm run clean && npm install`
+- **Prettier template syntax errors:** Ensure `templates/` and `*.hbs` are in `.prettierignore`
+- **Husky permissions:** Ensure `.husky/pre-commit` and `.husky/pre-push` have executable permissions (`chmod +x`)
+- **GitHub Actions versions:** Use official GitHub Actions `@v4` (`actions/checkout@v4`, `actions/setup-node@v4`)
+- **SEO redirect warnings:** Always include trailing slashes on URLs to match `trailingSlash: true`
+- **CLI dry run test:** Run `node dist/cli.mjs my-app --dry-run --verbose`

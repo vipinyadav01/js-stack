@@ -127,7 +127,9 @@ export async function createProject(
         // Override with CLI options if provided
         frontend: options.frontend ? (options.frontend as any) : base.frontend,
         backend: options.backend || base.backend,
-        runtime: options.runtime || defaultRuntimeFor(options.backend || base.backend, base.runtime),
+        runtime:
+          options.runtime ||
+          defaultRuntimeFor(options.backend || base.backend, base.runtime),
         database: options.database || base.database,
         orm: options.orm || base.orm,
         api: options.api || base.api,
@@ -163,7 +165,9 @@ export async function createProject(
           relativePath,
           frontend: (options.frontend || base.frontend) as any,
           backend: options.backend || base.backend,
-          runtime: options.runtime || defaultRuntimeFor(options.backend || base.backend, base.runtime),
+          runtime:
+            options.runtime ||
+            defaultRuntimeFor(options.backend || base.backend, base.runtime),
           database: options.database || base.database,
           orm: options.orm || base.orm,
           api: options.api || base.api,
@@ -178,9 +182,7 @@ export async function createProject(
           packageManager: options.packageManager || base.packageManager,
           git: options.git !== undefined ? options.git : base.git,
           install:
-            options.install !== undefined
-              ? options.install
-              : base.install,
+            options.install !== undefined ? options.install : base.install,
         };
       } else {
         // Interactive prompts

@@ -24,12 +24,36 @@ interface DocRoute {
 }
 
 const DOC_ROUTES: DocRoute[] = [
-  { title: "Introduction", href: "/docs", description: "Overview of JS-Stack CLI" },
-  { title: "Getting Started", href: "/docs/getting-started", description: "Install and scaffold your first project" },
-  { title: "Presets", href: "/docs/presets", description: "Named stack bundles to start from" },
-  { title: "CLI Options", href: "/docs/cli-options", description: "Every flag the create command accepts" },
-  { title: "How It Works", href: "/docs/how-it-works", description: "Template-layering model explained" },
-  { title: "Components", href: "/docs/components", description: "Fumadocs UI component showcase" },
+  {
+    title: "Introduction",
+    href: "/docs",
+    description: "Overview of JS-Stack CLI",
+  },
+  {
+    title: "Getting Started",
+    href: "/docs/getting-started",
+    description: "Install and scaffold your first project",
+  },
+  {
+    title: "Presets",
+    href: "/docs/presets",
+    description: "Named stack bundles to start from",
+  },
+  {
+    title: "CLI Options",
+    href: "/docs/cli-options",
+    description: "Every flag the create command accepts",
+  },
+  {
+    title: "How It Works",
+    href: "/docs/how-it-works",
+    description: "Template-layering model explained",
+  },
+  {
+    title: "Components",
+    href: "/docs/components",
+    description: "Fumadocs UI component showcase",
+  },
 ];
 
 const NAV_LINKS: NavLink[] = [
@@ -137,7 +161,12 @@ export function Navigation() {
               >
                 <BookOpen className="h-3 w-3" />
                 <span>Docs</span>
-                <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", docsOpen && "rotate-180")} />
+                <ChevronDown
+                  className={cn(
+                    "h-3 w-3 transition-transform duration-200",
+                    docsOpen && "rotate-180",
+                  )}
+                />
               </Link>
               {docsOpen && (
                 <div className="absolute top-full left-0 mt-1 w-64 rounded-lg border border-border/60 bg-background/95 backdrop-blur-xl shadow-xl shadow-black/10 p-1.5 z-50">
@@ -152,8 +181,12 @@ export function Navigation() {
                           : "text-foreground",
                       )}
                     >
-                      <div className="text-xs font-mono font-semibold">{route.title}</div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5">{route.description}</div>
+                      <div className="text-xs font-mono font-semibold">
+                        {route.title}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5">
+                        {route.description}
+                      </div>
                     </Link>
                   ))}
                 </div>
@@ -239,7 +272,10 @@ export function Navigation() {
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="top" className="w-full pt-16 px-6 pb-6 bg-background">
+              <SheetContent
+                side="top"
+                className="w-full pt-16 px-6 pb-6 bg-background"
+              >
                 <div className="flex flex-col gap-2">
                   {/* Mobile Docs Section */}
                   <button
@@ -255,7 +291,12 @@ export function Navigation() {
                       <BookOpen className="h-4 w-4" />
                       Docs
                     </span>
-                    <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", mobileDocsOpen && "rotate-180")} />
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 transition-transform duration-200",
+                        mobileDocsOpen && "rotate-180",
+                      )}
+                    />
                   </button>
                   {mobileDocsOpen && (
                     <div className="ml-4 flex flex-col gap-1 border-l-2 border-border pl-3">

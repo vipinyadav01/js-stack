@@ -18,7 +18,11 @@ export const JAVA_ORMS = new Set<string>(["jpa"]);
 export const JAVA_AUTH = new Set<string>(["spring-security"]);
 
 /** API styles a Java backend can expose to a JavaScript frontend. */
-export const JAVA_COMPATIBLE_APIS = new Set<string>(["none", "rest", "graphql"]);
+export const JAVA_COMPATIBLE_APIS = new Set<string>([
+  "none",
+  "rest",
+  "graphql",
+]);
 
 /** Databases the generated JPA configuration supports. */
 export const JPA_DATABASES = new Set<string>(["postgres", "mysql", "sqlite"]);

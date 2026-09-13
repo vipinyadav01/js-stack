@@ -243,9 +243,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             enableSystem
             disableTransitionOnChange
           >
-            <div className="relative flex min-h-screen flex-col" suppressHydrationWarning>
+            <div
+              className="relative flex min-h-screen flex-col"
+              suppressHydrationWarning
+            >
               <Navigation />
-              <main className="flex-1 pt-16 font-sans" suppressHydrationWarning>{children}</main>
+              <main className="flex-1 pt-16 font-sans" suppressHydrationWarning>
+                {children}
+              </main>
               <ConditionalFooter />
             </div>
           </ThemeProvider>

@@ -14,7 +14,9 @@ const packageJson = JSON.parse(
   readFileSync(join(__dirname, "../package.json"), "utf-8"),
 );
 
-console.log(chalk.blue.bold("🚀 Publishing @vipinyadav02/createjsstack to npm"));
+console.log(
+  chalk.blue.bold("🚀 Publishing @vipinyadav02/createjsstack to npm"),
+);
 console.log(chalk.gray(`Version: ${packageJson.version}`));
 console.log();
 

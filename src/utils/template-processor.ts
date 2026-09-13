@@ -64,16 +64,13 @@ function registerHelpers() {
   // Spring property placeholder: ${NAME} or ${NAME:default}. Built by a helper
   // because writing one inline around a Handlebars expression would end the
   // line in "}}}", which the parser reads as a triple-stash close tag.
-  Handlebars.registerHelper(
-    "springPlaceholder",
-    function (name, defaultValue) {
-      // Handlebars appends its options object, so a call with no default lands
-      // here with an object in defaultValue.
-      const hasDefault =
-        defaultValue !== undefined && typeof defaultValue !== "object";
-      return hasDefault ? `\${${name}:${defaultValue}}` : `\${${name}}`;
-    },
-  );
+  Handlebars.registerHelper("springPlaceholder", function (name, defaultValue) {
+    // Handlebars appends its options object, so a call with no default lands
+    // here with an object in defaultValue.
+    const hasDefault =
+      defaultValue !== undefined && typeof defaultValue !== "object";
+    return hasDefault ? `\${${name}:${defaultValue}}` : `\${${name}}`;
+  });
 
   // Current year (used by scaffolded LICENSE files, etc.)
   Handlebars.registerHelper("currentYear", function () {
@@ -146,16 +143,10 @@ function parseLooseJson(content: string): Record<string, unknown> {
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    !Array.isArray(value)
-  );
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function sortObjectKeys(
-  obj: Record<string, unknown>,
-): Record<string, unknown> {
+function sortObjectKeys(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.keys(obj)
     .sort()
     .reduce<Record<string, unknown>>((acc, key) => {
